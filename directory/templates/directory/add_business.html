@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Business - SwiftFind</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Global Variables */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        /* Dark Mode Variables */
+        .dark-mode {
+            --background: #1e293b;
+            --card-bg: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #475569;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
+        }
+
+        /* Global Styles */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--background);
+            margin: 0;
+            padding: 2rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        h1, h2, h3 {
+            margin: 0;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Add Business Container */
+        .add-business-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .add-business-container h1 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        /* Form Group */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group label i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        /* Input Fields */
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: var(--text-primary);
+            background-color: var(--background);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        /* File Input */
+        .form-group input[type="file"] {
+            padding: 0.5rem;
+        }
+
+        /* Submit Button */
+        .submit-button {
+            width: 100%;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .submit-button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .add-business-container {
+                padding: 1rem;
+            }
+
+            .add-business-container h1 {
+                font-size: 1.75rem;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                font-size: 0.875rem;
+            }
+
+            .submit-button {
+                font-size: 0.875rem;
+            }
+        }
+        /* Fixed Buttons */
+        .fixed-buttons {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .rounded-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            box-shadow: var(--shadow);
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .rounded-button:hover {
+            background-color: var(--primary-hover);
+        }
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            transition: background-color 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--primary-hover);
+        }
+    </style>
+</head>
+<body>
+    <!-- Dark Mode Toggle -->
+    <button id="theme-toggle" class="theme-toggle">🌙</button>
+
+    <!-- Add Business Form -->
+    <div class="add-business-container">
+    <h2 class="mt-4 mb-4">Add a New Business</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}  <!-- CSRF token for security -->
+
+        <!-- Display form errors if any -->
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Error!</strong> Please correct the following:
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ field|title }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <!-- Form fields -->
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">Business Name</label>
+            {{ form.name }}
+            <small class="form-text text-muted">Enter the name of your business.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.logo.id_for_label }}">Logo</label>
+            {{ form.logo }}
+            <small class="form-text text-muted">Upload a logo for your business (optional).</small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.category.id_for_label }}">Category</label>
+            {{ form.category }}
+            <small class="form-text text-muted">Select the category your business belongs to.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">Description</label>
+            {{ form.description }}
+            <small class="form-text text-muted">Describe your business (optional).</small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.address.id_for_label }}">Address</label>
+            {{ form.address }}
+            <small class="form-text text-muted">Enter the physical address of your business.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.phone_number.id_for_label }}">Phone Number</label>
+            {{ form.phone_number }}
+            <small class="form-text text-muted">Enter a contact number for your business.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.email.id_for_label }}">Email</label>
+            {{ form.email }}
+            <small class="form-text text-muted">Enter an email address for your business (optional).</small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.website.id_for_label }}">Website</label>
+            {{ form.website }}
+            <small class="form-text text-muted">Enter the website URL for your business (optional).</small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.latitude.id_for_label }}">Latitude</label>
+            {{ form.latitude }}
+            <small class="form-text text-muted">Enter the latitude for map integration (optional).</small>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.longitude.id_for_label }}">Longitude</label>
+            {{ form.longitude }}
+            <small class="form-text text-muted">Enter the longitude for map integration (optional).</small>
+        </div>
+
+        <!-- Submit button -->
+        <button type="submit" class="submit-button">Add Business</button>
+    </form>
+    </div>
+    <!-- Fixed Buttons Container -->
+    <div class="fixed-buttons">
+        <!-- Home Button -->
+        <a href="{% url 'business-list' %}" class="rounded-button" title="Home">
+            <i class="fas fa-home"></i>
+        </a>
+    </div>
+    <!-- Include Google Maps JavaScript API with Places library -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAIGUlnCpBwdQOgysvYdLmXG-wmVqPjXzU&libraries=places"></script>
+    <script>
+        let map;
+        let marker;
+
+        function initAutocomplete() {
+            const addressField = document.getElementById('address');
+            const autocomplete = new google.maps.places.Autocomplete(addressField, {
+                fields: ['geometry'],
+            });
+
+            // Initialize the map
+            map = new google.maps.Map(document.getElementById('map-preview'), {
+                center: { lat: 0, lng: 0 },
+                zoom: 2,
+            });
+
+            marker = new google.maps.Marker({
+                map: map,
+                draggable: true,
+            });
+
+            // Update latitude, longitude, and map when an address is selected
+            autocomplete.addListener('place_changed', function () {
+                const place = autocomplete.getPlace();
+                if (place.geometry) {
+                    updateLocation(place.geometry.location);
+                } else {
+                    // Use Geocoding API if no geometry is available
+                    const geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({ address: addressField.value }, function (results, status) {
+                        if (status === 'OK' && results[0]) {
+                            updateLocation(results[0].geometry.location);
+                        } else {
+                            alert('Unable to fetch coordinates for the entered address.');
+                        }
+                    });
+                }
+            });
+
+            // Update location when the marker is dragged
+            marker.addListener('dragend', function (event) {
+                document.getElementById('id_latitude').value = event.latLng.lat();
+                document.getElementById('id_longitude').value = event.latLng.lng();
+            });
+        }
+
+        function updateLocation(location) {
+            document.getElementById('id_latitude').value = location.lat();
+            document.getElementById('id_longitude').value = location.lng();
+            map.setCenter(location);
+            marker.setPosition(location);
+        }
+
+        // Initialize the autocomplete when the page loads
+        window.onload = initAutocomplete;
+    </script>
+
+    <!-- JavaScript for Dark Mode Toggle -->
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            body.classList.add(savedTheme);
+            themeToggle.textContent = savedTheme === 'dark-mode' ? '☀️' : '🌙';
+        }
+
+        // Toggle dark mode
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const isDarkMode = body.classList.contains('dark-mode');
+            themeToggle.textContent = isDarkMode ? '☀️' : '🌙';
+            localStorage.setItem('theme', isDarkMode ? 'dark-mode' : '');
+        });
+    </script>
+</body>
+</html>

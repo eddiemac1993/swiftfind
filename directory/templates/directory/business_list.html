@@ -1,0 +1,525 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business List - SwiftFind</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Global Variables */
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        /* Dark Mode Variables */
+        .dark-mode {
+            --background: #1e293b;
+            --card-bg: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #475569;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
+        }
+
+        /* Global Styles */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--background);
+            margin: 0;
+            padding: 2rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        h1, h2, h3 {
+            margin: 0;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Search and Filter Form */
+        .search-form {
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            padding: 1.5rem;
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow);
+        }
+
+        .search-form input,
+        .search-form select {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: var(--text-primary);
+            background-color: var(--background);
+            transition: all 0.2s ease;
+        }
+
+        .search-form input:focus,
+        .search-form select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-form button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .search-form button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Categories Tags */
+        .categories {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .category-tag {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .category-tag:hover {
+            background-color: var(--background);
+        }
+
+        .category-tag i {
+            color: var(--primary-color);
+        }
+
+        /* Business List */
+        .business-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .business-item {
+            display: flex;
+            gap: 2rem;
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .business-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        .business-logo img {
+            width: 120px;
+            height: 120px;
+            border-radius: 0.75rem;
+            object-fit: cover;
+        }
+
+        .business-details {
+            flex: 1;
+        }
+
+        .business-details h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .business-details p {
+            margin: 0.5rem 0;
+            color: var(--text-secondary);
+        }
+
+        .business-details strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .business-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        .stars {
+            color: #fbbf24; /* Yellow for stars */
+        }
+
+        .review-count {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Load More Button */
+        .load-more-button {
+            display: block;
+            margin: 2rem auto;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .load-more-button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Add Business Button */
+        .add-business-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow);
+            transition: background-color 0.2s ease;
+            z-index: 1000; /* Ensure it stays on top */
+        }
+
+        .add-business-button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            z-index: 1000; /* Ensure it stays on top */
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .business-item {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .business-logo img {
+                width: 100px;
+                height: 100px;
+            }
+
+            .search-form {
+                padding: 1rem;
+            }
+
+            .search-form input,
+            .search-form select,
+            .search-form button {
+                width: 100%;
+            }
+
+            .theme-toggle {
+                bottom: 1rem;
+                left: 1rem;
+            }
+        }
+
+        /* Pagination Controls */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .pagination a {
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .pagination a:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .pagination .current {
+            padding: 0.5rem 1rem;
+            background-color: var(--background);
+            color: var(--text-primary);
+            border-radius: 0.5rem;
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 6rem;
+            right: 2rem;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow);
+            transition: background-color 0.2s ease;
+            z-index: 1000; /* Ensure it stays on top */
+        }
+
+        .back-to-top:hover {
+            background-color: var(--primary-hover);
+        }
+        /* Fixed position for the button container */
+        .fixed-buttons {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000; /* Ensure it's above other content */
+        }
+
+        /* Rounded buttons */
+        .rounded-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #007bff; /* Bootstrap primary color */
+            color: white;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease;
+            text-decoration: none; /* Remove underline from links */
+        }
+
+        .rounded-button:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+        }
+
+
+    </style>
+</head>
+<body>
+    <!-- Add Business Button -->
+    <a href="{% url 'add-business' %}" class="add-business-button">
+        <i class="fas fa-plus"></i> Add Business
+    </a>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Discover Local Businesses</h1>
+            <p>Find the best businesses in your area. Search by name, category, or location.</p>
+        </div>
+    </section>
+
+    <!-- Search and Filter Form -->
+    <!-- Search and Filter Form -->
+    <form method="get" action="." class="search-form">
+        <input type="text" name="q" placeholder="Search by name" value="{{ query }}">
+        <select name="category">
+            <option value="">All Categories</option>
+            {% for category in categories %}
+                <option value="{{ category.name }}" {% if selected_category == category.name %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <select id="sort-by" name="sort_by" class="sort-by-dropdown">
+            <option value="">Sort By</option>
+            <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Rating (Highest to Lowest)</option>
+            <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name (A-Z)</option>
+            <option value="reviews" {% if sort_by == 'reviews' %}selected{% endif %}>Most Reviewed</option>
+            <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest</option>
+        </select>
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" style="display: none; text-align: center; margin: 2rem 0;">
+        <i class="fas fa-spinner fa-spin"></i> Loading...
+    </div>
+    <!-- Business List -->
+    <div class="business-list">
+        {% if page_obj.object_list %}
+            {% for business in page_obj %}
+                <div class="business-item">
+                    <div class="business-logo">
+                        <img src="{{ business.logo.url }}" alt="{{ business.name }} Logo">
+                    </div>
+                    <div class="business-details">
+                        <h2><a href="{% url 'business-detail' business.pk %}">{{ business.name }}</a></h2>
+
+                        <p><strong>Category:</strong> <i class="fas fa-tag"></i>
+                <span>{{ business.category.name }}</span></p>
+                        <p><strong>Address:</strong> {{ business.address }}</p>
+                        <p><strong>Phone:</strong> {{ business.phone_number }}</p>
+                        {% if business.email %}
+                            <p><strong>Email:</strong> {{ business.email }}</p>
+                        {% endif %}
+                        {% if business.website %}
+                            <p><strong>Website:</strong> <a href="{{ business.website }}" target="_blank">{{ business.website }}</a></p>
+                        {% endif %}
+                        <div class="business-rating">
+                            <span class="stars">★★★★★</span>
+                            <span class="review-count">({{ business.reviews.count }} reviews)</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-results">No businesses found.</p>
+        {% endif %}
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+        <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+    </div>
+    <!-- Fixed Buttons Container -->
+    <div class="fixed-buttons">
+        <!-- About Button -->
+        <a href="{% url 'about' %}" class="rounded-button" title="About">
+            <i class="fas fa-info-circle"></i>
+        </a>
+
+    </div>
+    <!-- Back to Top Button -->
+    <a href="#" class="back-to-top">
+        <i class="fas fa-arrow-up"></i> Back to Top
+    </a>
+
+    <!-- Dark Mode Toggle -->
+    <button id="theme-toggle" class="theme-toggle">🌙</button>
+
+    <script>
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        // Check local storage for dark mode preference
+        const isDarkMode = localStorage.getItem('darkMode') === 'true';
+        if (isDarkMode) {
+            body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            themeToggle.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('darkMode', isDark);
+        });
+
+        // Back to Top Button
+        const backToTopButton = document.querySelector('.back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopButton.style.display = 'flex';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
