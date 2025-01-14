@@ -53,7 +53,26 @@
         a:hover {
             text-decoration: underline;
         }
-
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .gallery-item {
+            flex: 1 1 calc(33.333% - 10px);  /* 3 images per row */
+            box-sizing: border-box;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .caption {
+            text-align: center;
+            font-style: italic;
+            color: #555;
+        }
         /* Business Details */
         .business-details {
             display: flex;
@@ -438,7 +457,26 @@
     .related-item p {
         font-size: 0.875rem;
     }
-
+    .image-gallery {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    .gallery-item {
+        flex: 1 1 calc(33.333% - 10px);  /* 3 images per row */
+        box-sizing: border-box;
+    }
+    .gallery-item img {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+    }
+    .caption {
+        text-align: center;
+        font-style: italic;
+        color: #555;
+    }
     /* User Reviews */
 /* General Styles */
 .user-reviews {
@@ -603,6 +641,20 @@
         </div>
     </div>
 <p><strong>Description:</strong> {{ business.description }}</p>
+    <!-- Image Gallery Section -->
+    <h2>Image Gallery</h2>
+    <div class="image-gallery">
+        {% for image in business.images.all %}
+            <div class="gallery-item">
+                <img src="{{ image.thumbnail.url }}" alt="{{ image.caption|default:business.name }}">
+                {% if image.caption %}
+                    <p class="caption">{{ image.caption }}</p>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>No images available for this business.</p>
+        {% endfor %}
+    </div>
     <!-- Map Integration -->
     <div id="map"></div>
 

@@ -9,4 +9,5 @@ urlpatterns = [
     path('contact/', views.contact, name='contact'),
     path('privacy/', views.privacy, name='privacy'),
     path('terms/', views.terms, name='terms'),
+    path('business/<int:business_id>/upload-image/', views.upload_business_image, name='upload_business_image'),
 ]

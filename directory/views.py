@@ -24,6 +24,9 @@ def add_business(request):
         form = BusinessForm()
     return render(request, 'directory/add_business.html', {'form': form})
 
+
+from django.db.models import Q
+
 def business_list(request):
     # Get search query, category filter, and sort_by parameter from the request
     query = request.GET.get('q')
@@ -38,7 +41,12 @@ def business_list(request):
 
     # Apply search filter
     if query:
-        businesses = businesses.filter(name__icontains=query)
+        businesses = businesses.filter(
+            Q(name__icontains=query) |          # Search in name
+            Q(description__icontains=query) |   # Search in description
+            Q(address__icontains=query) |       # Search in address
+            Q(tags__name__icontains=query)      # Search in tags (if using django-taggit)
+        ).distinct()  # Use distinct() to avoid duplicate results
 
     # Apply category filter
     if category:
@@ -116,6 +124,23 @@ def business_detail(request, pk):
         'reviews': reviews,
         'form': form,
     })
+
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Business
+from .forms import BusinessImageForm
+
+def upload_business_image(request, business_id):
+    business = get_object_or_404(Business, id=business_id)
+    if request.method == 'POST':
+        form = BusinessImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.save(commit=False)
+            image.business = business
+            image.save()
+            return redirect('business_detail', business_id=business.id)
+    else:
+        form = BusinessImageForm()
+    return render(request, 'upload_image.html', {'form': form, 'business': business})
 
 def about(request):
     return render(request, 'about.html')

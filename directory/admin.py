@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Business, Review
+from .models import Category, Business, Review, BusinessImage
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -24,3 +24,9 @@ class ReviewAdmin(admin.ModelAdmin):
     list_editable = ('status',)
     raw_id_fields = ('business', 'user')
     date_hierarchy = 'created_at'
+
+@admin.register(BusinessImage)
+class BusinessImageAdmin(admin.ModelAdmin):
+    list_display = ['business', 'image', 'caption', 'created_at']
+    list_filter = ['business']
+    search_fields = ['business__name', 'caption']

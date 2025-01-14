@@ -40,3 +40,12 @@ class BusinessForm(forms.ModelForm):
                 raise ValidationError("Enter a valid URL.")
 
         return website
+
+
+from django import forms
+from .models import BusinessImage
+
+class BusinessImageForm(forms.ModelForm):
+    class Meta:
+        model = BusinessImage
+        fields = ['image', 'caption']
