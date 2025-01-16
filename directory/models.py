@@ -45,8 +45,7 @@ class Business(models.Model):
     phone_number = models.CharField(max_length=15)
     email = models.EmailField(blank=True, null=True)
     website = models.URLField(blank=True, null=True)
-    latitude = models.FloatField(blank=True, null=True)
-    longitude = models.FloatField(blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)  # New city field
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     tags = TaggableManager(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

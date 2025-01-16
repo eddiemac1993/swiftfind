@@ -18,7 +18,7 @@ from .models import Business
 class BusinessForm(forms.ModelForm):
     class Meta:
         model = Business
-        fields = ['name', 'category', 'description', 'address', 'phone_number', 'email', 'website', 'logo', 'latitude', 'longitude']
+        fields = ['name', 'category', 'description', 'address', 'phone_number', 'email', 'website', 'logo', 'city']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
         }

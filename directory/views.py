@@ -8,6 +8,11 @@ from django.shortcuts import render, redirect
 from .forms import BusinessForm  # You'll need to create this form
 from .models import Business
 
+from django.shortcuts import render
+
+def offline(request):
+    return render(request, 'offline.html')
+
 def add_business(request):
     if request.method == 'POST':
         form = BusinessForm(request.POST, request.FILES)
@@ -30,6 +35,7 @@ from django.db.models import Q
 def business_list(request):
     # Get search query, category filter, and sort_by parameter from the request
     query = request.GET.get('q')
+    city = request.GET.get('city', '')
     category = request.GET.get('category')
     sort_by = request.GET.get('sort_by')
 
@@ -47,6 +53,9 @@ def business_list(request):
             Q(address__icontains=query) |       # Search in address
             Q(tags__name__icontains=query)      # Search in tags (if using django-taggit)
         ).distinct()  # Use distinct() to avoid duplicate results
+
+    if city:
+        businesses = businesses.filter(city__icontains=city)
 
     # Apply category filter
     if category:
@@ -78,6 +87,7 @@ def business_list(request):
         'page_obj': page_obj,
         'categories': categories,
         'query': query,
+        'city': city,
         'selected_category': category,
         'sort_by': sort_by,  # Pass the selected sort_by value to the template
     })

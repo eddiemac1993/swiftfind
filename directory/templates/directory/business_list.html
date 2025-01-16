@@ -3,8 +3,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Business Directory PWA">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Business List - SwiftFind</title>
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
@@ -232,27 +240,53 @@
             background-color: var(--primary-hover);
         }
 
-        /* Add Business Button */
-        .add-business-button {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            padding: 0.75rem 1.5rem;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 0.5rem;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: var(--shadow);
-            transition: background-color 0.2s ease;
-            z-index: 1000; /* Ensure it stays on top */
-        }
+/* Add Business Button */
+.add-business-button {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 3.5rem; /* Fixed width */
+    height: 3.5rem; /* Fixed height */
+    padding: 0; /* Remove padding */
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%; /* Make it circular */
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the icon */
+    box-shadow: var(--shadow);
+    transition: background-color 0.2s ease;
+    z-index: 1000; /* Ensure it stays on top */
+}
 
-        .add-business-button:hover {
-            background-color: var(--primary-hover);
-        }
+.add-business-button:hover {
+    background-color: var(--primary-hover);
+}
+
+/* Back to Top Button */
+.back-to-top {
+    position: fixed;
+    bottom: 6rem;
+    right: 2rem;
+    width: 3.5rem; /* Fixed width */
+    height: 3.5rem; /* Fixed height */
+    padding: 0; /* Remove padding */
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%; /* Make it circular */
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the icon */
+    box-shadow: var(--shadow);
+    transition: background-color 0.2s ease;
+    z-index: 1000; /* Ensure it stays on top */
+}
+
+.back-to-top:hover {
+    background-color: var(--primary-hover);
+}
 
         /* Dark Mode Toggle */
         .theme-toggle {
@@ -336,27 +370,7 @@
             border-radius: 0.5rem;
         }
 
-        /* Back to Top Button */
-        .back-to-top {
-            position: fixed;
-            bottom: 6rem;
-            right: 2rem;
-            padding: 0.75rem 1.5rem;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 0.5rem;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: var(--shadow);
-            transition: background-color 0.2s ease;
-            z-index: 1000; /* Ensure it stays on top */
-        }
 
-        .back-to-top:hover {
-            background-color: var(--primary-hover);
-        }
         /* Fixed position for the button container */
         .fixed-buttons {
             position: fixed;
@@ -388,14 +402,33 @@
             background-color: #0056b3; /* Darker shade on hover */
         }
 
-
+  #installButton {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+  }
+  #installButton:hover {
+    background-color: #45a049;
+  }
     </style>
 </head>
 <body>
     <!-- Add Business Button -->
-    <a href="{% url 'add-business' %}" class="add-business-button">
-        <i class="fas fa-plus"></i> Add Business
-    </a>
+<a href="{% url 'add-business' %}" class="add-business-button" title="Add Business">
+    <i class="fas fa-plus"></i>
+</a>
+
+<a href="#" class="back-to-top" title="Back to Top">
+    <i class="fas fa-arrow-up"></i>
+</a>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -444,14 +477,9 @@
 
                         <p><strong>Category:</strong> <i class="fas fa-tag"></i>
                 <span>{{ business.category.name }}</span></p>
-                        <p><strong>Address:</strong> {{ business.address }}</p>
-                        <p><strong>Phone:</strong> {{ business.phone_number }}</p>
-                        {% if business.email %}
-                            <p><strong>Email:</strong> {{ business.email }}</p>
-                        {% endif %}
-                        {% if business.website %}
-                            <p><strong>Website:</strong> <a href="{{ business.website }}" target="_blank">{{ business.website }}</a></p>
-                        {% endif %}
+                        <p><strong>City:</strong> <i class="fas fa-map-marker-alt"></i>
+            <span>{{ business.city }}</span>
+        </p>
                         <div class="business-rating">
                             <span class="stars">★★★★★</span>
                             <span class="review-count">({{ business.reviews.count }} reviews)</span>
@@ -484,14 +512,20 @@
         </a>
 
     </div>
-    <!-- Back to Top Button -->
-    <a href="#" class="back-to-top">
-        <i class="fas fa-arrow-up"></i> Back to Top
-    </a>
-
     <!-- Dark Mode Toggle -->
-    <button id="theme-toggle" class="theme-toggle">🌙</button>
+<button id="theme-toggle" class="theme-toggle">🌙</button>
 
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('{% static 'js/serviceworker.js' %}')
+      .then((registration) => {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      })
+      .catch((error) => {
+        console.log('ServiceWorker registration failed: ', error);
+      });
+  }
+</script>
     <script>
         // Dark Mode Toggle
         const themeToggle = document.getElementById('theme-toggle');

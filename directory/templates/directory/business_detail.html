@@ -3,8 +3,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Business Directory PWA">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ business.name }} - SwiftFind</title>
+    <link rel="manifest" href="/static/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
@@ -636,11 +640,11 @@
                 {% else %}
 
                 {% endif %}
-                <a href="https://www.google.com/maps?q={{ business.latitude }},{{ business.longitude }}" target="_blank"><i class="fas fa-directions"></i> Get Directions</a>
+
             </div>
         </div>
     </div>
-<p><strong>Description:</strong> {{ business.description }}</p>
+<p><strong>Description:</strong> {{ business.description|safe }}</p>
     <!-- Image Gallery Section -->
     <h2>Image Gallery</h2>
     <div class="image-gallery">
@@ -786,7 +790,17 @@
             });
         }
     </script>
-
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/static/js/serviceworker.js')
+      .then((registration) => {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      })
+      .catch((error) => {
+        console.log('ServiceWorker registration failed: ', error);
+      });
+  }
+</script>
     <!-- JavaScript for Dark Mode Toggle -->
     <script>
         const themeToggle = document.getElementById('theme-toggle');
