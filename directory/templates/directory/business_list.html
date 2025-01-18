@@ -264,6 +264,29 @@
     background-color: var(--primary-hover);
 }
 
+/* Create Paper Button */
+.create-paper-button {
+    position: fixed;
+    bottom: 2rem; /* Adjust position as needed */
+    right: 6rem; /* Position to the left of the "Add Business" button */
+    width: 3.5rem; /* Fixed width */
+    height: 3.5rem; /* Fixed height */
+    padding: 0; /* Remove padding */
+    background-color: var(--primary-color); /* Use your primary color */
+    color: white; /* Icon/text color */
+    border-radius: 50%; /* Make it circular */
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the icon */
+    box-shadow: var(--shadow); /* Add shadow */
+    transition: background-color 0.2s ease; /* Smooth hover effect */
+    z-index: 1000; /* Ensure it stays on top */
+}
+
+.create-paper-button:hover {
+    background-color: var(--primary-hover); /* Change color on hover */
+}
 /* Back to Top Button */
 .back-to-top {
     position: fixed;
@@ -424,6 +447,9 @@
     <!-- Add Business Button -->
 <a href="{% url 'add-business' %}" class="add-business-button" title="Add Business">
     <i class="fas fa-plus"></i>
+</a>
+<a href="{% url 'create_paper' %}" class="create-paper-button" title="Create Paper">
+    <i class="fas fa-file-alt"></i>
 </a>
 
 <a href="#" class="back-to-top" title="Back to Top">

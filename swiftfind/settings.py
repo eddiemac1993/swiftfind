@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'taggit',
     'imagekit',
     'rest_framework',
+    'paper',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
