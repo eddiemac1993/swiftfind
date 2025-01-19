@@ -40,7 +40,6 @@
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: var(--background);
             margin: 0;
-            padding: 2rem;
             color: var(--text-primary);
             line-height: 1.5;
             transition: background-color 0.3s ease, color 0.3s ease;
@@ -104,29 +103,37 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        .form-container button {
-            padding: 0.75rem 1.5rem;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
+/* Make the form a flex container */
+.form-container form {
+    flex-direction: column;
+}
 
-        .form-container button:hover {
-            background-color: var(--primary-hover);
+/* Align the button to the right */
+.form-container form button {
+    align-self: flex-end; /* Aligns the button to the right */
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.form-container form button:hover {
+    background-color: var(--primary-hover);
+}
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
             body {
-                padding: 1rem;
+                padding: 0.5rem;
             }
 
             .form-container {
-                padding: 1rem;
+                padding: 1.5rem;
             }
         }
 
@@ -134,7 +141,7 @@
         .home-button {
             position: fixed;
             top: 2rem;
-            left: 2rem;
+            right: 2rem;
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -157,8 +164,8 @@
         /* Dark Mode Toggle */
         .theme-toggle {
             position: fixed;
-            bottom: 2rem;
-            left: 2rem;
+            top: 6rem;
+            right: 2rem;
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -219,12 +226,7 @@
     {% endif %}
 
     <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Create Paper</h1>
-            <p>Generate quotations, invoices, receipts, or delivery notes.</p>
-        </div>
-    </section>
+
         <!-- Display messages -->
         {% if messages %}
         <div class="messages">
@@ -237,7 +239,12 @@
         {% endif %}
     <!-- Form Container -->
     <div class="form-container">
-        <h1>Create a New Paper</h1>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Create Paper</h1>
+            <p>Generate quotations, invoices, receipts, or delivery notes.</p>
+        </div>
+    </section>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ paper_form.as_p }}

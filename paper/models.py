@@ -9,7 +9,7 @@ def generate_unique_paper_number(prefix):
     while True:
         # Generate a random 6-digit number
         random_part = ''.join(random.choices(string.digits, k=3))
-        paper_number = random_part  # Use only the numeric part
+        paper_number = f"{prefix}-{random_part}"
         if not Paper.objects.filter(paper_number=paper_number).exists():
             return paper_number
 

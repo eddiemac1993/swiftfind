@@ -7,19 +7,28 @@ class PaperForm(forms.ModelForm):
     class Meta:
         model = Paper
         fields = [
-            'company_name', 'company_address', 'company_email', 'phone_number',
-            'customer_name', 'date', 'paper_type', 'prepared_by', 'logo'  # Add 'logo' field
+            'company_name', 'logo', 'company_address', 'company_email', 'phone_number',
+            'customer_name', 'date', 'paper_type', 'prepared_by'
         ]
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),  # Use HTML5 date picker
-            'company_address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),  # Textarea for address
+            'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'company_address': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
             'company_name': forms.TextInput(attrs={'class': 'form-control'}),
             'company_email': forms.EmailInput(attrs={'class': 'form-control'}),
             'phone_number': forms.TextInput(attrs={'class': 'form-control'}),
             'customer_name': forms.TextInput(attrs={'class': 'form-control'}),
             'paper_type': forms.Select(attrs={'class': 'form-control'}),
             'prepared_by': forms.TextInput(attrs={'class': 'form-control'}),
-            'logo': forms.ClearableFileInput(attrs={'class': 'form-control'}),  # Custom widget for logo
+            'logo': forms.ClearableFileInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Upload your company logo (optional)',
+            }),
+        }
+        help_texts = {
+            'logo': 'Upload your company logo (optional). Max file size: 2MB. Allowed formats: JPG, PNG.',
+        }
+        labels = {
+            'logo': 'Company Logo (Optional)',
         }
 
     def clean_phone_number(self):
@@ -30,6 +39,22 @@ class PaperForm(forms.ModelForm):
         if not phone_number.isdigit():
             raise forms.ValidationError("Phone number must contain only digits.")
         return phone_number
+
+    def clean_logo(self):
+        """
+        Validate the logo file.
+        """
+        logo = self.cleaned_data.get('logo')
+        if logo:
+            # Check file size (e.g., 2MB limit)
+            if logo.size > 2 * 1024 * 1024:  # 2MB
+                raise forms.ValidationError("Logo file size must be less than 2MB.")
+
+            # Check file type (e.g., only allow JPG and PNG)
+            allowed_types = ['image/jpeg', 'image/png']
+            if logo.content_type not in allowed_types:
+                raise forms.ValidationError("Only JPG and PNG files are allowed for the logo.")
+        return logo
 
 class PaperItemForm(forms.ModelForm):
     class Meta:

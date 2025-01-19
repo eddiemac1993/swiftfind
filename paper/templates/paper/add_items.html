@@ -123,7 +123,7 @@
         /* Responsive Design */
         @media (max-width: 768px) {
             body {
-                padding: 1rem;
+                padding: 1.8rem;
             }
 
             .form-container {
@@ -135,7 +135,7 @@
         .home-button {
             position: fixed;
             top: 2rem;
-            left: 2rem;
+            right: 2rem;
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -211,7 +211,6 @@
 
         table {
             width: 100%;
-            border-collapse: collapse;
         }
 
         th, td {
@@ -301,6 +300,10 @@
     <!-- Dark Mode Toggle -->
     <button id="theme-toggle" class="theme-toggle">🌙</button>
 
+
+
+    <!-- Form Section -->
+    <div class="form-container">
     <!-- Display Messages -->
     {% if messages %}
     <div class="messages">
@@ -315,16 +318,14 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Add Items to Quotation #<span class="quotation-number">{{ paper.quotation_number }}</span></h1>
+            <h1>Add Items to Quotation #<span class="quotation-number">{{ paper.paper_number }}</span></h1>
         </div>
     </section>
-
-    <!-- Form Section -->
-    <div class="form-container">
+    <hr>
         <form method="post" action="{% url 'add_items' paper.id %}" id="item-form">
             {% csrf_token %}
             <input type="hidden" name="item_id" id="item-id" value="">
-            
+
             <div class="form-group">
                 <label for="id_description">Description:</label>
                 {{ form.description }}
@@ -372,7 +373,7 @@
                         <td>{{ item.total|intcomma }}</td>
                         <td>
                             <div class="action-buttons">
-                                <button class="btn btn-edit" 
+                                <button class="btn btn-edit"
                                         data-id="{{ item.id }}"
                                         data-description="{{ item.description }}"
                                         data-quantity="{{ item.quantity }}"
