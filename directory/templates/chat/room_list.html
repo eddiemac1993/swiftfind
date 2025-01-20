@@ -1,0 +1,174 @@
+{% extends 'chat/base.html' %}
+
+{% block content %}
+<style>
+  /* Chat Rooms Container */
+  .chat-rooms-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  /* Chat Rooms Header */
+  .chat-rooms-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .chat-rooms-header h1 {
+    font-size: 2rem;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .chat-rooms-header a {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+  }
+
+  .chat-rooms-header a:hover {
+    background-color: var(--primary-hover);
+  }
+
+  /* Chat Rooms List */
+  .chat-rooms-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .chat-room-item {
+    background-color: var(--card-bg);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .chat-room-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  }
+
+  .chat-room-item .room-info {
+    flex: 1;
+  }
+
+  .chat-room-item h3 {
+    font-size: 1.25rem;
+    margin: 0;
+    color: var(--text-primary);
+  }
+
+  .chat-room-item p {
+    margin: 0.5rem 0 0;
+    color: var(--text-secondary);
+    font-size: 1rem;
+  }
+
+  .chat-room-item .join-button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+  }
+
+  .chat-room-item .join-button:hover {
+    background-color: var(--primary-hover);
+  }
+
+  /* Bottom Navigation Bar */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--card-bg);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0.5rem 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+
+  .bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    transition: color 0.2s ease;
+  }
+
+  .bottom-nav a i {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .bottom-nav a:hover {
+    color: var(--primary-color);
+  }
+
+  .bottom-nav a.active {
+    color: var(--primary-color);
+  }
+</style>
+
+<div class="chat-rooms-container">
+  <!-- Chat Rooms Header -->
+  <div class="chat-rooms-header">
+    <h1>Chat Rooms</h1>
+    <a href="{% url 'create_chat_room' %}">Create New Room</a>
+  </div>
+
+  <!-- Chat Rooms List -->
+  <ul class="chat-rooms-list">
+    {% for room in rooms %}
+      <li class="chat-room-item">
+        <div class="room-info">
+          <h3>{{ room.name }}</h3>
+          <p>{{ room.description }}</p>
+        </div>
+        <a href="{% url 'chat_room_detail' room.id %}" class="join-button">Join</a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<!-- Bottom Navigation Bar -->
+<nav class="bottom-nav">
+  <a href="{% url 'chat_room_list' %}" class="active" title="Chat Rooms">
+    <i class="fas fa-comments"></i>
+    <span>Chat</span>
+  </a>
+  <a href="{% url 'add-business' %}" title="Add Business">
+    <i class="fas fa-plus"></i>
+    <span>Add Business</span>
+  </a>
+  <a href="{% url 'create_paper' %}" title="Create Paper">
+    <i class="fas fa-file-alt"></i>
+    <span>Create Paper</span>
+  </a>
+  <a href="{% url 'about' %}" title="About">
+    <i class="fas fa-info-circle"></i>
+    <span>About</span>
+  </a>
+</nav>
+{% endblock %}

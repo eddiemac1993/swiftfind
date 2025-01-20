@@ -1,0 +1,105 @@
+{% extends 'chat/base.html' %}
+
+{% block content %}
+<style>
+  /* Form Container */
+  .create-room-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: var(--card-bg);
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow);
+  }
+
+  /* Form Header */
+  .create-room-container h1 {
+    font-size: 2rem;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  /* Form Elements */
+  .create-room-container label {
+    display: block;
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  .create-room-container input[type="text"],
+  .create-room-container textarea {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    color: var(--text-primary);
+    background-color: var(--card-bg);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .create-room-container input[type="text"]:focus,
+  .create-room-container textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  .create-room-container textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  /* Submit Button */
+  .create-room-container button[type="submit"] {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .create-room-container button[type="submit"]:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+  }
+
+  .create-room-container button[type="submit"]:active {
+    transform: translateY(0);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .create-room-container {
+      padding: 1.5rem;
+    }
+
+    .create-room-container h1 {
+      font-size: 1.75rem;
+    }
+  }
+</style>
+
+<div class="create-room-container">
+  <h1>Create Chat Room</h1>
+  <form method="post">
+    {% csrf_token %}
+    <label for="name">Room Name:</label>
+    <input type="text" name="name" id="name" required placeholder="Enter room name">
+
+    <label for="description">Description:</label>
+    <textarea name="description" id="description" placeholder="Enter room description (optional)"></textarea>
+
+    <button type="submit">Create Room</button>
+  </form>
+</div>
+{% endblock %}

@@ -163,3 +163,62 @@ def privacy(request):
 
 def terms(request):
     return render(request, 'terms.html')
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
+from .models import ChatRoom, ChatMessage
+from .utils import get_client_ip, generate_random_name
+
+# List all chat rooms
+def chat_room_list(request):
+    rooms = ChatRoom.objects.all()
+    return render(request, 'chat/room_list.html', {'rooms': rooms})
+
+# Create a new chat room
+def create_chat_room(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        if name:
+            ChatRoom.objects.create(name=name, description=description)
+            return redirect('chat_room_list')
+    return render(request, 'chat/create_room.html')
+
+# View for a specific chat room
+def chat_room_detail(request, room_id):
+    room = get_object_or_404(ChatRoom, id=room_id)
+    return render(request, 'chat/chat_room_detail.html', {'room': room})
+
+# Handle sending messages
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from .models import ChatRoom, ChatMessage
+from .utils import get_client_ip, generate_random_name
+
+def send_message(request, room_id):
+    if request.method == 'POST':
+        # Retrieve the chat room
+        room = get_object_or_404(ChatRoom, id=room_id)
+
+        # Get the message from the request
+        message = request.POST.get('message')
+        if not message:
+            return JsonResponse({'status': 'error', 'message': 'Message is required'}, status=400)
+
+        # Get the user's IP address
+        ip_address = get_client_ip(request)
+
+        # Generate a random name based on the IP address
+        user_name = generate_random_name(ip_address)
+
+        # Create the ChatMessage instance
+        ChatMessage.objects.create(
+            room=room,
+            message=message,
+            user_name=user_name,
+            ip_address=ip_address,
+        )
+
+        return JsonResponse({'status': 'success', 'message': 'Message sent successfully'})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)

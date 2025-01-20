@@ -43,7 +43,10 @@ INSTALLED_APPS = [
     'rest_framework',
     'paper',
     'django.contrib.humanize',
+    'channels',
 ]
+
+ASGI_APPLICATION = 'directory.asgi.application'
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

@@ -130,36 +130,6 @@
             background-color: var(--primary-hover);
         }
 
-        /* Categories Tags */
-        .categories {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 2rem;
-        }
-
-        .category-tag {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .category-tag:hover {
-            background-color: var(--background);
-        }
-
-        .category-tag i {
-            color: var(--primary-color);
-        }
-
         /* Business List */
         .business-list {
             display: grid;
@@ -223,99 +193,83 @@
             font-size: 0.875rem;
         }
 
-        /* Load More Button */
-        .load-more-button {
-            display: block;
-            margin: 2rem auto;
-            padding: 0.75rem 1.5rem;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
+        /* Install Paper Button */
+        .install-paper-button {
+          position: fixed;
+          bottom: 4rem; /* Adjust position as needed */
+          right: 2rem; /* Position from the right */
+          width: auto; /* Auto width for text */
+          height: 3.5rem; /* Fixed height */
+          padding: 0 1.5rem; /* Padding for text */
+          background-color: var(--primary-color); /* Use your primary color */
+          color: white; /* Text color */
+          border-radius: 50px; /* Rounded corners */
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+          justify-content: center; /* Center the text */
+          box-shadow: var(--shadow); /* Add shadow */
+          transition: background-color 0.2s ease, transform 0.2s ease; /* Smooth hover effect */
+          z-index: 1000; /* Ensure it stays on top */
+          font-size: 1rem; /* Adjust font size */
+          font-weight: 500; /* Medium font weight */
+          border: none; /* Remove default border */
+          cursor: pointer; /* Pointer cursor on hover */
+        }
+        
+        .install-paper-button:hover {
+          background-color: var(--primary-hover); /* Change color on hover */
+          transform: scale(1.05); /* Slightly enlarge on hover */
+        }
+        
+        .install-paper-button:active {
+          transform: scale(0.95); /* Slightly shrink on click */
         }
 
-        .load-more-button:hover {
-            background-color: var(--primary-hover);
+
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0.5rem 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
         }
 
-/* Add Business Button */
-.add-business-button {
-    position: fixed;
-    top: 1.5rem;
-    right: 2rem;
-    width: 3.5rem; /* Fixed width */
-    height: 3.5rem; /* Fixed height */
-    padding: 0; /* Remove padding */
-    background-color: var(--primary-color);
-    color: white;
-    border-radius: 50%; /* Make it circular */
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Center the icon */
-    box-shadow: var(--shadow);
-    transition: background-color 0.2s ease;
-    z-index: 1000; /* Ensure it stays on top */
-}
+        .bottom-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
+        }
 
-.add-business-button:hover {
-    background-color: var(--primary-hover);
-}
+        .bottom-nav a i {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
 
-/* Create Paper Button */
-.create-paper-button {
-    position: fixed;
-    top: 6rem; /* Adjust position as needed */
-    right: 2rem; /* Position to the left of the "Add Business" button */
-    width: 3.5rem; /* Fixed width */
-    height: 3.5rem; /* Fixed height */
-    padding: 0; /* Remove padding */
-    background-color: var(--primary-color); /* Use your primary color */
-    color: white; /* Icon/text color */
-    border-radius: 50%; /* Make it circular */
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Center the icon */
-    box-shadow: var(--shadow); /* Add shadow */
-    transition: background-color 0.2s ease; /* Smooth hover effect */
-    z-index: 1000; /* Ensure it stays on top */
-}
+        .bottom-nav a:hover {
+            color: var(--primary-color);
+        }
 
-.create-paper-button:hover {
-    background-color: var(--primary-hover); /* Change color on hover */
-}
-/* Back to Top Button */
-.back-to-top {
-    position: fixed;
-    bottom: 6rem;
-    right: 2rem;
-    width: 3.5rem; /* Fixed width */
-    height: 3.5rem; /* Fixed height */
-    padding: 0; /* Remove padding */
-    background-color: var(--primary-color);
-    color: white;
-    border-radius: 50%; /* Make it circular */
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Center the icon */
-    box-shadow: var(--shadow);
-    transition: background-color 0.2s ease;
-    z-index: 1000; /* Ensure it stays on top */
-}
-
-.back-to-top:hover {
-    background-color: var(--primary-hover);
-}
+        .bottom-nav a.active {
+            color: var(--primary-color);
+        }
 
         /* Dark Mode Toggle */
         .theme-toggle {
             position: fixed;
-            bottom: 2rem;
-            left: 2rem;
+            top: 2rem;
+            right: 2rem;
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -328,7 +282,7 @@
             align-items: center;
             justify-content: center;
             box-shadow: var(--shadow);
-            z-index: 1000; /* Ensure it stays on top */
+            z-index: 1000;
         }
 
         /* Responsive Design */
@@ -392,69 +346,13 @@
             color: var(--text-primary);
             border-radius: 0.5rem;
         }
-
-
-        /* Fixed position for the button container */
-        .fixed-buttons {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 1000; /* Ensure it's above other content */
-        }
-
-        /* Rounded buttons */
-        .rounded-button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #007bff; /* Bootstrap primary color */
-            color: white;
-            border: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease;
-            text-decoration: none; /* Remove underline from links */
-        }
-
-        .rounded-button:hover {
-            background-color: #0056b3; /* Darker shade on hover */
-        }
-
-  #installButton {
-    background-color: #4CAF50; /* Green */
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin: 10px;
-  }
-  #installButton:hover {
-    background-color: #45a049;
-  }
     </style>
 </head>
 <body>
-    <!-- Add Business Button -->
-<a href="{% url 'add-business' %}" class="add-business-button" title="Add Business">
-    <i class="fas fa-plus"></i>
-</a>
-<a href="{% url 'create_paper' %}" class="create-paper-button" title="Create Paper">
-    <i class="fas fa-file-alt"></i>
-</a>
-
-<a href="#" class="back-to-top" title="Back to Top">
-    <i class="fas fa-arrow-up"></i>
-</a>
+    <!-- Install PWA Button -->
+    <button id="install-button" class="install-paper-button" style="display: none;">
+        <i class="fas fa-download"></i>
+    </button>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -464,7 +362,6 @@
         </div>
     </section>
 
-    <!-- Search and Filter Form -->
     <!-- Search and Filter Form -->
     <form method="get" action="." class="search-form">
         <input type="text" name="q" placeholder="Search by name" value="{{ query }}">
@@ -486,10 +383,6 @@
         <button type="submit">Search</button>
     </form>
 
-    <!-- Loading Spinner -->
-    <div id="loading-spinner" style="display: none; text-align: center; margin: 2rem 0;">
-        <i class="fas fa-spinner fa-spin"></i> Loading...
-    </div>
     <!-- Business List -->
     <div class="business-list">
         {% if page_obj.object_list %}
@@ -500,12 +393,8 @@
                     </div>
                     <div class="business-details">
                         <h2><a href="{% url 'business-detail' business.pk %}">{{ business.name }}</a></h2>
-
-                        <p><strong>Category:</strong> <i class="fas fa-tag"></i>
-                <span>{{ business.category.name }}</span></p>
-                        <p><strong>City:</strong> <i class="fas fa-map-marker-alt"></i>
-            <span>{{ business.city }}</span>
-        </p>
+                        <p><strong>Category:</strong> <i class="fas fa-tag"></i> {{ business.category.name }}</p>
+                        <p><strong>City:</strong> <i class="fas fa-map-marker-alt"></i> {{ business.city|capfirst }}</p>
                         <div class="business-rating">
                             <span class="stars">★★★★★</span>
                             <span class="review-count">({{ business.reviews.count }} reviews)</span>
@@ -530,28 +419,30 @@
             <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
         {% endif %}
     </div>
-    <!-- Fixed Buttons Container -->
-    <div class="fixed-buttons">
-        <!-- About Button -->
-        <a href="{% url 'about' %}" class="rounded-button" title="About">
-            <i class="fas fa-info-circle"></i>
-        </a>
 
-    </div>
     <!-- Dark Mode Toggle -->
-<button id="theme-toggle" class="theme-toggle">🌙</button>
+    <button id="theme-toggle" class="theme-toggle">🌙</button>
 
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('{% static 'js/serviceworker.js' %}')
-      .then((registration) => {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-      })
-      .catch((error) => {
-        console.log('ServiceWorker registration failed: ', error);
-      });
-  }
-</script>
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+        <a href="{% url 'chat_room_list' %}" title="Chat Rooms">
+            <i class="fas fa-comments"></i>
+            <span>Chat</span>
+        </a>
+        <a href="{% url 'add-business' %}" title="Add Business">
+            <i class="fas fa-plus"></i>
+            <span>Add Business</span>
+        </a>
+        <a href="{% url 'create_paper' %}" title="Create Paper">
+            <i class="fas fa-file-alt"></i>
+            <span>Create Paper</span>
+        </a>
+        <a href="{% url 'about' %}" title="About">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
+        </a>
+    </nav>
+
     <script>
         // Dark Mode Toggle
         const themeToggle = document.getElementById('theme-toggle');
@@ -571,15 +462,39 @@
             localStorage.setItem('darkMode', isDark);
         });
 
-        // Back to Top Button
-        const backToTopButton = document.querySelector('.back-to-top');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTopButton.style.display = 'flex';
-            } else {
-                backToTopButton.style.display = 'none';
+        // PWA Install Prompt
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (event) => {
+            event.preventDefault();
+            deferredPrompt = event;
+            document.getElementById('install-button').style.display = 'block';
+        });
+
+        document.getElementById('install-button').addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User installed Swift Find');
+                    } else {
+                        console.log('User dismissed the install prompt');
+                    }
+                    deferredPrompt = null;
+                });
             }
         });
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('{% static 'js/serviceworker.js' %}')
+                .then((registration) => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                })
+                .catch((error) => {
+                    console.log('ServiceWorker registration failed: ', error);
+                });
+        }
     </script>
 </body>
 </html>
