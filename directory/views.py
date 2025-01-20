@@ -31,6 +31,7 @@ def add_business(request):
 
 
 from django.db.models import Q
+from .models import SearchQuery  # Import the SearchQuery model
 
 def business_list(request):
     # Get search query, category filter, and sort_by parameter from the request
@@ -38,6 +39,22 @@ def business_list(request):
     city = request.GET.get('city', '')
     category = request.GET.get('category')
     sort_by = request.GET.get('sort_by')
+
+    # Log the search query if a query or filter is provided
+    if query or city or category or sort_by:
+        # Check if an identical search query already exists
+        search_query, created = SearchQuery.objects.get_or_create(
+            query=query,
+            city=city,
+            category=category,
+            sort_by=sort_by,
+            defaults={'timestamp': timezone.now()}  # Set the timestamp for new queries
+        )
+
+        # If the query already exists, increment the count
+        if not created:
+            search_query.count += 1
+            search_query.save()
 
     # Start with all businesses and annotate with average rating and review count
     businesses = Business.objects.annotate(

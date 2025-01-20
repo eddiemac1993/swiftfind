@@ -1,12 +1,17 @@
 from django.contrib import admin
 from .models import Category, Business, Review, BusinessImage
 from django import forms
-from django.contrib import admin
-from django import forms
-from django.contrib import admin
 from django.utils.text import slugify
 from django.shortcuts import redirect
-from .models import Category
+from .models import SearchQuery
+
+@admin.register(SearchQuery)
+class SearchQueryAdmin(admin.ModelAdmin):
+    list_display = ('query', 'city', 'category', 'sort_by', 'timestamp', 'count')  # Include 'count' in list_display
+    list_filter = ('timestamp', 'city', 'category')  # Filters for the right sidebar
+    search_fields = ('query', 'city', 'category')  # Enable search functionality
+    readonly_fields = ('timestamp',)  # Make timestamp non-editable
+    ordering = ('-count',)  # Sort by count (highest to lowest) by default
 
 class MultipleCategoryForm(forms.Form):
     names = forms.CharField(

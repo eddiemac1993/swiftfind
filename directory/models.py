@@ -164,3 +164,17 @@ class ChatMessage(models.Model):
 
     def __str__(self):
         return f"{self.user_name}: {self.message[:50]}"
+
+from django.db import models
+from django.utils import timezone
+
+class SearchQuery(models.Model):
+    query = models.CharField(max_length=255, blank=True, null=True)  # The search query
+    city = models.CharField(max_length=100, blank=True, null=True)  # City filter
+    category = models.CharField(max_length=100, blank=True, null=True)  # Category filter
+    sort_by = models.CharField(max_length=50, blank=True, null=True)  # Sorting parameter
+    timestamp = models.DateTimeField(default=timezone.now)  # When the search was performed
+    count = models.PositiveIntegerField(default=1)  # Track the number of times this query has been performed
+
+    def __str__(self):
+        return f"{self.query} - {self.timestamp} (Count: {self.count})"

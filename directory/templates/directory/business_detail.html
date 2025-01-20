@@ -12,371 +12,359 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-        /* Global Variables */
-        :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --background: #f8fafc;
-            --card-bg: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-color: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-        }
+/* Global Variables */
+:root {
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    --background: #f8fafc;
+    --card-bg: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+}
 
-        /* Dark Mode Variables */
-        .dark-mode {
-            --background: #1e293b;
-            --card-bg: #334155;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --border-color: #475569;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
-        }
+/* Dark Mode Variables */
+.dark-mode {
+    --background: #1e293b;
+    --card-bg: #334155;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-color: #475569;
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
+}
 
-        /* Global Styles */
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: var(--background);
-            margin: 0;
-            padding: 2rem;
-            color: var(--text-primary);
-            line-height: 1.5;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
+/* Global Styles */
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--background);
+    margin: 0;
+    padding: 2rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
 
-        h1, h2, h3 {
-            margin: 0;
-        }
+h1, h2, h3 {
+    margin: 0;
+}
 
-        a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
 
-        a:hover {
-            text-decoration: underline;
-        }
-        .image-gallery {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .gallery-item {
-            flex: 1 1 calc(33.333% - 10px);  /* 3 images per row */
-            box-sizing: border-box;
-        }
-        .gallery-item img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-        }
-        .caption {
-            text-align: center;
-            font-style: italic;
-            color: #555;
-        }
-        /* Business Details */
-        .business-details {
-            display: flex;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
+a:hover {
+    text-decoration: underline;
+}
 
-        .business-logo img {
-            width: 200px;
-            height: 200px;
-            border-radius: 1rem;
-            object-fit: cover;
-        }
+/* Business Details */
+.business-details {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
 
-        .business-info {
-            flex: 1;
-        }
+.business-logo img {
+    width: 200px;
+    height: 200px;
+    border-radius: 1rem;
+    object-fit: cover;
+}
 
-        .business-info h1 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
+.business-info {
+    flex: 1;
+}
 
-        .business-info p {
-            margin: 0.5rem 0;
-            color: var(--text-secondary);
-        }
+.business-info h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
 
-        .business-info strong {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
+.business-info p {
+    margin: 0.5rem 0;
+    color: var(--text-secondary);
+}
 
-        .call-to-action {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
+.business-info strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
 
-        .call-to-action a {
-            padding: 0.75rem 1.5rem;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 0.5rem;
-            text-align: center;
-            transition: background-color 0.2s ease;
-        }
+.call-to-action {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
 
-        .call-to-action a:hover {
-            background-color: var(--primary-hover);
-        }
+.call-to-action a {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 0.5rem;
+    text-align: center;
+    transition: background-color 0.2s ease;
+}
 
-        /* Map Integration */
-        #map {
-            height: 300px;
-            width: 100%;
-            border-radius: 1rem;
-            margin-bottom: 2rem;
-        }
+.call-to-action a:hover {
+    background-color: var(--primary-hover);
+}
 
-        /* Related Businesses */
-        .related-businesses {
-            margin-bottom: 2rem;
-        }
+/* Map Integration */
+#map {
+    height: 300px;
+    width: 100%;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
 
-        .related-businesses h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
+/* Related Businesses */
+.related-businesses {
+    margin-bottom: 2rem;
+}
 
-        .related-list {
-            display: grid;
-            gap: 1.5rem;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        }
-        /* Fixed Buttons */
-        .fixed-buttons {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 1000;
-        }
+.related-businesses h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
 
-        .rounded-button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            box-shadow: var(--shadow);
-            transition: background-color 0.3s ease;
-            text-decoration: none;
-        }
+.related-list {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
 
-        .rounded-button:hover {
-            background-color: var(--primary-hover);
-        }
-        .related-item {
-            background-color: var(--card-bg);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            box-shadow: var(--shadow);
-        }
+.related-item {
+    background-color: var(--card-bg);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
 
-        .related-item img {
-            width: 100%;
-            height: 150px;
-            border-radius: 0.75rem;
-            object-fit: cover;
-        }
+.related-item img {
+    width: 100%;
+    height: 150px;
+    border-radius: 0.75rem;
+    object-fit: cover;
+}
 
-        .related-item h3 {
-            font-size: 1.25rem;
-            margin: 1rem 0 0.5rem;
-        }
+.related-item h3 {
+    font-size: 1.25rem;
+    margin: 1rem 0 0.5rem;
+}
 
-        .related-item p {
-            color: var(--text-secondary);
-        }
+.related-item p {
+    color: var(--text-secondary);
+}
 
-        /* User Reviews */
-        .user-reviews {
-            margin-bottom: 2rem;
-        }
+/* User Reviews */
+.user-reviews {
+    margin-bottom: 2rem;
+}
 
-        .user-reviews h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
+.user-reviews h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
 
-        .review-item {
-            margin-bottom: 1rem;
-            padding: 1rem;
-            background-color: var(--card-bg);
-            border-radius: 0.5rem;
-            box-shadow: var(--shadow);
-        }
+.review-item {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+}
 
-        .review-rating {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
+.review-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
 
-        .stars {
-            color: #fbbf24; /* Yellow for stars */
-        }
+.stars {
+    color: #fbbf24; /* Yellow for stars */
+}
 
-        .review-date {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
+.review-date {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
 
-        .review-comment {
-            margin: 0.5rem 0;
-        }
+.review-comment {
+    margin: 0.5rem 0;
+}
 
-        .review-author {
-            text-align: right;
-            font-style: italic;
-            color: var(--text-secondary);
-        }
+.review-author {
+    text-align: right;
+    font-style: italic;
+    color: var(--text-secondary);
+}
 
-        /* Review Form */
-        .review-form {
-            margin-bottom: 2rem;
-        }
+/* Review Form */
+.review-form {
+    margin-bottom: 2rem;
+}
 
-        .review-form h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
+.review-form h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
 
-        .review-form textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-        }
+.review-form textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
 
-        .review-form button {
-            padding: 0.75rem 1.5rem;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
+.review-form button {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
 
-        .review-form button:hover {
-            background-color: var(--primary-hover);
-        }
+.review-form button:hover {
+    background-color: var(--primary-hover);
+}
 
-        /* Social Sharing */
-        .social-sharing {
-            margin-top: 2rem;
-            text-align: center;
-        }
+/* Social Sharing */
+.social-sharing {
+    margin-top: 2rem;
+    text-align: center;
+}
 
-        .social-sharing h3 {
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
+.social-sharing h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
 
-        .social-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-        }
+.social-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
 
-        .social-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            color: white;
-            text-decoration: none;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            position: relative;
-        }
+.social-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: white;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
-        .social-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+.social-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-        .social-button::after {
-            content: attr(title);
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--text-primary);
-            color: white;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            font-size: 0.75rem;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            pointer-events: none;
-        }
+.social-button.facebook {
+    background-color: #1877f2; /* Facebook blue */
+}
 
-        .social-button:hover::after {
-            opacity: 1;
-        }
+.social-button.twitter {
+    background-color: #1da1f2; /* Twitter blue */
+}
 
-        /* Facebook */
-        .social-button.facebook {
-            background-color: #1877f2; /* Facebook blue */
-        }
+.social-button.whatsapp {
+    background-color: #25d366; /* WhatsApp green */
+}
 
-        /* Twitter */
-        .social-button.twitter {
-            background-color: #1da1f2; /* Twitter blue */
-        }
+/* Image Gallery */
+.image-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
 
-        /* WhatsApp */
-        .social-button.whatsapp {
-            background-color: #25d366; /* WhatsApp green */
-        }
+.gallery-item {
+    flex: 1 1 calc(33.333% - 10px);
+    box-sizing: border-box;
+}
 
-        /* Dark Mode Toggle */
-        .theme-toggle {
-            position: fixed;
-            bottom: 2rem;
-            left: 2rem;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
-            cursor: pointer;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow);
-            transition: background-color 0.2s ease;
-        }
+.gallery-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
 
-        .theme-toggle:hover {
-            background-color: var(--primary-hover);
-        }
+.caption {
+    text-align: center;
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+/* Fixed Buttons */
+.fixed-buttons {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.rounded-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    box-shadow: var(--shadow);
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+}
+
+.rounded-button:hover {
+    background-color: var(--primary-hover);
+}
+
+/* Dark Mode Toggle */
+.theme-toggle {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 3rem;
+    height: 3rem;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+    transition: background-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+    background-color: var(--primary-hover);
+}
+
 /* Responsive Styles */
 @media (max-width: 768px) {
-    /* Business Details */
     .business-details {
         flex-direction: column;
         align-items: center;
@@ -397,12 +385,10 @@
         width: 100%;
     }
 
-    /* Map */
     #map {
         height: 200px;
     }
 
-    /* Related Businesses */
     .related-list {
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     }
@@ -411,25 +397,6 @@
         height: 120px;
     }
 
-    /* Review Form */
-    .review-form textarea {
-        width: 100%;
-    }
-
-    /* Social Sharing */
-    .social-buttons {
-        flex-wrap: wrap;
-    }
-
-    .social-button {
-        width: 36px;
-        height: 36px;
-        font-size: 0.875rem;
-    }
-
-
-
-    /* Dark Mode Toggle */
     .theme-toggle {
         bottom: 1rem;
         left: 1rem;
@@ -440,7 +407,6 @@
 }
 
 @media (max-width: 480px) {
-    /* Business Details */
     .business-info h1 {
         font-size: 1.75rem;
     }
@@ -449,7 +415,6 @@
         font-size: 0.875rem;
     }
 
-    /* Related Businesses */
     .related-list {
         grid-template-columns: 1fr;
     }
@@ -461,206 +426,62 @@
     .related-item p {
         font-size: 0.875rem;
     }
-    .image-gallery {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 20px;
-    }
-    .gallery-item {
-        flex: 1 1 calc(33.333% - 10px);  /* 3 images per row */
-        box-sizing: border-box;
-    }
-    .gallery-item img {
-        width: 100%;
-        height: auto;
-        border-radius: 8px;
-    }
-    .caption {
-        text-align: center;
-        font-style: italic;
-        color: #555;
-    }
-    /* User Reviews */
-/* General Styles */
-.user-reviews {
-    margin-top: 20px;
-}
 
-.review-item {
-    border-bottom: 1px solid #ddd;
-    padding: 10px 0;
-}
-
-.review-rating {
-    font-size: 1.2em;
-    color: #ffc107; /* Gold color for stars */
-}
-
-.review-date {
-    font-size: 0.9em;
-    color: #777;
-    margin-left: 10px;
-}
-
-.review-title {
-    font-size: 1.1em;
-    margin: 10px 0 5px;
-    color: #333;
-}
-
-.review-comment {
-    font-size: 1em;
-    margin: 10px 0;
-    color: #555;
-}
-
-.review-author {
-    font-size: 0.9em;
-    color: #555;
-    font-style: italic;
-}
-
-.helpful-votes {
-    font-size: 0.9em;
-    color: #777;
-    margin-top: 5px;
-}
-
-/* Pagination Styles */
-.pagination {
-    margin-top: 20px;
-    text-align: center;
-}
-
-.pagination a {
-    margin: 0 5px;
-    text-decoration: none;
-    color: #007bff;
-}
-
-.pagination a:hover {
-    text-decoration: underline;
-}
-
-/* Messages Styles */
-.messages {
-    margin: 20px 0;
-}
-
-.alert {
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid transparent;
-    border-radius: 4px;
-}
-
-.alert-success {
-    color: #155724;
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-}
-
-.alert-error {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-}
-
-/* Review Form Styles */
-.review-form {
-    margin-top: 30px;
-}
-
-.review-form h2 {
-    margin-bottom: 15px;
-}
-
-.review-form form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.review-form button {
-    align-self: flex-start;
-    padding: 5px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-.review-form button:hover {
-    background-color: #0056b3;
-}
-
-    /* Social Sharing */
     .social-sharing h3 {
         font-size: 1.1rem;
     }
 }
     </style>
+
 </head>
 <body>
     <!-- Dark Mode Toggle -->
-    <button id="theme-toggle" class="theme-toggle">🌙</button>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+
     <!-- Fixed Buttons Container -->
     <div class="fixed-buttons">
-        <!-- Home Button -->
-        <a href="{% url 'business-list' %}" class="rounded-button" title="Home">
+        <a href="{% url 'business-list' %}" class="rounded-button" title="Home" aria-label="Home">
             <i class="fas fa-home"></i>
         </a>
     </div>
+
     <!-- Business Details -->
     <div class="business-details">
         <div class="business-logo">
-            <img src="{{ business.logo.url }}" alt="{{ business.name }} Logo">
+            <img src="{{ business.logo.url }}" alt="{{ business.name }} Logo" loading="lazy">
         </div>
         <div class="business-info">
             <h1>{{ business.name }}</h1>
             <p><strong>Category:</strong> {{ business.category.name }}</p>
-
             <p><strong>Address:</strong> {{ business.address }}</p>
             <p><strong>Phone:</strong> {{ business.phone_number }}</p>
             {% if business.email %}
                 <p><strong>Email:</strong> {{ business.email }}</p>
             {% endif %}
             {% if business.website %}
-                <p><strong>Website:</strong> <a href="{{ business.website }}" target="_blank">{{ business.website }}</a></p>
+                <p><strong>Website:</strong> <a href="{{ business.website }}" target="_blank" rel="noopener noreferrer">{{ business.website }}</a></p>
             {% else %}
                 <p><strong>Website:</strong> No website provided</p>
             {% endif %}
-            <div class="call-to-action">
-                <a href="tel:{{ business.phone_number }}"><i class="fas fa-phone"></i> Call</a>
+
+        </div>
+        <div class="call-to-action">
+                <a href="tel:{{ business.phone_number }}" class="small-text call-button" aria-label="Call {{ business.name }}">
+                    <i class="fas fa-phone"></i> Call
+                </a>
                 {% if business.website %}
-                    <a href="{{ business.website }}" target="_blank">
+                    <a href="{{ business.website }}" target="_blank" rel="noopener noreferrer" aria-label="Visit {{ business.name }} website">
                         <i class="fas fa-globe"></i> Visit Website
                     </a>
-                {% else %}
-
-                {% endif %}
-
-            </div>
-        </div>
-    </div>
-<p><strong>Description:</strong> {{ business.description|safe }}</p>
-    <!-- Image Gallery Section -->
-    <h2>Image Gallery</h2>
-    <div class="image-gallery">
-        {% for image in business.images.all %}
-            <div class="gallery-item">
-                <img src="{{ image.thumbnail.url }}" alt="{{ image.caption|default:business.name }}">
-                {% if image.caption %}
-                    <p class="caption">{{ image.caption }}</p>
                 {% endif %}
             </div>
-        {% empty %}
-            <p>No images available for this business.</p>
-        {% endfor %}
     </div>
+
+    <!-- Business Description -->
+    <p><strong>Description:</strong> {{ business.description|safe }}</p>
+
     <!-- Map Integration -->
-    <div id="map"></div>
+    <div id="map" aria-label="Location of {{ business.name }}"></div>
 
     <!-- Related Businesses -->
     <div class="related-businesses">
@@ -668,13 +489,31 @@
         <div class="related-list">
             {% for related_business in related_businesses %}
                 <div class="related-item">
-                    <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }} Logo">
+                    <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }} Logo" loading="lazy">
                     <h3><a href="{% url 'business-detail' related_business.pk %}">{{ related_business.name }}</a></h3>
                     <p>{{ related_business.address }}</p>
                 </div>
             {% endfor %}
         </div>
     </div>
+
+    <!-- Social Sharing -->
+    <div class="social-sharing">
+        <h3>Share This Business</h3>
+        <div class="social-buttons">
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="social-button facebook" title="Share on Facebook" aria-label="Share on Facebook">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text=Check out this business: {{ business.name }}" target="_blank" class="social-button twitter" title="Share on Twitter" aria-label="Share on Twitter">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a href="https://wa.me/?text=Check out this business: {{ request.build_absolute_uri }}" target="_blank" class="social-button whatsapp" title="Share on WhatsApp" aria-label="Share on WhatsApp">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Business Rating -->
     <div class="business-rating">
         <span class="stars">
             {% if business.average_rating %}
@@ -692,128 +531,109 @@
         <span class="review-count">({{ business.review_count }} reviews)</span>
     </div>
 
-<!-- Display approved reviews -->
-<div class="user-reviews">
-    <h2>User Reviews</h2>
-    {% for review in reviews %}
-        <div class="review-item">
-            <div class="review-rating">
-                <span class="stars">
-                    {% for i in "12345" %}
-                        {% if forloop.counter <= review.rating %}
-                            ★
-                        {% else %}
-                            ☆
-                        {% endif %}
-                    {% endfor %}
-                </span>
-                <span class="review-date">{{ review.created_at|date:"M d, Y" }}</span>
-            </div>
-            {% if review.title %}
-                <h3 class="review-title">{{ review.title }}</h3>
-            {% endif %}
-            <p class="review-comment">{{ review.comment }}</p>
-            <p class="review-author">- {{ review.user.username|default:"Anonymous" }}</p>
-            <p class="helpful-votes">Helpful Votes: {{ review.helpful_votes }}</p>
-        </div>
-    {% endfor %}
-
-    <!-- Pagination -->
-    <div class="pagination">
-        <span class="step-links">
-            {% if reviews.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ reviews.previous_page_number }}">previous</a>
-            {% endif %}
-
-            <span class="current">
-                Page {{ reviews.number }} of {{ reviews.paginator.num_pages }}.
-            </span>
-
-            {% if reviews.has_next %}
-                <a href="?page={{ reviews.next_page_number }}">next</a>
-                <a href="?page={{ reviews.paginator.num_pages }}">last &raquo;</a>
-            {% endif %}
-        </span>
-    </div>
-</div>
-
-<!-- Display messages -->
-{% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
+    <!-- User Reviews -->
+    <div class="user-reviews">
+        <h2>User Reviews</h2>
+        {% for review in reviews %}
+            <div class="review-item">
+                <div class="review-rating">
+                    <span class="stars">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= review.rating %}
+                                ★
+                            {% else %}
+                                ☆
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                    <span class="review-date">{{ review.created_at|date:"M d, Y" }}</span>
+                </div>
+                {% if review.title %}
+                    <h3 class="review-title">{{ review.title }}</h3>
+                {% endif %}
+                <p class="review-comment">{{ review.comment }}</p>
+                <p class="review-author">- {{ review.user.username|default:"Anonymous" }}</p>
+                <p class="helpful-votes">Helpful Votes: {{ review.helpful_votes }}</p>
             </div>
         {% endfor %}
-    </div>
-{% endif %}
 
-<!-- Review form -->
-<div class="review-form">
-    <h2>Leave a Review</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit Review</button>
-    </form>
-</div>
-
-    <!-- Social Sharing -->
-    <div class="social-sharing">
-        <h3>Share This Business</h3>
-        <div class="social-buttons">
-            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="social-button facebook" title="Share on Facebook">
-                <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text=Check out this business: {{ business.name }}" target="_blank" class="social-button twitter" title="Share on Twitter">
-                <i class="fab fa-twitter"></i>
-            </a>
-            <a href="https://wa.me/?text=Check out this business: {{ request.build_absolute_uri }}" target="_blank" class="social-button whatsapp" title="Share on WhatsApp">
-                <i class="fab fa-whatsapp"></i>
-            </a>
+        <!-- Pagination -->
+        <div class="pagination">
+            <span class="step-links">
+                {% if reviews.has_previous %}
+                    <a href="?page=1" aria-label="First page">&laquo; first</a>
+                    <a href="?page={{ reviews.previous_page_number }}" aria-label="Previous page">previous</a>
+                {% endif %}
+                <span class="current">
+                    Page {{ reviews.number }} of {{ reviews.paginator.num_pages }}.
+                </span>
+                {% if reviews.has_next %}
+                    <a href="?page={{ reviews.next_page_number }}" aria-label="Next page">next</a>
+                    <a href="?page={{ reviews.paginator.num_pages }}" aria-label="Last page">last &raquo;</a>
+                {% endif %}
+            </span>
         </div>
     </div>
 
-    <!-- Map Script -->
-    <script>
-        function initMap() {
-            const map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: {{ business.latitude }}, lng: {{ business.longitude }} },
-                zoom: 15,
-            });
+    <!-- Review Form -->
+    <div class="review-form">
+        <h2>Leave a Review</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_rating">Rating:</label>
+                {{ form.rating }}
+            </div>
+            <div class="form-group">
+                <label for="id_title">Title:</label>
+                {{ form.title }}
+            </div>
+            <div class="form-group">
+                <label for="id_comment">Comment:</label>
+                {{ form.comment }}
+            </div>
+            <button type="submit" aria-label="Submit review">Submit Review</button>
+        </form>
+    </div>
 
-            new google.maps.Marker({
-                position: { lat: {{ business.latitude }}, lng: {{ business.longitude }} },
-                map,
-                title: "{{ business.name }}",
-            });
+    <!-- Image Gallery -->
+    <div class="image-gallery">
+        <h2>Image Gallery</h2>
+        {% for image in business.images.all %}
+            <div class="gallery-item">
+                <img src="{{ image.thumbnail.url }}" alt="{{ image.caption|default:business.name }}" loading="lazy">
+                {% if image.caption %}
+                    <p class="caption">{{ image.caption }}</p>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>No images available for this business.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('{% static "js/serviceworker.js" %}')
+                .then((registration) => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                })
+                .catch((error) => {
+                    console.log('ServiceWorker registration failed: ', error);
+                });
         }
     </script>
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/static/js/serviceworker.js')
-      .then((registration) => {
-        console.log('ServiceWorker registration successful with scope: ', registration.scope);
-      })
-      .catch((error) => {
-        console.log('ServiceWorker registration failed: ', error);
-      });
-  }
-</script>
-    <!-- JavaScript for Dark Mode Toggle -->
+    <!-- Dark Mode Toggle Script -->
     <script>
         const themeToggle = document.getElementById('theme-toggle');
         const body = document.body;
 
-        // Check for saved theme preference
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme) {
             body.classList.add(savedTheme);
             themeToggle.textContent = savedTheme === 'dark-mode' ? '☀️' : '🌙';
         }
 
-        // Toggle dark mode
         themeToggle.addEventListener('click', () => {
             body.classList.toggle('dark-mode');
             const isDarkMode = body.classList.contains('dark-mode');

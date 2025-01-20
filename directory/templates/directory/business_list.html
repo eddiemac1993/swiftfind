@@ -216,12 +216,12 @@
           border: none; /* Remove default border */
           cursor: pointer; /* Pointer cursor on hover */
         }
-        
+
         .install-paper-button:hover {
           background-color: var(--primary-hover); /* Change color on hover */
           transform: scale(1.05); /* Slightly enlarge on hover */
         }
-        
+
         .install-paper-button:active {
           transform: scale(0.95); /* Slightly shrink on click */
         }
@@ -364,7 +364,7 @@
 
     <!-- Search and Filter Form -->
     <form method="get" action="." class="search-form">
-        <input type="text" name="q" placeholder="Search by name" value="{{ query }}">
+        <input type="text" name="q" placeholder="Search For Anything" value="{{ query|default:'' }}">
         <select name="category">
             <option value="">All Categories</option>
             {% for category in categories %}
