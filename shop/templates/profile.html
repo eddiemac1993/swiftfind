@@ -1,0 +1,154 @@
+{% extends 'chat/base.html' %}
+
+{% block content %}
+<style>
+  /* Profile Container */
+  .profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  /* Profile Header */
+  .profile-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    color: white;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .profile-header h1 {
+    font-size: 2rem;
+    margin: 0;
+    color: white;
+  }
+
+  .profile-header p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0.5rem 0 1rem;
+  }
+
+  /* Balance Information */
+  .balance-info {
+    background-color: var(--card-bg);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .balance-info:hover {
+    transform: scale(1.02);
+    background-color: var(--card-bg-hover);
+  }
+
+  .balance-info h2 {
+    font-size: 1.5rem;
+    margin: 0 0 1rem;
+    color: var(--text-primary);
+  }
+
+  .balance-info p {
+    margin: 0.5rem 0;
+    color: var(--text-secondary);
+    font-size: 1rem;
+  }
+
+  /* Shop Information */
+  .shop-info {
+    background-color: var(--card-bg);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .shop-info:hover {
+    transform: scale(1.02);
+    background-color: var(--card-bg-hover);
+  }
+
+  .shop-info h2 {
+    font-size: 1.5rem;
+    margin: 0 0 1rem;
+    color: var(--text-primary);
+  }
+
+  .shop-info p {
+    margin: 0.5rem 0;
+    color: var(--text-secondary);
+    font-size: 1rem;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .profile-container {
+      padding: 0.5rem;
+    }
+
+    .profile-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .profile-header p {
+      font-size: 0.875rem;
+    }
+
+    .balance-info, .shop-info {
+      padding: 1rem;
+    }
+
+    .balance-info h2, .shop-info h2 {
+      font-size: 1.25rem;
+    }
+
+    .balance-info p, .shop-info p {
+      font-size: 0.875rem;
+    }
+  }
+</style>
+
+<div class="profile-container">
+  <!-- Profile Header -->
+  <header class="profile-header" aria-labelledby="profile-title">
+    <h1 id="profile-title">Profile</h1>
+    <hr>
+    <p>Welcome back, {{ shop.user.username }}! Here's your shop and balance information.</p>
+  </header>
+
+  <!-- Shop Information -->
+  <div class="shop-info">
+    <h2>Shop Information</h2>
+    <p><strong>Name:</strong> {{ shop.name }}</p>
+    <p><strong>Address:</strong> {{ shop.address }}</p>
+  </div>
+
+  <!-- Balance Information -->
+  <div class="balance-info">
+    <h2>Balance Information</h2>
+    <p><strong>Total Amount:</strong> K{{ balance.total_amount }}</p>
+    <p><strong>Amount Paid:</strong> K{{ balance.amount_paid }}</p>
+    <p><strong>Amount Due:</strong> K{{ balance.amount_due }}</p>
+  </div>
+</div>
+
+<script>
+  // Simulate loading state (replace with actual data fetching logic)
+  document.getElementById('loading-spinner').style.display = 'block';
+  setTimeout(() => {
+    document.getElementById('loading-spinner').style.display = 'none';
+  }, 2000);
+</script>
+{% endblock %}

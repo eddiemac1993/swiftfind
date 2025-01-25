@@ -63,23 +63,111 @@
         }
 
         /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-            color: white;
-            padding: 4rem 2rem;
-            text-align: center;
-            border-radius: 1rem;
-            margin-bottom: 2rem;
-        }
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    color: white;
+    padding: 6rem 2rem;
+    text-align: center;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
 
-        .hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.1); /* Subtle overlay for better text contrast */
+    z-index: 1;
+}
 
-        .hero p {
-            font-size: 1.25rem;
-            color: rgba(255, 255, 255, 0.9);
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    animation: fadeInDown 1s ease;
+}
+
+.hero p {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2rem;
+    animation: fadeInUp 1s ease;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background-color: white;
+    color: var(--primary-color);
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 1.5s ease;
+}
+
+.cta-button:hover {
+    background-color: var(--primary-hover);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cta-button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Animations */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+        /* Verified Tick */
+        .admin-tick {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.8rem;
+            color: green;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 2px 5px;
+            border-radius: 3px;
         }
 
         /* Search and Filter Form */
@@ -129,7 +217,57 @@
         .search-form button:hover {
             background-color: var(--primary-hover);
         }
+/* Typing Effect Styles */
+#typed-title,
+#typed-description {
+    display: inline-block;
+    overflow: hidden;
+    border-right: 2px solid white; /* Cursor */
+    white-space: nowrap;
+}
 
+/* Typing Effect Styles */
+#typed-title,
+#typed-description {
+    display: inline-block;
+    overflow: hidden;
+    border-right: 2px solid white; /* Cursor */
+    white-space: nowrap;
+    font-size: clamp(1.5rem, 5vw, 3rem); /* Responsive font size for <h1> */
+}
+
+#typed-description {
+    font-size: clamp(1rem, 3vw, 1.5rem); /* Responsive font size for <p> */
+    white-space: normal; /* Allow text wrapping on smaller screens */
+}
+
+/* Typing Animation */
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+/* Blinking Cursor Animation */
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: white; }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    #typed-title,
+    #typed-description {
+        white-space: normal; /* Allow text wrapping on smaller screens */
+    }
+
+    #typed-title {
+        font-size: clamp(1.5rem, 6vw, 2.5rem); /* Smaller font size for <h1> on mobile */
+    }
+
+    #typed-description {
+        font-size: clamp(0.875rem, 3.5vw, 1.25rem); /* Smaller font size for <p> on mobile */
+    }
+}
         /* Business List */
         .business-list {
             display: grid;
@@ -144,6 +282,7 @@
             padding: 1.5rem;
             box-shadow: var(--shadow);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
         }
 
         .business-item:hover {
@@ -160,11 +299,15 @@
 
         .business-details {
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .business-details h2 {
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
+            position: relative;
         }
 
         .business-details p {
@@ -180,12 +323,13 @@
         .business-rating {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
             margin: 0.5rem 0;
         }
 
         .stars {
-            color: #fbbf24; /* Yellow for stars */
+            color: #fbbf24;
         }
 
         .review-count {
@@ -196,36 +340,35 @@
         /* Install Paper Button */
         .install-paper-button {
           position: fixed;
-          bottom: 4rem; /* Adjust position as needed */
-          right: 2rem; /* Position from the right */
-          width: auto; /* Auto width for text */
-          height: 3.5rem; /* Fixed height */
-          padding: 0 1.5rem; /* Padding for text */
-          background-color: var(--primary-color); /* Use your primary color */
-          color: white; /* Text color */
-          border-radius: 50px; /* Rounded corners */
+          bottom: 4rem;
+          right: 2rem;
+          width: auto;
+          height: 3.5rem;
+          padding: 0 1.5rem;
+          background-color: var(--primary-color);
+          color: white;
+          border-radius: 50px;
           text-decoration: none;
           display: flex;
           align-items: center;
-          justify-content: center; /* Center the text */
-          box-shadow: var(--shadow); /* Add shadow */
-          transition: background-color 0.2s ease, transform 0.2s ease; /* Smooth hover effect */
-          z-index: 1000; /* Ensure it stays on top */
-          font-size: 1rem; /* Adjust font size */
-          font-weight: 500; /* Medium font weight */
-          border: none; /* Remove default border */
-          cursor: pointer; /* Pointer cursor on hover */
+          justify-content: center;
+          box-shadow: var(--shadow);
+          transition: background-color 0.2s ease, transform 0.2s ease;
+          z-index: 1000;
+          font-size: 1rem;
+          font-weight: 500;
+          border: none;
+          cursor: pointer;
         }
 
         .install-paper-button:hover {
-          background-color: var(--primary-hover); /* Change color on hover */
-          transform: scale(1.05); /* Slightly enlarge on hover */
+          background-color: var(--primary-hover);
+          transform: scale(1.05);
         }
 
         .install-paper-button:active {
-          transform: scale(0.95); /* Slightly shrink on click */
+          transform: scale(0.95);
         }
-
 
         /* Bottom Navigation Bar */
         .bottom-nav {
@@ -291,6 +434,23 @@
                 padding: 1rem;
             }
 
+    .hero {
+        padding: 4rem 1rem;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .cta-button {
+        padding: 0.5rem 1.5rem;
+        font-size: 0.875rem;
+    }
+
             .business-item {
                 flex-direction: column;
                 align-items: center;
@@ -301,6 +461,16 @@
             .business-logo img {
                 width: 100px;
                 height: 100px;
+            }
+
+            .business-details h2 {
+                text-align: center; /* Center the business name */
+            }
+
+            .admin-tick {
+                position: absolute; /* Keep this absolute */
+                top: 10px; /* Adjust as needed */
+                right: 10px; /* Adjust as needed */
             }
 
             .search-form {
@@ -357,7 +527,7 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Discover Local Businesses</h1>
+            <h1><span id="typed-title"></span></h1>
             <p>Find the best businesses in your area. Search by name, category, or location.</p>
         </div>
     </section>
@@ -387,20 +557,33 @@
     <div class="business-list">
         {% if page_obj.object_list %}
             {% for business in page_obj %}
-                <div class="business-item">
-                    <div class="business-logo">
-                        <img src="{{ business.logo.url }}" alt="{{ business.name }} Logo">
-                    </div>
-                    <div class="business-details">
-                        <h2><a href="{% url 'business-detail' business.pk %}">{{ business.name }}</a></h2>
-                        <p><strong>Category:</strong> <i class="fas fa-tag"></i> {{ business.category.name }}</p>
-                        <p><strong>City:</strong> <i class="fas fa-map-marker-alt"></i> {{ business.city|capfirst }}</p>
-                        <div class="business-rating">
-                            <span class="stars">★★★★★</span>
-                            <span class="review-count">({{ business.reviews.count }} reviews)</span>
-                        </div>
-                    </div>
-                </div>
+<div class="business-item">
+    <div class="business-logo">
+        <img src="{{ business.logo.url }}" alt="{{ business.name }} Logo" loading="lazy">
+    </div>
+    <div class="business-details">
+        <h2>
+            <a href="{% url 'business-detail' business.pk %}">{{ business.name }}</a>
+        </h2>
+        {% if business.is_admin_added %}
+            <span class="admin-tick">✅verified</span>
+        {% endif %}
+        <p><strong>Category:</strong> <i class="fas fa-tag"></i> {{ business.category.name }}</p>
+        <p><strong>City:</strong> <i class="fas fa-map-marker-alt"></i> {{ business.city|capfirst }}</p>
+        <div class="business-rating">
+            <span class="stars">
+                {% for i in "12345" %}
+                    {% if i|add:0 <= business.rating %}
+                        ★
+                    {% else %}
+                        ☆
+                    {% endif %}
+                {% endfor %}
+            </span>
+            <span class="review-count">({{ business.reviews.count }} reviews)</span>
+        </div>
+    </div>
+</div>
             {% endfor %}
         {% else %}
             <p class="no-results">Search for '<strong>{{ query }}</strong>' not found.</p>
@@ -419,31 +602,67 @@
             <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
         {% endif %}
     </div>
-
+<hr>
     <!-- Dark Mode Toggle -->
-    <button id="theme-toggle" class="theme-toggle">🌙</button>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
 
     <!-- Bottom Navigation Bar -->
     <nav class="bottom-nav">
-        <a href="{% url 'chat_room_list' %}" title="Chat Rooms">
-            <i class="fas fa-comments"></i>
-            <span>Chat</span>
+        <a href="{% url 'item_list' %}" title="Items">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Request</span>
         </a>
         <a href="{% url 'add-business' %}" title="Add Business">
             <i class="fas fa-plus"></i>
-            <span>Add Business</span>
+            <span>Business</span>
         </a>
         <a href="{% url 'create_paper' %}" title="Create Paper">
             <i class="fas fa-file-alt"></i>
-            <span>Create Paper</span>
+            <span>Paper</span>
         </a>
         <a href="{% url 'about' %}" title="About">
             <i class="fas fa-info-circle"></i>
             <span>About</span>
         </a>
     </nav>
-
     <script>
+
+// Typing Effect Script
+const titleText = "Discover Local Businesses"; // Text for <h1>
+const typedTitleElement = document.getElementById('typed-title');
+let titleIndex = 0;
+
+// Function to calculate typing speed based on screen width
+function getTypingSpeed() {
+    const screenWidth = window.innerWidth;
+    return screenWidth < 768 ? 50 : 100; // Faster typing on smaller screens
+}
+
+function typeTitle() {
+    if (titleIndex < titleText.length) {
+        typedTitleElement.textContent += titleText.charAt(titleIndex);
+        titleIndex++;
+        setTimeout(typeTitle, 70); // Adjust this value to change speed
+    } else {
+        typedDescriptionElement.style.animation = "typing 4s steps(50, end), blink-caret 0.75s step-end infinite";
+        typeDescription();
+    }
+}
+
+
+
+// Start the typing effect when the page loads
+window.onload = typeTitle;
+
+// Handle window resizing
+window.addEventListener('resize', () => {
+    // Reset the typing effect on resize
+    typedTitleElement.textContent = "";
+    typedDescriptionElement.textContent = "";
+    titleIndex = 0;
+    typeTitle();
+});
+
         // Dark Mode Toggle
         const themeToggle = document.getElementById('theme-toggle');
         const body = document.body;

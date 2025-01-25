@@ -7,6 +7,7 @@ from .models import Business, Category
 from django.shortcuts import render, redirect
 from .forms import BusinessForm  # You'll need to create this form
 from .models import Business
+from django.utils import timezone
 
 from django.shortcuts import render
 
@@ -18,11 +19,13 @@ def add_business(request):
         form = BusinessForm(request.POST, request.FILES)
         if form.is_valid():
             business = form.save(commit=False)
-            # Assign the owner only if the user is authenticated
             if request.user.is_authenticated:
                 business.owner = request.user
+                # Check if the user is an admin
+                if request.user.is_staff or request.user.is_superuser:
+                    business.is_admin_added = True
             else:
-                business.owner = None  # Set owner to None for anonymous users
+                business.owner = None
             business.save()
             return redirect('business-detail', pk=business.pk)
     else:
@@ -181,14 +184,13 @@ def privacy(request):
 def terms(request):
     return render(request, 'terms.html')
 
-from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from .models import ChatRoom, ChatMessage
 from .utils import get_client_ip, generate_random_name
 
 # List all chat rooms
 def chat_room_list(request):
-    rooms = ChatRoom.objects.all()
+    rooms = ChatRoom.objects.all().order_by('-created_at')
     return render(request, 'chat/room_list.html', {'rooms': rooms})
 
 # Create a new chat room

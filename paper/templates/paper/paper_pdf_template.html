@@ -152,7 +152,6 @@
             border: 1px solid #e2e8f0;
             border-radius: 0.5rem;
             font-size: 1rem;
-            text-align: center;
         }
 
         /* Prepared By Section */
@@ -287,14 +286,18 @@
     {% if paper.paper_type == 'RECEIPT' %}
         <!-- Receipt: Amount in Words and Figures -->
             <div class="amount-in-words">
-                <p>Received Amount in Words: {{ grand_total|amount_in_words }}</p>
-                <p>Amount in Figures: {{ paper.currency_symbol }}{{ grand_total|intcomma }}</p>
+                <p>Received Amount in Words: <strong>{{ grand_total|amount_in_words }}</strong></p>
+                <p>Amount in Figures:[ K {{ grand_total|intcomma }} ]</p>
             </div>
             <div class="payment-details">
                 <p><strong>Cash:</strong> </p>
                 <p><strong>Money Transfer:</strong> </p>
                 <p><strong>Cheque Number:</strong> </p>
-                <p><strong>Payment For:</strong> {{ item.description }}</p>
+                <p><strong>being payment for:</strong>
+                    {% for item in items %}
+                        {{ item.description }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
             </div>
     {% elif paper.paper_type == 'DELIVERY_NOTE' %}
         <!-- Delivery Note: Only Description and Quantity -->

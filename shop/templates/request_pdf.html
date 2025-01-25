@@ -1,0 +1,39 @@
+<!-- shop/templates/shop/request_pdf.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Request #{{ cart.id }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    h1 { color: #333; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <h1>Request Order#{{ cart.id }}</h1>
+  <p><strong>Requested by:</strong> {{ cart.user.username }}</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in cart.items.all %}
+        <tr>
+          <td>{{ item.item.name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>K{{ item.item.price }}</td>
+          <td>K{{ item.total_price }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p><strong>Total:</strong> K{{ cart.total_price }}</p>
+</body>
+</html>

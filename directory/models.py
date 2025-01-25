@@ -43,6 +43,7 @@ class Business(models.Model):
     description = models.TextField(blank=True, null=True)
     address = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=15)
+    is_admin_added = models.BooleanField(default=False)
     email = models.EmailField(blank=True, null=True)
     website = models.URLField(blank=True, null=True)
     city = models.CharField(max_length=100, blank=True, null=True)  # New city field

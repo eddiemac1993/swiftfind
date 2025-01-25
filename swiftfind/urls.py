@@ -7,6 +7,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('directory.urls')),
     path('paper/', include('paper.urls')),
+    path('shop/', include('shop.urls')),
+
+    path('accounts/', include('django.contrib.auth.urls')),
 ]
 # Serve static and media files during development
 if settings.DEBUG:

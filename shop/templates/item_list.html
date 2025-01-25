@@ -1,0 +1,396 @@
+{% extends 'chat/base.html' %}
+
+{% block content %}
+<style>
+  /* Items Container */
+  .items-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  /* Items Header */
+  .items-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    color: white;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .items-header h1 {
+    font-size: 2rem;
+    margin: 0;
+    color: white;
+  }
+
+  .items-header p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0.5rem 0 1rem;
+  }
+
+  /* Category Buttons */
+  .category-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .category-buttons button {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .category-buttons button:hover {
+    background-color: var(--primary-color);
+    color: white;
+  }
+
+  .category-buttons button.active {
+    background-color: var(--primary-color);
+    color: white;
+  }
+
+  /* Search Bar */
+  .search-bar {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .search-bar i {
+    margin-right: 0.5rem;
+    color: var(--text-secondary);
+  }
+
+  .search-bar input {
+    width: 100%;
+    max-width: 500px;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, width 0.2s ease;
+  }
+
+  .search-bar input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.1);
+    width: 100%;
+    max-width: 550px;
+  }
+
+  /* Items List */
+  .items-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .item {
+    background-color: var(--card-bg);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .item:hover {
+    transform: scale(1.02);
+    background-color: var(--card-bg-hover);
+  }
+
+  .item .item-info {
+    flex: 1;
+  }
+
+  .item h3 {
+    font-size: 1.25rem;
+    margin: 0;
+    color: var(--text-primary);
+  }
+
+  .item p {
+    margin: 0.5rem 0 0;
+    color: var(--text-secondary);
+    font-size: 1rem;
+  }
+
+  .item .add-to-cart-button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+  }
+
+  .item .add-to-cart-button:hover {
+    background-color: var(--primary-hover);
+  }
+
+  /* Empty State */
+  #no-results {
+    display: none;
+    text-align: center;
+    color: var(--text-secondary);
+    margin-top: 2rem;
+  }
+
+  /* Loading Spinner */
+  #loading-spinner {
+    display: none;
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  #loading-spinner i {
+    font-size: 2rem;
+    color: var(--primary-color);
+  }
+
+  /* Bottom Navigation Bar */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--card-bg);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0.5rem 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+
+  .bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    transition: color 0.2s ease;
+    position: relative;
+  }
+
+  .bottom-nav a i {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .bottom-nav a:hover {
+    color: var(--primary-color);
+  }
+
+  .bottom-nav a.active {
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+
+  .notification-badge {
+    background-color: red;
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: 50%;
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .items-container {
+      padding: 0.5rem;
+    }
+
+    .items-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .items-header p {
+      font-size: 0.875rem;
+    }
+
+    .item {
+      flex-direction: column;
+    }
+
+    .item .add-to-cart-button {
+      margin-top: 1rem;
+      width: 100%;
+      text-align: center;
+    }
+
+    .bottom-nav {
+      padding: 0.5rem;
+    }
+
+    .bottom-nav a {
+      font-size: 0.75rem;
+    }
+
+    .bottom-nav a i {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<div class="items-container">
+  <!-- Items Header -->
+  <header class="items-header" aria-labelledby="items-title">
+    <h1 id="items-title">Items</h1>
+    <hr>
+    <p>Browse and add items to your Requests.</p>
+  </header>
+
+  <!-- Category Buttons -->
+  <div class="category-buttons">
+    <button onclick="filterItemsByCategory('all')" class="active">All</button>
+    {% for category in categories %}
+      <button onclick="filterItemsByCategory('{{ category.slug }}')">{{ category.name }}</button>
+    {% endfor %}
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-bar" role="search">
+    <input type="text" id="search-item" placeholder="Search for items..." oninput="filterItems()" aria-label="Search for items">
+  </div>
+
+  <!-- Loading Spinner -->
+  <div id="loading-spinner">
+    <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+    <p>Loading items...</p>
+  </div>
+
+  <!-- Items List -->
+  <ul class="items-list" aria-labelledby="items-title">
+    {% for item in items %}
+      <li class="item" data-category="{{ item.category.slug }}">
+        <div class="item-info">
+          <h3>{{ item.name }}</h3>
+          <p>{{ item.description }}</p>
+          <p><strong>Price:</strong> K{{ item.price }}</p>
+          <p><strong>Category:</strong> {{ item.category.name }}</p>
+        </div>
+        <a href="{% url 'add_to_cart' item.id %}" class="add-to-cart-button" aria-label="Add {{ item.name }} to Cart">Add to Request</a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<!-- Bottom Navigation Bar -->
+<nav class="bottom-nav" aria-label="Main Navigation">
+  <a href="{% url 'view_cart' %}" class="active" title="Cart" aria-label="Cart">
+    <i class="fas fa-shopping-cart"></i>
+    <span>Requests</span>
+    {% if cart.total_items > 0 %}
+      <span class="notification-badge">{{ cart.total_items }}</span>
+    {% endif %}
+  </a>
+  <a href="{% url 'add-business' %}" title="Add Business" aria-label="Add Business">
+    <i class="fas fa-plus"></i>
+    <span>Add Business</span>
+  </a>
+  <a href="{% url 'create_paper' %}" title="Create Paper" aria-label="Create Paper">
+    <i class="fas fa-file-alt"></i>
+    <span>Create Paper</span>
+  </a>
+ <a href="{% url 'profile' %}">
+      <i class="fas fa-user"></i> Profile
+    </a>
+</nav>
+
+<script>
+  // Filter items by category
+  function filterItemsByCategory(categorySlug) {
+    const items = document.querySelectorAll('.item');
+    const categoryButtons = document.querySelectorAll('.category-buttons button');
+
+    // Remove active class from all buttons
+    categoryButtons.forEach(button => button.classList.remove('active'));
+
+    // Add active class to the clicked button
+    const activeButton = Array.from(categoryButtons).find(button => button.textContent.toLowerCase() === categorySlug || (categorySlug === 'all' && button.textContent.toLowerCase() === 'all'));
+    if (activeButton) {
+      activeButton.classList.add('active');
+    }
+
+    // Show/hide items based on category
+    items.forEach(item => {
+      if (categorySlug === 'all' || item.dataset.category === categorySlug) {
+        item.style.display = 'flex';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+
+    // Show/hide empty state
+    const visibleItems = Array.from(items).filter(item => item.style.display !== 'none');
+    const noResults = document.getElementById('no-results');
+    if (visibleItems.length === 0) {
+      noResults.style.display = 'block';
+    } else {
+      noResults.style.display = 'none';
+    }
+  }
+
+  // Filter items by search query
+  function filterItems() {
+    const searchQuery = document.getElementById('search-item').value.toLowerCase();
+    const items = document.querySelectorAll('.item');
+    let visibleItems = 0;
+
+    items.forEach(item => {
+      const itemName = item.querySelector('h3').textContent.toLowerCase();
+      const itemDescription = item.querySelector('p').textContent.toLowerCase();
+
+      if (itemName.includes(searchQuery) || itemDescription.includes(searchQuery)) {
+        item.style.display = 'flex';
+        visibleItems++;
+      } else {
+        item.style.display = 'none';
+      }
+    });
+
+    const noResults = document.getElementById('no-results');
+    if (visibleItems === 0) {
+      noResults.style.display = 'block';
+    } else {
+      noResults.style.display = 'none';
+    }
+  }
+
+  // Simulate loading state (replace with actual data fetching logic)
+  document.getElementById('loading-spinner').style.display = 'block';
+  setTimeout(() => {
+    document.getElementById('loading-spinner').style.display = 'none';
+  }, 2000);
+</script>
+{% endblock %}

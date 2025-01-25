@@ -1,0 +1,11 @@
+<h1>Request Details</h1>
+<p><strong>Shop:</strong> {{ request_obj.shop.name }}</p>
+<p><strong>Items:</strong></p>
+<ul>
+    {% for item in request_obj.items.all %}
+    <li>{{ item.quantity }} x {{ item.item.name }} - ${{ item.item.price }}</li>
+    {% endfor %}
+</ul>
+<p><strong>Status:</strong> {{ request_obj.status }}</p>
+<p><strong>Created At:</strong> {{ request_obj.created_at }}</p>
+<p><strong>Updated At:</strong> {{ request_obj.updated_at }}</p>

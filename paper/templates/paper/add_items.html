@@ -125,10 +125,6 @@
             body {
                 padding: 1.8rem;
             }
-
-            .form-container {
-                padding: 1rem;
-            }
         }
 
         /* Home Button */
@@ -318,7 +314,7 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Add Items to Quotation #<span class="quotation-number">{{ paper.paper_number }}</span></h1>
+            <h1>{{ paper.get_paper_type_display }} #<span class="quotation-number">{{ paper.paper_number }}</span></h1>
         </div>
     </section>
     <hr>

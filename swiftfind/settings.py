@@ -44,9 +44,18 @@ INSTALLED_APPS = [
     'paper',
     'django.contrib.humanize',
     'channels',
+    'shop',
 ]
 
-ASGI_APPLICATION = 'directory.asgi.application'
+# Specify the ASGI application
+ASGI_APPLICATION = 'swiftfind.asgi.application'
+
+# Configure channel layers (for development, use in-memory layer)
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -68,6 +77,7 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
+                'shop.context_processors.cart_context',
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -135,3 +145,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Where media files are stored
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# settings.py
+
+LOGIN_URL = 'login'  # This should match the name of the login URL
+LOGIN_REDIRECT_URL = 'business-list'  # Redirect after successful login
+LOGOUT_REDIRECT_URL = 'business-list'  # Redirect after logout

@@ -1,0 +1,157 @@
+<!-- shop/view_request.html -->
+{% extends 'chat/base.html' %}
+
+{% block content %}
+<style>
+  /* Request Container */
+  .request-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  /* Request Header */
+  .request-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    color: white;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .request-header h1 {
+    font-size: 2rem;
+    margin: 0;
+    color: white;
+  }
+
+  /* Request Table */
+  .request-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+  }
+
+  .request-table th,
+  .request-table td {
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    text-align: left;
+  }
+
+  .request-table th {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+  }
+
+  .request-table tr:hover {
+    background-color: var(--card-bg-hover);
+  }
+
+  /* Total Price */
+  .total-price {
+    text-align: right;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 2rem 0;
+  }
+
+  /* Download Button */
+  .download-button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+  }
+
+  .download-button:hover {
+    background-color: var(--primary-hover);
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .request-container {
+      padding: 0.5rem;
+    }
+
+    .request-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .request-table th,
+    .request-table td {
+      padding: 0.75rem;
+    }
+
+    .total-price {
+      text-align: center;
+    }
+
+    .download-button {
+      width: 100%;
+      padding: 1rem;
+    }
+  }
+</style>
+
+<div class="request-container">
+  <!-- Request Header -->
+  <header class="request-header" aria-labelledby="request-title">
+    <h1 id="request-title">Your Request</h1>
+  </header>
+
+  <!-- Display messages -->
+  {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Request Table -->
+  <table class="request-table">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in cart.items.all %}
+        <tr>
+          <td>{{ item.item.name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>K{{ item.item.price }}</td>
+          <td>K{{ item.total_price }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Total Price -->
+  <p class="total-price">Total: K{{ cart.total_price }}</p>
+
+  <!-- Download Button -->
+  <a href="{% url 'download_request_pdf' %}" class="download-button">Download as PDF</a>
+</div>
+{% endblock %}

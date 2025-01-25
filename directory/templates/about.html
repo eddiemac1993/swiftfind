@@ -8,7 +8,11 @@
     <meta name="description" content="Business Directory PWA">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us - SwiftFind</title>
-    <link rel="manifest" href="/static/manifest.json">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
@@ -122,7 +126,6 @@
             background-color: var(--card-bg);
             border-radius: 1rem;
             padding: 1.5rem;
-            box-shadow: var(--shadow);
             text-align: center;
         }
 
@@ -281,9 +284,41 @@
             we help you make informed decisions while supporting local economies.
         </p>
 
+        <!-- What SwiftFind Offers -->
+        <h2>What We Offer</h2>
+        <p>
+            SwiftFind is more than just a business directory. It’s a powerful tool designed to simplify
+            how businesses and customers interact. Here’s what makes SwiftFind unique:
+        </p>
+        <ul>
+            <li>
+                <strong>Comprehensive Business Listings:</strong> Browse businesses by category, location,
+                or tags. Each business profile includes essential details like address, contact information,
+                website, and customer reviews.
+            </li>
+            <li>
+                <strong>Customer Reviews and Ratings:</strong> Share your experiences and read reviews from
+                other users to make informed decisions. Our review system ensures transparency and trust.
+            </li>
+            <li>
+                <strong>Document Management:</strong> Businesses can generate and manage essential documents
+                like quotations, invoices, receipts, and delivery notes directly on the platform.
+            </li>
+            <li>
+                <strong>Interactive Chat Rooms:</strong> Engage with other users or businesses in real-time
+                through our chat feature. Whether it’s for customer support or community discussions, SwiftFind
+                keeps you connected.
+            </li>
+            <li>
+                <strong>Advanced Search Analytics:</strong> Our platform tracks search queries to improve
+                user experience and provide insights into popular trends and categories.
+            </li>
+        </ul>
+
         <!-- Team Section -->
         <div class="team-section">
             <h2>Meet Our Team</h2>
+            <hr>
             <div class="team-grid">
                 <!-- Team Member 1 -->
                 <div class="team-member">
@@ -294,7 +329,6 @@
             </div>
         </div>
     </div>
-
     <!-- Footer Section -->
     <footer class="footer">
         <div class="footer-links">
@@ -302,7 +336,7 @@
             <a href="{% url 'privacy' %}">Privacy Policy</a>
             <a href="{% url 'terms' %}">Terms and Conditions</a>
         </div>
-        <p>&copy; 2023 SwiftFind. All rights reserved.</p>
+        <p>&copy; 2025 SwiftFind. All rights reserved.</p>
     </footer>
 
     <!-- Dark Mode Toggle -->

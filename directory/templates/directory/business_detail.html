@@ -6,237 +6,187 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#000000">
     <meta name="description" content="Business Directory PWA">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ business.name }} - SwiftFind</title>
     <link rel="manifest" href="/static/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-/* Global Variables */
-:root {
-    --primary-color: #2563eb;
-    --primary-hover: #1d4ed8;
-    --background: #f8fafc;
-    --card-bg: #ffffff;
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
-    --border-color: #e2e8f0;
-    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-}
+        /* CSS Reset and Base Styles */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-/* Dark Mode Variables */
-.dark-mode {
-    --background: #1e293b;
-    --card-bg: #334155;
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --border-color: #475569;
-    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
-}
+        /* Global Variables */
+        :root {
+            --max-width: 1200px;
+            --container-padding: clamp(1rem, 5vw, 2rem);
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --border-radius: 0.75rem;
+        }
 
-/* Global Styles */
-body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    background-color: var(--background);
-    margin: 0;
-    padding: 2rem;
-    color: var(--text-primary);
-    line-height: 1.5;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
+        /* Dark Mode */
+        .dark-mode {
+            --background: #1e293b;
+            --card-bg: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #475569;
+        }
 
-h1, h2, h3 {
-    margin: 0;
-}
+        /* Global Styles */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s ease;
+        }
 
-a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: var(--container-padding);
+        }
 
-a:hover {
-    text-decoration: underline;
-}
+        /* Business Details Section */
+        .business-details {
+            display: grid;
+            grid-template-columns: minmax(200px, 300px) 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
 
-/* Business Details */
-.business-details {
-    display: flex;
-    gap: 2rem;
-    margin-bottom: 2rem;
-}
+        @media (max-width: 768px) {
+            .business-details {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+        }
 
-.business-logo img {
-    width: 200px;
-    height: 200px;
-    border-radius: 1rem;
-    object-fit: cover;
-}
+        .business-logo img {
+            width: 100%;
+            height: auto;
+            border-radius: var(--border-radius);
+            aspect-ratio: 1;
+            object-fit: cover;
+        }
 
-.business-info {
-    flex: 1;
-}
+        /* Action Buttons */
+        .call-to-action {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            justify-content: center; /* Center buttons on smaller screens */
+        }
 
-.business-info h1 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-}
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+            text-align: center;
+            flex: 1 1 150px; /* Allow buttons to grow and shrink */
+        }
 
-.business-info p {
-    margin: 0.5rem 0;
-    color: var(--text-secondary);
-}
+        .action-button:hover {
+            background-color: var(--primary-hover);
+            text-decoration: none;
+        }
 
-.business-info strong {
-    color: var(--text-primary);
-    font-weight: 600;
-}
+        /* Related Businesses Grid */
+        .related-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
 
-.call-to-action {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1.5rem;
-}
+        .related-item {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
 
-.call-to-action a {
-    padding: 0.75rem 1.5rem;
-    background-color: var(--primary-color);
-    color: white;
-    border-radius: 0.5rem;
-    text-align: center;
-    transition: background-color 0.2s ease;
-}
+        .related-item:hover {
+            transform: translateY(-4px);
+        }
 
-.call-to-action a:hover {
-    background-color: var(--primary-hover);
-}
+        /* Reviews Section */
+        .review-item {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
 
-/* Map Integration */
-#map {
-    height: 300px;
-    width: 100%;
-    border-radius: 1rem;
-    margin-bottom: 2rem;
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-}
+        /* Review Form */
+        .review-form {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            margin: 2rem 0;
+        }
 
-/* Related Businesses */
-.related-businesses {
-    margin-bottom: 2rem;
-}
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
 
-.related-businesses h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-}
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
 
-.related-list {
-    display: grid;
-    gap: 1.5rem;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-}
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            background-color: var(--background);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+        }
 
-.related-item {
-    background-color: var(--card-bg);
-    border-radius: 1rem;
-    padding: 1.5rem;
-    box-shadow: var(--shadow);
-}
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
 
-.related-item img {
-    width: 100%;
-    height: 150px;
-    border-radius: 0.75rem;
-    object-fit: cover;
-}
+        .review-form button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            width: 100%;
+        }
 
-.related-item h3 {
-    font-size: 1.25rem;
-    margin: 1rem 0 0.5rem;
-}
-
-.related-item p {
-    color: var(--text-secondary);
-}
-
-/* User Reviews */
-.user-reviews {
-    margin-bottom: 2rem;
-}
-
-.user-reviews h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-.review-item {
-    margin-bottom: 1rem;
-    padding: 1rem;
-    background-color: var(--card-bg);
-    border-radius: 0.5rem;
-    box-shadow: var(--shadow);
-}
-
-.review-rating {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.stars {
-    color: #fbbf24; /* Yellow for stars */
-}
-
-.review-date {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-}
-
-.review-comment {
-    margin: 0.5rem 0;
-}
-
-.review-author {
-    text-align: right;
-    font-style: italic;
-    color: var(--text-secondary);
-}
-
-/* Review Form */
-.review-form {
-    margin-bottom: 2rem;
-}
-
-.review-form h2 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-.review-form textarea {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    margin-bottom: 1rem;
-    background-color: var(--card-bg);
-    color: var(--text-primary);
-}
-
-.review-form button {
-    padding: 0.75rem 1.5rem;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.review-form button:hover {
-    background-color: var(--primary-hover);
-}
-
+        .review-form button:hover {
+            background-color: var(--primary-hover);
+        }
 /* Social Sharing */
 .social-sharing {
     margin-top: 2rem;
@@ -282,31 +232,6 @@ a:hover {
 
 .social-button.whatsapp {
     background-color: #25d366; /* WhatsApp green */
-}
-
-/* Image Gallery */
-.image-gallery {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.gallery-item {
-    flex: 1 1 calc(33.333% - 10px);
-    box-sizing: border-box;
-}
-
-.gallery-item img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-}
-
-.caption {
-    text-align: center;
-    font-style: italic;
-    color: var(--text-secondary);
 }
 
 /* Fixed Buttons */
@@ -362,253 +287,222 @@ a:hover {
 .theme-toggle:hover {
     background-color: var(--primary-hover);
 }
+        .rating-info {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
-    .business-details {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
+        /* Image Gallery */
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
 
-    .business-logo img {
-        width: 150px;
-        height: 150px;
-    }
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            border-radius: var(--border-radius);
+            aspect-ratio: 16/9;
+            object-fit: cover;
+        }
 
-    .call-to-action {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
+        /* Responsive Typography */
+        h1 {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            margin-bottom: 1rem;
+        }
 
-    .call-to-action a {
-        width: 100%;
-    }
+        h2 {
+            font-size: clamp(1.25rem, 4vw, 2rem);
+            margin: 2rem 0 1rem;
+        }
 
-    #map {
-        height: 200px;
-    }
+        /* Utility Classes */
+        .text-secondary {
+            color: var(--text-secondary);
+        }
 
-    .related-list {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-
-    .related-item img {
-        height: 120px;
-    }
-
-    .theme-toggle {
-        bottom: 1rem;
-        left: 1rem;
-        width: 2.5rem;
-        height: 2.5rem;
-        font-size: 1.25rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .business-info h1 {
-        font-size: 1.75rem;
-    }
-
-    .business-info p {
-        font-size: 0.875rem;
-    }
-
-    .related-list {
-        grid-template-columns: 1fr;
-    }
-
-    .related-item h3 {
-        font-size: 1.1rem;
-    }
-
-    .related-item p {
-        font-size: 0.875rem;
-    }
-
-    .social-sharing h3 {
-        font-size: 1.1rem;
-    }
-}
+        .mt-2 { margin-top: 2rem; }
+        .mb-2 { margin-bottom: 2rem; }
     </style>
-
 </head>
 <body>
-    <!-- Dark Mode Toggle -->
-    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+    <div class="container">
+        <!-- Dark Mode Toggle -->
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
 
-    <!-- Fixed Buttons Container -->
-    <div class="fixed-buttons">
-        <a href="{% url 'business-list' %}" class="rounded-button" title="Home" aria-label="Home">
-            <i class="fas fa-home"></i>
-        </a>
-    </div>
-
-    <!-- Business Details -->
-    <div class="business-details">
-        <div class="business-logo">
-            <img src="{{ business.logo.url }}" alt="{{ business.name }} Logo" loading="lazy">
+        <!-- Fixed Buttons Container -->
+        <div class="fixed-buttons">
+            <a href="{% url 'business-list' %}" class="rounded-button" title="Home" aria-label="Home">
+                <i class="fas fa-home"></i>
+            </a>
         </div>
-        <div class="business-info">
-            <h1>{{ business.name }}</h1>
-            <p><strong>Category:</strong> {{ business.category.name }}</p>
-            <p><strong>Address:</strong> {{ business.address }}</p>
-            <p><strong>Phone:</strong> {{ business.phone_number }}</p>
-            {% if business.email %}
-                <p><strong>Email:</strong> {{ business.email }}</p>
-            {% endif %}
-            {% if business.website %}
-                <p><strong>Website:</strong> <a href="{{ business.website }}" target="_blank" rel="noopener noreferrer">{{ business.website }}</a></p>
-            {% else %}
-                <p><strong>Website:</strong> No website provided</p>
-            {% endif %}
 
-        </div>
-        <div class="call-to-action">
-                <a href="tel:{{ business.phone_number }}" class="small-text call-button" aria-label="Call {{ business.name }}">
-                    <i class="fas fa-phone"></i> Call
-                </a>
-                {% if business.website %}
-                    <a href="{{ business.website }}" target="_blank" rel="noopener noreferrer" aria-label="Visit {{ business.name }} website">
-                        <i class="fas fa-globe"></i> Visit Website
-                    </a>
+        <!-- Business Details -->
+        <div class="business-details">
+            <div class="business-logo">
+                <img src="{{ business.logo.url }}" alt="{{ business.name }} Logo" loading="lazy">
+            </div>
+            <div class="business-info">
+                <h1>{{ business.name }}</h1>
+                <p><strong>Category:</strong> {{ business.category.name }}</p>
+                <p><strong>Address:</strong> {{ business.address }}</p>
+                <p><strong>Phone:</strong> {{ business.phone_number }}</p>
+                {% if business.email %}
+                    <p><strong>Email:</strong> {{ business.email }}</p>
                 {% endif %}
             </div>
-    </div>
-
-    <!-- Business Description -->
-    <p><strong>Description:</strong> {{ business.description|safe }}</p>
-
-    <!-- Map Integration -->
-    <div id="map" aria-label="Location of {{ business.name }}"></div>
-
-    <!-- Related Businesses -->
-    <div class="related-businesses">
-        <h2>Related Businesses</h2>
-        <div class="related-list">
-            {% for related_business in related_businesses %}
-                <div class="related-item">
-                    <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }} Logo" loading="lazy">
-                    <h3><a href="{% url 'business-detail' related_business.pk %}">{{ related_business.name }}</a></h3>
-                    <p>{{ related_business.address }}</p>
-                </div>
-            {% endfor %}
         </div>
-    </div>
 
-    <!-- Social Sharing -->
-    <div class="social-sharing">
-        <h3>Share This Business</h3>
-        <div class="social-buttons">
-            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="social-button facebook" title="Share on Facebook" aria-label="Share on Facebook">
-                <i class="fab fa-facebook-f"></i>
+        <!-- Call and Website Buttons -->
+        <div class="call-to-action">
+            <a href="tel:{{ business.phone_number }}" class="action-button" aria-label="Call {{ business.name }}">
+                <i class="fas fa-phone"></i> Call
             </a>
-            <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text=Check out this business: {{ business.name }}" target="_blank" class="social-button twitter" title="Share on Twitter" aria-label="Share on Twitter">
-                <i class="fab fa-twitter"></i>
-            </a>
-            <a href="https://wa.me/?text=Check out this business: {{ request.build_absolute_uri }}" target="_blank" class="social-button whatsapp" title="Share on WhatsApp" aria-label="Share on WhatsApp">
-                <i class="fab fa-whatsapp"></i>
-            </a>
+            {% if business.website %}
+                <a href="{{ business.website }}" target="_blank" rel="noopener noreferrer" class="action-button" aria-label="Visit {{ business.name }} website">
+                    
+                    <i class="fas fa-globe"></i> Visit Website
+                </a>
+            {% endif %}
         </div>
-    </div>
 
-    <!-- Business Rating -->
-    <div class="business-rating">
-        <span class="stars">
-            {% if business.average_rating %}
-                {% for _ in "12345" %}
-                    {% if forloop.counter <= business.average_rating %}
-                        ★
-                    {% else %}
-                        ☆
+        <!-- Business Description -->
+        <p><strong>Description:</strong> {{ business.description|safe }}</p>
+
+        <!-- Related Businesses -->
+        <div class="related-businesses">
+            <h2>Related Businesses</h2>
+            <div class="related-list">
+                {% for related_business in related_businesses %}
+                    {% if related_business.category == business.category %}
+                        <div class="related-item">
+                            <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }} Logo" loading="lazy">
+                            <h3><a href="{% url 'business-detail' related_business.pk %}">{{ related_business.name }}</a></h3>
+                            <p>{{ related_business.address }}</p>
+                        </div>
                     {% endif %}
                 {% endfor %}
-            {% else %}
-                No ratings yet
-            {% endif %}
-        </span>
-        <span class="review-count">({{ business.review_count }} reviews)</span>
-    </div>
-
-    <!-- User Reviews -->
-    <div class="user-reviews">
-        <h2>User Reviews</h2>
-        {% for review in reviews %}
-            <div class="review-item">
-                <div class="review-rating">
-                    <span class="stars">
-                        {% for i in "12345" %}
-                            {% if forloop.counter <= review.rating %}
-                                ★
-                            {% else %}
-                                ☆
-                            {% endif %}
-                        {% endfor %}
-                    </span>
-                    <span class="review-date">{{ review.created_at|date:"M d, Y" }}</span>
-                </div>
-                {% if review.title %}
-                    <h3 class="review-title">{{ review.title }}</h3>
-                {% endif %}
-                <p class="review-comment">{{ review.comment }}</p>
-                <p class="review-author">- {{ review.user.username|default:"Anonymous" }}</p>
-                <p class="helpful-votes">Helpful Votes: {{ review.helpful_votes }}</p>
             </div>
-        {% endfor %}
+        </div>
 
-        <!-- Pagination -->
-        <div class="pagination">
-            <span class="step-links">
-                {% if reviews.has_previous %}
-                    <a href="?page=1" aria-label="First page">&laquo; first</a>
-                    <a href="?page={{ reviews.previous_page_number }}" aria-label="Previous page">previous</a>
-                {% endif %}
-                <span class="current">
-                    Page {{ reviews.number }} of {{ reviews.paginator.num_pages }}.
-                </span>
-                {% if reviews.has_next %}
-                    <a href="?page={{ reviews.next_page_number }}" aria-label="Next page">next</a>
-                    <a href="?page={{ reviews.paginator.num_pages }}" aria-label="Last page">last &raquo;</a>
+        <!-- Social Sharing -->
+        <div class="social-sharing">
+            <h3>Share This Business</h3>
+            <div class="social-buttons">
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="social-button facebook" title="Share on Facebook" aria-label="Share on Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text=Check out this business: {{ business.name }}" target="_blank" class="social-button twitter" title="Share on Twitter" aria-label="Share on Twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://wa.me/?text=Check out this business: {{ request.build_absolute_uri }}" target="_blank" class="social-button whatsapp" title="Share on WhatsApp" aria-label="Share on WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Business Rating -->
+        <div class="business-rating">
+            <span class="stars">
+                {% if business.average_rating %}
+                    {% for _ in "12345" %}
+                        {% if forloop.counter <= business.average_rating %}
+                            ★
+                        {% else %}
+                            ☆
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    No ratings yet
                 {% endif %}
             </span>
+            <span class="review-count">({{ business.review_count }} reviews)</span>
         </div>
-    </div>
 
-    <!-- Review Form -->
-    <div class="review-form">
-        <h2>Leave a Review</h2>
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="id_rating">Rating:</label>
-                {{ form.rating }}
-            </div>
-            <div class="form-group">
-                <label for="id_title">Title:</label>
-                {{ form.title }}
-            </div>
-            <div class="form-group">
-                <label for="id_comment">Comment:</label>
-                {{ form.comment }}
-            </div>
-            <button type="submit" aria-label="Submit review">Submit Review</button>
-        </form>
-    </div>
+        <!-- User Reviews -->
+        <div class="user-reviews">
+            <h2>User Reviews</h2>
+            {% for review in reviews %}
+                <div class="review-item">
+                    <div class="review-rating">
+                        <span class="stars">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                    ★
+                                {% else %}
+                                    ☆
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        <span class="review-date">{{ review.created_at|date:"M d, Y" }}</span>
+                    </div>
+                    {% if review.title %}
+                        <h3 class="review-title">{{ review.title }}</h3>
+                    {% endif %}
+                    <p class="review-comment">{{ review.comment }}</p>
+                    <p class="review-author">- {{ review.user.username|default:"Anonymous" }}</p>
+                    <p class="helpful-votes">Helpful Votes: {{ review.helpful_votes }}</p>
+                </div>
+            {% endfor %}
 
-    <!-- Image Gallery -->
-    <div class="image-gallery">
-        <h2>Image Gallery</h2>
-        {% for image in business.images.all %}
-            <div class="gallery-item">
-                <img src="{{ image.thumbnail.url }}" alt="{{ image.caption|default:business.name }}" loading="lazy">
-                {% if image.caption %}
-                    <p class="caption">{{ image.caption }}</p>
-                {% endif %}
+            <!-- Pagination -->
+            <div class="pagination">
+                <span class="step-links">
+                    {% if reviews.has_previous %}
+                        <a href="?page=1" aria-label="First page">&laquo; first</a>
+                        <a href="?page={{ reviews.previous_page_number }}" aria-label="Previous page">previous</a>
+                    {% endif %}
+                    <span class="current">
+                        Page {{ reviews.number }} of {{ reviews.paginator.num_pages }}.
+                    </span>
+                    {% if reviews.has_next %}
+                        <a href="?page={{ reviews.next_page_number }}" aria-label="Next page">next</a>
+                        <a href="?page={{ reviews.paginator.num_pages }}" aria-label="Last page">last &raquo;</a>
+                    {% endif %}
+                </span>
             </div>
-        {% empty %}
-            <p>No images available for this business.</p>
-        {% endfor %}
+        </div>
+
+        <!-- Review Form -->
+        <div class="review-form">
+            <h2>Leave a Review</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_rating">Rating (1-5):</label>
+                    {{ form.rating }}
+                    <div class="rating-info">Rate this business from 1 (lowest) to 5 (highest).</div>
+                </div>
+                <div class="form-group">
+                    <label for="id_title">Title:</label>
+                    {{ form.title }}
+                </div>
+                <div class="form-group">
+                    <label for="id_comment">Comment:</label>
+                    {{ form.comment }}
+                </div>
+                <button type="submit" aria-label="Submit review">Submit Review</button>
+            </form>
+        </div>
+
+        <!-- Image Gallery -->
+        <div class="image-gallery">
+            <h2>Image Gallery</h2>
+            {% for image in business.images.all %}
+                <div class="gallery-item">
+                    <img src="{{ image.thumbnail.url }}" alt="{{ image.caption|default:business.name }}" loading="lazy">
+                    {% if image.caption %}
+                        <p class="caption">{{ image.caption }}</p>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p>No images available for this business.</p>
+            {% endfor %}
+        </div>
     </div>
 
     <!-- Service Worker Registration -->
