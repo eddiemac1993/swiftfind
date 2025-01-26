@@ -9,11 +9,14 @@ from weasyprint import HTML
 
 @login_required
 def product_list(request):
-    # Get the business associated with the logged-in user
     business = get_object_or_404(Business, owner=request.user)
-    # Fetch products for the business
     products = Product.objects.filter(business=business)
-    return render(request, 'pos/product_list.html', {'products': products})
+    cart = request.session.get('cart', {})
+    cart_total_items = sum(cart.values())
+    return render(request, 'pos/product_list.html', {
+        'products': products,
+        'cart_total_items': cart_total_items,
+    })
 
 @login_required
 def add_product(request):

@@ -314,10 +314,10 @@
       <span class="notification-badge">{{ cart.total_items }}</span>
     {% endif %}
   </a>
-  <a href="{% url 'add-business' %}" title="Add Business" aria-label="Add Business">
-    <i class="fas fa-plus"></i>
-    <span>Add Business</span>
-  </a>
+    <a href="{% url 'create_paper' %}" title="Create Paper">
+        <i class="fas fa-file-alt"></i>
+        <span>Paper</span>
+    </a>
   <a href="{% url 'product_list' %}" title="Create Paper" aria-label="Create Paper">
     <i class="fas fa-cash-register"></i>
     <span>POS System</span>
