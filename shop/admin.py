@@ -45,11 +45,3 @@ class PaymentAdmin(admin.ModelAdmin):
     list_filter = ('payment_type', 'payment_date')
     search_fields = ('request__shop__name', 'request__item__name')
     readonly_fields = ('payment_date', 'created_at', 'updated_at')
-
-# Register Balance model
-@admin.register(Balance)
-class BalanceAdmin(admin.ModelAdmin):
-    list_display = ('shop', 'total_amount', 'amount_paid', 'amount_due')
-    list_filter = ('shop__name',)
-    search_fields = ('shop__name',)
-    readonly_fields = ('created_at', 'updated_at')

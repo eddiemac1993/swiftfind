@@ -11,21 +11,21 @@ from .forms import ShopForm, RequestForm, PaymentForm
 def profile(request):
     # Get the shop associated with the logged-in user
     shop = Shop.objects.get(user=request.user)
-    
+
     # Get or create the balance for the shop
     balance, created = Balance.objects.get_or_create(shop=shop, defaults={
         'total_amount': 0,
         'amount_paid': 0,
         'amount_due': 0,
     })
-    
+
     # Pass the balance and shop details to the template
     context = {
         'shop': shop,
         'balance': balance,
     }
     return render(request, 'profile.html', context)
-    
+
 # Item List Page
 def item_list(request, category_slug=None):
     category = None
@@ -90,13 +90,13 @@ def view_request(request):
 @login_required
 def download_request_pdf(request):
     cart = get_object_or_404(Cart, user=request.user)
-    
+
     # Render the request details to HTML
     html_string = render_to_string('request_pdf.html', {'cart': cart})
-    
+
     # Generate the PDF
     pdf_file = HTML(string=html_string).write_pdf()
-    
+
     # Return the PDF as a response
     response = HttpResponse(pdf_file, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="request_{cart.id}.pdf"'
@@ -123,7 +123,7 @@ def create_request(request):
 # Request Detail (Optional)
 def request_detail(request, pk):
     request_obj = get_object_or_404(Request, pk=pk)
-    return render(request, 'shop/request_detail.html', {'request_obj': request_obj})
+    return render(request, 'request_detail.html', {'request_obj': request_obj})
 
 # Make Payment (Optional)
 def make_payment(request, request_id):

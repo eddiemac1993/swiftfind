@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'channels',
     'shop',
+    'pos',
 ]
 
 # Specify the ASGI application

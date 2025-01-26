@@ -1,5 +1,5 @@
-<!-- shop/templates/shop/request_pdf.html -->
-<!DOCTYPE html>
+{% load custom_filters %}
+{% load humanize %}
 <html>
 <head>
   <title>Request #{{ cart.id }}</title>
@@ -9,6 +9,20 @@
     table { width: 100%; border-collapse: collapse; }
     th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
     th { background-color: #f2f2f2; }
+    .payment-box { 
+      margin-top: 20px; 
+      padding: 10px; 
+      border: 1px solid #000; 
+      width: 30%; 
+      display: inline-block; 
+      text-align: center; 
+    }
+    .payment-box h3 { margin: 0; }
+    .signature-box { 
+      margin-top: 10px; 
+      height: 50px; 
+      border: 1px solid #000; 
+    }
   </style>
 </head>
 <body>
@@ -28,12 +42,29 @@
         <tr>
           <td>{{ item.item.name }}</td>
           <td>{{ item.quantity }}</td>
-          <td>K{{ item.item.price }}</td>
-          <td>K{{ item.total_price }}</td>
+          <td>K{{ item.item.price|intcomma }}</td>
+          <td>K{{ item.total_price|intcomma }}</td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
-  <p><strong>Total:</strong> K{{ cart.total_price }}</p>
+  <p><strong>Total:</strong> K{{ cart.total_price|intcomma }}</p>
+
+  <!-- Payment Boxes -->
+  <div class="payment-box">
+    <h3>40% Payment</h3>
+    <p>K{{ cart.total_price|multiply:0.4|intcomma }}</p>
+    <div class="signature-box"></div>
+  </div>
+  <div class="payment-box">
+    <h3>30% Payment</h3>
+    <p>K{{ cart.total_price|multiply:0.3|intcomma }}</p>
+    <div class="signature-box"></div>
+  </div>
+  <div class="payment-box">
+    <h3>30% Payment</h3>
+    <p>K{{ cart.total_price|multiply:0.3|intcomma }}</p>
+    <div class="signature-box"></div>
+  </div>
 </body>
 </html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <style>
+        .cart-list {
+            list-style: none;
+            padding: 0;
+        }
+        .cart-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .total {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1><i class="fas fa-shopping-cart"></i> Cart</h1>
+    <ul class="cart-list">
+        {% for item in cart_items %}
+            <li class="cart-item">
+                <strong>{{ item.product.name }}</strong> - {{ item.quantity }} x ${{ item.product.price }} = ${{ item.total_price }}
+            </li>
+        {% endfor %}
+    </ul>
+    <p class="total">Total Amount: ${{ total_amount }}</p>
+    <form method="post" action="{% url 'process_sale' %}">
+        {% csrf_token %}
+        <button type="submit">Process Sale</button>
+    </form>
+    <a href="{% url 'clear_cart' %}">Clear Cart</a>
+    <a href="{% url 'product_list' %}">Back to Products</a>
+</body>
+</html>
