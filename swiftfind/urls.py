@@ -9,8 +9,10 @@ urlpatterns = [
     path('paper/', include('paper.urls')),
     path('shop/', include('shop.urls')),
     path('pos/', include('pos.urls')),
+    path('posts/', include('posts.urls')),
 
     path('accounts/', include('django.contrib.auth.urls')),
+
 ]
 # Serve static and media files during development
 if settings.DEBUG:

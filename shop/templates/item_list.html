@@ -314,18 +314,27 @@
       <span class="notification-badge">{{ cart.total_items }}</span>
     {% endif %}
   </a>
-    <a href="{% url 'create_paper' %}" title="Create Paper">
-        <i class="fas fa-file-alt"></i>
-        <span>Paper</span>
-    </a>
-  <a href="{% url 'product_list' %}" title="Create Paper" aria-label="Create Paper">
+  <a href="{% url 'create_paper' %}" title="Create Paper">
+    <i class="fas fa-file-alt"></i>
+    <span>Paper</span>
+  </a>
+  <a href="{% url 'product_list' %}" title="POS System" aria-label="POS System">
     <i class="fas fa-cash-register"></i>
     <span>POS System</span>
   </a>
- <a href="{% url 'profile' %}">
-      <i class="fas fa-user"></i> Profile
+  {% if user.is_authenticated %}
+    <a href="{% url 'profile' %}" title="Profile">
+      <i class="fas fa-user"></i>
+      <span>Profile</span>
     </a>
+  {% else %}
+    <a href="{% url 'login' %}" title="Login">
+      <i class="fas fa-sign-in-alt"></i>
+      <span>Login</span>
+    </a>
+  {% endif %}
 </nav>
+
 
 <script>
   // Filter items by category

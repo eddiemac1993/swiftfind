@@ -7,6 +7,11 @@ from django.http import HttpResponse
 from django.template.loader import render_to_string
 from weasyprint import HTML
 
+
+def custom_logout(request):
+    # Render a custom logout confirmation page
+    return render(request, 'registration/logout.html')
+
 @login_required
 def product_list(request):
     business = get_object_or_404(Business, owner=request.user)

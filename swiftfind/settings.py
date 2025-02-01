@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'channels',
     'shop',
     'pos',
+    'posts',
 ]
 
 # Specify the ASGI application
@@ -150,5 +151,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # settings.py
 
 LOGIN_URL = 'login'  # This should match the name of the login URL
-LOGIN_REDIRECT_URL = 'business-list'  # Redirect after successful login
-LOGOUT_REDIRECT_URL = 'business-list'  # Redirect after logout
+# Redirect to this URL after login
+LOGIN_REDIRECT_URL = 'product_list'
+
+# Redirect to this URL after logout
+LOGOUT_REDIRECT_URL = 'login'  # Redirect to the login page after logout

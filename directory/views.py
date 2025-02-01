@@ -36,6 +36,12 @@ def add_business(request):
 from django.db.models import Q
 from .models import SearchQuery  # Import the SearchQuery model
 
+from django.db.models import Q, Count, Avg
+from django.core.paginator import Paginator
+from django.utils import timezone
+from django.shortcuts import render
+from .models import SearchQuery, Business, Category  # Import your models
+
 def business_list(request):
     # Get search query, category filter, and sort_by parameter from the request
     query = request.GET.get('q')
@@ -99,6 +105,9 @@ def business_list(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    # Get the number of businesses on the current page
+    businesses_count_on_page = len(page_obj.object_list)
+
     # Get all categories for the filter dropdown
     categories = Category.objects.all()
 
@@ -110,6 +119,7 @@ def business_list(request):
         'city': city,
         'selected_category': category,
         'sort_by': sort_by,  # Pass the selected sort_by value to the template
+        'businesses_count_on_page': businesses_count_on_page,  # Pass the count of businesses on the current page
     })
 
 from django.shortcuts import render, get_object_or_404

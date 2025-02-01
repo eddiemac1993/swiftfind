@@ -1,0 +1,226 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ post.title }} - SwiftFind</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --accent-gradient: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .dark-mode {
+            --background: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin: 0;
+            padding: 2rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .post-header {
+            margin-bottom: 2rem;
+        }
+
+        .post-header h1 {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 2rem;
+            margin: 0 0 1rem 0;
+        }
+
+        .post-header h1 i {
+            color: var(--primary-color);
+        }
+
+        .post-description {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .post-stats {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .post-stats i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        .comments-section {
+            margin-top: 3rem;
+        }
+
+        .comments-section h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .comments-section h3 i {
+            color: var(--primary-color);
+        }
+
+        .comment {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .comment p {
+            margin: 0 0 1rem 0;
+        }
+
+        .comment-form {
+            margin-bottom: 2rem;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 1rem;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            background: var(--accent-gradient);
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .reply-form {
+            margin-top: 1rem;
+            margin-left: 2rem;
+            padding-left: 1rem;
+            border-left: 2px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .post-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .post-stats {
+                flex-wrap: wrap;
+            }
+
+            .vote-buttons {
+                flex-direction: column;
+            }
+
+            .vote-buttons a {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <article class="post-header">
+            <h1><i class="fa-solid fa-file-alt"></i> {{ post.title }}</h1>
+            <p class="post-description">{{ post.description }}</p>
+            <div class="post-stats">
+                <span><i class="fa-solid fa-eye"></i> {{ post.views }} views</span>
+            </div>
+        </article>
+
+        <section class="comments-section">
+            <h3><i class="fa-solid fa-comments"></i> Comments</h3>
+            {% for comment in comments %}
+                <div class="comment">
+                    <p>{{ comment.content }}</p>
+                </div>
+            {% endfor %}
+
+            <h3><i class="fa-solid fa-comment"></i> Add a Comment</h3>
+            <form method="post" class="comment-form">
+                {% csrf_token %}
+                <textarea name="content" placeholder="Write your comment..."></textarea>
+                <button type="submit">
+                    <i class="fa-solid fa-paper-plane"></i> Submit
+                </button>
+            </form>
+        </section>
+    </div>
+
+    <script>
+        // Add dark mode toggle if needed
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+        if (prefersDark.matches) {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+</body>
+</html>

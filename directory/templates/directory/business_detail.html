@@ -86,7 +86,7 @@
             flex-wrap: wrap;
             gap: 1rem;
             margin: 1.5rem 0;
-            justify-content: center; /* Center buttons on smaller screens */
+            justify-content: center;
         }
 
         .action-button {
@@ -101,39 +101,199 @@
             text-decoration: none;
             transition: background-color 0.2s ease;
             text-align: center;
-            flex: 1 1 150px; /* Allow buttons to grow and shrink */
+            flex: 1 1 150px;
         }
 
         .action-button:hover {
             background-color: var(--primary-hover);
-            text-decoration: none;
         }
 
-        /* Related Businesses Grid */
-        .related-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
+        /* Related Businesses */
+/* Related Businesses Section */
+.related-businesses {
+    margin-top: 2rem;
+}
+
+.related-businesses h2 {
+    font-size: clamp(1.25rem, 4vw, 2rem);
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.business-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.business-item {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--shadow);
+    color: white; /* White text for the card */
+    text-decoration: none; /* Remove text decoration */
+}
+
+.business-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.business-logo img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.business-details {
+    padding: 1rem;
+}
+
+.business-details h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: white; /* White text for the title */
+}
+
+.business-details p {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.8); /* Slightly transparent white text */
+}
+
+.business-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.stars {
+    color: #f6ad55; /* Gold color for stars */
+}
+
+.review-count {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.8); /* Slightly transparent white text */
+}
+
+/* Reviews Section */
+.user-reviews {
+    margin-top: 2rem;
+}
+
+.review-item {
+    background-color: var(--card-bg);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary); /* Default text color for reviews */
+}
+
+.review-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.review-rating .stars {
+    color: #f6ad55; /* Gold color for stars */
+}
+
+.review-date {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.review-title {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.review-comment {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.review-author {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.helpful-votes {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+        .business-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
         }
 
-        .related-item {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            transition: transform 0.2s ease;
+        .stars {
+            color: #f6ad55; /* Gold color for stars */
         }
 
-        .related-item:hover {
-            transform: translateY(-4px);
+        .review-count {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.8); /* Slightly transparent white text */
         }
 
         /* Reviews Section */
+        .user-reviews {
+            margin-top: 2rem;
+        }
+
         .review-item {
             background-color: var(--card-bg);
             border-radius: var(--border-radius);
-            padding: 1.5rem;
+            padding: 1rem;
             margin-bottom: 1rem;
+            color: var(--text-primary); /* Default text color for reviews */
+        }
+
+        .review-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .review-rating .stars {
+            color: #f6ad55; /* Gold color for stars */
+        }
+
+        .review-date {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .review-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .review-comment {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .review-author {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .helpful-votes {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
         }
 
         /* Review Form */
@@ -187,146 +347,102 @@
         .review-form button:hover {
             background-color: var(--primary-hover);
         }
-/* Social Sharing */
-.social-sharing {
-    margin-top: 2rem;
-    text-align: center;
-}
 
-.social-sharing h3 {
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
-}
 
-.social-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-}
-
-.social-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    color: white;
-    text-decoration: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.social-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.social-button.facebook {
-    background-color: #1877f2; /* Facebook blue */
-}
-
-.social-button.twitter {
-    background-color: #1da1f2; /* Twitter blue */
-}
-
-.social-button.whatsapp {
-    background-color: #25d366; /* WhatsApp green */
-}
-
-/* Fixed Buttons */
-.fixed-buttons {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    z-index: 1000;
-}
-
-.rounded-button {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    box-shadow: var(--shadow);
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-}
-
-.rounded-button:hover {
-    background-color: var(--primary-hover);
-}
-
-/* Dark Mode Toggle */
-.theme-toggle {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 3rem;
-    height: 3rem;
-    cursor: pointer;
-    font-size: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--shadow);
-    transition: background-color 0.2s ease;
-}
-
-.theme-toggle:hover {
-    background-color: var(--primary-hover);
-}
-        .rating-info {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-        }
-
-        /* Image Gallery */
-        .image-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1rem;
+        /* Social Sharing */
+        .social-sharing {
             margin-top: 2rem;
+            text-align: center;
         }
 
-        .gallery-item img {
-            width: 100%;
-            height: auto;
-            border-radius: var(--border-radius);
-            aspect-ratio: 16/9;
-            object-fit: cover;
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
         }
 
-        /* Responsive Typography */
-        h1 {
-            font-size: clamp(1.5rem, 5vw, 2.5rem);
-            margin-bottom: 1rem;
+        .social-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        h2 {
-            font-size: clamp(1.25rem, 4vw, 2rem);
-            margin: 2rem 0 1rem;
+        .social-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        /* Utility Classes */
-        .text-secondary {
-            color: var(--text-secondary);
+        .social-button.facebook {
+            background-color: #1877f2;
         }
 
-        .mt-2 { margin-top: 2rem; }
-        .mb-2 { margin-bottom: 2rem; }
+        .social-button.twitter {
+            background-color: #1da1f2;
+        }
+
+        .social-button.whatsapp {
+            background-color: #25d366;
+        }
+
+        /* Fixed Buttons */
+        .fixed-buttons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .rounded-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            box-shadow: var(--shadow);
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .rounded-button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            transition: background-color 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--primary-hover);
+        }
     </style>
 </head>
 <body>
@@ -364,7 +480,6 @@
             </a>
             {% if business.website %}
                 <a href="{{ business.website }}" target="_blank" rel="noopener noreferrer" class="action-button" aria-label="Visit {{ business.name }} website">
-                    
                     <i class="fas fa-globe"></i> Visit Website
                 </a>
             {% endif %}
@@ -374,34 +489,42 @@
         <p><strong>Description:</strong> {{ business.description|safe }}</p>
 
         <!-- Related Businesses -->
+<!-- Related Businesses -->
+        <!-- Related Businesses -->
         <div class="related-businesses">
             <h2>Related Businesses</h2>
-            <div class="related-list">
+            <div class="business-list">
                 {% for related_business in related_businesses %}
                     {% if related_business.category == business.category %}
-                        <div class="related-item">
-                            <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }} Logo" loading="lazy">
-                            <h3><a href="{% url 'business-detail' related_business.pk %}">{{ related_business.name }}</a></h3>
-                            <p>{{ related_business.address }}</p>
-                        </div>
+                        <a href="{% url 'business-detail' related_business.pk %}" class="business-item-link">
+                            <div class="business-item">
+                                <div class="business-logo">
+                                    <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }} Logo" loading="lazy">
+                                </div>
+                                <div class="business-details">
+                                    <h2>{{ related_business.name }}</h2>
+                                    {% if related_business.is_admin_added %}
+                                        <span class="admin-tick">✅verified</span>
+                                    {% endif %}
+                                    <p><strong>City:</strong> <i class="fas fa-map-marker-alt"></i> {{ related_business.city|capfirst }}</p>
+                                    <p><strong>Category:</strong> <i class="fas fa-tag"></i> {{ related_business.category.name }}</p>
+                                    <div class="business-rating">
+                                        <span class="stars">
+                                            {% for i in "12345" %}
+                                                {% if i|add:0 <= related_business.rating %}
+                                                    ★
+                                                {% else %}
+                                                    ☆
+                                                {% endif %}
+                                            {% endfor %}
+                                        </span>
+                                        <span class="review-count">({{ related_business.reviews.count }} reviews)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
                     {% endif %}
                 {% endfor %}
-            </div>
-        </div>
-
-        <!-- Social Sharing -->
-        <div class="social-sharing">
-            <h3>Share This Business</h3>
-            <div class="social-buttons">
-                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="social-button facebook" title="Share on Facebook" aria-label="Share on Facebook">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text=Check out this business: {{ business.name }}" target="_blank" class="social-button twitter" title="Share on Twitter" aria-label="Share on Twitter">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href="https://wa.me/?text=Check out this business: {{ request.build_absolute_uri }}" target="_blank" class="social-button whatsapp" title="Share on WhatsApp" aria-label="Share on WhatsApp">
-                    <i class="fab fa-whatsapp"></i>
-                </a>
             </div>
         </div>
 
@@ -487,21 +610,6 @@
                 </div>
                 <button type="submit" aria-label="Submit review">Submit Review</button>
             </form>
-        </div>
-
-        <!-- Image Gallery -->
-        <div class="image-gallery">
-            <h2>Image Gallery</h2>
-            {% for image in business.images.all %}
-                <div class="gallery-item">
-                    <img src="{{ image.thumbnail.url }}" alt="{{ image.caption|default:business.name }}" loading="lazy">
-                    {% if image.caption %}
-                        <p class="caption">{{ image.caption }}</p>
-                    {% endif %}
-                </div>
-            {% empty %}
-                <p>No images available for this business.</p>
-            {% endfor %}
         </div>
     </div>
 

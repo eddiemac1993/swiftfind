@@ -119,14 +119,40 @@
     }
   }
 </style>
+<style>
+  .logout-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-size: 1rem;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .logout-link:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: white;
+  }
+
+  .logout-link i {
+    margin-right: 0.5rem;
+  }
+</style>
 
 <div class="profile-container">
   <!-- Profile Header -->
-  <header class="profile-header" aria-labelledby="profile-title">
-    <h1 id="profile-title">Profile</h1>
-    <hr>
-    <p>Welcome back, {{ shop.user.username }}! Here's your shop and balance information.</p>
-  </header>
+<header class="profile-header" aria-labelledby="profile-title">
+  <h1 id="profile-title">Profile</h1>
+  <hr>
+  <p>Welcome back, {{ shop.user.username }}! Here's your shop and balance information.</p>
+  <a href="{% url 'logouts' %}" class="logout-link" aria-label="Logout">
+    <i class="fas fa-sign-out-alt"></i> Logout
+  </a>
+</header>
+
 
   <!-- Shop Information -->
   <div class="shop-info">
