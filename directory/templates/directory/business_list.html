@@ -18,26 +18,25 @@
     <style>
         /* Global Variables */
         :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
             --background: #f8fafc;
             --card-bg: #ffffff;
             --text-primary: #1e293b;
             --text-secondary: #64748b;
             --border-color: #e2e8f0;
             --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --accent-gradient: linear-gradient(135deg, #3b82f6, #2563eb);
         }
 
-        /* Dark Mode Variables */
         .dark-mode {
-            --background: #1e293b;
-            --card-bg: #334155;
+            --background: #0f172a;
+            --card-bg: #1e293b;
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
-            --border-color: #475569;
+            --border-color: #334155;
             --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
         }
-
         /* Global Styles */
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -601,7 +600,7 @@
     <nav class="bottom-nav">
         <a href="{% url 'post_list' %}" title="Posts">
             <i class="fas fa-list"></i>
-            <span>View Posts</span>
+            <span>Freelancers</span>
         </a>
         <a href="{% url 'add-business' %}" title="Add Business">
             <i class="fas fa-plus"></i>

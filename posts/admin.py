@@ -1,19 +1,50 @@
 from django.contrib import admin
 from .models import Post, Comment
 
-# Define a custom admin class for Post
+class CommentInline(admin.TabularInline):
+    model = Comment
+    extra = 1  # Number of empty comment forms to display
+    fields = ('name', 'content', 'created_at')  # Fields to display in the inline
+    readonly_fields = ('created_at',)  # Make created_at read-only
+
+@admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('title', 'category', 'created_at', 'votes', 'views')  # List columns to display
-    search_fields = ('title', 'description')  # Enable search by title and description
-    list_filter = ('category', 'created_at')  # Filter posts by category and creation date
-    ordering = ('-created_at',)  # Order posts by creation date, descending
+    list_display = ('title', 'category', 'phone_number', 'views', 'votes', 'created_at')  # Fields to display in the list view
+    list_filter = ('category', 'created_at')  # Filters for the right sidebar
+    search_fields = ('title', 'description', 'phone_number')  # Searchable fields
+    prepopulated_fields = {'slug': ('title',)}  # Automatically populate slug from title
+    inlines = [CommentInline]  # Add comments as inline
 
-# Define a custom admin class for Comment
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'slug', 'description', 'category', 'phone_number')
+        }),
+        ('Statistics', {
+            'fields': ('views', 'votes'),
+            'classes': ('collapse',)  # Collapsible section
+        }),
+        ('Metadata', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)  # Collapsible section
+        }),
+    )
+
+    readonly_fields = ('created_at',)  # Make created_at read-only
+
+@admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('post', 'author', 'content', 'created_at', 'parent')  # List columns for comments
-    search_fields = ('content',)  # Enable search by comment content
-    list_filter = ('created_at',)  # Filter comments by creation date
+    list_display = ('name', 'post', 'content', 'created_at')  # Fields to display in the list view
+    list_filter = ('created_at', 'post')  # Filters for the right sidebar
+    search_fields = ('name', 'content', 'post__title')  # Searchable fields
 
-# Register the models with custom admin classes
-admin.site.register(Post, PostAdmin)
-admin.site.register(Comment, CommentAdmin)
+    fieldsets = (
+        (None, {
+            'fields': ('post', 'name', 'content')
+        }),
+        ('Metadata', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)  # Collapsible section
+        }),
+    )
+
+    readonly_fields = ('created_at',)  # Make created_at read-only

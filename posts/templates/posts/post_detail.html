@@ -4,7 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Post Detail - SwiftFind">
     <title>{{ post.title }} - SwiftFind</title>
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
@@ -32,194 +39,301 @@
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: var(--background);
+            margin: 0;
+            padding: 1rem;
             color: var(--text-primary);
             line-height: 1.6;
-            margin: 0;
-            padding: 2rem 1rem;
             transition: all 0.3s ease;
+            min-height: 100vh;
         }
 
-        .container {
+        .post-detail {
             max-width: 800px;
-            margin: 0 auto;
-            padding: 0 1rem;
+            margin: 6rem auto 2rem auto;
+            padding: 1rem;
         }
 
         .post-header {
-            margin-bottom: 2rem;
-        }
-
-        .post-header h1 {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 2rem;
-            margin: 0 0 1rem 0;
-        }
-
-        .post-header h1 i {
-            color: var(--primary-color);
-        }
-
-        .post-description {
-            font-size: 1.125rem;
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-            line-height: 1.7;
-        }
-
-        .post-stats {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .post-stats i {
-            color: var(--primary-color);
-            margin-right: 0.5rem;
-        }
-
-        .comments-section {
-            margin-top: 3rem;
-        }
-
-        .comments-section h3 {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.25rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .comments-section h3 i {
-            color: var(--primary-color);
-        }
-
-        .comment {
             background-color: var(--card-bg);
             border-radius: 1rem;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
             box-shadow: var(--shadow);
-            border: 1px solid var(--border-color);
+            border: 2px solid transparent;
+            background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+                        var(--accent-gradient) border-box;
         }
 
-        .comment p {
-            margin: 0 0 1rem 0;
-        }
-
-        .comment-form {
-            margin-bottom: 2rem;
-        }
-
-        textarea {
-            width: 100%;
-            padding: 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            background-color: var(--card-bg);
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 1rem;
-            resize: vertical;
-            min-height: 100px;
+        .post-header h1 {
+            font-size: 2rem;
             margin-bottom: 1rem;
+            color: var(--text-primary);
         }
 
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        .post-header .post-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
         }
 
-        button {
-            display: inline-flex;
+        .post-header .post-meta span {
+            display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 0.5rem;
+        }
+
+        .post-header .post-meta i {
+            color: var(--primary-color);
+        }
+
+        .post-header .post-description {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .post-header .post-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .post-header .post-actions button {
             background: var(--accent-gradient);
             color: white;
-            font-size: 0.875rem;
-            font-weight: 500;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
             cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        button:hover {
-            transform: translateY(-1px);
+            font-size: 0.875rem;
             box-shadow: var(--shadow);
+            transition: transform 0.2s ease;
         }
 
-        .reply-form {
+        .post-header .post-actions button:hover {
+            transform: scale(1.05);
+        }
+
+        .comments-section {
+            margin-top: 2rem;
+        }
+
+        .comments-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .comment {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .comment .comment-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .comment .comment-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .comment .comment-meta i {
+            color: var(--primary-color);
+        }
+
+        .comment .comment-content {
+            font-size: 1rem;
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment .reply-form {
             margin-top: 1rem;
-            margin-left: 2rem;
-            padding-left: 1rem;
-            border-left: 2px solid var(--border-color);
+            display: none;
         }
 
+        .comment .reply-form textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+            background-color: var(--background);
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .comment .reply-form button {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease;
+        }
+
+        .comment .reply-form button:hover {
+            transform: scale(1.05);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            cursor: pointer;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            transition: transform 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+        }
+
+        .icon-nav {
+            position: fixed;
+            top: 6rem;
+            right: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .icon-nav a {
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            cursor: pointer;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease;
+            text-decoration: none;
+        }
+
+        .icon-nav a:hover {
+            transform: scale(1.05);
+        }
+        
         @media (max-width: 768px) {
-            body {
-                padding: 1rem;
+            .post-detail {
+                margin: 4rem auto 2rem auto;
+            }
+            
+            .icon-nav {
+                top: 4rem;
+                right: 1rem;
+                gap: 0.75rem;
             }
 
-            .post-header h1 {
-                font-size: 1.5rem;
-            }
-
-            .post-stats {
-                flex-wrap: wrap;
-            }
-
-            .vote-buttons {
-                flex-direction: column;
-            }
-
-            .vote-buttons a {
-                width: 100%;
-                justify-content: center;
+            .icon-nav a {
+                width: 2.5rem;
+                height: 2.5rem;
+                font-size: 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <article class="post-header">
-            <h1><i class="fa-solid fa-file-alt"></i> {{ post.title }}</h1>
-            <p class="post-description">{{ post.description }}</p>
-            <div class="post-stats">
-                <span><i class="fa-solid fa-eye"></i> {{ post.views }} views</span>
+    <!-- Post Detail Section -->
+    <div class="post-detail">
+        <div class="post-header">
+            <h1>{{ post.title }}</h1>
+            <div class="post-meta">
+                <span><i class="fas fa-eye"></i> {{ post.views }} visits</span>
+                <span><i class="fas fa-tag"></i> {{ post.get_category_display }}</span>
             </div>
-        </article>
-
-        <section class="comments-section">
-            <h3><i class="fa-solid fa-comments"></i> Comments</h3>
-            {% for comment in comments %}
-                <div class="comment">
-                    <p>{{ comment.content }}</p>
-                </div>
-            {% endfor %}
-
-            <h3><i class="fa-solid fa-comment"></i> Add a Comment</h3>
-            <form method="post" class="comment-form">
-                {% csrf_token %}
-                <textarea name="content" placeholder="Write your comment..."></textarea>
-                <button type="submit">
-                    <i class="fa-solid fa-paper-plane"></i> Submit
-                </button>
-            </form>
-        </section>
+            <p class="post-description">
+                <i class="fas fa-phone"></i> {{ post.phone_number }}
+            </p>
+            <hr>
+            <p class="post-description">{{ post.description }}</p>
+        </div>
     </div>
+    <!-- Icon Navigation -->
+    <nav class="icon-nav">
+        <a href="{% url 'post_list' %}" class="rounded-button" title="Home">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <a href="{% url 'post_create' %}" title="Add Post">
+            <i class="fas fa-plus"></i>
+        </a>
+        <a href="{% url 'about' %}" title="About">
+            <i class="fas fa-info-circle"></i>
+        </a>
+    </nav>
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
 
     <script>
-        // Add dark mode toggle if needed
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-        if (prefersDark.matches) {
-            document.body.classList.add('dark-mode');
+        // Dark mode toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        const isDarkMode = localStorage.getItem('darkMode') === 'true';
+        if (isDarkMode) {
+            body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            themeToggle.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('darkMode', isDark);
+        });
+
+        // Toggle reply form
+        function toggleReplyForm(commentId) {
+            const replyForm = document.getElementById(`reply-form-${commentId}`);
+            replyForm.style.display = replyForm.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Voting functionality
+        function votePost(voteType) {
+            fetch(`/vote_post/{{ post.id }}/${voteType}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+            }).then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                }
+            });
         }
     </script>
 </body>

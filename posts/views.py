@@ -1,6 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count
 from .models import Post, Comment
+from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView
+from .forms import PostForm  # Ensure you have a form for post creation
+
+class PostCreateView(CreateView):
+    model = Post
+    form_class = PostForm  # Use a Django ModelForm for the post
+    template_name = 'posts/post_form.html'  # Ensure this template exists
+    success_url = reverse_lazy('post_list')
 
 # List posts with brief description
 def post_list(request):

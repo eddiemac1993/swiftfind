@@ -501,26 +501,6 @@
                                 <div class="business-logo">
                                     <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }} Logo" loading="lazy">
                                 </div>
-                                <div class="business-details">
-                                    <h2>{{ related_business.name }}</h2>
-                                    {% if related_business.is_admin_added %}
-                                        <span class="admin-tick">✅verified</span>
-                                    {% endif %}
-                                    <p><strong>City:</strong> <i class="fas fa-map-marker-alt"></i> {{ related_business.city|capfirst }}</p>
-                                    <p><strong>Category:</strong> <i class="fas fa-tag"></i> {{ related_business.category.name }}</p>
-                                    <div class="business-rating">
-                                        <span class="stars">
-                                            {% for i in "12345" %}
-                                                {% if i|add:0 <= related_business.rating %}
-                                                    ★
-                                                {% else %}
-                                                    ☆
-                                                {% endif %}
-                                            {% endfor %}
-                                        </span>
-                                        <span class="review-count">({{ related_business.reviews.count }} reviews)</span>
-                                    </div>
-                                </div>
                             </div>
                         </a>
                     {% endif %}
