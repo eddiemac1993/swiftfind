@@ -9,8 +9,6 @@ class CategoryChoices(Enum):
     SERVICE = 'service'
     RENT = 'rent'
     LOOKING_FOR = 'looking_for'
-    FOUND = 'found'
-    ASKING_FOR = 'asking_for'
 
     @classmethod
     def choices(cls):

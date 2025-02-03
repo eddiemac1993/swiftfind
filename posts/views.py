@@ -13,7 +13,7 @@ class PostCreateView(CreateView):
 
 # List posts with brief description
 def post_list(request):
-    posts = Post.objects.annotate(comment_count=Count('comments'))
+    posts = Post.objects.annotate(comment_count=Count('comments')).order_by('-created_at')
     return render(request, 'posts/post_list.html', {'posts': posts})
 
 # Detailed view with full description, voting, and comments

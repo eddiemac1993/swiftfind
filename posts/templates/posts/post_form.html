@@ -241,9 +241,27 @@
             <!-- Phone Number Field -->
             <div class="form-group">
                 <label for="id_phone_number">Phone Number</label>
-                <input type="text" id="id_phone_number" name="phone_number" value="{{ form.phone_number.value|default:'' }}">
+                <input type="text" id="id_phone_number" name="phone_number" value="{{ form.phone_number.value|default:'' }}" pattern="[0-9]{10}" placeholder="Enter a 10-digit phone number">
                 {% if form.phone_number.errors %}
                     <div class="error-message">{{ form.phone_number.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Location Field -->
+            <div class="form-group">
+                <label for="id_location">Location</label>
+                <input type="text" id="id_location" name="location" value="{{ form.location.value|default:'' }}" placeholder="Enter the location (optional)">
+                {% if form.location.errors %}
+                    <div class="error-message">{{ form.location.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Price Range Field -->
+            <div class="form-group">
+                <label for="id_price_range">Price Range</label>
+                <input type="text" id="id_price_range" name="price_range" value="{{ form.price_range.value|default:'' }}" placeholder="Enter the price range (optional)">
+                {% if form.price_range.errors %}
+                    <div class="error-message">{{ form.price_range.errors }}</div>
                 {% endif %}
             </div>
 

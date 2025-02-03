@@ -125,7 +125,7 @@
             border-radius: 0.5rem;
             padding: 0.5rem 1rem;
             cursor: pointer;
-            font-size: 0.875rem;
+            font-size: 0.6rem;
             box-shadow: var(--shadow);
             transition: transform 0.2s ease;
         }
@@ -247,7 +247,7 @@
 
         .icon-nav {
             position: fixed;
-            top: 6rem;
+            top: 12rem;
             right: 1.5rem;
             display: flex;
             flex-direction: column;
@@ -288,6 +288,32 @@
             align-items: center;
             gap: 5px;
         }
+.post-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 5px 0;
+}
+
+.location {
+    font-size: 14px;
+    color: #555;
+    background-color: #f3f3f3;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.price-range {
+    font-size: 14px;
+    font-weight: bold;
+    color: #27ae60; /* Green for emphasis */
+    background-color: #eaf7eb;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
 
         @media (max-width: 768px) {
             .search-bar {
@@ -295,18 +321,18 @@
                 gap: 0.5rem;
                 padding: 0.5rem;
             }
-            
+
             .search-bar input {
                 max-width: 100%;
             }
-            
+
             .category-filter {
                 width: 100%;
                 justify-content: center;
             }
-            
+
             .icon-nav {
-                top: 4rem;
+                top: 10rem;
                 right: 1rem;
                 gap: 0.75rem;
             }
@@ -324,7 +350,8 @@
     <!-- Hero Section -->
     <div class="hero">
         <h1>Welcome to Freelancers</h1>
-        <p>Find jobs, services, and opportunities. Post your offers and connect with others.</p>
+           <p>Find jobs, services, rentals, and opportunities. Post your offers and connect with the right people.</p>
+
         <a href="{% url 'post_create' %}" class="cta-button">Post an Offer</a>
     </div>
 
@@ -335,6 +362,8 @@
             <button onclick="filterPosts('all')" class="active">All</button>
             <button onclick="filterPosts('job')">Job</button>
             <button onclick="filterPosts('service')">Service</button>
+            <button onclick="filterPosts('rent')">Rent</button>
+            <button onclick="filterPosts('looking_for')">Looking For</button>
         </div>
     </div>
 
@@ -353,10 +382,20 @@
                     <h2><a href="{% url 'post_detail' post.id %}">{{ post.title }}</a></h2>
                 </div>
                 <p class="post-description">{{ post.description|truncatewords:20 }}</p>
-                <div class="post-stats">
+               <div class="post-details">
+                    {% if post.location %}
+                        <span class="location"> <i class="fa fa-map-marker" aria-hidden="true"> </i> {{ post.location|upper }}</span>
+                    {% endif %}
+
+                    {% if post.price_range %}
+                        <span class="price-range">k {{ post.price_range }}</span>
+                    {% endif %}
+                </div>
+
+                    <div class="post-stats">
                     <span><i class="fa-solid fa-eye"></i> {{ post.views }} visits</span>
                     <span><i class="fa-solid fa-tag"></i> {{ post.get_category_display }}</span>
-                    
+
                 </div>
             </div>
         {% endfor %}

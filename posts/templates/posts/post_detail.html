@@ -246,12 +246,38 @@
         .icon-nav a:hover {
             transform: scale(1.05);
         }
-        
+.post-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 5px 0;
+}
+
+.location {
+    font-size: 14px;
+    color: #555;
+    background-color: #f3f3f3;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+.price-range {
+    font-size: 14px;
+    font-weight: bold;
+    color: #27ae60; /* Green for emphasis */
+    background-color: #eaf7eb;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+}
+
         @media (max-width: 768px) {
             .post-detail {
                 margin: 4rem auto 2rem auto;
             }
-            
+
             .icon-nav {
                 top: 4rem;
                 right: 1rem;
@@ -278,6 +304,16 @@
             <p class="post-description">
                 <i class="fas fa-phone"></i> {{ post.phone_number }}
             </p>
+            <div class="post-details">
+                {% if post.location %}
+                    <span class="location"> <i class="fa fa-map-marker" aria-hidden="true"> </i> {{ post.location|upper }}</span>
+                {% endif %}
+
+                {% if post.price_range %}
+                    <span class="price-range">K {{ post.price_range }}</span>
+                {% endif %}
+            </div>
+
             <hr>
             <p class="post-description">{{ post.description }}</p>
         </div>
