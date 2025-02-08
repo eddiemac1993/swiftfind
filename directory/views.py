@@ -33,94 +33,79 @@ def add_business(request):
     return render(request, 'directory/add_business.html', {'form': form})
 
 
-from django.db.models import Q
-from .models import SearchQuery  # Import the SearchQuery model
-
 from django.db.models import Q, Count, Avg
 from django.core.paginator import Paginator
 from django.utils import timezone
 from django.shortcuts import render
-from .models import SearchQuery, Business, Category  # Import your models
+from .models import SearchQuery, Business, Category
+import random
 
 def business_list(request):
-    # Get search query, category filter, and sort_by parameter from the request
     query = request.GET.get('q')
     city = request.GET.get('city', '')
     category = request.GET.get('category')
     sort_by = request.GET.get('sort_by')
 
-    # Log the search query if a query or filter is provided
     if query or city or category or sort_by:
-        # Check if an identical search query already exists
         search_query, created = SearchQuery.objects.get_or_create(
             query=query,
             city=city,
             category=category,
             sort_by=sort_by,
-            defaults={'timestamp': timezone.now()}  # Set the timestamp for new queries
+            defaults={'timestamp': timezone.now()}
         )
-
-        # If the query already exists, increment the count
         if not created:
             search_query.count += 1
             search_query.save()
 
-    # Start with all businesses and annotate with average rating and review count
     businesses = Business.objects.annotate(
-        average_rating=Avg('reviews__rating'),  # Calculate average rating
-        review_count=Count('reviews')           # Count reviews
+        average_rating=Avg('reviews__rating'),
+        review_count=Count('reviews')
     )
 
-    # Apply search filter
     if query:
         businesses = businesses.filter(
-            Q(name__icontains=query) |          # Search in name
-            Q(description__icontains=query) |   # Search in description
-            Q(address__icontains=query) |       # Search in address
-            Q(tags__name__icontains=query)      # Search in tags (if using django-taggit)
-        ).distinct()  # Use distinct() to avoid duplicate results
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(address__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
 
     if city:
         businesses = businesses.filter(city__icontains=city)
 
-    # Apply category filter
     if category:
         businesses = businesses.filter(category__name__icontains=category)
 
-    # Apply sorting based on the sort_by parameter
     if sort_by == 'rating':
-        businesses = businesses.order_by('-average_rating')  # Sort by average rating (highest to lowest)
+        businesses = businesses.order_by('-average_rating')
     elif sort_by == 'name':
-        businesses = businesses.order_by('name')  # Sort by name (A-Z)
+        businesses = businesses.order_by('name')
     elif sort_by == 'reviews':
-        businesses = businesses.order_by('-review_count')  # Sort by most reviewed
+        businesses = businesses.order_by('-review_count')
     elif sort_by == 'newest':
-        businesses = businesses.order_by('-created_at')  # Sort by newest (most recent first)
+        businesses = list(businesses)  # Convert queryset to list
+        random.shuffle(businesses)  # Shuffle the list
     else:
-        # Default sorting: newest first
-        businesses = businesses.order_by('-created_at')  # Newest businesses appear first by default
+        businesses = businesses.order_by('?')
 
-    # Paginate the results (10 businesses per page)
-    paginator = Paginator(businesses, 10)
+    paginator = Paginator(businesses, 100)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # Get the number of businesses on the current page
     businesses_count_on_page = len(page_obj.object_list)
-
-    # Get all categories for the filter dropdown
     categories = Category.objects.all()
 
-    # Render the template with the paginated results, categories, and other context variables
     return render(request, 'directory/business_list.html', {
         'page_obj': page_obj,
         'categories': categories,
         'query': query,
         'city': city,
         'selected_category': category,
-        'sort_by': sort_by,  # Pass the selected sort_by value to the template
-        'businesses_count_on_page': businesses_count_on_page,  # Pass the count of businesses on the current page
+        'sort_by': sort_by,
+        'businesses_count_on_page': businesses_count_on_page,
     })
+
 
 from django.shortcuts import render, get_object_or_404
 from .models import Business, Review, Category

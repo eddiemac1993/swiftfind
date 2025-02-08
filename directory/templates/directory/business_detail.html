@@ -498,9 +498,8 @@
                     {% if related_business.category == business.category %}
                         <a href="{% url 'business-detail' related_business.pk %}" class="business-item-link">
                             <div class="business-item">
-                                <div class="business-logo">
-                                    <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }} Logo" loading="lazy">
-                                </div>
+                                    <h3>{{ related_business.name }}</h3>
+                                    <p>{{ related_business.city }}</p>
                             </div>
                         </a>
                     {% endif %}
@@ -543,9 +542,7 @@
                         </span>
                         <span class="review-date">{{ review.created_at|date:"M d, Y" }}</span>
                     </div>
-                    {% if review.title %}
-                        <h3 class="review-title">{{ review.title }}</h3>
-                    {% endif %}
+
                     <p class="review-comment">{{ review.comment }}</p>
                     <p class="review-author">- {{ review.user.username|default:"Anonymous" }}</p>
                     <p class="helpful-votes">Helpful Votes: {{ review.helpful_votes }}</p>
@@ -581,8 +578,7 @@
                     <div class="rating-info">Rate this business from 1 (lowest) to 5 (highest).</div>
                 </div>
                 <div class="form-group">
-                    <label for="id_title">Title:</label>
-                    {{ form.title }}
+
                 </div>
                 <div class="form-group">
                     <label for="id_comment">Comment:</label>

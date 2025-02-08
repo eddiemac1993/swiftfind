@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Manage Equipment</h2>
+<a href="{% url 'add_equipment' %}" class="btn btn-primary">Add Equipment</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Brand</th>
+            <th>Condition</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for equipment in equipment_list %}
+        <tr>
+            <td>{{ equipment.name }}</td>
+            <td>{{ equipment.category.name }}</td>
+            <td>{{ equipment.brand }}</td>
+            <td>{{ equipment.condition }}</td>
+            <td>
+                <a href="{% url 'edit_equipment' equipment.pk %}">Edit</a>
+                <a href="{% url 'delete_equipment' equipment.pk %}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{% url 'dashboard' %}">Back to Dashboard</a>
+{% endblock %}

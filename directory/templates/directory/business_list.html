@@ -135,7 +135,6 @@
 
         /* Search and Filter Form */
         .search-form {
-            max-width: 800px;
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
@@ -242,7 +241,6 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    background-color: #48bb78;
     color: white;
     padding: 2px 8px;
     border-radius: 4px;
@@ -579,19 +577,7 @@
         <p class="no-results">Search for '<strong>{{ query }}</strong>' not found.</p>
     {% endif %}
 </div>
-
-    <!-- Pagination Controls -->
-    <div class="pagination">
-        {% if page_obj.has_previous %}
-            <a href="?page=1">First</a>
-            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
-        {% endif %}
-        <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-        {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">Next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
-        {% endif %}
-    </div>
+<br>
 <hr>
     <!-- Dark Mode Toggle -->
     <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
