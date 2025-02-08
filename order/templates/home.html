@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <title>Distribution Platform</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 dark:text-white">
+
+    <!-- Search and Cart Header -->
+    <div class="fixed top-0 w-full bg-white dark:bg-gray-800 shadow-md z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <form class="w-full max-w-xl" method="GET" action="{% url 'home' %}">
+                <input type="text" 
+                       name="search" 
+                       value="{{ search_query }}"
+                       placeholder="Search items..." 
+                       class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            </form>
+            <a href="{% url 'cart' %}" class="ml-4 relative">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                    {{ cart_count }}
+                </span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 pt-20">
+        <!-- Categories -->
+        <div class="my-6">
+            <h2 class="text-2xl font-bold mb-4">Categories</h2>
+            <div class="flex flex-wrap gap-2">
+                {% for category in categories %}
+                <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition" 
+                        onclick="filterByCategory('{{ category.id }}')">
+                    {{ category.name }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Items Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for item in items %}
+            <div class="bg-white rounded-lg shadow-md p-4 dark:bg-gray-800">
+                <h3 class="text-lg font-semibold">{{ item.name }}</h3>
+                <p class="text-gray-600 text-sm mt-2 dark:text-gray-400">{{ item.description }}</p>
+                <p class="text-gray-500 text-sm mt-2">Category: {{ item.category.name }}</p>
+                <p class="text-xl font-bold mt-2">K{{ item.selling_price }}</p>
+                <button onclick="addToCart({{ item.id }})" 
+                        class="w-full mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+                    Add to Cart
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            const htmlElement = document.documentElement;
+            if (htmlElement.classList.contains('dark')) {
+                htmlElement.classList.remove('dark');
+            } else {
+                htmlElement.classList.add('dark');
+            }
+        }
+
+        function addToCart(itemId) {
+            fetch('{% url "add_to_cart" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    item_id: itemId,
+                    quantity: 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('cart-count').textContent = data.cart_count;
+                }
+            });
+        }
+
+        // Function to filter items by category
+        function filterByCategory(categoryId) {
+            window.location.href = "{% url 'home' %}?category=" + categoryId;
+        }
+    </script>
+
+    <!-- Fixed Round Buttons -->
+    <div class="fixed bottom-4 right-4 space-y-4">
+        <!-- Dark Mode Button -->
+        <button onclick="toggleDarkMode()" class="bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m6.364 2.636l-.707-.707M21 12h-1m-2.636 6.364l.707-.707M12 21v1m-6.364-2.636l.707.707M3 12h1m2.636-6.364l-.707.707" />
+            </svg>
+        </button>
+
+        <!-- Business List Button -->
+        <a href="{% url 'business-list' %}">
+            <button class="bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18v18H3V3zm10 9l4-4m0 0l4 4m-4-4v12" />
+                </svg>
+            </button>
+        </a>
+    </div>
+
+</body>
+</html>

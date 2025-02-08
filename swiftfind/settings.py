@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'shop',
     'pos',
     'posts',
+    'order',
 ]
 
 # Specify the ASGI application

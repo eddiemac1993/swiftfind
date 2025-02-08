@@ -1,0 +1,8 @@
+<h1>Quotation</h1>
+<ul>
+    {% for item in cart.cartitem_set.all %}
+        <li>{{ item.item.name }} - {{ item.quantity }} x {{ item.item.selling_price }} = {{ item.total_price }}</li>
+    {% endfor %}
+</ul>
+<p>Total Amount: {{ cart.total_amount }}</p>
+<p>Send this quotation to WhatsApp: <a href="https://wa.me/260772447190?text=Here%20is%20my%20order%20quotation">Click here</a></p>

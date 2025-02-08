@@ -1,0 +1,105 @@
+
+<!-- cart.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shopping Cart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8">Shopping Cart</h1>
+        
+        {% if cart_items %}
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <!-- Cart Items -->
+            {% for cart_item in cart_items %}
+            <div class="flex items-center justify-between border-b py-4">
+                <div>
+                    <h3 class="text-lg font-semibold">{{ cart_item.item.name }}</h3>
+                    <p class="text-gray-600">K{{ cart_item.item.selling_price }} each</p>
+                </div>
+                <div class="flex items-center">
+                    <button onclick="updateQuantity({{ cart_item.item.id }}, {{ cart_item.quantity|add:'-1' }})" 
+                            class="px-3 py-1 bg-gray-200 rounded-l">-</button>
+                    <span class="px-4 py-1 bg-gray-100">{{ cart_item.quantity }}</span>
+                    <button onclick="updateQuantity({{ cart_item.item.id }}, {{ cart_item.quantity|add:'1' }})" 
+                            class="px-3 py-1 bg-gray-200 rounded-r">+</button>
+                </div>
+                <p class="font-semibold">K{{ cart_item.total_price }}</p>
+            </div>
+            {% endfor %}
+
+            <!-- Total -->
+            <div class="mt-6 text-right">
+                <p class="text-xl font-bold">Total: K<span id="cart-total">{{ cart.total_amount }}</span></p>
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-6 flex justify-end space-x-4">
+                <a href="{% url 'home' %}" class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
+                    Continue Shopping
+                </a>
+                <button onclick="generateQuotation()" 
+                        class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+                    Generate Quotation & Order
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <p class="text-xl text-gray-600">Your cart is empty</p>
+            <a href="{% url 'home' %}" class="mt-4 inline-block px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                Start Shopping
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function updateQuantity(itemId, newQuantity) {
+            fetch('{% url "update_cart" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    item_id: itemId,
+                    quantity: newQuantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            });
+        }
+
+        function generateQuotation() {
+            fetch('{% url "generate_quotation" %}', {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Open WhatsApp in new tab
+                    window.open(data.whatsapp_url, '_blank');
+                    
+                    // Create and download PDF
+                    var element = document.createElement('div');
+                    element.innerHTML = data.html_content;
+                    document.body.appendChild(element);
+                    window.print();
+                    document.body.removeChild(element);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
