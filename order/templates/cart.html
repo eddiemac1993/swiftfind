@@ -1,31 +1,82 @@
-
-<!-- cart.html -->
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en" class="dark">
 <head>
-    <title>Shopping Cart</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Distribution Platform">
+    <title>Shopping Cart</title>
+    
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {},
+            },
+        };
+
+        // Toggle Dark Mode
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark') ? 'enabled' : 'disabled');
+        }
+
+        // Set Dark Mode from Local Storage
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                document.documentElement.classList.add('dark');
+            }
+        });
+    </script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 dark:bg-gray-900 dark:text-white">
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold mb-8">Shopping Cart</h1>
-        
+        <!-- Header Section -->
+        <div class="flex items-center justify-between mb-6">
+            <!-- Back Button -->
+            <button onclick="history.back()" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition">
+                <i class="fas fa-arrow-left text-2xl"></i>
+            </button>
+            
+            <!-- Page Title -->
+            <h1 class="text-3xl font-bold flex items-center">
+                <i class="fas fa-shopping-cart mr-2"></i> Order Cart
+            </h1>
+
+            <!-- Dark Mode Toggle -->
+            <button onclick="toggleDarkMode()" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition">
+                <i class="fas fa-moon text-2xl"></i>
+            </button>
+        </div>
+
         {% if cart_items %}
-        <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <!-- Cart Items -->
             {% for cart_item in cart_items %}
-            <div class="flex items-center justify-between border-b py-4">
+            <div class="flex items-center justify-between border-b dark:border-gray-700 py-4">
                 <div>
                     <h3 class="text-lg font-semibold">{{ cart_item.item.name }}</h3>
-                    <p class="text-gray-600">K{{ cart_item.item.selling_price }} each</p>
+                    <p class="text-gray-600 dark:text-gray-400">K{{ cart_item.item.selling_price }} each</p>
                 </div>
                 <div class="flex items-center">
-                    <button onclick="updateQuantity({{ cart_item.item.id }}, {{ cart_item.quantity|add:'-1' }})" 
-                            class="px-3 py-1 bg-gray-200 rounded-l">-</button>
-                    <span class="px-4 py-1 bg-gray-100">{{ cart_item.quantity }}</span>
-                    <button onclick="updateQuantity({{ cart_item.item.id }}, {{ cart_item.quantity|add:'1' }})" 
-                            class="px-3 py-1 bg-gray-200 rounded-r">+</button>
+                    <button onclick="updateQuantity({{ cart_item.item.id }}, {{ cart_item.quantity|add:'-1' }})"
+                            class="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-l">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <span class="px-4 py-1 bg-gray-100 dark:bg-gray-600">{{ cart_item.quantity }}</span>
+                    <button onclick="updateQuantity({{ cart_item.item.id }}, {{ cart_item.quantity|add:'1' }})"
+                            class="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-r">
+                        <i class="fas fa-plus"></i>
+                    </button>
                 </div>
                 <p class="font-semibold">K{{ cart_item.total_price }}</p>
             </div>
@@ -38,20 +89,20 @@
 
             <!-- Actions -->
             <div class="mt-6 flex justify-end space-x-4">
-                <a href="{% url 'home' %}" class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">
-                    Continue Shopping
+                <a href="{% url 'home' %}" class="px-6 py-2 bg-gray-500 dark:bg-gray-600 text-white rounded-lg hover:bg-gray-600 dark:hover:bg-gray-500 transition flex items-center">
+                    <i class="fas fa-home mr-2"></i> Continue Ordering
                 </a>
-                <button onclick="generateQuotation()" 
-                        class="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
-                    Generate Quotation & Order
+                <button onclick="generateQuotation()"
+                        class="px-6 py-2 bg-green-500 dark:bg-green-600 text-white rounded-lg hover:bg-green-600 dark:hover:bg-green-500 transition flex items-center">
+                    <i class="fas fa-check mr-2"></i> Pdf Quotation
                 </button>
             </div>
         </div>
         {% else %}
         <div class="text-center py-8">
-            <p class="text-xl text-gray-600">Your cart is empty</p>
-            <a href="{% url 'home' %}" class="mt-4 inline-block px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
-                Start Shopping
+            <p class="text-xl text-gray-600 dark:text-gray-400">Your cart is empty</p>
+            <a href="{% url 'home' %}" class="mt-4 inline-block px-6 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-600 transition flex items-center">
+                <i class="fas fa-home mr-2"></i> Start Shopping
             </a>
         </div>
         {% endif %}
@@ -90,7 +141,7 @@
                 if (data.success) {
                     // Open WhatsApp in new tab
                     window.open(data.whatsapp_url, '_blank');
-                    
+
                     // Create and download PDF
                     var element = document.createElement('div');
                     element.innerHTML = data.html_content;
@@ -101,5 +152,8 @@
             });
         }
     </script>
+
+    <!-- Font Awesome for Icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
 </body>
 </html>
