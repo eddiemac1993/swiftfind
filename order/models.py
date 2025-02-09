@@ -16,7 +16,7 @@ class Item(models.Model):
 
     def save(self, *args, **kwargs):
         # Convert 1.20 to a Decimal to avoid TypeError
-        self.selling_price = self.base_price * Decimal("1.20")
+        self.selling_price = self.base_price * Decimal("1.30")
         super().save(*args, **kwargs)
 
     def __str__(self):

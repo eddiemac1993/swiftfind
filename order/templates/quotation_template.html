@@ -1,8 +1,105 @@
-<h1>Quotation</h1>
-<ul>
-    {% for item in cart.cartitem_set.all %}
-        <li>{{ item.item.name }} - {{ item.quantity }} x {{ item.item.selling_price }} = {{ item.total_price }}</li>
-    {% endfor %}
-</ul>
-<p>Total Amount: {{ cart.total_amount }}</p>
-<p>Send this quotation to WhatsApp: <a href="https://wa.me/260772447190?text=Here%20is%20my%20order%20quotation">Click here</a></p>
+{% load custom_filters %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quotation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9fafb;
+            padding: 20px;
+        }
+        .quotation-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        li:last-child {
+            border-bottom: none;
+        }
+        .total-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1f2937;
+            text-align: right;
+            margin-top: 20px;
+        }
+        .whatsapp-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #ffffff;
+            background-color: #25d366;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .whatsapp-link:hover {
+            background-color: #128c7e;
+        }
+        .payment-terms {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f3f4f6;
+            border-radius: 5px;
+        }
+        .payment-terms h2 {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        .payment-terms p {
+            margin: 5px 0;
+            color: #4b5563;
+        }
+    </style>
+</head>
+<body>
+    <div class="quotation-container">
+        <h1>SwiftFind | Quotation</h1>
+        <ul>
+            {% for item in cart.cartitem_set.all %}
+                <li>
+                    <span>{{ item.item.name }}</span>
+                    <span>{{ item.quantity }} x {{ item.item.selling_price|intcomma }}</span>
+                    <span>K {{ item.total_price|intcomma }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+        <p class="total-amount">Total Amount: K {{ cart.total_amount|intcomma }}</p>
+        
+        <!-- Payment Terms Section -->
+        <div class="payment-terms">
+            <h2>Payment Terms</h2>
+            <p><strong>50% upfront:</strong> K {{ cart.total_amount|multiply:0.5|intcomma }} (to be paid immediately)</p>
+            <p><strong>20% after one week:</strong> K {{ cart.total_amount|multiply:0.2|intcomma }} (to be paid after 7 days)</p>
+            <p><strong>30% after another week:</strong> K {{ cart.total_amount|multiply:0.3|intcomma }} (to be paid after 14 days)</p>
+        </div>
+    </div>
+</body>
+</html>

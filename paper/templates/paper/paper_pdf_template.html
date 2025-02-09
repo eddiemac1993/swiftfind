@@ -356,6 +356,12 @@
             <img src="{{ paper.signature.path }}" alt="Signature" class="signature">
         {% endif %}
     </div>
+    <div class="Received-by">
+        <p>Recevied By: </p>
+        {% if paper.signature %}
+            <img src="{{ paper.signature.path }}" alt="Signature" class="signature">
+        {% endif %}
+    </div>
 
     <!-- Footer Section -->
     <div class="footer">

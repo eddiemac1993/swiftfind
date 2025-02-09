@@ -7,15 +7,17 @@
     <meta name="theme-color" content="#000000">
     <meta name="description" content="Distribution Platform">
     <title>Shopping Cart</title>
-    
+
     <link rel="manifest" href="{% static 'manifest.json' %}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -36,6 +38,58 @@
                 document.documentElement.classList.add('dark');
             }
         });
+
+        function updateQuantity(itemId, newQuantity) {
+            fetch('{% url "update_cart" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    item_id: itemId,
+                    quantity: newQuantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            });
+        }
+
+        function generateQuotation() {
+            fetch('{% url "generate_quotation" %}', {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Open WhatsApp in new tab
+                    window.location.href = data.whatsapp_url;
+
+                    // Generate PDF
+                    generatePDF(data.html_content);
+                }
+            });
+        }
+
+        function generatePDF(htmlContent) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.html(htmlContent, {
+                callback: function (doc) {
+                    doc.save('quotation.pdf');
+                },
+                x: 10,
+                y: 10
+            });
+        }
     </script>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 dark:text-white">
@@ -46,7 +100,7 @@
             <button onclick="history.back()" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition">
                 <i class="fas fa-arrow-left text-2xl"></i>
             </button>
-            
+
             <!-- Page Title -->
             <h1 class="text-3xl font-bold flex items-center">
                 <i class="fas fa-shopping-cart mr-2"></i> Order Cart
@@ -94,7 +148,7 @@
                 </a>
                 <button onclick="generateQuotation()"
                         class="px-6 py-2 bg-green-500 dark:bg-green-600 text-white rounded-lg hover:bg-green-600 dark:hover:bg-green-500 transition flex items-center">
-                    <i class="fas fa-check mr-2"></i> Pdf Quotation
+                    <i class="fas fa-check mr-2"></i> Generate Quotation
                 </button>
             </div>
         </div>
@@ -107,51 +161,6 @@
         </div>
         {% endif %}
     </div>
-
-    <script>
-        function updateQuantity(itemId, newQuantity) {
-            fetch('{% url "update_cart" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({
-                    item_id: itemId,
-                    quantity: newQuantity
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                }
-            });
-        }
-
-        function generateQuotation() {
-            fetch('{% url "generate_quotation" %}', {
-                method: 'GET',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Open WhatsApp in new tab
-                    window.open(data.whatsapp_url, '_blank');
-
-                    // Create and download PDF
-                    var element = document.createElement('div');
-                    element.innerHTML = data.html_content;
-                    document.body.appendChild(element);
-                    window.print();
-                    document.body.removeChild(element);
-                }
-            });
-        }
-    </script>
 
     <!-- Font Awesome for Icons -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>

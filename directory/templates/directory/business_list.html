@@ -552,7 +552,9 @@
                     <div class="business-details">
                         <h2>{{ business.name }}</h2>
                         {% if business.is_admin_added %}
-                            <span class="admin-tick">✅verified</span>
+                            <span class="admin-tick">
+                                <i class="fa-solid fa-circle-check" style="color: green;"></i>Verified
+                            </span>
                         {% endif %}
 
                         <p><strong>City:</strong> <i class="fas fa-map-marker-alt"></i> {{ business.city|capfirst }}</p>
