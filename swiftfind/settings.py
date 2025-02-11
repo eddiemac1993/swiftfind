@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-=udh)je!ql09a_n0_g353ixb6qc=g+8y#$kgysq&yo7zj#bvxn
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["swiftfindzm.com", "www.swiftfindzm.com", '*']
 
 
 # Application definition
@@ -68,7 +68,11 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 ROOT_URLCONF = "swiftfind.urls"
 

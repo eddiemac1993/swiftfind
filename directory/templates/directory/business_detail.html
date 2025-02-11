@@ -5,8 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#000000">
-    <meta name="description" content="Business Directory PWA">
+    <meta name="description" content="Alkebulan">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ business.name }} - SwiftFind</title>
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link rel="manifest" href="/static/manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -155,13 +161,13 @@
 .business-details h2 {
     font-size: 1.25rem;
     margin-bottom: 0.5rem;
-    color: white; /* White text for the title */
+    color: var(--text-secondary);
 }
 
 .business-details p {
     font-size: 0.875rem;
     margin-bottom: 0.5rem;
-    color: rgba(255, 255, 255, 0.8); /* Slightly transparent white text */
+    color: var(--text-secondary);
 }
 
 .business-rating {
@@ -416,7 +422,46 @@
             transition: background-color 0.3s ease;
             text-decoration: none;
         }
+        /* Social Sharing Buttons */
+        .social-sharing {
+            margin-top: 2rem;
+            text-align: center;
+        }
 
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .social-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .social-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-button.facebook {
+            background-color: #1877f2; /* Facebook blue */
+        }
+
+        .social-button.whatsapp {
+            background-color: #25d366; /* WhatsApp green */
+        }
+
+        .social-button.sms {
+            background-color: #34b7f1; /* SMS blue */
+        }
         .rounded-button:hover {
             background-color: var(--primary-hover);
         }
@@ -485,6 +530,39 @@
                 </a>
             {% endif %}
         </div>
+        {% if business.is_admin_added %}
+            <!-- Social Sharing Section -->
+            <div class="social-sharing">
+                <h2>Share this business</h2>
+                <div class="social-buttons">
+                    <!-- Facebook Share Button -->
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}"
+                       target="_blank"
+                       class="social-button facebook"
+                       aria-label="Share on Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+
+                    <!-- WhatsApp Share Button -->
+                    <a href="https://wa.me/?text=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
+                       target="_blank"
+                       class="social-button whatsapp"
+                       aria-label="Share on WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+
+                    <!-- SMS Share Button -->
+                    <a href="sms:?body=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
+                       class="social-button sms"
+                       aria-label="Share via SMS">
+                        <i class="fas fa-comment-alt"></i>
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+        <br>
+        <hr>
+        <br>
         <!-- Business Description -->
         <p><strong>Description:</strong> {{ business.description|safe }}</p>
 
@@ -496,7 +574,7 @@
                     {% if related_business.category == business.category %}
                         <a href="{% url 'business-detail' related_business.pk %}" class="block bg-white dark:bg-gray-700 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200">
                             <div class="p-4">
-                                <h3 class="text-xl font-semibold mb-2">{{ related_business.name }}</h3>
+                                <h3 class="text-gray-600 dark:text-gray-300 text-xl font-semibold mb-2">{{ related_business.name }}</h3>
                                 <p class="text-gray-600 dark:text-gray-300">{{ related_business.city }}</p>
                             </div>
                         </a>

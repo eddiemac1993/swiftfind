@@ -12,15 +12,16 @@ class Item(models.Model):
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     base_price = models.DecimalField(max_digits=10, decimal_places=2)  # Supplier price
-    selling_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)  # Price with 20% markup
+    selling_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)  # Price with 30% markup
+    source = models.CharField(max_length=200, default="Unknown", help_text="Brand, restaurant, manufacturer, or shop name")
 
     def save(self, *args, **kwargs):
-        # Convert 1.20 to a Decimal to avoid TypeError
         self.selling_price = self.base_price * Decimal("1.30")
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.source})"
+
 
 class Cart(models.Model):
     items = models.ManyToManyField(Item, through='CartItem')

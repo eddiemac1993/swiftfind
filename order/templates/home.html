@@ -25,14 +25,14 @@
     </script>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 dark:text-white">
-    
+
     <div class="fixed top-0 w-full bg-white dark:bg-gray-800 shadow-md z-50">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <form class="w-full max-w-xl" method="GET" action="{% url 'home' %}">
-                <input type="text" 
-                       name="search" 
+                <input type="text"
+                       name="search"
                        value="{{ search_query }}"
-                       placeholder="Search items..." 
+                       placeholder="Search items..."
                        class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
             </form>
             <a href="{% url 'cart' %}" class="ml-4 relative">
@@ -44,33 +44,39 @@
         </div>
     </div>
 
-    <div class="container mx-auto px-4 pt-20">
-        <div class="my-6">
-            <h2 class="text-2xl font-bold mb-4">Categories</h2>
-            <div class="flex flex-wrap gap-2">
-                {% for category in categories %}
-                <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition" 
-                        onclick="filterByCategory('{{ category.id }}')">
-                    {{ category.name }}
-                </button>
-                {% endfor %}
-            </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {% for item in items %}
-            <div class="bg-white rounded-lg shadow-md p-4 dark:bg-gray-800">
-                <h3 class="text-lg font-semibold">{{ item.name }}</h3>
-                <p class="text-gray-600 text-sm mt-2 dark:text-gray-400">{{ item.description }}</p>
-                <p class="text-gray-500 text-sm mt-2">Category: {{ item.category.name }}</p>
-                <p class="text-xl font-bold mt-2">K{{ item.selling_price }}</p>
-                <button onclick="addToCart({{ item.id }})" 
-                        class="w-full mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
-                    Add to Cart
-                </button>
-            </div>
+<div class="container mx-auto px-4 pt-20">
+    <!-- Categories Section -->
+    <div class="my-4">
+        <h2 class="text-xl font-bold mb-4">Categories</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2"> <!-- Responsive grid -->
+            {% for category in categories %}
+            <button class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm text-center"
+                    onclick="filterByCategory('{{ category.id }}')">
+                {{ category.name }}
+            </button>
             {% endfor %}
         </div>
     </div>
+
+    <!-- Items Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {% for item in items %}
+        <div class="bg-white rounded-lg shadow-md p-4 dark:bg-gray-800 relative">
+            <div class="absolute top-2 right-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded-full">
+                {{ item.source }}
+            </div>
+            <h3 class="text-lg font-semibold">{{ item.name }}</h3>
+            <p class="text-gray-600 text-sm mt-2 dark:text-gray-400">{{ item.description }}</p>
+            <p class="text-gray-500 text-sm mt-2">Category: {{ item.category.name }}</p>
+            <p class="text-xl font-bold mt-2">K{{ item.selling_price }}</p>
+            <button onclick="addToCart({{ item.id }})"
+                    class="w-full mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+                Add to Cart
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 
     <script>
         function toggleDarkMode() {

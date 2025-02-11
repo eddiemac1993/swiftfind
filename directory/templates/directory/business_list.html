@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#000000">
-    <meta name="description" content="Business Directory PWA">
+    <meta name="description" content="Alkebulan">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Business List - SwiftFind</title>
     <link rel="manifest" href="{% static 'manifest.json' %}">
@@ -15,6 +15,7 @@
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Global Variables */
         :root {
@@ -230,7 +231,7 @@
 
 .business-details p {
     font-size: 10px;
-    color: white;
+    color: var(--text-secondary);
     margin: 4px 0;
     white-space: nowrap;
     overflow: hidden;
@@ -241,7 +242,7 @@
     position: absolute;
     top: 10px;
     right: 10px;
-    color: white;
+    color: var(--text-secondary);
     padding: 2px 8px;
     border-radius: 4px;
     font-size: 0.8rem;
@@ -516,9 +517,13 @@
         <div class="business-count">
             Showing {{ page_obj.paginator.count }} businesses.
         </div>
-    </div>
-</section>
 
+    </div>
+    <!-- Add "Alkebulan" in the bottom-right corner -->
+        <div class="absolute bottom-2 right-6 text-white text-sm opacity-80">
+            Alkebulan: Garden of Eden
+        </div>
+</section>
     <!-- Search and Filter Form -->
     <form method="get" action="." class="search-form">
         <input type="text" name="q" placeholder="Search For Anything" value="{{ query|default:'' }}">
@@ -553,7 +558,7 @@
                         <h2>{{ business.name }}</h2>
                         {% if business.is_admin_added %}
                             <span class="admin-tick">
-                                <i class="fa-solid fa-circle-check" style="color: green;"></i>Verified
+                                <i class="fa-solid fa-circle-check" style="color: green;"></i> Verified
                             </span>
                         {% endif %}
 
@@ -588,7 +593,7 @@
     <nav class="bottom-nav">
         <a href="{% url 'post_list' %}" title="Posts">
             <i class="fas fa-list"></i>
-            <span>lancers</span>
+            <span>Jobs</span>
         </a>
         <a href="{% url 'add-business' %}" title="Add Business">
             <i class="fas fa-plus"></i>
@@ -607,7 +612,7 @@
             <span>About</span>
         </a>
     </nav>
-    <script>
+        <script>
         // Dark Mode Toggle
         const themeToggle = document.getElementById('theme-toggle');
         const body = document.body;
