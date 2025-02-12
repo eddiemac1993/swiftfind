@@ -512,7 +512,7 @@
                 <h1>{{ business.name }}</h1>
                 <p><strong>Category:</strong> {{ business.category.name }}</p>
                 <p><strong>Address:</strong> {{ business.address }}</p>
-                <p><strong>Phone:</strong> {{ business.phone_number }}</p>
+                <p><strong>Phone:</strong> <span id="phone-number">{{ business.phone_number }}</span></p>
                 {% if business.email %}
                     <p><strong>Email:</strong> {{ business.email }}</p>
                 {% endif %}
@@ -678,6 +678,20 @@
         }
     </script>
     <!-- Dark Mode Toggle Script -->
+    <script>
+        function formatPhoneNumber(phoneNumber) {
+            if (phoneNumber.startsWith('+260')) {
+                return phoneNumber;
+            } else if (phoneNumber.startsWith('26')) {
+                return '+' + phoneNumber;
+            } else {
+                return '+26' + phoneNumber;
+            }
+        }
+
+        const phoneNumberElement = document.getElementById('phone-number');
+        phoneNumberElement.textContent = formatPhoneNumber(phoneNumberElement.textContent);
+    </script>
     <script>
         const themeToggle = document.getElementById('theme-toggle');
         const body = document.body;
