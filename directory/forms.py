@@ -27,18 +27,18 @@ class BusinessForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'rows': 4}),
         }
 
-    def clean_website(self):
-        website = self.cleaned_data.get('website', '').strip()  # Trim whitespace
 
-        if not website:  # If the field is empty, return as is (since it's optional)
-            return website
+    def clean_website(self):
+        website = self.cleaned_data.get('website')
+
+        if website is None or website.strip() == "":  # Ensure website is not None before calling strip()
+            return website  # Return None or empty string as-is
+
+        website = website.strip()  # Trim whitespace
 
         # Normalize the URL
         if not website.startswith(('http://', 'https://')):
-            if website.startswith('www.'):
-                website = 'http://' + website
-            else:
-                website = 'http://' + website
+            website = 'http://' + website  # Prepend http:// if missing
 
         # Validate the URL using Django's URLValidator
         validator = URLValidator()

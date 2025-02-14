@@ -18,9 +18,10 @@ class Paper(models.Model):
     company_address = models.TextField(default="Unknown Address")
     company_email = models.EmailField(default="unknown@example.com")
     phone_number = models.CharField(max_length=50, default="000-000-0000")
+    
     PAPER_TYPE_CHOICES = [
         ('QUOTATION', 'Quotation'),
-        ('INVOICE', 'Invoice'),
+        # ('INVOICE', 'Invoice'),  # Invoice commented out
         ('RECEIPT', 'Receipt'),
         ('DELIVERY_NOTE', 'Delivery Note'),
     ]
@@ -38,12 +39,13 @@ class Paper(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.paper_number:
-            prefix = {
+            prefix_mapping = {
                 'QUOTATION': 'QTN',
-                'INVOICE': 'INV',
+                # 'INVOICE': 'INV',  # Invoice prefix commented out
                 'RECEIPT': 'RCP',
                 'DELIVERY_NOTE': 'DLN',
-            }[self.paper_type]
+            }
+            prefix = prefix_mapping.get(self.paper_type, 'PPR')
             self.paper_number = generate_unique_paper_number(prefix)
         super().save(*args, **kwargs)
 
