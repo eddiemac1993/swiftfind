@@ -524,11 +524,11 @@
             <a href="tel:{{ business.phone_number }}" class="bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors duration-200" aria-label="Call {{ business.name }}">
                 <i class="fas fa-phone"></i> Call
             </a>
-            {% if business.website %}
-                <a href="{{ business.website }}" target="_blank" rel="noopener noreferrer" class="bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors duration-200" aria-label="Visit {{ business.name }} website">
-                    <i class="fas fa-globe"></i> Visit Website
-                </a>
-            {% endif %}
+        {% if business.email %}
+            <a href="mailto:{{ business.email }}" class="bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors duration-200" aria-label="Send an email to {{ business.name }}">
+                <i class="fas fa-envelope"></i> Send Email
+            </a>
+        {% endif %}
         </div>
         {% if business.is_admin_added %}
             <!-- Social Sharing Section -->
@@ -621,7 +621,6 @@
 
                     <p class="review-comment">{{ review.comment }}</p>
                     <p class="review-author">- {{ review.user.username|default:"Anonymous" }}</p>
-                    <p class="helpful-votes">Helpful Votes: {{ review.helpful_votes }}</p>
                 </div>
             {% endfor %}
 

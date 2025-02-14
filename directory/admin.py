@@ -65,14 +65,38 @@ class BusinessAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     date_hierarchy = 'created_at'
 
+
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('business', 'rating', 'title', 'status', 'created_at')
-    list_filter = ('status', 'rating', 'created_at')
-    search_fields = ('business__name', 'title', 'comment')
-    list_editable = ('status',)
-    raw_id_fields = ('business', 'user')
-    date_hierarchy = 'created_at'
+    list_display = ('business', 'rating', 'title', 'comment_preview', 'status', 'created_at', 'user_or_session')
+    list_filter = ('status', 'rating', 'created_at', 'business')
+    search_fields = ('business__name', 'title', 'comment', 'user__username', 'session_key')
+    list_editable = ('status',)  # Allow editing the status directly from the list view
+    raw_id_fields = ('business', 'user')  # Use raw_id_fields for better performance with large datasets
+    date_hierarchy = 'created_at'  # Add a date hierarchy for easy filtering by date
+    actions = ['approve_reviews', 'reject_reviews']  # Custom actions for bulk approval/rejection
+
+    def comment_preview(self, obj):
+        """Display a shortened preview of the comment."""
+        return obj.comment[:50] + '...' if obj.comment else ''
+    comment_preview.short_description = 'Comment Preview'
+
+    def user_or_session(self, obj):
+        """Display the user or session key for the review."""
+        return obj.user.username if obj.user else f"Anonymous ({obj.session_key})"
+    user_or_session.short_description = 'User/Session'
+
+    def approve_reviews(self, request, queryset):
+        """Custom action to approve selected reviews."""
+        queryset.update(status='approved')
+        self.message_user(request, f"{queryset.count()} reviews were approved.")
+    approve_reviews.short_description = "Approve selected reviews"
+
+    def reject_reviews(self, request, queryset):
+        """Custom action to reject selected reviews."""
+        queryset.update(status='rejected')
+        self.message_user(request, f"{queryset.count()} reviews were rejected.")
+    reject_reviews.short_description = "Reject selected reviews"
 
 @admin.register(BusinessImage)
 class BusinessImageAdmin(admin.ModelAdmin):

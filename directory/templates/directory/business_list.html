@@ -263,7 +263,11 @@
     font-size: 10px;
     margin-left: 8px;
 }
-
+.comment-count {
+    color: #718096; /* Same as review count */
+    font-size: 10px; /* Same as review count */
+    margin-left: 8px; /* Adjust spacing as needed */
+}
 .fas {
     margin-right: 4px;
     font-size: 12px;
@@ -575,6 +579,9 @@
                                 {% endfor %}
                             </span>
                             <span class="review-count">({{ business.reviews.count }} reviews)</span>
+                            <span class="comment-count">
+                                <i class="fas fa-comments"></i> {{ business.comment_count }}
+                            </span>
                         </div>
                     </div>
                 </div>

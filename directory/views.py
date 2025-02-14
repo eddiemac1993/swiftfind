@@ -60,7 +60,8 @@ def business_list(request):
 
     businesses = Business.objects.annotate(
         average_rating=Avg('reviews__rating'),
-        review_count=Count('reviews')
+        review_count=Count('reviews'),
+        comment_count=Count('reviews', filter=Q(reviews__comment__isnull=False) & ~Q(reviews__comment=""))
     )
 
     if query:
@@ -115,7 +116,7 @@ from django.contrib import messages
 def business_detail(request, pk):
     business = get_object_or_404(Business, pk=pk)
     related_businesses = Business.objects.filter(category=business.category).exclude(pk=pk)[:5]
-    reviews = Review.objects.filter(business=business, status='approved')  # Only show approved reviews
+    reviews = Review.objects.filter(business=business, status='pending')  # Only show approved reviews
 
     # Paginate reviews
     paginator = Paginator(reviews, 5)  # Show 5 reviews per page
