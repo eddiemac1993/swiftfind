@@ -606,7 +606,7 @@
         <a href="{% url 'add-business' %}" title="Add Business">
             <i class="fas fa-plus"></i>
             <span>Business</span>
-            <a href="{% url 'home' %}" title="View Orders">
+            <!-- <a href="{% url 'home' %}" title="View Orders">
                 <i class="fas fa-shopping-cart"></i>
                 <span>Orders</span>
             </a>
@@ -614,11 +614,22 @@
         <a href="{% url 'create_paper' %}" title="Create Paper">
             <i class="fas fa-file-alt"></i>
             <span>Paper</span>
-        </a>
+        </a>-->
         <a href="{% url 'about' %}" title="About">
             <i class="fas fa-info-circle"></i>
             <span>About</span>
         </a>
+        {% if user.is_authenticated %}
+    <a href="{% url 'profile' %}" title="Profile">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+    </a>
+    {% else %}
+        <a href="{% url 'login' %}" title="Login">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Login</span>
+        </a>
+    {% endif %}
     </nav>
         <script>
         // Dark Mode Toggle

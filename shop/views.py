@@ -8,6 +8,10 @@ from .models import Shop, Request, Payment, Balance, Category, Cart, CartItem, I
 from .forms import ShopForm, RequestForm, PaymentForm
 
 @login_required
+def register(request):
+    return render(request, 'register.html')
+
+@login_required
 def profile(request):
     # Get the shop associated with the logged-in user
     shop = Shop.objects.get(user=request.user)

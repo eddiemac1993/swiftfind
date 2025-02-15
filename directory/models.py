@@ -4,6 +4,9 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.text import slugify
 from taggit.managers import TaggableManager
 from django.db.models import Avg
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
+from django.utils import timezone
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
