@@ -5,11 +5,68 @@ from django.db.models import Avg, Count
 from django.core.paginator import Paginator
 from .models import Business, Category
 from django.shortcuts import render, redirect
-from .forms import BusinessForm  # You'll need to create this form
+from .forms import BusinessForm
 from .models import Business
 from django.utils import timezone
-
 from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import UserProfile
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
+from .models import UserProfile
+from django.shortcuts import render, redirect
+from django.contrib.auth import login
+from .forms import UserRegistrationForm
+
+def register(request):
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('profile')  # Redirect to the home page or any other page
+    else:
+        form = UserRegistrationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import UserProfile, Business, Category
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .forms import UserUpdateForm, ProfileUpdateForm, BusinessUpdateForm
+from .models import Category
+
+@login_required
+def profile(request):
+    user = request.user
+    profile = user.profile
+    business = profile.business
+
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=user)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+        business_form = BusinessUpdateForm(request.POST, request.FILES, instance=business)
+
+        if user_form.is_valid() and profile_form.is_valid() and business_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            business_form.save()
+            return redirect('profile')  # Redirect to the profile page after saving
+    else:
+        user_form = UserUpdateForm(instance=user)
+        profile_form = ProfileUpdateForm(instance=profile)
+        business_form = BusinessUpdateForm(instance=business)
+
+    categories = Category.objects.all()
+    return render(request, 'registration/profile.html', {
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'business_form': business_form,
+        'categories': categories,
+    })
 
 def offline(request):
     return render(request, 'offline.html')

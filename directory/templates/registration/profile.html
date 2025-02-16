@@ -1,0 +1,505 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Profile - SwiftFind">
+    <title>Profile - SwiftFind</title>
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+:root {
+    --primary-color: #0f172a;
+    --primary-hover: #1e293b;
+    --secondary-color: #3b82f6;
+    --secondary-hover: #2563eb;
+    --background: #f8fafc;
+    --card-bg: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --success-color: #10b981;
+    --error-color: #ef4444;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+:root {
+    --primary-color: #0f172a;
+    --primary-hover: #1e293b;
+    --secondary-color: #3b82f6;
+    --secondary-hover: #2563eb;
+    --background: #f1f5f9;
+    --card-bg: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --success-color: #10b981;
+    --error-color: #ef4444;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --gradient-1: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    --gradient-2: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+.dark-mode {
+    --background: #0f172a;
+    --card-bg: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+}
+
+/* Modern Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--secondary-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-hover);
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--background);
+    background-image: 
+        radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.1) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(15, 23, 42, 0.1) 0px, transparent 50%);
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text-primary);
+    line-height: 1.6;
+    transition: all 0.3s ease;
+}
+
+.profile-container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    background-color: var(--card-bg);
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transform: translateY(0);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.profile-container:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg), 0 30px 60px -15px rgba(0, 0, 0, 0.15);
+}
+
+.profile-header {
+    background: var(--gradient-1);
+    padding: 4rem 2rem;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.1;
+}
+
+.profile-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60%;
+    background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+}
+
+.profile-picture {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 6px solid white;
+    box-shadow: var(--shadow-lg);
+    margin: 0 auto 2rem;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
+}
+
+.profile-picture:hover {
+    transform: scale(1.05);
+}
+
+.profile-header h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+.profile-header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin-top: 0.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.profile-form {
+    padding: 3rem;
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    background: linear-gradient(to bottom, var(--card-bg), rgba(255,255,255,0.5));
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    position: relative;
+}
+
+.form-group label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 1rem 1.25rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0.75rem;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover {
+    border-color: var(--secondary-color);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    outline: none;
+    transform: translateY(-2px);
+}
+
+.form-group textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1.5rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--border-color);
+    margin-top: 1rem;
+}
+
+.btn {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 120%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%) scale(0);
+    border-radius: 50%;
+    transition: transform 0.5s ease;
+}
+
+.btn:hover::after {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.btn-primary {
+    background: var(--gradient-1);
+    color: white;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+.btn-secondary {
+    background: var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background: var(--text-secondary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.home-button,
+.theme-toggle {
+    position: fixed;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--gradient-1);
+    color: white;
+    border: none;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.home-button {
+    bottom: 11.5rem;
+    right: 2rem;
+}
+
+.theme-toggle {
+    bottom: 7.5rem;
+    right: 2rem;
+}
+
+.home-button:hover,
+.theme-toggle:hover {
+    transform: translateY(-3px) scale(1.1);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        margin: 1rem;
+    }
+    
+    .profile-form {
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+    }
+    
+    .profile-picture {
+        width: 160px;
+        height: 160px;
+    }
+    
+    .profile-header h1 {
+        font-size: 2.25rem;
+    }
+    
+    .home-button,
+    .theme-toggle {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+    }
+}
+
+/* Loading State for Buttons */
+.btn.loading {
+    position: relative;
+    color: transparent;
+}
+
+.btn.loading::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Error State for Inputs */
+.form-group.error input,
+.form-group.error select,
+.form-group.error textarea {
+    border-color: var(--error-color);
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+}
+
+.error-message {
+    color: var(--error-color);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Success State for Form Groups */
+.form-group.success input,
+.form-group.success select,
+.form-group.success textarea {
+    border-color: var(--success-color);
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+}
+    </style>
+</head>
+<body>
+    <!-- Home Button -->
+    <a href="{% url 'business-list' %}" class="home-button" aria-label="Go to Home">🏠</a>
+
+    <!-- Dark Mode Toggle -->
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <img src="{% if user.profile.profile_picture %}{{ user.profile.business.logo.url }}{% else %}{% static 'business_logos/default.jpg' %}{% endif %}" alt="Profile Picture" class="profile-picture">
+            <h1>{{ user.username }}</h1>
+            <p>Update your Business information below.</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="profile-form">
+            {% csrf_token %}
+            
+            <!-- User Update Form -->
+            <div class="form-group">
+                <label for="{{ user_form.username.id_for_label }}">Username</label>
+                {{ user_form.username }}
+            </div>
+            <div class="form-group">
+                <label for="{{ user_form.email.id_for_label }}">Email</label>
+                {{ user_form.email }}
+            </div>
+
+            <!-- Profile Update Form -->
+            <div class="form-group">
+                <label for="{{ profile_form.phone_number.id_for_label }}">Phone Number</label>
+                {{ profile_form.phone_number }}
+            </div>
+            <div class="form-group">
+                <label for="{{ profile_form.address.id_for_label }}">Address</label>
+                {{ profile_form.address }}
+            </div>
+
+            <!-- Business Update Form -->
+            <div class="form-group">
+                <label for="{{ business_form.logo.id_for_label }}">Business Logo</label>
+                {{ business_form.logo }}
+            </div>
+            <div class="form-group">
+                <label for="{{ business_form.name.id_for_label }}">Business Name</label>
+                {{ business_form.name }}
+            </div>
+            <div class="form-group">
+                <label for="{{ business_form.email.id_for_label }}">Business Email</label>
+                {{ business_form.email }}
+            </div>
+            <div class="form-group">
+                <label for="{{ business_form.city.id_for_label }}">City</label>
+                {{ business_form.city }}
+            </div>
+            <div class="form-group">
+                <label for="{{ business_form.phone_number.id_for_label }}">Business Phone</label>
+                {{ business_form.phone_number }}
+            </div>
+            <div class="form-group">
+                <label for="{{ business_form.category.id_for_label }}">Category</label>
+                {{ business_form.category }}
+            </div>
+            <div class="form-group">
+                <label for="{{ business_form.description.id_for_label }}">Description</label>
+                {{ business_form.description }}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="reset" class="btn btn-secondary">Reset</button>
+                
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        const isDarkMode = localStorage.getItem('darkMode') === 'true';
+        if (isDarkMode) {
+            body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            themeToggle.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('darkMode', isDark);
+        });
+    </script>
+</body>
+</html>

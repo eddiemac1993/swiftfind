@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'paper',
     'django.contrib.humanize',
     'channels',
-    'shop',
     'pos',
     'posts',
     'order',
@@ -84,7 +83,6 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
-                'shop.context_processors.cart_context',
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
@@ -157,7 +155,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_URL = 'login'  # This should match the name of the login URL
 # Redirect to this URL after login
-LOGIN_REDIRECT_URL = 'product_list'
+LOGIN_REDIRECT_URL = '/'
 
 # Redirect to this URL after logout
 LOGOUT_REDIRECT_URL = 'login'  # Redirect to the login page after logout

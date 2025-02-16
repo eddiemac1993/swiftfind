@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#000000">
-    <meta name="description" content="Logout - SwiftFind">
-    <title>Logout - SwiftFind</title>
+    <meta name="description" content="Register - SwiftFind">
+    <title>Register - SwiftFind</title>
     <link rel="manifest" href="{% static 'manifest.json' %}">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-        /* Global Variables */
+        /* Reuse the same styles from the login page */
         :root {
             --primary-color: #2563eb;
             --primary-hover: #1d4ed8;
@@ -27,7 +27,6 @@
             --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
 
-        /* Dark Mode Variables */
         .dark-mode {
             --background: #1e293b;
             --card-bg: #334155;
@@ -37,7 +36,6 @@
             --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
         }
 
-        /* Global Styles */
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: var(--background);
@@ -48,20 +46,6 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        h1, h2, h3 {
-            margin: 0;
-        }
-
-        a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        /* Hero Section */
         .hero {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
             color: white;
@@ -106,30 +90,37 @@
             animation: fadeInUp 1s ease;
         }
 
-        /* Logout Confirmation */
-        .logout-confirmation {
-            max-width: 400px;
+        .registration-form {
+            max-width: 500px;
             margin: 0 auto;
             padding: 2rem;
             background-color: var(--card-bg);
             border-radius: 1rem;
             box-shadow: var(--shadow);
-            text-align: center;
         }
 
-        .logout-confirmation h2 {
-            font-size: 2rem;
+        .registration-form input,
+        .registration-form select {
+            width: 100%;
+            padding: 0.75rem 1rem;
             margin-bottom: 1rem;
-        }
-
-        .logout-confirmation p {
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
             font-size: 1rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
+            color: var(--text-primary);
+            background-color: var(--background);
+            transition: all 0.2s ease;
         }
 
-        .logout-confirmation a {
-            display: inline-block;
+        .registration-form input:focus,
+        .registration-form select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .registration-form button {
+            width: 100%;
             padding: 0.75rem 1.5rem;
             background-color: var(--primary-color);
             color: white;
@@ -138,14 +129,23 @@
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s ease;
-            text-decoration: none;
         }
 
-        .logout-confirmation a:hover {
+        .registration-form button:hover {
             background-color: var(--primary-hover);
         }
 
-        /* Dark Mode Toggle */
+        .registration-form p {
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .registration-form p a {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
         .theme-toggle {
             position: fixed;
             top: 2rem;
@@ -165,7 +165,6 @@
             z-index: 1000;
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             body {
                 padding: 1rem;
@@ -183,7 +182,7 @@
                 font-size: 1rem;
             }
 
-            .logout-confirmation {
+            .registration-form {
                 padding: 1.5rem;
             }
         }
@@ -193,16 +192,19 @@
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>Logged Out</h1>
-            <p>You have been successfully logged out.</p>
+            <h1>Create Your Account</h1>
+            <p>Register to create your business and start managing your profile.</p>
         </div>
     </section>
 
-    <!-- Logout Confirmation -->
-    <div class="logout-confirmation">
-        <h2>See You Again!</h2>
-        <p>Thank you for using SwiftFind. You can log in again anytime.</p>
-        <a href="{% url 'login' %}">Login Again</a>
+    <!-- Registration Form -->
+    <div class="registration-form">
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Register</button>
+</form>
+        <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
     </div>
 
     <!-- Dark Mode Toggle -->
@@ -213,7 +215,6 @@
         const themeToggle = document.getElementById('theme-toggle');
         const body = document.body;
 
-        // Check local storage for dark mode preference
         const isDarkMode = localStorage.getItem('darkMode') === 'true';
         if (isDarkMode) {
             body.classList.add('dark-mode');

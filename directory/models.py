@@ -129,9 +129,6 @@ class Review(models.Model):
     def __str__(self):
         return f"Review for {self.business.name}"
 
-from imagekit.models import ImageSpecField
-from imagekit.processors import ResizeToFill
-
 class BusinessImage(models.Model):
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='business_images/', blank=True, null=True)
@@ -147,8 +144,6 @@ class BusinessImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.business.name}"
-
-from django.db import models
 
 class ChatRoom(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -169,9 +164,6 @@ class ChatMessage(models.Model):
     def __str__(self):
         return f"{self.user_name}: {self.message[:50]}"
 
-from django.db import models
-from django.utils import timezone
-
 class SearchQuery(models.Model):
     query = models.CharField(max_length=255, blank=True, null=True)  # The search query
     city = models.CharField(max_length=100, blank=True, null=True)  # City filter
@@ -182,3 +174,16 @@ class SearchQuery(models.Model):
 
     def __str__(self):
         return f"{self.query} - {self.timestamp} (Count: {self.count})"
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    business = models.ForeignKey(Business, on_delete=models.SET_NULL, null=True, blank=True, related_name='employees')
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+    bio = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile"

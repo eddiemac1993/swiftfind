@@ -2,6 +2,58 @@ from django import forms
 from .models import Review
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from .models import UserProfile, Business
+from django import forms
+from django.contrib.auth.models import User
+from .models import UserProfile, Business
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['profile_picture', 'phone_number', 'address', 'bio']
+
+class BusinessUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Business
+        fields = ['logo', 'name', 'email', 'city', 'phone_number', 'category', 'description']
+
+class UserRegistrationForm(UserCreationForm):
+    business_name = forms.CharField(max_length=200, required=True)
+    business_description = forms.CharField(widget=forms.Textarea, required=True)
+    business_address = forms.CharField(max_length=255, required=True)
+    business_phone_number = forms.CharField(max_length=15, required=True)
+    business_email = forms.EmailField(required=True)
+    business_website = forms.URLField(required=False)
+    business_city = forms.CharField(max_length=100, required=True)
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2', 'business_name', 'business_description', 'business_address', 'business_phone_number', 'business_email', 'business_website', 'business_city']
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if commit:
+            user.save()
+            business = Business.objects.create(
+                name=self.cleaned_data['business_name'],
+                description=self.cleaned_data['business_description'],
+                address=self.cleaned_data['business_address'],
+                phone_number=self.cleaned_data['business_phone_number'],
+                email=self.cleaned_data['business_email'],
+                website=self.cleaned_data['business_website'],
+                city=self.cleaned_data['business_city'],
+                owner=user
+            )
+            UserProfile.objects.create(user=user, business=business)
+        return user
 
 class ReviewForm(forms.ModelForm):
     class Meta:
@@ -19,41 +71,18 @@ from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from urllib.parse import urlparse
 
+from django import forms
+from .models import UserProfile, Business
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['profile_picture', 'phone_number', 'address', 'bio']
+
 class BusinessForm(forms.ModelForm):
     class Meta:
         model = Business
-        fields = ['name', 'category', 'description', 'address', 'phone_number', 'email', 'website', 'logo', 'city']
-        widgets = {
-            'description': forms.Textarea(attrs={'rows': 4}),
-        }
-
-
-    def clean_website(self):
-        website = self.cleaned_data.get('website')
-
-        if website is None or website.strip() == "":  # Ensure website is not None before calling strip()
-            return website  # Return None or empty string as-is
-
-        website = website.strip()  # Trim whitespace
-
-        # Normalize the URL
-        if not website.startswith(('http://', 'https://')):
-            website = 'http://' + website  # Prepend http:// if missing
-
-        # Validate the URL using Django's URLValidator
-        validator = URLValidator()
-        try:
-            validator(website)
-        except ValidationError:
-            raise ValidationError("Please enter a valid URL. Example: http://example.com or https://example.com")
-
-        # Ensure the URL has a valid scheme and netloc
-        parsed_url = urlparse(website)
-        if not parsed_url.scheme or not parsed_url.netloc:
-            raise ValidationError("Please enter a complete URL including the scheme (http:// or https://).")
-
-        return website
-
+        fields = ['logo', 'name', 'email', 'city', 'phone_number', 'category', 'description']
 
 from django import forms
 from .models import BusinessImage
