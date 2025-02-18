@@ -25,6 +25,7 @@
             --border-color: #e2e8f0;
             --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --accent-gradient: linear-gradient(135deg, #3b82f6, #2563eb);
+            --transition: all 0.3s ease;
         }
 
         .dark-mode {
@@ -43,7 +44,7 @@
             padding: 1rem;
             color: var(--text-primary);
             line-height: 1.6;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             min-height: 100vh;
         }
 
@@ -127,7 +128,7 @@
             cursor: pointer;
             font-size: 0.6rem;
             box-shadow: var(--shadow);
-            transition: transform 0.2s ease;
+            transition: var(--transition);
         }
 
         .category-filter button.active {
@@ -145,16 +146,20 @@
         }
 
         .post-item {
+            display: block;
+            text-decoration: none;
+            color: inherit;
             background-color: var(--card-bg);
             border-radius: 1.25rem;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
             box-shadow: var(--shadow);
-            transition: all 0.3s ease;
+            transition: var(--transition);
             border: 2px solid transparent;
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 0.5s ease, transform 0.5s ease;
+            will-change: transform, opacity;
         }
 
         .post-item.visible {
@@ -183,16 +188,6 @@
             margin: 0;
             font-size: 1.5rem;
             font-weight: 700;
-        }
-
-        .post-title a {
-            color: var(--text-primary);
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        .post-title a:hover {
-            color: var(--primary-color);
         }
 
         .post-description {
@@ -238,7 +233,7 @@
             justify-content: center;
             box-shadow: var(--shadow);
             z-index: 1000;
-            transition: transform 0.2s ease;
+            transition: var(--transition);
         }
 
         .theme-toggle:hover {
@@ -268,7 +263,7 @@
             align-items: center;
             justify-content: center;
             box-shadow: var(--shadow);
-            transition: transform 0.2s ease;
+            transition: var(--transition);
             text-decoration: none;
         }
 
@@ -288,32 +283,33 @@
             align-items: center;
             gap: 5px;
         }
-.post-details {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 5px 0;
-}
 
-.location {
-    font-size: 14px;
-    color: #555;
-    background-color: #f3f3f3;
-    padding: 5px 10px;
-    border-radius: 5px;
-    display: inline-block;
-}
+        .post-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 5px 0;
+        }
 
-.price-range {
-    font-size: 14px;
-    font-weight: bold;
-    color: #27ae60; /* Green for emphasis */
-    background-color: #eaf7eb;
-    padding: 5px 10px;
-    border-radius: 5px;
-    display: inline-block;
-}
+        .location {
+            font-size: 14px;
+            color: #555;
+            background-color: #f3f3f3;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+
+        .price-range {
+            font-size: 14px;
+            font-weight: bold;
+            color: #27ae60;
+            background-color: #eaf7eb;
+            padding: 5px 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
 
         @media (max-width: 768px) {
             .search-bar {
@@ -343,15 +339,13 @@
                 font-size: 1rem;
             }
         }
-
     </style>
 </head>
 <body>
     <!-- Hero Section -->
     <div class="hero">
         <h1>Welcome to Freelancers</h1>
-           <p>Find jobs, services, rentals, and opportunities. Post your offers and connect with the right people.</p>
-
+        <p>Find jobs, services, rentals, and opportunities. Post your offers and connect with the right people.</p>
         <a href="{% url 'post_create' %}" class="cta-button">Post an Offer</a>
     </div>
 
@@ -373,31 +367,28 @@
     <!-- Post List -->
     <div class="post-list" id="post-list">
         {% for post in posts %}
-            <div class="post-item" data-title="{{ post.title|lower }}" data-description="{{ post.description|lower }}" data-category="{{ post.category }}">
+            <a href="{% url 'post_detail' post.id %}" class="post-item" data-title="{{ post.title|lower }}" data-description="{{ post.description|lower }}" data-category="{{ post.category }}">
                 <span class="post-timestamp">
                     <i class="fa-solid fa-clock"></i> {{ post.created_at|timesince }} ago
                 </span>
                 <div class="post-title">
                     <i class="fa-solid fa-file-alt"></i>
-                    <h2><a href="{% url 'post_detail' post.id %}">{{ post.title }}</a></h2>
+                    <h2>{{ post.title }}</h2>
                 </div>
                 <p class="post-description">{{ post.description|truncatewords:20 }}</p>
-               <div class="post-details">
+                <div class="post-details">
                     {% if post.location %}
                         <span class="location"> <i class="fa fa-map-marker" aria-hidden="true"> </i> {{ post.location|upper }}</span>
                     {% endif %}
-
                     {% if post.price_range %}
                         <span class="price-range">k {{ post.price_range }}</span>
                     {% endif %}
                 </div>
-
-                    <div class="post-stats">
+                <div class="post-stats">
                     <span><i class="fa-solid fa-eye"></i> {{ post.views }} visits</span>
                     <span><i class="fa-solid fa-tag"></i> {{ post.get_category_display }}</span>
-
                 </div>
-            </div>
+            </a>
         {% endfor %}
     </div>
 
@@ -415,6 +406,15 @@
     </nav>
 
     <script>
+        // Debounce function to limit the rate at which a function can fire
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
         // Dark mode toggle
         const themeToggle = document.getElementById('theme-toggle');
         const body = document.body;
@@ -438,7 +438,7 @@
         const postItems = postList.getElementsByClassName('post-item');
         const noResults = document.getElementById('no-results');
 
-        searchInput.addEventListener('input', () => {
+        const handleSearch = debounce(() => {
             const searchTerm = searchInput.value.trim().toLowerCase();
             let visibleCount = 0;
 
@@ -455,7 +455,9 @@
             });
 
             noResults.style.display = visibleCount === 0 ? 'block' : 'none';
-        });
+        }, 300);
+
+        searchInput.addEventListener('input', handleSearch);
 
         // Category filter functionality
         function filterPosts(category) {

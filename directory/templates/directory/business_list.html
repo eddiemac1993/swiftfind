@@ -187,6 +187,7 @@
         }
 
         .business-item {
+            position: relative;
             display: flex;
             max-width: 800px;
             min-width: 280px;
@@ -238,14 +239,24 @@
     text-overflow: ellipsis;
 }
 
+/* Heart Icon Styles */
+.heart-icon {
+    position: absolute;
+    top: 10px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
+    color: red; /* Heart icon color */
+    font-size: 1.2em; /* Adjust size as needed */
+    z-index: 1; /* Ensure it appears above other elements */
+}
+
+/* Verified Tick Styles */
 .admin-tick {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    color: var(--text-secondary);
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
+    top: 10px; /* Adjust as needed */
+    right: 40px; /* Move it left to make space for the heart icon */
+    color: green; /* Verified tick color */
+    font-size: 0.8em; /* Adjust size as needed */
+    z-index: 1; /* Ensure it appears above other elements */
 }
 
 .business-rating {
@@ -314,7 +325,35 @@
           transform: scale(0.95);
         }
 
+/* Advertisement Styles */
+.advertisement {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    text-align: center;
+    padding: 1rem;
+}
 
+.advertisement a {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.ad-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.ad-text {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
 .business-item {
     cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
     /* Add any other styles you need */
@@ -552,40 +591,55 @@
 <!-- Business List -->
 <div class="business-list">
     {% if page_obj.object_list %}
-        {% for business in page_obj %}
-            <a href="{% url 'business-detail' business.pk %}" class="business-item-link">
-                <div class="business-item">
-                    <div class="business-logo">
-                        <img src="{{ business.logo.url }}" alt="{{ business.name }} Logo" loading="lazy">
-                    </div>
-                    <div class="business-details">
-                        <h2>{{ business.name }}</h2>
-                        {% if business.is_admin_added %}
-                            <span class="admin-tick">
-                                <i class="fa-solid fa-circle-check" style="color: green;"></i> Verified
-                            </span>
-                        {% endif %}
-
-                        <p><strong>City:</strong> <i class="fas fa-map-marker-alt"></i> {{ business.city|capfirst }}</p>
-                        <p><strong>Category:</strong> <i class="fas fa-tag"></i> {{ business.category.name }}</p>
-                        <div class="business-rating">
-                            <span class="stars">
-                                {% for i in "12345" %}
-                                    {% if i|add:0 <= business.rating %}
-                                        ★
-                                    {% else %}
-                                        ☆
-                                    {% endif %}
-                                {% endfor %}
-                            </span>
-                            <span class="review-count">({{ business.reviews.count }} reviews)</span>
-                            <span class="comment-count">
-                                <i class="fas fa-comments"></i> {{ business.comment_count }}
-                            </span>
+        {% for item in page_obj %}
+            {% if item.0 == 'business' %}
+                <!-- Display Business -->
+                <a href="{% url 'business-detail' item.1.pk %}" class="business-item-link">
+                    <div class="business-item">
+                        <div class="business-logo">
+                            <img src="{{ item.1.logo.url }}" alt="{{ item.1.name }} Logo" loading="lazy">
+                        </div>
+                        <div class="business-details">
+                            <h2>{{ item.1.name }}</h2>
+                            {% if item.1.is_admin_added %}
+                                <span class="admin-tick">
+                                    <i class="fa-solid fa-circle-check"></i> Verified
+                                </span>
+                            {% endif %}
+                            {% if user.is_authenticated and item.1.owner == user %}
+                                <span class="heart-icon">
+                                    <i class="fa-solid fa-heart"></i>
+                                </span>
+                            {% endif %}
+                            <p><strong>City:</strong> <i class="fas fa-map-marker-alt"></i> {{ item.1.city|capfirst }}</p>
+                            <p><strong>Category:</strong> <i class="fas fa-tag"></i> {{ item.1.category.name }}</p>
+                            <div class="business-rating">
+                                <span class="stars">
+                                    {% for i in "12345" %}
+                                        {% if i|add:0 <= item.1.rating %}
+                                            ★
+                                        {% else %}
+                                            ☆
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <span class="review-count">({{ item.1.reviews.count }} reviews)</span>
+                                <span class="comment-count">
+                                    <i class="fas fa-comments"></i> {{ item.1.comment_count }}
+                                </span>
+                            </div>
                         </div>
                     </div>
+                </a>
+            {% elif item.0 == 'advertisement' %}
+                <!-- Display Advertisement -->
+                <div class="advertisement">
+                    <a href="{{ item.1.link }}" target="_blank">
+                        <img src="{{ item.1.image.url }}" alt="{{ item.1.title }}" class="ad-image">
+                    </a>
+                    <p class="ad-text">{{ item.1.small_text }}</p>
                 </div>
-            </a>
+            {% endif %}
         {% endfor %}
     {% else %}
         <p class="no-results">Search for '<strong>{{ query }}</strong>' not found.</p>
@@ -601,7 +655,7 @@
     <nav class="bottom-nav">
         <a href="{% url 'post_list' %}" title="Posts">
             <i class="fas fa-list"></i>
-            <span>Jobs</span>
+            <span>Lancer</span>
         </a>
 {% if user.is_authenticated %}
     <a href="{% url 'home' %}" title="View Orders">

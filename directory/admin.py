@@ -1,9 +1,15 @@
 from django.contrib import admin
-from .models import Category, Business, Review, BusinessImage
+from .models import Category, Business, Review, BusinessImage, Advertisement
 from django import forms
 from django.utils.text import slugify
 from django.shortcuts import redirect
 from .models import SearchQuery
+
+@admin.register(Advertisement)
+class AdvertisementAdmin(admin.ModelAdmin):
+    list_display = ('title', 'slot', 'start_time', 'end_time', 'is_active', 'is_running')
+    list_filter = ('is_active', 'slot')
+    search_fields = ('title', 'small_text')
 
 @admin.register(SearchQuery)
 class SearchQueryAdmin(admin.ModelAdmin):

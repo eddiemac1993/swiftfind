@@ -94,7 +94,7 @@ from django.db.models import Q, Count, Avg
 from django.core.paginator import Paginator
 from django.utils import timezone
 from django.shortcuts import render
-from .models import SearchQuery, Business, Category
+from .models import SearchQuery, Business, Category, Advertisement
 import random
 
 def business_list(request):
@@ -103,6 +103,7 @@ def business_list(request):
     category = request.GET.get('category')
     sort_by = request.GET.get('sort_by')
 
+    # Log search query if applicable
     if query or city or category or sort_by:
         search_query, created = SearchQuery.objects.get_or_create(
             query=query,
@@ -115,12 +116,14 @@ def business_list(request):
             search_query.count += 1
             search_query.save()
 
+    # Annotate businesses with ratings and review counts
     businesses = Business.objects.annotate(
         average_rating=Avg('reviews__rating'),
         review_count=Count('reviews'),
         comment_count=Count('reviews', filter=Q(reviews__comment__isnull=False) & ~Q(reviews__comment=""))
     )
 
+    # Apply filters based on query, city, and category
     if query:
         businesses = businesses.filter(
             Q(name__icontains=query) |
@@ -135,6 +138,7 @@ def business_list(request):
     if category:
         businesses = businesses.filter(category__name__icontains=category)
 
+    # Apply sorting
     if sort_by == 'rating':
         businesses = businesses.order_by('-average_rating')
     elif sort_by == 'name':
@@ -147,11 +151,37 @@ def business_list(request):
     else:
         businesses = businesses.order_by('?')
 
-    paginator = Paginator(businesses, 100)
+    # Fetch active advertisements
+    now = timezone.now()
+    active_ads = Advertisement.objects.filter(
+        start_time__lte=now,  # Advertisements that have started
+        end_time__gte=now,    # Advertisements that have not ended
+        is_active=True        # Advertisements that are active
+    )
+
+    # Combine businesses and advertisements
+    combined_list = []
+    ad_index = 0
+    interval = 5  # Show an ad after every 5 businesses
+
+    for i, business in enumerate(businesses, start=1):
+        combined_list.append(('business', business))  # Add business to the list
+
+        # Add an ad after every `interval` businesses
+        if i % interval == 0 and active_ads.exists():
+            ad = active_ads[ad_index % len(active_ads)]  # Cycle through ads
+            combined_list.append(('advertisement', ad))
+            ad_index += 1
+
+    # Paginate the combined list
+    paginator = Paginator(combined_list, 100)  # Adjust page size as needed
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    businesses_count_on_page = len(page_obj.object_list)
+    # Count businesses on the current page
+    businesses_count_on_page = len([item for item in page_obj.object_list if item[0] == 'business'])
+
+    # Fetch all categories for the sidebar/filter
     categories = Category.objects.all()
 
     return render(request, 'directory/business_list.html', {

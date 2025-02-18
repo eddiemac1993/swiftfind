@@ -8,6 +8,31 @@ from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from django.utils import timezone
 
+class Advertisement(models.Model):
+    SLOT_CHOICES = [(i, f'Slot {i}') for i in range(1, 11)]  # 10 slots
+
+    title = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='advertisements/')
+    link = models.URLField(blank=True, null=True)  # Link to redirect when the ad is clicked
+    small_text = models.CharField(max_length=100, default="Paid Advert")  # Text to indicate it's an ad
+    slot = models.IntegerField(choices=SLOT_CHOICES, unique=True)  # Unique slot number (1-10)
+    start_time = models.DateTimeField()  # When the ad starts running
+    end_time = models.DateTimeField()  # When the ad stops running
+    is_active = models.BooleanField(default=True)  # To manually enable/disable the ad
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.title} (Slot {self.slot})"
+
+    def is_running(self):
+        """Check if the ad is currently running based on the time."""
+        now = timezone.now()
+        return self.start_time <= now <= self.end_time and self.is_active
+
+    class Meta:
+        ordering = ['slot']
+
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(unique=True, blank=True)
@@ -187,3 +212,7 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
+
+
+# Add this method to the User model (or a custom user model)
+User.add_to_class('get_profile', lambda user: UserProfile.objects.get_or_create(user=user)[0])

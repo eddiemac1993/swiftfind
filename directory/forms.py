@@ -82,7 +82,7 @@ class UserProfileForm(forms.ModelForm):
 class BusinessForm(forms.ModelForm):
     class Meta:
         model = Business
-        fields = ['logo', 'name', 'email', 'city', 'phone_number', 'category', 'description']
+        fields = ['logo', 'name','address', 'email', 'city', 'phone_number', 'category', 'description']
 
 from django import forms
 from .models import BusinessImage
