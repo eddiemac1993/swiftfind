@@ -25,7 +25,10 @@
             --border-color: #e2e8f0;
             --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --accent-gradient: linear-gradient(135deg, #3b82f6, #2563eb);
-            --transition: all 0.3s ease;
+            --success-color: #22c55e;
+            --warning-color: #eab308;
+            --error-color: #ef4444;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .dark-mode {
@@ -37,112 +40,166 @@
             --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
         }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: var(--background);
-            margin: 0;
-            padding: 1rem;
             color: var(--text-primary);
             line-height: 1.6;
             transition: var(--transition);
             min-height: 100vh;
+            padding-top: 6rem;
         }
 
         .hero {
             text-align: center;
-            padding: 4rem 1rem;
+            padding: 6rem 2rem;
             background: var(--accent-gradient);
             color: white;
-            margin-bottom: 2rem;
-            border-radius: 1rem;
+            margin: -6rem -1rem 2rem -1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1) 75%, transparent 75%, transparent);
+            background-size: 100px 100px;
+            animation: moveBackground 15s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes moveBackground {
+            0% { background-position: 0 0; }
+            100% { background-position: 100px 100px; }
         }
 
         .hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .hero p {
             font-size: 1.25rem;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .cta-button {
             background: white;
             color: var(--primary-color);
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
             text-decoration: none;
             font-weight: 600;
-            transition: transform 0.2s ease;
+            transition: var(--transition);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: inline-block;
         }
 
         .cta-button:hover {
-            transform: scale(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
         }
 
         .search-bar {
-            position: fixed;
+            position: sticky;
             top: 0;
-            left: 0;
-            right: 0;
             background-color: var(--card-bg);
             padding: 1rem;
             box-shadow: var(--shadow);
             z-index: 1000;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             gap: 1rem;
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .search-bar i {
-            position: absolute;
-            left: 1.5rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
         }
 
         .search-bar input {
-            max-width: 800px;
-            padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
             font-size: 1rem;
-            border-radius: 0.5rem;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow);
+            border-radius: 9999px;
+            border: 2px solid var(--border-color);
             background-color: var(--background);
             color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
         }
 
         .category-filter {
             display: flex;
             gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .category-filter button {
-            background: var(--accent-gradient);
-            color: white;
-            border: none;
-            border-radius: 0.5rem;
-            padding: 0.5rem 1rem;
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 9999px;
+            padding: 0.5rem 1.25rem;
             cursor: pointer;
-            font-size: 0.6rem;
-            box-shadow: var(--shadow);
+            font-size: 0.875rem;
+            font-weight: 500;
             transition: var(--transition);
         }
 
         .category-filter button.active {
-            background: var(--primary-hover);
-            transform: scale(1.05);
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
         }
 
         .category-filter button:hover {
-            transform: scale(1.05);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .category-filter button.active:hover {
+            color: white;
         }
 
         .post-list {
             max-width: 800px;
-            margin: 1rem auto 5rem auto;
+            margin: 2rem auto;
+            padding: 0 1rem;
         }
 
         .post-item {
@@ -150,51 +207,76 @@
             text-decoration: none;
             color: inherit;
             background-color: var(--card-bg);
-            border-radius: 1.25rem;
+            border-radius: 1.5rem;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
             box-shadow: var(--shadow);
             transition: var(--transition);
             border: 2px solid transparent;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            will-change: transform, opacity;
-        }
-
-        .post-item.visible {
-            opacity: 1;
-            transform: translateY(0);
+            position: relative;
+            overflow: hidden;
         }
 
         .post-item:hover {
-            transform: translateY(-2px);
+            transform: translateY(-4px);
             box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary-color);
         }
 
         .post-title {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 1rem;
             margin-bottom: 1rem;
         }
 
         .post-title i {
             color: var(--primary-color);
             font-size: 1.5rem;
+            background: rgba(59, 130, 246, 0.1);
+            padding: 0.75rem;
+            border-radius: 12px;
         }
 
         .post-title h2 {
             margin: 0;
             font-size: 1.5rem;
             font-weight: 700;
+            line-height: 1.3;
         }
 
         .post-description {
             font-size: 1rem;
             color: var(--text-secondary);
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
             line-height: 1.6;
+        }
+
+        .post-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .location, .price-range {
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .location {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--primary-color);
+        }
+
+        .price-range {
+            background-color: rgba(34, 197, 94, 0.1);
+            color: var(--success-color);
+            font-weight: 600;
         }
 
         .post-stats {
@@ -212,22 +294,29 @@
             gap: 0.5rem;
         }
 
-        .post-stats i {
-            color: var(--primary-color);
+        .post-timestamp {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .theme-toggle {
             position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            background: var(--accent-gradient);
-            color: white;
-            border: none;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
             border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
+            width: 3.5rem;
+            height: 3.5rem;
             cursor: pointer;
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -237,13 +326,15 @@
         }
 
         .theme-toggle:hover {
-            transform: scale(1.05);
+            transform: rotate(45deg);
+            border-color: var(--primary-color);
         }
 
         .icon-nav {
             position: fixed;
-            top: 12rem;
-            right: 1.5rem;
+            top: 50%;
+            right: 2rem;
+            transform: translateY(-50%);
             display: flex;
             flex-direction: column;
             gap: 1rem;
@@ -251,148 +342,160 @@
         }
 
         .icon-nav a {
-            background: var(--accent-gradient);
-            color: white;
-            border: none;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
             border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
-            cursor: pointer;
-            font-size: 1.25rem;
+            width: 3.5rem;
+            height: 3.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
             text-decoration: none;
+            font-size: 1.25rem;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
         }
 
         .icon-nav a:hover {
-            transform: scale(1.05);
+            transform: translateY(-4px);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
         }
 
-        .post-timestamp {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 10px;
-            font-size: 0.6rem;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .post-details {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            padding: 5px 0;
-        }
-
-        .location {
-            font-size: 14px;
-            color: #555;
-            background-color: #f3f3f3;
-            padding: 5px 10px;
-            border-radius: 5px;
-            display: inline-block;
-        }
-
-        .price-range {
-            font-size: 14px;
-            font-weight: bold;
-            color: #27ae60;
-            background-color: #eaf7eb;
-            padding: 5px 10px;
-            border-radius: 5px;
-            display: inline-block;
+        .icon-nav a:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
         }
 
         @media (max-width: 768px) {
-            .search-bar {
-                flex-direction: column;
-                gap: 0.5rem;
-                padding: 0.5rem;
+            .hero h1 {
+                font-size: 2.5rem;
             }
 
-            .search-bar input {
-                max-width: 100%;
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .search-bar {
+                padding: 0.75rem;
             }
 
             .category-filter {
-                width: 100%;
-                justify-content: center;
+                padding: 0 0.5rem;
+            }
+
+            .category-filter button {
+                padding: 0.4rem 1rem;
+                font-size: 0.75rem;
+            }
+
+            .post-item {
+                padding: 1.25rem;
+                border-radius: 1rem;
             }
 
             .icon-nav {
-                top: 10rem;
-                right: 1rem;
-                gap: 0.75rem;
+                bottom: 1.5rem;
+                right: 1.5rem;
             }
 
-            .icon-nav a {
-                width: 2.5rem;
-                height: 2.5rem;
+            .theme-toggle {
+                bottom: 1.5rem;
+                right: 1.5rem;
+            }
+
+            .icon-nav a, .theme-toggle {
+                width: 3rem;
+                height: 3rem;
                 font-size: 1rem;
             }
         }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .post-item {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .post-item:nth-child(1) { animation-delay: 0.1s; }
+        .post-item:nth-child(2) { animation-delay: 0.2s; }
+        .post-item:nth-child(3) { animation-delay: 0.3s; }
+        .post-item:nth-child(4) { animation-delay: 0.4s; }
+        .post-item:nth-child(5) { animation-delay: 0.5s; }
     </style>
 </head>
 <body>
-    <!-- Hero Section -->
     <div class="hero">
-        <h1>Welcome to Freelancers</h1>
-        <p>Find jobs, services, rentals, and opportunities. Post your offers and connect with the right people.</p>
-        <a href="{% url 'post_create' %}" class="cta-button">Post an Offer</a>
+        <h1>Welcome to <span style="color: #4ade80">FindIt</span></h1>
+        <p>Your one-stop platform to discover jobs, services, rentals, or reconnect with lost items.
+            <br><span style="color: #4ade80">Post offers, explore opportunities, and connect with the right people.</span>
+        </p>
+        <a href="{% url 'post_create' %}" class="cta-button">
+            <i class="fas fa-plus"></i> Post an Offer
+        </a>
     </div>
 
-    <!-- Search Bar with Category Filter -->
     <div class="search-bar">
-        <input type="text" id="search-input" placeholder="Search posts by title or description...">
+        <div class="search-container">
+<i class="fas fa-search search-icon"></i>
+            <input type="text" id="search-input" placeholder="Search posts by title or description...">
+        </div>
         <div class="category-filter">
-            <button onclick="filterPosts('all')" class="active">All</button>
-            <button onclick="filterPosts('job')">Job</button>
-            <button onclick="filterPosts('service')">Service</button>
-            <button onclick="filterPosts('rent')">Rent</button>
+            <button onclick="filterPosts('all')" class="active">All Posts</button>
+            <button onclick="filterPosts('job')">Jobs</button>
+            <button onclick="filterPosts('service')">Services</button>
+            <button onclick="filterPosts('rent')">Rentals</button>
             <button onclick="filterPosts('looking_for')">Looking For</button>
         </div>
     </div>
 
-    <!-- Theme Toggle -->
-    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
-
-    <!-- Post List -->
     <div class="post-list" id="post-list">
         {% for post in posts %}
             <a href="{% url 'post_detail' post.id %}" class="post-item" data-title="{{ post.title|lower }}" data-description="{{ post.description|lower }}" data-category="{{ post.category }}">
                 <span class="post-timestamp">
-                    <i class="fa-solid fa-clock"></i> {{ post.created_at|timesince }} ago
+                    <i class="far fa-clock"></i> {{ post.created_at|timesince }} ago
                 </span>
                 <div class="post-title">
-                    <i class="fa-solid fa-file-alt"></i>
+                    <i class="far fa-file-alt"></i>
                     <h2>{{ post.title }}</h2>
                 </div>
                 <p class="post-description">{{ post.description|truncatewords:20 }}</p>
                 <div class="post-details">
                     {% if post.location %}
-                        <span class="location"> <i class="fa fa-map-marker" aria-hidden="true"> </i> {{ post.location|upper }}</span>
+                        <span class="location">
+                            <i class="fas fa-map-marker-alt"></i> {{ post.location|upper }}
+                        </span>
                     {% endif %}
                     {% if post.price_range %}
-                        <span class="price-range">k {{ post.price_range }}</span>
+                        <span class="price-range">
+                            <i class="fas fa-tag"></i> k{{ post.price_range }}
+                        </span>
                     {% endif %}
                 </div>
                 <div class="post-stats">
-                    <span><i class="fa-solid fa-eye"></i> {{ post.views }} visits</span>
-                    <span><i class="fa-solid fa-tag"></i> {{ post.get_category_display }}</span>
+                    <span><i class="fas fa-eye"></i> {{ post.views }} views</span>
+                    <span><i class="fas fa-folder"></i> {{ post.get_category_display }}</span>
                 </div>
             </a>
         {% endfor %}
     </div>
 
-    <!-- Icon Navigation -->
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <i class="fas fa-moon"></i>
+    </button>
+
     <nav class="icon-nav">
         <a href="{% url 'business-list' %}" title="Home">
             <i class="fas fa-home"></i>
@@ -406,86 +509,126 @@
     </nav>
 
     <script>
-        // Debounce function to limit the rate at which a function can fire
+        // Improved debounce function
         function debounce(func, wait) {
             let timeout;
-            return function(...args) {
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
                 clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), wait);
+                timeout = setTimeout(later, wait);
             };
         }
 
-        // Dark mode toggle
+        // Dark mode functionality
         const themeToggle = document.getElementById('theme-toggle');
         const body = document.body;
+        const themeIcon = themeToggle.querySelector('i');
 
+        // Check for saved theme preference
         const isDarkMode = localStorage.getItem('darkMode') === 'true';
         if (isDarkMode) {
             body.classList.add('dark-mode');
-            themeToggle.textContent = '☀️';
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
         }
 
+        // Theme toggle handler
         themeToggle.addEventListener('click', () => {
             body.classList.toggle('dark-mode');
             const isDark = body.classList.contains('dark-mode');
-            themeToggle.textContent = isDark ? '☀️' : '🌙';
+
+            // Animate icon change
+            themeIcon.style.transform = 'rotate(180deg)';
+            setTimeout(() => {
+                themeIcon.classList.toggle('fa-moon', !isDark);
+                themeIcon.classList.toggle('fa-sun', isDark);
+                themeIcon.style.transform = 'rotate(0deg)';
+            }, 150);
+
             localStorage.setItem('darkMode', isDark);
         });
 
-        // Search functionality
+        // Enhanced search functionality
         const searchInput = document.getElementById('search-input');
         const postList = document.getElementById('post-list');
         const postItems = postList.getElementsByClassName('post-item');
-        const noResults = document.getElementById('no-results');
 
         const handleSearch = debounce(() => {
             const searchTerm = searchInput.value.trim().toLowerCase();
-            let visibleCount = 0;
+            const activeCategory = document.querySelector('.category-filter button.active').textContent.toLowerCase();
 
             Array.from(postItems).forEach((post) => {
                 const title = post.getAttribute('data-title');
                 const description = post.getAttribute('data-description');
+                const category = post.getAttribute('data-category');
 
-                if (title.includes(searchTerm) || description.includes(searchTerm)) {
-                    post.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    post.style.display = 'none';
+                const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+                const matchesCategory = activeCategory === 'all posts' || category === activeCategory.slice(0, -1); // Remove 's' from category name
+
+                post.style.display = matchesSearch && matchesCategory ? 'block' : 'none';
+
+                // Reset and re-apply animation
+                if (matchesSearch && matchesCategory) {
+                    post.style.animation = 'none';
+                    post.offsetHeight; // Trigger reflow
+                    post.style.animation = null;
                 }
             });
-
-            noResults.style.display = visibleCount === 0 ? 'block' : 'none';
         }, 300);
 
         searchInput.addEventListener('input', handleSearch);
 
-        // Category filter functionality
+        // Enhanced category filter
         function filterPosts(category) {
             const buttons = document.querySelectorAll('.category-filter button');
-            buttons.forEach(button => button.classList.remove('active'));
-            event.target.classList.add('active');
+            const searchTerm = searchInput.value.trim().toLowerCase();
 
-            let visibleCount = 0;
-
-            Array.from(postItems).forEach((post) => {
-                const postCategory = post.getAttribute('data-category');
-                if (category === 'all' || postCategory === category) {
-                    post.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    post.style.display = 'none';
+            buttons.forEach(button => {
+                button.classList.remove('active');
+                if (button.textContent.toLowerCase().includes(category)) {
+                    button.classList.add('active');
                 }
             });
 
-            noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+            Array.from(postItems).forEach((post) => {
+                const title = post.getAttribute('data-title');
+                const description = post.getAttribute('data-description');
+                const postCategory = post.getAttribute('data-category');
+
+                const matchesSearch = !searchTerm || title.includes(searchTerm) || description.includes(searchTerm);
+                const matchesCategory = category === 'all' || postCategory === category;
+
+                post.style.display = matchesSearch && matchesCategory ? 'block' : 'none';
+
+                // Reset and re-apply animation
+                if (matchesSearch && matchesCategory) {
+                    post.style.animation = 'none';
+                    post.offsetHeight; // Trigger reflow
+                    post.style.animation = null;
+                }
+            });
         }
 
-        // Fade-in animation for posts
+        // Initialize animations on load
         document.addEventListener('DOMContentLoaded', () => {
-            const posts = document.querySelectorAll('.post-item');
-            posts.forEach((post, index) => {
-                setTimeout(() => post.classList.add('visible'), index * 100);
+            // Add intersection observer for animation on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1
             });
+
+            // Observe all post items
+            postItems.forEach(post => observer.observe(post));
         });
     </script>
 </body>

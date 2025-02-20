@@ -25,8 +25,10 @@ def register(request):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
-            return redirect('profile')  # Redirect to the home page or any other page
+            # Check if profile exists before creating
+            if not UserProfile.objects.filter(user=user).exists():
+                UserProfile.objects.create(user=user)
+            return redirect('login')
     else:
         form = UserRegistrationForm()
     return render(request, 'registration/register.html', {'form': form})
@@ -38,34 +40,40 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import UserUpdateForm, ProfileUpdateForm, BusinessUpdateForm
 from .models import Category
+from django.db import transaction
+
 
 @login_required
 def profile(request):
-    user = request.user
-    profile = user.profile
-    business = profile.business
-
     if request.method == 'POST':
-        user_form = UserUpdateForm(request.POST, instance=user)
-        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
-        business_form = BusinessUpdateForm(request.POST, request.FILES, instance=business)
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        business = request.user.businesses.first()
+        business_form = BusinessUpdateForm(request.POST, request.FILES, instance=business) if business else None
 
-        if user_form.is_valid() and profile_form.is_valid() and business_form.is_valid():
-            user_form.save()
-            profile_form.save()
-            business_form.save()
-            return redirect('profile')  # Redirect to the profile page after saving
+        if all(form.is_valid() for form in filter(None, [user_form, profile_form, business_form])):
+            try:
+                with transaction.atomic():
+                    user_form.save()
+                    profile_form.save()
+                    if business_form:
+                        business_form.save()
+                messages.success(request, 'Profile updated successfully!')
+                return redirect('profile')
+            except Exception as e:
+                messages.error(request, f'An error occurred: {str(e)}')
+        else:
+            messages.error(request, 'Please correct the errors below.')
     else:
-        user_form = UserUpdateForm(instance=user)
-        profile_form = ProfileUpdateForm(instance=profile)
-        business_form = BusinessUpdateForm(instance=business)
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=request.user.profile)
+        business = request.user.businesses.first()
+        business_form = BusinessUpdateForm(instance=business) if business else None
 
-    categories = Category.objects.all()
     return render(request, 'registration/profile.html', {
         'user_form': user_form,
         'profile_form': profile_form,
         'business_form': business_form,
-        'categories': categories,
     })
 
 def offline(request):

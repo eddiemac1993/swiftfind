@@ -150,7 +150,7 @@
 
 .business-logo img {
     width: 100%;
-    height: 150px;
+    height: 250px;
     object-fit: cover;
 }
 
@@ -509,7 +509,7 @@
                 <img src="{{ business.logo.url }}" alt="{{ business.name }} Logo" loading="lazy">
             </div>
             <div class="business-info">
-                <h1>{{ business.name }}</h1>
+                <h1><strong>{{ business.name }}</strong></h1>
                 <p><strong>Category:</strong> {{ business.category.name }}</p>
                 <p><strong>Address:</strong> {{ business.address }}</p>
                 <p><strong>Phone:</strong> <span id="phone-number">{{ business.phone_number }}</span></p>

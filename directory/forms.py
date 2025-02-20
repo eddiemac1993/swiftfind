@@ -27,7 +27,6 @@ class BusinessUpdateForm(forms.ModelForm):
 
 class UserRegistrationForm(UserCreationForm):
     business_name = forms.CharField(max_length=200, required=True)
-    business_description = forms.CharField(widget=forms.Textarea, required=True)
     business_address = forms.CharField(max_length=255, required=True)
     business_phone_number = forms.CharField(max_length=15, required=True)
     business_email = forms.EmailField(required=True)
@@ -36,7 +35,7 @@ class UserRegistrationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2', 'business_name', 'business_description', 'business_address', 'business_phone_number', 'business_email', 'business_website', 'business_city']
+        fields = ['username', 'email', 'password1', 'password2', 'business_name', 'business_address', 'business_phone_number', 'business_email', 'business_website', 'business_city']
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -44,15 +43,14 @@ class UserRegistrationForm(UserCreationForm):
             user.save()
             business = Business.objects.create(
                 name=self.cleaned_data['business_name'],
-                description=self.cleaned_data['business_description'],
                 address=self.cleaned_data['business_address'],
                 phone_number=self.cleaned_data['business_phone_number'],
                 email=self.cleaned_data['business_email'],
-                website=self.cleaned_data['business_website'],
+                website=self.cleaned_data.get('business_website', ''),
                 city=self.cleaned_data['business_city'],
                 owner=user
             )
-            UserProfile.objects.create(user=user, business=business)
+            UserProfile.objects.get_or_create(user=user, defaults={'business': business})
         return user
 
 class ReviewForm(forms.ModelForm):
