@@ -1,4 +1,5 @@
 {% load static %}
+{% load jcustom_filters %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -532,7 +533,78 @@
     display: inline-block;
     animation: fadeInUp 1s ease;
 }
+/* Newsfeed Card Styles */
+.newsfeed-section {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 1rem;
+    background-color: var(--card-bg);
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow);
+}
 
+.newsfeed-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.newsfeed-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.newsfeed-section li {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: var(--background);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.newsfeed-section li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.newsfeed-section li a {
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+.newsfeed-section li h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.newsfeed-section li p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Responsive Design for Newsfeed */
+@media (max-width: 768px) {
+    .newsfeed-section {
+        padding: 0.5rem;
+    }
+
+    .newsfeed-section h2 {
+        font-size: 1.25rem;
+    }
+
+    .newsfeed-section li h3 {
+        font-size: 1rem;
+    }
+
+    .newsfeed-section li p {
+        font-size: 0.75rem;
+    }
+}
 /* Animation for Fade In */
 @keyframes fadeInUp {
     from {
@@ -558,7 +630,7 @@
         <h1>Discover Local Businesses</h1>
         <p>Find the best businesses in your area. Search by name, category, or location.</p>
         <div class="business-count">
-            Showing {{ page_obj.paginator.count }} businesses.
+            Showing {{ businesses_count }} businesses / {{ page_obj.paginator.count }} posts.
         </div>
 
     </div>
@@ -588,6 +660,7 @@
         <button type="submit">Search</button>
     </form>
 
+<!-- Business List -->
 <!-- Business List -->
 <div class="business-list">
     {% if page_obj.object_list %}
@@ -631,6 +704,7 @@
                         </div>
                     </div>
                 </a>
+
             {% elif item.0 == 'advertisement' %}
                 <!-- Display Advertisement -->
                 <div class="advertisement">
@@ -638,6 +712,20 @@
                         <img src="{{ item.1.image.url }}" alt="{{ item.1.title }}" class="ad-image">
                     </a>
                     <p class="ad-text">{{ item.1.small_text }}</p>
+                </div>
+
+            {% elif item.0 == 'newsfeed' %}
+                <!-- Display Newsfeed -->
+                <div class="newsfeed-section">
+                    <h2>Latest {{ item.1.get_category_display }}</h2>
+                    <ul>
+                        <li>
+                            <a href="{{ item.1.get_absolute_url }}">
+                                <h3>{{ item.1.title }}</h3>
+                                <p>{{ item.1.get_category_display }}</p>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             {% endif %}
         {% endfor %}

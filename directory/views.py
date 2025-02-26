@@ -19,6 +19,53 @@ from .models import UserProfile
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from .forms import UserRegistrationForm
+from .models import NewsFeed
+from .models import Advertisement
+
+def become_partner(request):
+    return render(request, 'directory/become_partner.html')
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import NewsFeed, Comment
+from .forms import CommentForm
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import NewsFeed, Comment
+from .forms import CommentForm
+
+def newsfeed_detail(request, pk):
+    newsfeed = get_object_or_404(NewsFeed, pk=pk)
+
+    # Handle comment submission
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.newsfeed = newsfeed  # Associate the comment with the newsfeed
+            if request.user.is_authenticated:
+                comment.user = request.user  # Associate the comment with the logged-in user
+            comment.save()
+            messages.success(request, 'Your comment has been posted!')
+            return redirect('newsfeed_detail', pk=newsfeed.pk)
+    else:
+        form = CommentForm()
+
+    # Fetch approved comments for this newsfeed
+    comments = Comment.objects.filter(newsfeed=newsfeed, is_approved=True).order_by('-created_at')
+
+    # Get previous and next newsfeed posts
+    previous_newsfeed = NewsFeed.objects.filter(created_at__lt=newsfeed.created_at).order_by('-created_at').first()
+    next_newsfeed = NewsFeed.objects.filter(created_at__gt=newsfeed.created_at).order_by('created_at').first()
+
+    return render(request, 'directory/newsfeed_detail.html', {
+        'newsfeed': newsfeed,
+        'previous_newsfeed': previous_newsfeed,
+        'next_newsfeed': next_newsfeed,
+        'form': form,
+        'comments': comments,
+    })
 
 def register(request):
     if request.method == 'POST':
@@ -167,13 +214,23 @@ def business_list(request):
         is_active=True        # Advertisements that are active
     )
 
-    # Combine businesses and advertisements
+    # Fetch newsfeeds
+    newsfeeds = NewsFeed.objects.all().order_by('-created_at')[:5]  # Adjust the number as needed
+
+    # Combine businesses, advertisements, and newsfeeds
     combined_list = []
     ad_index = 0
+    newsfeed_index = 0
     interval = 5  # Show an ad after every 5 businesses
+    newsfeed_interval = 2  # Show a newsfeed after every 2 businesses
 
     for i, business in enumerate(businesses, start=1):
         combined_list.append(('business', business))  # Add business to the list
+
+        # Add a newsfeed after every `newsfeed_interval` businesses
+        if i % newsfeed_interval == 0 and newsfeed_index < len(newsfeeds):
+            combined_list.append(('newsfeed', newsfeeds[newsfeed_index]))
+            newsfeed_index += 1
 
         # Add an ad after every `interval` businesses
         if i % interval == 0 and active_ads.exists():
@@ -187,6 +244,7 @@ def business_list(request):
     page_obj = paginator.get_page(page_number)
 
     # Count businesses on the current page
+    businesses_count = businesses.count()
     businesses_count_on_page = len([item for item in page_obj.object_list if item[0] == 'business'])
 
     # Fetch all categories for the sidebar/filter
@@ -200,6 +258,7 @@ def business_list(request):
         'selected_category': category,
         'sort_by': sort_by,
         'businesses_count_on_page': businesses_count_on_page,
+        'businesses_count': businesses_count,
     })
 
 

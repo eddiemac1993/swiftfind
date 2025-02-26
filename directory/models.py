@@ -7,6 +7,42 @@ from django.db.models import Avg
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from django.utils import timezone
+from ckeditor.fields import RichTextField
+
+class NewsFeed(models.Model):
+    CATEGORY_CHOICES = [
+        ('story', 'Story'),
+        ('weather', 'Weather'),
+        ('food', 'Food'),
+        ('news', 'News'),
+        ('event', 'Event'),
+        ('other', 'Other'),
+    ]
+
+    title = models.CharField(max_length=200)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='news')
+    content = RichTextField()
+    image = models.ImageField(upload_to='newsfeed_images/', blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('newsfeed_detail', args=[str(self.id)])
+
+
+class Comment(models.Model):
+    newsfeed = models.ForeignKey('NewsFeed', on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # Optional: Track logged-in users
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_approved = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Comment on {self.newsfeed.title}"
 
 class Advertisement(models.Model):
     SLOT_CHOICES = [(i, f'Slot {i}') for i in range(1, 11)]  # 10 slots

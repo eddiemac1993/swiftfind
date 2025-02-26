@@ -4,6 +4,20 @@ from django import forms
 from django.utils.text import slugify
 from django.shortcuts import redirect
 from .models import SearchQuery
+from .models import NewsFeed
+from django.utils.html import format_html
+
+class NewsFeedAdmin(admin.ModelAdmin):
+    list_display = ('title', 'category', 'created_at', 'preview_content')
+    list_filter = ('category', 'created_at')
+    search_fields = ('title', 'content')
+
+    def preview_content(self, obj):
+        """ Show a short preview of the content with HTML rendering """
+        return format_html(obj.content[:100] + "...")  # Show first 100 characters safely
+    preview_content.short_description = "Content Preview"
+
+admin.site.register(NewsFeed, NewsFeedAdmin)
 
 @admin.register(Advertisement)
 class AdvertisementAdmin(admin.ModelAdmin):

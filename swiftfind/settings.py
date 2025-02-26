@@ -47,7 +47,17 @@ INSTALLED_APPS = [
     'pos',
     'posts',
     'order',
+    'ckeditor',
 ]
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': '100%',
+    },
+}
+
 
 # Specify the ASGI application
 ASGI_APPLICATION = 'swiftfind.asgi.application'

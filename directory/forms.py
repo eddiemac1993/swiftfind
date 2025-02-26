@@ -9,6 +9,12 @@ from .models import UserProfile, Business
 from django import forms
 from django.contrib.auth.models import User
 from .models import UserProfile, Business
+from .models import Comment
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
 
 class UserUpdateForm(forms.ModelForm):
     class Meta:

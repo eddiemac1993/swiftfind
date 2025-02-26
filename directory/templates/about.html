@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#000000">
     <meta name="description" content="Business Directory PWA">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us - SwiftFind</title>
     <link rel="manifest" href="{% static 'manifest.json' %}">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
@@ -15,7 +14,7 @@
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-<style>
+    <style>
         /* Global Variables */
         :root {
             --primary-color: #2563eb;
@@ -43,9 +42,9 @@
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: var(--background);
             margin: 0;
-            padding: 2rem;
+            padding: 0;
             color: var(--text-primary);
-            line-height: 1.5;
+            line-height: 1.6;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
@@ -66,20 +65,40 @@
         .hero {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
             color: white;
-            padding: 4rem 2rem;
+            padding: 6rem 2rem;
             text-align: center;
-            border-radius: 1rem;
             margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.1);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
         }
 
         .hero h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             margin-bottom: 1rem;
+            font-weight: 700;
         }
 
         .hero p {
             font-size: 1.25rem;
             color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         /* About Content Section */
@@ -90,12 +109,16 @@
             background-color: var(--card-bg);
             border-radius: 1rem;
             box-shadow: var(--shadow);
+            margin-top: -4rem;
+            position: relative;
+            z-index: 2;
         }
 
         .about-content h2 {
             font-size: 2rem;
             margin-bottom: 1.5rem;
             color: var(--text-primary);
+            font-weight: 600;
         }
 
         .about-content p {
@@ -105,48 +128,124 @@
             margin-bottom: 1.5rem;
         }
 
-        /* Team Section */
-        .team-section {
-            margin-top: 3rem;
+        .about-content ul {
+            list-style: none;
+            padding: 0;
         }
 
-        .team-section h2 {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
+        .about-content ul li {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            position: relative;
         }
 
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
+        .about-content ul li::before {
+            content: '✔';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
         }
 
-        .team-member {
+        /* Partner Section */
+        .partner-section {
+            margin-top: 4rem;
+            padding: 2rem;
             background-color: var(--card-bg);
             border-radius: 1rem;
-            padding: 1.5rem;
+            box-shadow: var(--shadow);
             text-align: center;
         }
 
-        .team-member img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
+        .partner-section h2 {
+            font-size: 2rem;
             margin-bottom: 1rem;
+            color: var(--text-primary);
+            font-weight: 600;
         }
 
-        .team-member h3 {
+        .partner-subtitle {
             font-size: 1.25rem;
-            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .partner-content {
+            display: flex;
+            gap: 2rem;
+            justify-content: space-between;
+            align-items: flex-start;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .partner-benefits {
+            text-align: left;
+            flex: 1;
+        }
+
+        .partner-benefits h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
             color: var(--text-primary);
         }
 
-        .team-member p {
-            font-size: 0.875rem;
+        .partner-benefits ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .partner-benefits ul li {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+            position: relative;
             color: var(--text-secondary);
         }
+
+        .partner-benefits ul li::before {
+            content: '✔';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .partner-cta {
+            background-color: var(--primary-color);
+            padding: 2rem;
+            border-radius: 1rem;
+            color: white;
+            text-align: center;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .partner-cta h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .partner-cta p {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-button {
+            background-color: white;
+            color: var(--primary-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .cta-button:hover {
+            background-color: var(--primary-hover);
+            color: white;
+        }
+
 
         /* Footer Section */
         .footer {
@@ -227,7 +326,17 @@
             box-shadow: var(--shadow);
             z-index: 1000;
         }
+        /* Responsive Design for Partner Section */
+        @media (max-width: 768px) {
+            .partner-content {
+                flex-direction: column;
+                align-items: center;
+            }
 
+            .partner-cta {
+                max-width: 100%;
+            }
+        }
         /* Responsive Design */
         @media (max-width: 768px) {
             body {
@@ -235,11 +344,16 @@
             }
 
             .hero {
-                padding: 2rem 1rem;
+                padding: 4rem 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
             }
 
             .about-content {
                 padding: 1rem;
+                margin-top: -2rem;
             }
 
             .team-grid {
@@ -315,24 +429,40 @@
                 negotiations, or support.
             </li>
         </ul>
+    </div>
 
-        <!-- Team Section -->
-        <div class="team-section">
-            <h2>Meet Our Team</h2>
-            <hr>
-            <div class="team-grid">
-                <!-- Team Member 1 -->
-                <div class="team-member">
-                    <img src="{% static 'default.jpg' %}" alt="Team Member 1">
-                    <h3>EDWARD BAJU MANJOLO</h3>
-                    <p>Co-Founder & CEO</p>
-                </div>
-                <!-- Add more team members here if needed -->
+    <!-- Become Our Partner Section -->
+    <section class="partner-section">
+        <h2>Become Our Partner</h2>
+        <p class="partner-subtitle">Join SwiftFind and grow your business with us!</p>
+        <div class="partner-content">
+            <div class="partner-benefits">
+                <h3>Why Partner With Us?</h3>
+                <ul>
+                    <li>
+                        <strong>Increased Visibility:</strong> Reach thousands of potential customers in your local area.
+                    </li>
+                    <li>
+                        <strong>Verified Profiles:</strong> Build trust with customers through verified business profiles.
+                    </li>
+                    <li>
+                        <strong>Exclusive Offers:</strong> Promote special deals and discounts to attract more customers.
+                    </li>
+                    <li>
+                        <strong>Seamless Communication:</strong> Connect with customers directly through our platform.
+                    </li>
+                    <li>
+                        <strong>Analytics Dashboard:</strong> Track your performance and customer engagement with our tools.
+                    </li>
+                </ul>
             </div>
-                <!-- Add more team members here if needed -->
+            <div class="partner-cta">
+                <h3>Ready to Join?</h3>
+                <p>Sign up today and start growing your business with SwiftFind.</p>
+                <a href="https://wa.me/+260772447190?text=Hi%2C%20I%27m%20interested%20in%20becoming%20a%20partner%20with%20SwiftFind%21" class="cta-button" target="_blank">Become a Partner</a>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- Footer Section -->
     <footer class="footer">
