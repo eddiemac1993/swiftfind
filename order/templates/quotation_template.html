@@ -1,81 +1,113 @@
-{% load custom_filters %}
+{% load pcustom_filters %}
 {% load humanize %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quotation</title>
+    <title>SwiftFind Quotation</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9fafb;
-            padding: 20px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
         }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
         .quotation-container {
             max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
-            background-color: #ffffff;
-            border: 1px solid #e5e7eb;
+            background-color: white;
+            padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+        
         h1 {
-            font-size: 24px;
-            font-weight: bold;
-            color: #1f2937;
-            text-align: center;
+            color: #2a5885;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eaeaea;
             margin-bottom: 20px;
+            font-size: 24px;
         }
+        
         ul {
-            list-style: none;
-            padding: 0;
+            list-style-type: none;
+            margin-bottom: 30px;
         }
+        
         li {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #e5e7eb;
+            padding: 12px 0;
+            border-bottom: 1px solid #eaeaea;
         }
-        li:last-child {
-            border-bottom: none;
+        
+        li span:first-child {
+            flex: 2;
+            font-weight: 500;
         }
-        .total-amount {
-            font-size: 18px;
-            font-weight: bold;
-            color: #1f2937;
-            text-align: right;
-            margin-top: 20px;
-        }
-        .whatsapp-link {
-            display: block;
+        
+        li span:nth-child(2) {
+            flex: 1;
             text-align: center;
-            margin-top: 20px;
-            color: #ffffff;
-            background-color: #25d366;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
+            color: #666;
         }
-        .whatsapp-link:hover {
-            background-color: #128c7e;
+        
+        li span:last-child {
+            flex: 1;
+            text-align: right;
+            font-weight: 600;
         }
+        
+        .total-amount {
+            text-align: right;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 20px 0;
+            padding: 10px 0;
+            border-top: 2px solid #eaeaea;
+            color: #2a5885;
+        }
+        
         .payment-terms {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f3f4f6;
-            border-radius: 5px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 30px;
         }
+        
         .payment-terms h2 {
             font-size: 18px;
-            font-weight: bold;
-            color: #1f2937;
+            margin-bottom: 15px;
+            color: #2a5885;
+        }
+        
+        .payment-terms p {
             margin-bottom: 10px;
         }
-        .payment-terms p {
-            margin: 5px 0;
-            color: #4b5563;
+        
+        .payment-terms strong {
+            color: #2a5885;
+        }
+        
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            
+            .quotation-container {
+                box-shadow: none;
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -92,13 +124,12 @@
             {% endfor %}
         </ul>
         <p class="total-amount">Total Amount: K {{ cart.total_amount|intcomma }}</p>
-        
         <!-- Payment Terms Section -->
         <div class="payment-terms">
             <h2>Payment Terms</h2>
-            <p><strong>50% upfront:</strong> K {{ cart.total_amount|multiply:0.5|intcomma }} (to be paid immediately)</p>
-            <p><strong>20% after one week:</strong> K {{ cart.total_amount|multiply:0.2|intcomma }} (to be paid after 7 days)</p>
-            <p><strong>30% after another week:</strong> K {{ cart.total_amount|multiply:0.3|intcomma }} (to be paid after 14 days)</p>
+            <p><strong>Deposit:</strong> K {{ cart.total_amount|multiply:0.7|intcomma }} (to be paid immediately)</p>
+            <p><strong>Transport Fee:</strong> K {{ cart.total_amount|multiply:0.1|intcomma }} (to be paid for transportation)</p>
+            <p><strong>Payment after week:</strong> K {{ cart.total_amount|multiply:0.2|intcomma }} (to be paid after 7 days)</p>
         </div>
     </div>
 </body>

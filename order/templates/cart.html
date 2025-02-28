@@ -16,6 +16,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -36,6 +38,58 @@
                 document.documentElement.classList.add('dark');
             }
         });
+
+        function updateQuantity(itemId, newQuantity) {
+            fetch('{% url "update_cart" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    item_id: itemId,
+                    quantity: newQuantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            });
+        }
+
+        function generateQuotation() {
+            fetch('{% url "generate_quotation" %}', {
+                method: 'GET',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Open WhatsApp in new tab
+                    window.location.href = data.whatsapp_url;
+
+                    // Generate PDF
+                    generatePDF(data.html_content);
+                }
+            });
+        }
+
+        function generatePDF(htmlContent) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.html(htmlContent, {
+                callback: function (doc) {
+                    doc.save('quotation.pdf');
+                },
+                x: 10,
+                y: 10
+            });
+        }
     </script>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 dark:text-white">
@@ -94,7 +148,7 @@
                 </a>
                 <button onclick="generateQuotation()"
                         class="px-6 py-2 bg-green-500 dark:bg-green-600 text-white rounded-lg hover:bg-green-600 dark:hover:bg-green-500 transition flex items-center">
-                    <i class="fas fa-check mr-2"></i> Pdf Quotation
+                    <i class="fas fa-check mr-2"></i> Generate Quotation
                 </button>
             </div>
         </div>
@@ -107,47 +161,6 @@
         </div>
         {% endif %}
     </div>
-
-    <script>
-        function updateQuantity(itemId, newQuantity) {
-            fetch('{% url "update_cart" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({
-                    item_id: itemId,
-                    quantity: newQuantity
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                }
-            });
-        }
-
-function generateQuotation() {
-    fetch('{% url "generate_quotation" %}', {
-        method: 'GET',
-        headers: {
-            'X-CSRFToken': '{{ csrf_token }}'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Open WhatsApp in new tab
-            window.open(data.whatsapp_url, '_blank');
-
-            // Optionally, open the PDF in a new tab
-            window.open(data.pdf_url, '_blank');
-        }
-    });
-}
-    </script>
 
     <!-- Font Awesome for Icons -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
