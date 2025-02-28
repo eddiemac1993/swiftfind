@@ -262,7 +262,7 @@
 
         <div class="form-group">
             <label for="{{ form.description.id_for_label }}">Description</label>
-            {{ form.description }}
+            {{ form.description|safe }}
             <small class="form-text text-muted">Describe your business (optional).</small>
         </div>
 

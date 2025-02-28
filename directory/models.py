@@ -16,6 +16,8 @@ class NewsFeed(models.Model):
         ('food', 'Food'),
         ('news', 'News'),
         ('event', 'Event'),
+        ('sports', 'Sports'),
+        ('over18', 'Over 18'),
         ('other', 'Other'),
     ]
 
@@ -104,7 +106,7 @@ class Business(models.Model):
     )
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='businesses', null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
-    description = models.TextField(blank=True, null=True)
+    description = RichTextField(blank=True, null=True)
     address = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=15)
     is_admin_added = models.BooleanField(default=False)

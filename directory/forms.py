@@ -26,10 +26,17 @@ class ProfileUpdateForm(forms.ModelForm):
         model = UserProfile
         fields = ['profile_picture', 'phone_number', 'address', 'bio']
 
+from django import forms
+from .models import Business
+from ckeditor.widgets import CKEditorWidget  # Import CKEditor widget
+
 class BusinessUpdateForm(forms.ModelForm):
+    description = forms.CharField(widget=CKEditorWidget(), required=False)
+
     class Meta:
         model = Business
         fields = ['logo', 'name', 'email', 'city', 'phone_number', 'category', 'description']
+
 
 class UserRegistrationForm(UserCreationForm):
     business_name = forms.CharField(max_length=200, required=True)
@@ -83,10 +90,17 @@ class UserProfileForm(forms.ModelForm):
         model = UserProfile
         fields = ['profile_picture', 'phone_number', 'address', 'bio']
 
+from django import forms
+from .models import Business
+from ckeditor.widgets import CKEditorWidget  # Import CKEditor widget
+
 class BusinessForm(forms.ModelForm):
+    description = forms.CharField(widget=CKEditorWidget(), required=False)
+
     class Meta:
         model = Business
-        fields = ['logo', 'name','address', 'email', 'city', 'phone_number', 'category', 'description']
+        fields = ['logo', 'name', 'address', 'email', 'city', 'phone_number', 'category', 'description']
+
 
 from django import forms
 from .models import BusinessImage

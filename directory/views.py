@@ -22,6 +22,25 @@ from .forms import UserRegistrationForm
 from .models import NewsFeed
 from .models import Advertisement
 
+def newsfeed_list(request):
+    category = request.GET.get('category', None)
+    newsfeed_items = NewsFeed.objects.all().order_by('-created_at')
+
+    # Filter by category if a category is selected
+    if category:
+        newsfeed_items = newsfeed_items.filter(category=category)
+
+    paginator = Paginator(newsfeed_items, 10)  # Show 10 items per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Pass CATEGORY_CHOICES to the template
+    context = {
+        'newsfeed_items': page_obj,
+        'category_choices': NewsFeed.CATEGORY_CHOICES,  # Add this line
+    }
+    return render(request, 'directory/newsfeed_list.html', context)
+
 def become_partner(request):
     return render(request, 'directory/become_partner.html')
 

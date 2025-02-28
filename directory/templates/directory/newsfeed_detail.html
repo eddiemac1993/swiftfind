@@ -154,13 +154,13 @@
         <nav class="mb-6 text-sm md:text-base">
             <ol class="flex items-center space-x-2">
                 <li>
-                    <a href="{% url 'business-list' %}" class="text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300">
-                        <i class="fas fa-home"></i> Home
+                    <a href="{% url 'newsfeed-list' %}" class="text-primary-600 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300">
+                        <i class="fas fa-newspaper"></i> Newsfeed
                     </a>
                 </li>
                 <li class="flex items-center">
                     <span class="mx-2 text-gray-500">/</span>
-                    <span class="text-gray-600 dark:text-gray-400">Newsfeed</span>
+                    <span class="text-gray-600 dark:text-gray-400">{{ newsfeed.get_category_display }}</span>
                 </li>
             </ol>
         </nav>
@@ -201,18 +201,22 @@
 
             <!-- Share section -->
             <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-                <h3 class="text-base font-semibold mb-4">Share this article</h3>
+                <h3 class="text-base font-semibold mb-4 text-slate-900 dark:text-white">Share this article</h3>
                 <div class="flex flex-wrap gap-3">
                     <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}"
                        target="_blank" rel="noopener noreferrer"
                        class="inline-flex items-center px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors">
                         <i class="fab fa-facebook-f mr-2"></i> Facebook
                     </a>
-                    <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ newsfeed.title }}"
-                       target="_blank" rel="noopener noreferrer"
-                       class="inline-flex items-center px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-600 text-white transition-colors">
-                        <i class="fab fa-twitter mr-2"></i> Twitter
-                    </a>
+<a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ newsfeed.title }}"
+   target="_blank" rel="noopener noreferrer"
+   class="inline-flex items-center px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-600 text-white transition-colors">
+    <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <!-- Add the "X" logo SVG path here -->
+        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+    </svg>
+    X
+</a>
                     <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}&title={{ newsfeed.title }}"
                        target="_blank" rel="noopener noreferrer"
                        class="inline-flex items-center px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-800 text-white transition-colors">
@@ -289,7 +293,7 @@
     </div>
 </section>
 
-                <!-- Back to business link -->
+        <!-- Previous and Next Buttons -->
         <div class="text-center mb-8 fade-in" style="animation-delay: 0.3s;">
             <div class="flex justify-center gap-4">
                 <!-- Previous Button -->
@@ -317,6 +321,7 @@
                 {% endif %}
             </div>
         </div>
+
         <!-- Advertisements Section -->
         <section class="mb-8 fade-in" style="animation-delay: 0.4s;">
             <h2 class="text-xl font-bold mb-4 text-slate-900 dark:text-white">Sponsored Content</h2>
@@ -343,7 +348,7 @@
                 <h2 class="text-2xl font-bold text-white mb-4">Become a Partner</h2>
                 <p class="text-white mb-6">Join us and grow your business with SwiftFind. Partner with us today!</p>
                 <a href="{% url 'become-partner' %}"
-                   class="inline-flex items-center justify-center px-6 py-3 bg-white text-primary-600 rounded-lg font-semibold hover:bg-black-100 transition-colors">
+                   class="inline-flex items-center justify-center px-6 py-3 bg-white text-primary-700 font-medium hover:bg-gray-100 transition-colors dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700">
                     Get Started <i class="fas fa-arrow-right ml-2"></i>
                 </a>
             </div>

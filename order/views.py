@@ -114,13 +114,12 @@ def update_cart(request):
             })
     return JsonResponse({'success': False})
 
-from django.http import JsonResponse
+from django.urls import reverse
+from django.http import HttpResponse
 from django.template.loader import render_to_string
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
-import os
-from datetime import datetime
 from weasyprint import HTML
+import tempfile
+import os
 
 def generate_quotation(request):
     cart_id = request.session.get('cart_id')
@@ -137,29 +136,31 @@ def generate_quotation(request):
         # Generate quotation HTML
         html_content = render_to_string('quotation_template.html', context)
 
-        # Generate PDF using WeasyPrint
-        pdf_file = HTML(string=html_content).write_pdf()
+        # Generate PDF
+        pdf_file = tempfile.NamedTemporaryFile(delete=False, suffix='.pdf')
+        HTML(string=html_content).write_pdf(pdf_file.name)
+        pdf_file.close()
 
-        # Save the PDF temporarily
-        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        pdf_filename = f"quotation_{timestamp}.pdf"
-        pdf_path = default_storage.save(pdf_filename, ContentFile(pdf_file))
-
-        # Generate downloadable link
-        pdf_url = request.build_absolute_uri(default_storage.url(pdf_path))
+        # Save the PDF to a permanent location (e.g., media directory)
+        pdf_path = os.path.join('media', 'quotations', f'quotation_{cart_id}.pdf')
+        os.rename(pdf_file.name, pdf_path)
 
         # Create WhatsApp message
         items_list = "\n".join([f"{item.quantity}x {item.item.name}" for item in cart_items])
-        whatsapp_message = (
-            f"New Order:\n{items_list}\nTotal: K{cart.total_amount}\n"
-            f"Download PDF: {pdf_url}"
-        )
+        pdf_url = request.build_absolute_uri(reverse('download_quotation', args=[cart_id]))
+        whatsapp_message = f"New Order:\n{items_list}\nTotal: K{cart.total_amount}\nDownload PDF: {pdf_url}"
         whatsapp_url = f"https://wa.me/260772447190?text={whatsapp_message}"
 
         return JsonResponse({
             'success': True,
             'whatsapp_url': whatsapp_url,
-            'pdf_url': pdf_url,
-            'html_content': html_content
+            'pdf_url': pdf_url
         })
     return JsonResponse({'success': False})
+
+def download_quotation(request, cart_id):
+    pdf_path = os.path.join('media', 'quotations', f'quotation_{cart_id}.pdf')
+    with open(pdf_path, 'rb') as pdf:
+        response = HttpResponse(pdf.read(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename=quotation_{cart_id}.pdf'
+        return response
