@@ -50,14 +50,14 @@ INSTALLED_APPS = [
     'ckeditor',
 ]
 
+# settings.py
 CKEDITOR_CONFIGS = {
     'default': {
-        'toolbar': 'full',
+        'toolbar': 'Full',
         'height': 300,
         'width': '100%',
     },
 }
-
 
 # Specify the ASGI application
 ASGI_APPLICATION = 'swiftfind.asgi.application'

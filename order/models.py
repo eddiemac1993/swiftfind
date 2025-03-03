@@ -14,6 +14,7 @@ class Item(models.Model):
     base_price = models.DecimalField(max_digits=10, decimal_places=2)  # Supplier price
     selling_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)  # Price with 30% markup
     source = models.CharField(max_length=200, default="Unknown", help_text="Brand, restaurant, manufacturer, or shop name")
+    image = models.ImageField(upload_to='item_images/', blank=True, null=True, help_text="Optional image for the item")
 
     def save(self, *args, **kwargs):
         self.selling_price = self.base_price * Decimal("1.30")

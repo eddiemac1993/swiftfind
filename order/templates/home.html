@@ -19,125 +19,319 @@
         tailwind.config = {
             darkMode: 'class',
             theme: {
-                extend: {},
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    spacing: {
+                        '72': '18rem',
+                        '84': '21rem',
+                        '96': '24rem',
+                    },
+                    animation: {
+                        'fadeIn': 'fadeIn 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                },
             },
         };
     </script>
+    <style>
+        /* Custom scrollbar for category menu */
+        .category-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+        .category-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .category-scroll::-webkit-scrollbar-thumb {
+            background: #0ea5e9;
+            border-radius: 10px;
+        }
+        .category-scroll::-webkit-scrollbar-thumb:hover {
+            background: #0284c7;
+        }
+        
+        /* Animations */
+        .scale-in {
+            animation: scale-in 0.3s ease-out;
+        }
+        @keyframes scale-in {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Card hover effects */
+        .item-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .item-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 dark:text-white">
+<body class="bg-gray-50 dark:bg-gray-900 dark:text-white min-h-screen">
 
     <!-- Fixed Top Navigation Bar -->
-    <div class="fixed top-0 w-full bg-white dark:bg-gray-800 shadow-md z-50">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <form class="w-full max-w-xl" method="GET" action="{% url 'home' %}">
-                <input type="text"
-                       name="search"
-                       value="{{ search_query }}"
-                       placeholder="Search items..."
-                       class="w-full px-4 py-2 rounded-lg border focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            </form>
-            <a href="{% url 'cart' %}" class="ml-4 relative">
-                <i class="fas fa-shopping-cart text-xl"></i>
-                <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+    <header class="fixed top-0 w-full bg-white dark:bg-gray-800 shadow-md z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="{% url 'home' %}" class="text-xl font-bold text-primary-600 dark:text-primary-400 mr-6">
+                        <i class="fas fa-store mr-2"></i>
+                    </a>
+                    <form class="hidden md:block w-full max-w-xl" method="GET" action="{% url 'home' %}">
+                        <div class="relative">
+                            <input type="text"
+                                name="search"
+                                value="{{ search_query }}"
+                                placeholder="Search items..."
+                                class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="toggleDarkMode()" class="text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
+                    </button>
+                    <a href="{% url 'cart' %}" class="relative p-2 text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                            {{ cart_count }}
+                        </span>
+                    </a>
+                    <a href="{% url 'business-list' %}" class="hidden md:block text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition">
+                        <i class="fas fa-building text-xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Mobile Search -->
+            <div class="mt-3 md:hidden">
+                <form method="GET" action="{% url 'home' %}">
+                    <div class="relative">
+                        <input type="text"
+                            name="search"
+                            value="{{ search_query }}"
+                            placeholder="Search items..."
+                            class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-24 right-4 z-50 transform translate-x-full transition-transform duration-300 opacity-0">
+        <div class="bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toast-message">Item added to cart!</span>
+        </div>
+    </div>
+
+    <main class="pt-32 md:pt-32 pb-20">
+        <!-- Hero Section -->
+        <section class="container mx-auto px-4 mb-8">
+            <div class="bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl p-8 shadow-lg relative overflow-hidden">
+                <div class="absolute right-0 bottom-0 opacity-10">
+                    <i class="fas fa-shopping-bag text-9xl"></i>
+                </div>
+                <div class="relative z-10">
+                    <h1 class="text-3xl md:text-4xl font-bold mb-2">Welcome to DistStore</h1>
+                    <p class="text-primary-100 mb-6 max-w-xl">Your one-stop shop for quality products at affordable prices. Find everything you need for your projects.</p>
+                    <a href="#featured-items" class="inline-flex items-center bg-white text-primary-600 px-6 py-3 rounded-lg font-medium hover:bg-primary-50 transition">
+                        Shop Now <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories with Icons -->
+        <section class="container mx-auto px-4 mb-10">
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+                <i class="fas fa-th-large mr-2 text-primary-500"></i>
+                Shop by Category
+            </h2>
+            <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+                {% for category in categories %}
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 text-center cursor-pointer hover:bg-primary-50 dark:hover:bg-gray-700 transition-all item-card"
+                     onclick="filterByCategory('{{ category.id }}')">
+                    <div class="w-12 h-12 mx-auto bg-primary-100 dark:bg-primary-900 text-primary-500 dark:text-primary-400 rounded-full flex items-center justify-center mb-2">
+                        {% if category.name == "Electrical" %}
+                            <i class="fas fa-bolt text-xl"></i>
+                        {% elif category.name == "Stationary" %}
+                            <i class="fas fa-pencil-alt text-xl"></i>
+                        {% elif category.name == "Plumbing" %}
+                            <i class="fas fa-tint text-xl"></i>
+                        {% elif category.name == "Carpentry" %}
+                            <i class="fas fa-hammer text-xl"></i>
+                        {% elif category.name == "Roofing" %}
+                            <i class="fas fa-home text-xl"></i>
+                        {% elif category.name == "Food" %}
+                            <i class="fas fa-utensils text-xl"></i>
+                        {% else %}
+                            <i class="fas fa-tag text-xl"></i>
+                        {% endif %}
+                    </div>
+                    <p class="font-medium text-sm">{{ category.name }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Items Grid -->
+        <section id="featured-items" class="container mx-auto px-4">
+            <h2 class="text-xl font-bold mb-4 flex items-center">
+                <i class="fas fa-fire-alt mr-2 text-primary-500"></i>
+                Featured Items
+            </h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {% for item in items %}
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden item-card" data-item-id="{{ item.id }}">
+                    <!-- Item Image -->
+                    <div class="relative">
+                        {% if item.image %}
+                            <img src="{{ item.image.url }}" alt="{{ item.name }}" class="w-full h-40 object-cover">
+                        {% else %}
+                            <div class="w-full h-40 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                <i class="fas fa-image text-gray-400 dark:text-gray-500 text-3xl"></i>
+                            </div>
+                        {% endif %}
+                        <div class="absolute top-2 right-2 bg-gray-900 bg-opacity-70 text-white text-xs px-2 py-1 rounded-full">
+                            {{ item.source }}
+                        </div>
+                    </div>
+                    
+                    <!-- Item Details -->
+                    <div class="p-4">
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400 mb-2">
+                            <span class="flex items-center">
+                                {% if item.category.name == "Electrical" %}
+                                    <i class="fas fa-bolt mr-1"></i>
+                                {% elif item.category.name == "Stationary" %}
+                                    <i class="fas fa-pencil-alt mr-1"></i>
+                                {% elif item.category.name == "Plumbing" %}
+                                    <i class="fas fa-tint mr-1"></i>
+                                {% elif item.category.name == "Carpentry" %}
+                                    <i class="fas fa-hammer mr-1"></i>
+                                {% elif item.category.name == "Roofing" %}
+                                    <i class="fas fa-home mr-1"></i>
+                                {% elif item.category.name == "Food" %}
+                                    <i class="fas fa-utensils mr-1"></i>
+                                {% else %}
+                                    <i class="fas fa-tag mr-1"></i>
+                                {% endif %}
+                                {{ item.category.name }}
+                            </span>
+                        </div>
+                        
+                        <h3 class="text-lg font-semibold mb-1 line-clamp-1">{{ item.name }}</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2 h-10">{{ item.description }}</p>
+                        
+                        <div class="flex justify-between items-center">
+                            <p class="text-xl font-bold text-primary-600 dark:text-primary-400">K{{ item.selling_price }}</p>
+                            <button onclick="addToCart({{ item.id }}, '{{ item.name }}')"
+                                    class="bg-primary-500 text-white p-2 rounded-lg hover:bg-primary-600 transition flex items-center">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <!-- Mobile Bottom Nav -->
+    <div class="md:hidden fixed bottom-0 w-full bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-40">
+        <div class="grid grid-cols-4 h-16">
+            <a href="{% url 'home' %}" class="flex flex-col items-center justify-center text-primary-500 dark:text-primary-400">
+                <i class="fas fa-home text-lg"></i>
+                <span class="text-xs mt-1">Home</span>
+            </a>
+            <a href="{% url 'business-list' %}" class="flex flex-col items-center justify-center text-gray-600 dark:text-gray-400">
+                <i class="fas fa-building text-lg"></i>
+                <span class="text-xs mt-1">Business</span>
+            </a>
+            <button onclick="toggleSearch()" class="flex flex-col items-center justify-center text-gray-600 dark:text-gray-400">
+                <i class="fas fa-search text-lg"></i>
+                <span class="text-xs mt-1">Search</span>
+            </button>
+            <a href="{% url 'cart' %}" class="flex flex-col items-center justify-center text-gray-600 dark:text-gray-400 relative">
+                <i class="fas fa-shopping-cart text-lg"></i>
+                <span id="mobile-cart-count" class="absolute top-1 right-6 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
                     {{ cart_count }}
                 </span>
+                <span class="text-xs mt-1">Cart</span>
             </a>
         </div>
     </div>
 
-    <!-- Home Link and Scrollable Categories -->
-    <div class="fixed top-16 w-full bg-white dark:bg-gray-800 shadow-md z-40">
-        <div class="container mx-auto px-4 py-2 flex items-center overflow-x-auto">
-            <a href="{% url 'home' %}" class="text-lg font-semibold mr-4">Home</a>
-            <div class="flex space-x-4">
-                {% for category in categories %}
-                <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm whitespace-nowrap"
-                        onclick="filterByCategory('{{ category.id }}')">
-                    {{ category.name }}
+    <!-- Modal -->
+    <div id="item-modal" class="fixed inset-0 z-50 hidden">
+        <div class="fixed inset-0 bg-black bg-opacity-50"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md p-6 relative">
+                <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                    <i class="fas fa-times"></i>
                 </button>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-
-    <!-- Hero Section -->
-    <div class="pt-32">
-        <div class="container mx-auto px-4">
-            <div class="bg-blue-500 text-white rounded-lg p-8">
-                <h1 class="text-4xl font-bold">Welcome to Our Store</h1>
-                <p class="mt-4">Discover the best products at the best prices.</p>
-            </div>
-        </div>
-    </div>
-
-<!-- Categories with Icons -->
-<div class="container mx-auto px-4 mt-8">
-    <h2 class="text-xl font-bold mb-4">Shop by Category</h2>
-    <div class="grid grid-cols-5 gap-2"> <!-- Adjusted for 5 columns -->
-        {% for category in categories %}
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 text-center cursor-pointer hover:shadow-lg transition-shadow"
-             onclick="filterByCategory('{{ category.id }}')">
-            <!-- Map category names to icons -->
-            {% if category.name == "Electrical" %}
-                <i class="fas fa-bolt text-xl mb-1"></i> <!-- Reduced icon size -->
-            {% elif category.name == "Stationary" %}
-                <i class="fas fa-pencil-alt text-xl mb-1"></i>
-            {% elif category.name == "Plumbing" %}
-                <i class="fas fa-tint text-xl mb-1"></i>
-            {% elif category.name == "Carpentry" %}
-                <i class="fas fa-hammer text-xl mb-1"></i>
-            {% elif category.name == "Roofing" %}
-                <i class="fas fa-home text-xl mb-1"></i>
-            {% elif category.name == "Food" %}
-                <i class="fas fa-utensils text-xl mb-1"></i>
-            {% else %}
-                <i class="fas fa-question text-xl mb-1"></i> <!-- Default icon -->
-            {% endif %}
-            <p class="text-xs">{{ category.name }}</p> <!-- Reduced text size -->
-        </div>
-        {% endfor %}
-    </div>
-</div>
-
-    <!-- Items Grid -->
-    <div class="container mx-auto px-4 mt-8">
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {% for item in items %}
-            <div class="bg-white rounded-lg shadow-md p-4 dark:bg-gray-800 relative">
-                <div class="absolute top-2 right-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs px-2 py-1 rounded-full">
-                    {{ item.source }}
+                <h2 id="modal-item-name" class="text-xl font-bold mb-2"></h2>
+                <p id="modal-item-description" class="text-gray-600 dark:text-gray-400 mb-4"></p>
+                <div class="flex justify-between items-center">
+                    <p id="modal-item-price" class="text-xl font-bold text-primary-600 dark:text-primary-400"></p>
+                    <button onclick="addToCartFromModal()" class="bg-primary-500 text-white p-2 rounded-lg hover:bg-primary-600 transition flex items-center">
+                        <i class="fas fa-cart-plus"></i>
+                    </button>
                 </div>
-                <h3 class="text-lg mt-3 font-semibold">{{ item.name }}</h3>
-                <p class="text-gray-600 text-sm mt-3 dark:text-gray-400">{{ item.description }}</p>
-                <p class="text-gray-500 text-sm mt-2">Category: {{ item.category.name }}</p>
-                <p class="text-xl font-bold mt-2">K{{ item.selling_price }}</p>
-                <button onclick="addToCart({{ item.id }})"
-                        class="w-full mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
-                    Add to Cart
-                </button>
             </div>
-            {% endfor %}
         </div>
-    </div>
-
-    <!-- Dark Mode and Business List Buttons -->
-    <div class="fixed bottom-4 right-4 space-y-4">
-        <button onclick="toggleDarkMode()" class="bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition">
-            <i class="fas fa-moon"></i>
-        </button>
-        <a href="{% url 'business-list' %}">
-            <button class="bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition">
-                <i class="fas fa-building"></i>
-            </button>
-        </a>
     </div>
 
     <script>
+        // Toggle dark mode
         function toggleDarkMode() {
             document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('darkMode', isDark);
         }
 
-        function addToCart(itemId) {
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark');
+        } else if (localStorage.getItem('darkMode') === 'false') {
+            document.documentElement.classList.remove('dark');
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Add to cart with toast notification
+        function addToCart(itemId, itemName) {
             fetch('{% url "add_to_cart" %}', {
                 method: 'POST',
                 headers: {
@@ -149,14 +343,76 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    document.getElementById('cart-count').textContent = data.cart_count;
+                    // Update cart count
+                    const count = data.cart_count;
+                    document.getElementById('cart-count').textContent = count;
+                    if (document.getElementById('mobile-cart-count')) {
+                        document.getElementById('mobile-cart-count').textContent = count;
+                    }
+                    
+                    // Show toast
+                    const toast = document.getElementById('toast');
+                    document.getElementById('toast-message').textContent = itemName + ' added to cart!';
+                    toast.classList.remove('translate-x-full', 'opacity-0');
+                    toast.classList.add('translate-x-0', 'opacity-100');
+                    
+                    // Hide toast after 3 seconds
+                    setTimeout(() => {
+                        toast.classList.add('translate-x-full', 'opacity-0');
+                        toast.classList.remove('translate-x-0', 'opacity-100');
+                    }, 3000);
                 }
             });
         }
 
+        // Filter by category
         function filterByCategory(categoryId) {
             window.location.href = "{% url 'home' %}?category=" + categoryId;
         }
+        
+        // Toggle mobile search
+        function toggleSearch() {
+            const searchForm = document.querySelector('header form');
+            searchForm.classList.toggle('hidden');
+            if (!searchForm.classList.contains('hidden')) {
+                searchForm.querySelector('input').focus();
+            }
+        }
+
+        // Modal functionality
+        let currentItemId = null;
+
+        function openModal(itemId, itemName, itemDescription, itemPrice) {
+            currentItemId = itemId;
+            document.getElementById('modal-item-name').textContent = itemName;
+            document.getElementById('modal-item-description').textContent = itemDescription;
+            document.getElementById('modal-item-price').textContent = itemPrice;
+            document.getElementById('item-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('item-modal').classList.add('hidden');
+        }
+
+        function addToCartFromModal() {
+            if (currentItemId) {
+                addToCart(currentItemId, document.getElementById('modal-item-name').textContent);
+            }
+        }
+
+        // Add event listeners to cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.item-card');
+            cards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const itemId = card.dataset.itemId;
+                    const itemName = card.querySelector('h3').textContent;
+                    const itemDescription = card.querySelector('p.text-gray-600').textContent;
+                    const itemPrice = card.querySelector('p.text-xl').textContent;
+                    openModal(itemId, itemName, itemDescription, itemPrice);
+                });
+            });
+        });
     </script>
 </body>
 </html>
