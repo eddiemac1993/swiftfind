@@ -82,11 +82,18 @@ def cart(request):
         cart = None
         cart_items = []
 
+    if request.method == "POST":
+        referred_by = request.POST.get("referred_by", "").strip()
+        if cart and referred_by:
+            cart.referred_by = referred_by
+            cart.save()
+
     context = {
         'cart': cart,
         'cart_items': cart_items
     }
     return render(request, 'cart.html', context)
+
 
 def update_cart(request):
     if request.method == 'POST':
@@ -126,12 +133,20 @@ def generate_quotation(request):
     cart_id = request.session.get('cart_id')
     if cart_id:
         cart = Cart.objects.get(id=cart_id)
+        referrer_phone = request.POST.get('referrer', '')
+
+        # Save the referrer phone number to the cart
+        if referrer_phone:
+            cart.referred_by = referrer_phone
+            cart.save()
+
         cart_items = cart.cartitem_set.all()
 
         context = {
             'cart': cart,
             'cart_items': cart_items,
-            'whatsapp_number': '+260772447190'
+            'whatsapp_number': '+260772447190',
+            'referrer_phone': referrer_phone
         }
 
         # Generate quotation HTML
@@ -154,6 +169,10 @@ def generate_quotation(request):
             f"New Order:\n{items_list}\nTotal: K{cart.total_amount}\n"
             f"Download PDF: {pdf_url}"
         )
+
+        if referrer_phone:
+            whatsapp_message += f"\nReferred by: {referrer_phone}"
+
         whatsapp_url = f"https://wa.me/260772447190?text={whatsapp_message}"
 
         return JsonResponse({

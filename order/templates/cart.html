@@ -91,6 +91,38 @@
             });
         }
     </script>
+<script>
+    function generateQuotation() {
+        // Submit the referrer form first
+        const referrerForm = document.getElementById('referrer-form');
+        fetch(referrerForm.action, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: new URLSearchParams(new FormData(referrerForm))
+        })
+        .then(() => {
+            // After saving the referrer, generate the quotation
+            const referrerPhone = document.getElementById('referrer-phone').value;
+            fetch('{% url "generate_quotation" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ referrer: referrerPhone })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = data.whatsapp_url;
+                }
+            });
+        });
+    }
+</script>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 dark:text-white">
     <div class="container mx-auto px-4 py-8">
@@ -135,7 +167,14 @@
                 <p class="font-semibold">K{{ cart_item.total_price }}</p>
             </div>
             {% endfor %}
-
+<form id="referrer-form" method="POST" action="{% url 'cart' %}">
+    {% csrf_token %}
+    <div class="mt-6">
+        <label for="referrer-phone" class="block text-gray-700 dark:text-gray-300">Referrer Phone Number (Optional)</label>
+        <input type="text" id="referrer-phone" name="referred_by" placeholder="Enter phone number"
+               class="w-full px-4 py-2 mt-2 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg focus:outline-none">
+    </div>
+</form>
             <!-- Total -->
             <div class="mt-6 text-right">
                 <p class="text-xl font-bold">Total: K<span id="cart-total">{{ cart.total_amount }}</span></p>

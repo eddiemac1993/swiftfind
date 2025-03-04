@@ -27,6 +27,7 @@ class Item(models.Model):
 class Cart(models.Model):
     items = models.ManyToManyField(Item, through='CartItem')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    referred_by = models.CharField(max_length=15, blank=True, null=True, help_text="Optional phone number of the person who recommended the items")
 
     def update_total(self):
         self.total_amount = sum(item.total_price for item in self.cartitem_set.all())
