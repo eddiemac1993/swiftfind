@@ -623,7 +623,6 @@
     <button id="install-button" class="install-paper-button" style="display: none;">
         <i class="fas fa-download"></i>
     </button>
-
 <!-- Hero Section -->
 <section class="hero">
     <div class="hero-content">
@@ -745,44 +744,43 @@
             <i class="fas fa-list"></i>
             <span>Findit</span>
         </a>
-{% if user.is_authenticated %}
-    <a href="{% url 'home' %}" title="View Orders">
-        <i class="fas fa-shopping-cart"></i>
-        <span>Orders</span>
-    </a>
-{% else %}
-    <a href="{% url 'add-business' %}" title="Add Business">
-        <i class="fas fa-plus"></i>
-        <span>Business</span>
-    </a>
-{% endif %}
 
-
-            <!-- <a href="{% url 'home' %}" title="View Orders">
+        {% if user.is_authenticated %}
+            <a href="{% url 'home' %}" title="View Orders">
                 <i class="fas fa-shopping-cart"></i>
                 <span>Orders</span>
             </a>
-        </a>
-        <a href="{% url 'create_paper' %}" title="Create Paper">
-            <i class="fas fa-file-alt"></i>
-            <span>Paper</span>
-        </a>-->
+        {% else %}
+            <a href="{% url 'add-business' %}" title="Add Business">
+                <i class="fas fa-plus"></i>
+                <span>Business</span>
+            </a>
+        {% endif %}
+
         <a href="{% url 'about' %}" title="About">
             <i class="fas fa-info-circle"></i>
             <span>About</span>
         </a>
+
         {% if user.is_authenticated %}
-    <a href="{% url 'profile' %}" title="Profile">
-        <i class="fas fa-user"></i>
-        <span>Profile</span>
-    </a>
-    {% else %}
-        <a href="{% url 'login' %}" title="Login">
-            <i class="fas fa-sign-in-alt"></i>
-            <span>Login</span>
-        </a>
-    {% endif %}
+            <a href="{% url 'profile' %}" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
+
+        {% if request.user.is_superuser %}
+            <a href="{% url 'create_paper' %}" class="fixed top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700 transition">
+                Create Paper
+            </a>
+        {% endif %}
     </nav>
+
         <script>
         // Dark Mode Toggle
         const themeToggle = document.getElementById('theme-toggle');

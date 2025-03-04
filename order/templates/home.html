@@ -70,16 +70,30 @@
         .category-scroll::-webkit-scrollbar-thumb:hover {
             background: #0284c7;
         }
-        
+
         /* Animations */
         .scale-in {
             animation: scale-in 0.3s ease-out;
+        }
+        /* Custom CSS for smaller category cards */
+        .category-card {
+            padding: 0.5rem;  /* Reduced padding */
+        }
+
+        .category-icon {
+            width: 2rem;  /* Further reduce icon size */
+            height: 2rem;  /* Further reduce icon size */
+            font-size: 1rem;  /* Further reduce icon size */
+        }
+
+        .category-name {
+            font-size: 0.75rem;  /* Further reduce text size */
         }
         @keyframes scale-in {
             0% { transform: scale(0.95); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
-        
+
         /* Card hover effects */
         .item-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -128,7 +142,7 @@
                     </a>
                 </div>
             </div>
-            
+
             <!-- Mobile Search -->
             <div class="mt-3 md:hidden">
                 <form method="GET" action="{% url 'home' %}">
@@ -163,43 +177,49 @@
                     <i class="fas fa-shopping-bag text-9xl"></i>
                 </div>
                 <div class="relative z-10">
-                    <h1 class="text-3xl md:text-4xl font-bold mb-2">Welcome to DistStore</h1>
+                    <h1 class="text-3xl md:text-4xl font-bold mb-2">Di-Store</h1>
                     <p class="text-primary-100 mb-6 max-w-xl">Your one-stop shop for quality products at affordable prices. Find everything you need for your projects.</p>
                     <a href="#featured-items" class="inline-flex items-center bg-white text-primary-600 px-6 py-3 rounded-lg font-medium hover:bg-primary-50 transition">
-                        Shop Now <i class="fas fa-arrow-right ml-2"></i>
+                        Order Now <i class="fas fa-arrow-right ml-2"></i>
                     </a>
                 </div>
             </div>
         </section>
 
         <!-- Categories with Icons -->
-        <section class="container mx-auto px-4 mb-10">
-            <h2 class="text-xl font-bold mb-4 flex items-center">
+        <section class="container mx-auto px-4 mb-6">  <!-- Reduced margin-bottom -->
+            <h2 class="text-xl font-bold mb-3 flex items-center">  <!-- Reduced margin-bottom -->
                 <i class="fas fa-th-large mr-2 text-primary-500"></i>
-                Shop by Category
+                Order by Category
             </h2>
-            <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+            <div class="grid grid-cols-4 md:grid-cols-6 gap-2">  <!-- Adjusted grid and gap -->
                 {% for category in categories %}
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 text-center cursor-pointer hover:bg-primary-50 dark:hover:bg-gray-700 transition-all item-card"
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 text-center cursor-pointer hover:bg-primary-50 dark:hover:bg-gray-700 transition-all item-card"
                      onclick="filterByCategory('{{ category.id }}')">
-                    <div class="w-12 h-12 mx-auto bg-primary-100 dark:bg-primary-900 text-primary-500 dark:text-primary-400 rounded-full flex items-center justify-center mb-2">
+                    <div class="w-10 h-10 mx-auto bg-primary-100 dark:bg-primary-900 text-primary-500 dark:text-primary-400 rounded-full flex items-center justify-center mb-1">  <!-- Reduced icon size -->
                         {% if category.name == "Electrical" %}
-                            <i class="fas fa-bolt text-xl"></i>
+                            <i class="fas fa-bolt text-lg"></i>  <!-- Reduced icon size -->
                         {% elif category.name == "Stationary" %}
-                            <i class="fas fa-pencil-alt text-xl"></i>
+                            <i class="fas fa-pencil-alt text-lg"></i>  <!-- Reduced icon size -->
                         {% elif category.name == "Plumbing" %}
-                            <i class="fas fa-tint text-xl"></i>
+                            <i class="fas fa-tint text-lg"></i>  <!-- Reduced icon size -->
                         {% elif category.name == "Carpentry" %}
-                            <i class="fas fa-hammer text-xl"></i>
+                            <i class="fas fa-hammer text-lg"></i>  <!-- Reduced icon size -->
                         {% elif category.name == "Roofing" %}
-                            <i class="fas fa-home text-xl"></i>
+                            <i class="fas fa-home text-lg"></i>  <!-- Reduced icon size -->
                         {% elif category.name == "Food" %}
-                            <i class="fas fa-utensils text-xl"></i>
+                            <i class="fas fa-utensils text-lg"></i>  <!-- Reduced icon size -->
+                        {% elif category.name == "Groceries" %}
+                            <i class="fas fa-shopping-basket text-lg"></i>  <!-- New icon -->
+                        {% elif category.name == "Cleaning Products" %}
+                            <i class="fas fa-soap text-lg"></i>  <!-- New icon -->
+                        {% elif category.name == "Farming" %}
+                            <i class="fas fa-tractor text-lg"></i>  <!-- New icon -->
                         {% else %}
-                            <i class="fas fa-tag text-xl"></i>
+                            <i class="fas fa-tag text-lg"></i>  <!-- Reduced icon size -->
                         {% endif %}
                     </div>
-                    <p class="font-medium text-sm">{{ category.name }}</p>
+                    <p class="font-medium text-xs">{{ category.name }}</p>  <!-- Reduced text size -->
                 </div>
                 {% endfor %}
             </div>
@@ -227,7 +247,7 @@
                             {{ item.source }}
                         </div>
                     </div>
-                    
+
                     <!-- Item Details -->
                     <div class="p-4">
                         <div class="flex items-center text-xs text-gray-500 dark:text-gray-400 mb-2">
@@ -250,10 +270,10 @@
                                 {{ item.category.name }}
                             </span>
                         </div>
-                        
+
                         <h3 class="text-lg font-semibold mb-1 line-clamp-1">{{ item.name }}</h3>
                         <p class="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2 h-10">{{ item.description }}</p>
-                        
+
                         <div class="flex justify-between items-center">
                             <p class="text-xl font-bold text-primary-600 dark:text-primary-400">K{{ item.selling_price }}</p>
                             <button onclick="addToCart({{ item.id }}, '{{ item.name }}')"
@@ -349,13 +369,13 @@
                     if (document.getElementById('mobile-cart-count')) {
                         document.getElementById('mobile-cart-count').textContent = count;
                     }
-                    
+
                     // Show toast
                     const toast = document.getElementById('toast');
                     document.getElementById('toast-message').textContent = itemName + ' added to cart!';
                     toast.classList.remove('translate-x-full', 'opacity-0');
                     toast.classList.add('translate-x-0', 'opacity-100');
-                    
+
                     // Hide toast after 3 seconds
                     setTimeout(() => {
                         toast.classList.add('translate-x-full', 'opacity-0');
@@ -369,7 +389,7 @@
         function filterByCategory(categoryId) {
             window.location.href = "{% url 'home' %}?category=" + categoryId;
         }
-        
+
         // Toggle mobile search
         function toggleSearch() {
             const searchForm = document.querySelector('header form');
