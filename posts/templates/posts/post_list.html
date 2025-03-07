@@ -29,6 +29,7 @@
             --warning-color: #eab308;
             --error-color: #ef4444;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --search-bar-height: 130px; /* Approximate height of search bar */
         }
 
         .dark-mode {
@@ -53,73 +54,16 @@
             line-height: 1.6;
             transition: var(--transition);
             min-height: 100vh;
-            padding-top: 6rem;
-        }
-
-        .hero {
-            text-align: center;
-            padding: 6rem 2rem;
-            background: var(--accent-gradient);
-            color: white;
-            margin: -6rem -1rem 2rem -1rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(0,0,0,0.1) 25%, transparent 25%, transparent 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1) 75%, transparent 75%, transparent);
-            background-size: 100px 100px;
-            animation: moveBackground 15s linear infinite;
-            opacity: 0.3;
-        }
-
-        @keyframes moveBackground {
-            0% { background-position: 0 0; }
-            100% { background-position: 100px 100px; }
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1.5rem;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            margin-bottom: 2.5rem;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .cta-button {
-            background: white;
-            color: var(--primary-color);
-            padding: 1rem 2rem;
-            border-radius: 9999px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            display: inline-block;
-        }
-
-        .cta-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+            padding-top: var(--search-bar-height); /* Add padding to body equal to search bar height */
         }
 
         .search-bar {
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
             background-color: var(--card-bg);
-            padding: 1rem;
+            padding: 1.25rem 1.5rem;
             box-shadow: var(--shadow);
             z-index: 1000;
             display: flex;
@@ -128,6 +72,7 @@
             gap: 1rem;
             backdrop-filter: blur(8px);
             border-bottom: 1px solid var(--border-color);
+            height: var(--search-bar-height); /* Set fixed height */
         }
 
         .search-container {
@@ -167,6 +112,8 @@
             gap: 0.5rem;
             flex-wrap: wrap;
             justify-content: center;
+            width: 100%;
+            max-width: 800px;
         }
 
         .category-filter button {
@@ -198,7 +145,7 @@
 
         .post-list {
             max-width: 800px;
-            margin: 2rem auto;
+            margin: 1.5rem auto 2rem auto;
             padding: 0 1rem;
         }
 
@@ -363,23 +310,13 @@
             color: var(--primary-color);
         }
 
-        .icon-nav a:hover {
-            transform: translateY(-4px);
-            border-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero p {
-                font-size: 1rem;
+            :root {
+                --search-bar-height: 140px; /* Slightly larger on mobile */
             }
 
             .search-bar {
-                padding: 0.75rem;
+                padding: 1rem;
             }
 
             .category-filter {
@@ -437,27 +374,15 @@
     </style>
 </head>
 <body>
-    <div class="hero">
-        <h1>Welcome to <span style="color: #4ade80">FindIt</span></h1>
-        <p>Your one-stop platform to discover jobs, services, rentals, or reconnect with lost items.
-            <br><span style="color: #4ade80">Post offers, explore opportunities, and connect with the right people.</span>
-        </p>
-        <a href="{% url 'post_create' %}" class="cta-button">
-            <i class="fas fa-plus"></i> Post an Offer
-        </a>
-    </div>
-
     <div class="search-bar">
         <div class="search-container">
-<i class="fas fa-search search-icon"></i>
+            <i class="fas fa-search search-icon"></i>
             <input type="text" id="search-input" placeholder="Search posts by title or description...">
         </div>
         <div class="category-filter">
             <button onclick="filterPosts('all')" class="active">All Posts</button>
-            <button onclick="filterPosts('job')">Jobs</button>
             <button onclick="filterPosts('service')">Services</button>
             <button onclick="filterPosts('rent')">Rentals</button>
-            <button onclick="filterPosts('looking_for')">Looking For</button>
         </div>
     </div>
 

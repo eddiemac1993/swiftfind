@@ -5,10 +5,8 @@ from django.urls import reverse
 from enum import Enum
 
 class CategoryChoices(Enum):
-    JOB = 'job'
     SERVICE = 'service'
     RENT = 'rent'
-    LOOKING_FOR = 'looking_for'
 
     @classmethod
     def choices(cls):

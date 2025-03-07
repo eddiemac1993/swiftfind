@@ -629,7 +629,7 @@
         <h1>Discover Local Businesses</h1>
         <p>Find the best businesses in your area. Search by name, category, or location.</p>
         <div class="business-count">
-            Showing {{ businesses_count }} businesses / {{ page_obj.paginator.count }} posts.
+            Showing {{ businesses_count }} businesses.
         </div>
 
     </div>
@@ -738,48 +738,48 @@
     <!-- Dark Mode Toggle -->
     <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
 
-    <!-- Bottom Navigation Bar -->
-    <nav class="bottom-nav">
-        <a href="{% url 'post_list' %}" title="Posts">
-            <i class="fas fa-list"></i>
-            <span>Findit</span>
+<!-- Bottom Navigation Bar -->
+<nav class="bottom-nav">
+    <a href="{% url 'post_list' %}" title="Posts">
+        <i class="fas fa-list"></i>
+        <span>Findit</span>
+    </a>
+    <a href="{% url 'home' %}" title="View Orders">
+        <i class="fas fa-shopping-cart"></i>
+        <span>Orders</span>
+    </a>
+
+    {% if not user.is_authenticated %}
+        <a href="{% url 'add-business' %}" title="Add Business">
+            <i class="fas fa-plus"></i>
+            <span>Business</span>
         </a>
+    {% endif %}
 
-        {% if user.is_authenticated %}
-            <a href="{% url 'home' %}" title="View Orders">
-                <i class="fas fa-shopping-cart"></i>
-                <span>Orders</span>
-            </a>
-        {% else %}
-            <a href="{% url 'add-business' %}" title="Add Business">
-                <i class="fas fa-plus"></i>
-                <span>Business</span>
-            </a>
-        {% endif %}
+    <a href="{% url 'about' %}" title="About">
+        <i class="fas fa-info-circle"></i>
+        <span>About</span>
+    </a>
 
-        <a href="{% url 'about' %}" title="About">
-            <i class="fas fa-info-circle"></i>
-            <span>About</span>
+    {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}" title="Profile">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
         </a>
+    {% else %}
+        <a href="{% url 'login' %}" title="Login">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Login</span>
+        </a>
+    {% endif %}
 
-        {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}" title="Profile">
-                <i class="fas fa-user"></i>
-                <span>Profile</span>
-            </a>
-        {% else %}
-            <a href="{% url 'login' %}" title="Login">
-                <i class="fas fa-sign-in-alt"></i>
-                <span>Login</span>
-            </a>
-        {% endif %}
+    {% if request.user.is_superuser %}
+        <a href="{% url 'create_paper' %}" class="fixed top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700 transition">
+            Create Paper
+        </a>
+    {% endif %}
+</nav>
 
-        {% if request.user.is_superuser %}
-            <a href="{% url 'create_paper' %}" class="fixed top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700 transition">
-                Create Paper
-            </a>
-        {% endif %}
-    </nav>
 
         <script>
         // Dark Mode Toggle
