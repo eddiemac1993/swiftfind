@@ -5,13 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Business Profile - SwiftFind">
-    <title>Business Profile - SwiftFind</title><link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <title>Business Profile - SwiftFind</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script><style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
         :root {
             --primary-color: #2563eb;
             --primary-hover: #1d4ed8;
@@ -29,6 +31,7 @@
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --navbar-height: 60px;
         }
 
         .dark-mode {
@@ -53,43 +56,112 @@
             color: var(--text-primary);
             line-height: 1.6;
             transition: all 0.3s ease;
+            padding-top: var(--navbar-height);
+        }
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            background-color: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            height: var(--navbar-height);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--primary-color);
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar-user-image {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .navbar-user-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .navbar-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-icon:hover {
+            color: var(--primary-color);
         }
 
         .container {
             max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
         }
 
-        .profile-container {
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 1.5rem;
+        }
+
+        .sidebar {
             background: var(--card-bg);
-            border-radius: 1rem;
-            box-shadow: var(--shadow-lg);
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-md);
             overflow: hidden;
         }
 
-        .profile-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            padding: 3rem 2rem;
+        .sidebar-user {
+            padding: 1.5rem;
             text-align: center;
-            color: white;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .profile-picture-container {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 1.5rem;
+        .sidebar-avatar {
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            border: 4px solid white;
-            overflow: hidden;
-            background: var(--card-bg);
-            position: relative;
-        }
-
-        .profile-picture {
-            width: 100%;
-            height: 100%;
             object-fit: cover;
+            margin: 0 auto 1rem;
+            border: 3px solid var(--primary-color);
+            position: relative;
         }
 
         .upload-button {
@@ -100,8 +172,8 @@
             color: white;
             border: none;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -113,8 +185,109 @@
             background: var(--primary-hover);
         }
 
+        .sidebar-menu {
+            padding: 1rem 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item.active {
+            background-color: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+
+        .menu-item:hover {
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+
+        .menu-item i {
+            width: 20px;
+            margin-right: 0.75rem;
+            text-align: center;
+        }
+
+        .completion-status {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--border-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+        }
+
+        .main-content {
+            background: var(--card-bg);
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .content-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .tab-navigation {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--background);
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .tab:hover:not(.active) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
         .alert {
-            margin: 1rem 2rem;
+            margin: 1rem;
             padding: 1rem;
             border-radius: 0.5rem;
             display: flex;
@@ -133,14 +306,29 @@
         }
 
         .profile-form {
-            padding: 2rem;
+            padding: 1.5rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
-            margin-bottom: 1.5rem;
         }
 
         .form-group {
@@ -161,8 +349,8 @@
         .form-group textarea {
             width: 100%;
             padding: 0.75rem 1rem;
-            border: 2px solid var(--input-border);
-            border-radius: 0.5rem;
+            border: 1px solid var(--input-border);
+            border-radius: 0.375rem;
             background: var(--input-bg);
             color: var(--text-primary);
             font-size: 1rem;
@@ -187,11 +375,13 @@
             gap: 1rem;
             justify-content: flex-end;
             margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
         }
 
         .btn {
             padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
+            border-radius: 0.375rem;
             font-weight: 500;
             display: flex;
             align-items: center;
@@ -199,7 +389,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             border: none;
-            font-size: 1rem;
+            font-size: 0.938rem;
         }
 
         .btn-primary {
@@ -221,68 +411,21 @@
             color: white;
         }
 
-        .theme-toggle {
-            position: fixed;
-            top: 1.5rem;
-            right: 1.5rem;
-            background: var(--card-bg);
-            border: none;
-            border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: var(--shadow-md);
-            transition: all 0.3s ease;
-        }
+        @media (max-width: 992px) {
+            .profile-layout {
+                grid-template-columns: 1fr;
+            }
 
-        .action-button {
-            position: fixed;
-            top: 1.5rem;
-            left: 1.5rem;
-            background: var(--card-bg);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            box-shadow: var(--shadow-md);
-            transition: all 0.3s ease;
-            text-decoration: none;
-            z-index: 100;
-        }
-
-        .action-button:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 10px;
-            background: var(--border-color);
-            border-radius: 5px;
-            margin: 1rem 0;
-            overflow: hidden;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: var(--primary-color);
-            transition: width 0.3s ease;
+            .sidebar {
+                display: none;
+            }
         }
 
         @media (max-width: 768px) {
+            .navbar {
+                padding: 0 1rem;
+            }
+
             .container {
                 padding: 1rem;
             }
@@ -299,131 +442,217 @@
                 width: 100%;
                 justify-content: center;
             }
+
+            .tab-navigation {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .tab {
+                padding: 1rem;
+            }
         }
     </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="logo"><a href="{% url 'business-list' %}" class="navbar-icon" title="Home">
+
+             <i class="fas fa-home"></i></a></div>
+        <div class="navbar-user">
+        </div>
+        <div class="navbar-actions">
+                <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% elif user.businesses.first.logo %}{{ user.businesses.first.logo.url }}{% else %}{% static 'business_logos/default.jpg' %}{% endif %}" alt="User" class="navbar-user-image">
+                <div class="relative">
+        <button id="dropdownToggle" class="navbar-user-name focus:outline-none">
+            {{ user.username }}
+            <i class="fas fa-caret-down ml-1"></i>
+        </button>
+        <div id="dropdownMenu" class="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg hidden">
+    <form id="logoutForm" method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
+            Logout
+        </button>
+    </form>
+</div>
+
+    </div>
+
+
+            <button class="navbar-icon theme-toggle" aria-label="Toggle dark mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+
     <div class="container">
-        <div class="profile-container">
-            <div class="profile-header">
-                <div class="profile-picture-container">
-                    <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% elif user.businesses.first.logo %}{{ user.businesses.first.logo.url }}{% else %}{% static 'business_logos/default.jpg' %}{% endif %}" alt="Profile Picture" class="profile-picture">
-                    <button class="upload-button" aria-label="Upload Profile Picture">
-                        <i class="fas fa-camera"></i>
-                    </button>
-                </div>
-                <h1>{{ user.username }}</h1>
-                <p>Manage Your Business Profile</p>
-                <div class="progress-bar">
-                    <div class="progress-bar-fill" style="width: 99%;"></div>
-                </div>
-            </div>
+        <h1 class="page-title">My Business Profile</h1>
 
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
-                        {{ message }}
+        <div class="profile-layout">
+            <aside class="sidebar">
+                <div class="sidebar-user">
+                    <div class="sidebar-avatar" style="position: relative;">
+                        <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% elif user.businesses.first.logo %}{{ user.businesses.first.logo.url }}{% else %}{% static 'business_logos/default.jpg' %}{% endif %}" alt="Profile Picture">
+                        <button class="upload-button" aria-label="Upload Profile Picture">
+                            <i class="fas fa-camera"></i>
+                        </button>
                     </div>
-                {% endfor %}
-            {% endif %}
-
-            <form method="post" enctype="multipart/form-data" class="profile-form">
-                {% csrf_token %}
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="{{ user_form.username.id_for_label }}">
-                            <i class="fas fa-user"></i> Username
-                        </label>
-                        {{ user_form.username }}
+                    <h2 class="text-lg font-semibold">{{ user.username }}</h2>
+                    <p class="text-sm text-gray-500">Business Owner</p>
+                </div>
+                <div class="sidebar-menu">
+                    <a href="#" class="menu-item active">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Business Profile</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-store"></i>
+                        <span>Products & Services</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-cog"></i>
+                        <span>Account Settings</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Analytics</span>
+                    </a>
+                    <a href="#" class="menu-item">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifications</span>
+                    </a>
+                </div>
+                <div class="completion-status">
+                    <div class="progress-label">
+                        <span>Profile Completion</span>
+                        <span>99%</span>
                     </div>
-                    <div class="form-group">
-                        <label for="{{ user_form.email.id_for_label }}">
-                            <i class="fas fa-envelope"></i> Email
-                        </label>
-                        {{ user_form.email }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ business_form.logo.id_for_label }}">
-                            <i class="fas fa-image"></i> Business Logo
-                        </label>
-                        {{ business_form.logo }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ business_form.name.id_for_label }}">
-                            <i class="fas fa-building"></i> Business Name
-                        </label>
-                        {{ business_form.name }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ business_form.email.id_for_label }}">
-                            <i class="fas fa-at"></i> Business Email
-                        </label>
-                        {{ business_form.email }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ business_form.city.id_for_label }}">
-                            <i class="fas fa-city"></i> City
-                        </label>
-                        {{ business_form.city }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ business_form.phone_number.id_for_label }}">
-                            <i class="fas fa-phone"></i> Business Phone
-                        </label>
-                        {{ business_form.phone_number }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ business_form.category.id_for_label }}">
-                            <i class="fas fa-tag"></i> Category
-                        </label>
-                        {{ business_form.category }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ business_form.website.id_for_label }}">
-                            <i class="fas fa-globe"></i> Website
-                        </label>
-                        {{ business_form.website }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ business_form.facebook.id_for_label }}">
-                            <i class="fab fa-facebook"></i> Facebook
-                        </label>
-                        {{ business_form.facebook }}
-                    </div>
-                    <div class="form-group">
-                        <label for="{{ business_form.twitter.id_for_label }}">
-                            <i class="fab fa-twitter"></i> Twitter
-                        </label>
-                        {{ business_form.twitter }}
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" style="width: 99%;"></div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="{{ business_form.description.id_for_label }}">
-                        <i class="fas fa-align-left"></i> Description
-                    </label>
-                    {{ business_form.description }}
+            </aside>
+
+            <main class="main-content">
+                <div class="content-header">
+                    <h2 class="content-title">Edit Business Information</h2>
                 </div>
 
-                <div class="form-actions">
-                    <button type="reset" class="btn btn-secondary">
-                        <i class="fas fa-undo"></i> Reset
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Save Changes
-                    </button>
+                <div class="tab-navigation">
+                    <div class="tab active">Basic Information</div>
+                    <div class="tab">Contact Details</div>
+                    <div class="tab">Business Description</div>
                 </div>
-            </form>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post" enctype="multipart/form-data" class="profile-form">
+                    {% csrf_token %}
+
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-user-circle text-primary-color"></i> Account Information
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="{{ user_form.username.id_for_label }}">
+                                    <i class="fas fa-user"></i> Username
+                                </label>
+                                {{ user_form.username }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ user_form.email.id_for_label }}">
+                                    <i class="fas fa-envelope"></i> Email
+                                </label>
+                                {{ user_form.email }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-building text-primary-color"></i> Business Details
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="{{ business_form.logo.id_for_label }}">
+                                    <i class="fas fa-image"></i> Business Logo
+                                </label>
+                                {{ business_form.logo }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ business_form.name.id_for_label }}">
+                                    <i class="fas fa-building"></i> Business Name
+                                </label>
+                                {{ business_form.name }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ business_form.category.id_for_label }}">
+                                    <i class="fas fa-tag"></i> Category
+                                </label>
+                                {{ business_form.category }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-address-card text-primary-color"></i> Contact Information
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="{{ business_form.email.id_for_label }}">
+                                    <i class="fas fa-at"></i> Business Email
+                                </label>
+                                {{ business_form.email }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ business_form.phone_number.id_for_label }}">
+                                    <i class="fas fa-phone"></i> Business Phone
+                                </label>
+                                {{ business_form.phone_number }}
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ business_form.city.id_for_label }}">
+                                    <i class="fas fa-city"></i> City
+                                </label>
+                                {{ business_form.city }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-align-left text-primary-color"></i> Business Description
+                        </h3>
+                        <div class="form-group">
+                            <label for="{{ business_form.description.id_for_label }}">
+                                <i class="fas fa-align-left"></i> Description
+                            </label>
+                            {{ business_form.description }}
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="reset" class="btn btn-secondary">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </main>
         </div>
     </div>
-    <div class="floating-actions">
-        <a href="{% url 'business-list' %}" class="action-button" title="Home">
-            <i class="fas fa-home"></i>
-        </a>
-    </div>
-    <button class="theme-toggle" aria-label="Toggle dark mode">
-        <i class="fas fa-moon"></i>
-    </button>
 
     <script>
         const themeToggle = document.querySelector('.theme-toggle');
@@ -450,7 +679,7 @@
         // Profile Picture Upload
         const uploadButton = document.querySelector('.upload-button');
         const profilePictureInput = document.querySelector('input[type="file"]');
-        const profilePicture = document.querySelector('.profile-picture');
+        const profilePictures = document.querySelectorAll('.navbar-user-image, .sidebar-avatar img');
 
         uploadButton.addEventListener('click', () => {
             profilePictureInput.click();
@@ -461,11 +690,39 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    profilePicture.src = e.target.result;
+                    profilePictures.forEach(pic => {
+                        pic.src = e.target.result;
+                    });
                 };
                 reader.readAsDataURL(file);
             }
         });
+
+        // Tabs functionality
+        const tabs = document.querySelectorAll('.tab');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
     </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const dropdownToggle = document.getElementById("dropdownToggle");
+        const dropdownMenu = document.getElementById("dropdownMenu");
+
+        dropdownToggle.addEventListener("click", function () {
+            dropdownMenu.classList.toggle("hidden");
+        });
+
+        document.addEventListener("click", function (event) {
+            if (!dropdownToggle.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.classList.add("hidden");
+            }
+        });
+    });
+</script>
 </body>
 </html>

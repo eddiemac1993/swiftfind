@@ -558,13 +558,20 @@
 
 .newsfeed-section li {
     margin-bottom: 1rem;
-    padding: 1rem;
-    background-color: var(--background);
+    position: relative; /* Ensure the child elements can be positioned absolutely */
+    padding-right: 120px;
     border-radius: 0.5rem;
-    box-shadow: var(--shadow);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
+.category-display {
+    position: absolute;
+    right: 1rem; /* Adjust the distance from the right edge */
+    top: 50%; /* Center vertically */
+    transform: translateY(-50%); /* Center vertically */
+    margin: 0; /* Remove default margin */
+    color: var(--text-secondary); /* Match the existing text color */
+    font-size: 0.875rem; /* Match the existing font size */
+}
 .newsfeed-section li:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -721,7 +728,7 @@
                         <li>
                             <a href="{{ item.1.get_absolute_url }}">
                                 <h3>{{ item.1.title }}</h3>
-                                <p>{{ item.1.get_category_display }}</p>
+                                <p class="category-display">{{ item.1.get_category_display }}</p>
                             </a>
                         </li>
                     </ul>
