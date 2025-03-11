@@ -113,18 +113,7 @@
                     <a href="{% url 'home' %}" class="text-xl font-bold text-primary-600 dark:text-primary-400 mr-6">
                         <i class="fas fa-store mr-2"></i>
                     </a>
-                    <form class="hidden md:block w-full max-w-xl" method="GET" action="{% url 'home' %}">
-                        <div class="relative">
-                            <input type="text"
-                                name="search"
-                                value="{{ search_query }}"
-                                placeholder="Search items..."
-                                class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3">
-                                <i class="fas fa-search text-gray-400"></i>
-                            </div>
-                        </div>
-                    </form>
+
                 </div>
                 <div class="flex items-center space-x-4">
                     <button onclick="toggleDarkMode()" class="text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition">
@@ -192,37 +181,45 @@
                 <i class="fas fa-th-large mr-2 text-primary-500"></i>
                 Order by Category
             </h2>
-            <div class="grid grid-cols-4 md:grid-cols-6 gap-2">  <!-- Adjusted grid and gap -->
+            <div class="grid grid-cols-4 md:grid-cols-6 gap-2">
                 {% for category in categories %}
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 text-center cursor-pointer hover:bg-primary-50 dark:hover:bg-gray-700 transition-all item-card"
                      onclick="filterByCategory('{{ category.id }}')">
-                    <div class="w-10 h-10 mx-auto bg-primary-100 dark:bg-primary-900 text-primary-500 dark:text-primary-400 rounded-full flex items-center justify-center mb-1">  <!-- Reduced icon size -->
+                    <div class="w-10 h-10 mx-auto bg-primary-100 dark:bg-primary-900
+                                {% if category.has_items %} text-green-500 {% else %} text-gray-500 {% endif %}
+                                rounded-full flex items-center justify-center mb-1">
                         {% if category.name == "Electrical" %}
-                            <i class="fas fa-bolt text-lg"></i>  <!-- Reduced icon size -->
+                            <i class="fas fa-bolt text-lg"></i>
                         {% elif category.name == "Stationary" %}
-                            <i class="fas fa-pencil-alt text-lg"></i>  <!-- Reduced icon size -->
+                            <i class="fas fa-pencil-alt text-lg"></i>
                         {% elif category.name == "Plumbing" %}
-                            <i class="fas fa-tint text-lg"></i>  <!-- Reduced icon size -->
+                            <i class="fas fa-tint text-lg"></i>
                         {% elif category.name == "Carpentry" %}
-                            <i class="fas fa-hammer text-lg"></i>  <!-- Reduced icon size -->
+                            <i class="fas fa-hammer text-lg"></i>
                         {% elif category.name == "Roofing" %}
-                            <i class="fas fa-home text-lg"></i>  <!-- Reduced icon size -->
+                            <i class="fas fa-home text-lg"></i>
                         {% elif category.name == "Food" %}
-                            <i class="fas fa-utensils text-lg"></i>  <!-- Reduced icon size -->
+                            <i class="fas fa-utensils text-lg"></i>
                         {% elif category.name == "Groceries" %}
-                            <i class="fas fa-shopping-basket text-lg"></i>  <!-- New icon -->
+                            <i class="fas fa-shopping-basket text-lg"></i>
                         {% elif category.name == "Cleaning Products" %}
-                            <i class="fas fa-soap text-lg"></i>  <!-- New icon -->
+                            <i class="fas fa-soap text-lg"></i>
                         {% elif category.name == "Farming" %}
-                            <i class="fas fa-tractor text-lg"></i>  <!-- New icon -->
+                            <i class="fas fa-tractor text-lg"></i>
+                        {% elif category.name == "Thrift" %}
+                            <i class="fas fa-recycle text-lg"></i>
+                        {% elif category.name == "Hardware" %}
+                            <i class="fas fa-tools text-lg"></i>
                         {% else %}
-                            <i class="fas fa-tag text-lg"></i>  <!-- Reduced icon size -->
+                            <i class="fas fa-tag text-lg"></i>
                         {% endif %}
                     </div>
-                    <p class="font-medium text-xs">{{ category.name }}</p>  <!-- Reduced text size -->
+                    <p class="font-medium text-xs">{{ category.name }}</p>
                 </div>
                 {% endfor %}
             </div>
+
+
         </section>
 
         <!-- Items Grid -->
@@ -273,7 +270,6 @@
 
                         <h3 class="text-lg font-semibold mb-1 line-clamp-1">{{ item.name }}</h3>
                         <p class="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2 h-10">{{ item.description }}</p>
-
                         <div class="flex justify-between items-center">
                             <p class="text-xl font-bold text-primary-600 dark:text-primary-400">K{{ item.selling_price }}</p>
                             <button onclick="addToCart({{ item.id }}, '{{ item.name }}')"

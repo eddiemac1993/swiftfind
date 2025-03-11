@@ -4,6 +4,7 @@ from django.template.loader import render_to_string
 from .models import Item, Cart, CartItem, Category
 import json
 from django.http import JsonResponse
+from django.db.models import Exists, OuterRef
 
 def get_cart(request):
     cart, created = Cart.objects.get_or_create(id=request.session.get('cart_id'))
@@ -11,8 +12,13 @@ def get_cart(request):
         request.session['cart_id'] = cart.id
     return cart
 
+
 def home(request):
-    categories = Category.objects.all()
+    # Annotate each category with a boolean field 'has_items' indicating if it has any associated items
+    categories = Category.objects.annotate(
+        has_items=Exists(Item.objects.filter(category=OuterRef('id')))
+    )
+
     items = Item.objects.all()
     search_query = request.GET.get('search', '')
     category_id = request.GET.get('category')
@@ -40,6 +46,7 @@ def home(request):
         'search_query': search_query
     }
     return render(request, 'home.html', context)
+
 
 def add_to_cart(request):
     if request.method == 'POST':
