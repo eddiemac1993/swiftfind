@@ -91,8 +91,13 @@ def cart(request):
 
     if request.method == "POST":
         referred_by = request.POST.get("referred_by", "").strip()
-        if cart and referred_by:
-            cart.referred_by = referred_by
+        billing_address = request.POST.get("billing_address", "").strip()
+
+        if cart:
+            if referred_by:
+                cart.referred_by = referred_by
+            if billing_address:
+                cart.billing_address = billing_address
             cart.save()
 
     context = {
@@ -141,11 +146,14 @@ def generate_quotation(request):
     if cart_id:
         cart = Cart.objects.get(id=cart_id)
         referrer_phone = request.POST.get('referrer', '')
+        billing_address = request.POST.get('billing_address', '')
 
-        # Save the referrer phone number to the cart
+        # Save the referrer phone number and billing address to the cart
         if referrer_phone:
             cart.referred_by = referrer_phone
-            cart.save()
+        if billing_address:
+            cart.billing_address = billing_address
+        cart.save()
 
         cart_items = cart.cartitem_set.all()
 
@@ -153,7 +161,8 @@ def generate_quotation(request):
             'cart': cart,
             'cart_items': cart_items,
             'whatsapp_number': '+260772447190',
-            'referrer_phone': referrer_phone
+            'referrer_phone': referrer_phone,
+            'billing_address': billing_address
         }
 
         # Generate quotation HTML
@@ -174,6 +183,7 @@ def generate_quotation(request):
         items_list = "\n".join([f"{item.quantity}x {item.item.name}" for item in cart_items])
         whatsapp_message = (
             f"New Order:\n{items_list}\nTotal: K{cart.total_amount}\n"
+            f"Billing Address: {billing_address}\n"
             f"Download PDF: {pdf_url}"
         )
 

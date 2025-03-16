@@ -15,6 +15,7 @@ class Item(models.Model):
     selling_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)  # Price with 30% markup
     source = models.CharField(max_length=200, default="Unknown", help_text="Brand, restaurant, manufacturer, or shop name")
     image = models.ImageField(upload_to='item_images/', blank=True, null=True, help_text="Optional image for the item")
+    location = models.CharField(max_length=200, blank=True, null=True, help_text="Physical location or storage place of the item")
 
     def save(self, *args, **kwargs):
         self.selling_price = self.base_price * Decimal("1.30")
@@ -28,6 +29,7 @@ class Cart(models.Model):
     items = models.ManyToManyField(Item, through='CartItem')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     referred_by = models.CharField(max_length=15, blank=True, null=True, help_text="Optional phone number of the person who recommended the items")
+    billing_address = models.CharField(max_length=255, blank=True, null=True, help_text="Set your address")
 
     def update_total(self):
         self.total_amount = sum(item.total_price for item in self.cartitem_set.all())

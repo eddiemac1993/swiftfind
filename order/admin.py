@@ -2,9 +2,9 @@ from django.contrib import admin
 from .models import Category, Item, Cart, CartItem
 
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'base_price', 'selling_price')
-    list_filter = ('category',)
-    search_fields = ('name',)
+    list_display = ('name', 'category', 'base_price', 'selling_price', 'source', 'location')
+    list_filter = ('category', 'source', 'location')
+    search_fields = ('name', 'description', 'source', 'location')
 
 class CartItemInline(admin.TabularInline):
     model = CartItem

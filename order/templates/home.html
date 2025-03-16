@@ -184,7 +184,7 @@
             <div class="grid grid-cols-4 md:grid-cols-6 gap-2">
                 {% for category in categories %}
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 text-center cursor-pointer hover:bg-primary-50 dark:hover:bg-gray-700 transition-all item-card"
-                     onclick="filterByCategory('{{ category.id }}')">
+                    onclick="filterByCategory('{{ category.id }}')">
                     <div class="w-10 h-10 mx-auto bg-primary-100 dark:bg-primary-900
                                 {% if category.has_items %} text-green-500 {% else %} text-gray-500 {% endif %}
                                 rounded-full flex items-center justify-center mb-1">
@@ -210,6 +210,8 @@
                             <i class="fas fa-recycle text-lg"></i>
                         {% elif category.name == "Hardware" %}
                             <i class="fas fa-tools text-lg"></i>
+                        {% elif category.name == "AutoSpare" %}
+                            <i class="fas fa-car text-lg"></i>  <!-- Autospare category added -->
                         {% else %}
                             <i class="fas fa-tag text-lg"></i>
                         {% endif %}
@@ -218,8 +220,6 @@
                 </div>
                 {% endfor %}
             </div>
-
-
         </section>
 
         <!-- Items Grid -->
@@ -269,7 +269,16 @@
                         </div>
 
                         <h3 class="text-lg font-semibold mb-1 line-clamp-1">{{ item.name }}</h3>
-                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2 h-10">{{ item.description }}</p>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-2 line-clamp-2 h-10">{{ item.description }}</p>
+                        
+                        <!-- Location information -->
+                        {% if item.location %}
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400 mb-2">
+                            <i class="fas fa-map-marker-alt mr-1"></i>
+                            <span class="location-text">{{ item.location }}</span>
+                        </div>
+                        {% endif %}
+                        
                         <div class="flex justify-between items-center">
                             <p class="text-xl font-bold text-primary-600 dark:text-primary-400">K{{ item.selling_price }}</p>
                             <button onclick="addToCart({{ item.id }}, '{{ item.name }}')"
@@ -319,6 +328,13 @@
                 </button>
                 <h2 id="modal-item-name" class="text-xl font-bold mb-2"></h2>
                 <p id="modal-item-description" class="text-gray-600 dark:text-gray-400 mb-4"></p>
+                
+                <!-- Location in modal -->
+                <div class="flex items-center text-gray-500 dark:text-gray-400 mb-4">
+                    <i class="fas fa-map-marker-alt mr-2"></i>
+                    <span id="modal-item-location">Location not specified</span>
+                </div>
+                
                 <div class="flex justify-between items-center">
                     <p id="modal-item-price" class="text-xl font-bold text-primary-600 dark:text-primary-400"></p>
                     <button onclick="addToCartFromModal()" class="bg-primary-500 text-white p-2 rounded-lg hover:bg-primary-600 transition flex items-center">
@@ -398,10 +414,11 @@
         // Modal functionality
         let currentItemId = null;
 
-        function openModal(itemId, itemName, itemDescription, itemPrice) {
+        function openModal(itemId, itemName, itemDescription, itemLocation, itemPrice) {
             currentItemId = itemId;
             document.getElementById('modal-item-name').textContent = itemName;
             document.getElementById('modal-item-description').textContent = itemDescription;
+            document.getElementById('modal-item-location').textContent = itemLocation || 'Location not specified';
             document.getElementById('modal-item-price').textContent = itemPrice;
             document.getElementById('item-modal').classList.remove('hidden');
         }
@@ -414,19 +431,32 @@
             if (currentItemId) {
                 addToCart(currentItemId, document.getElementById('modal-item-name').textContent);
             }
+            closeModal();
         }
 
         // Add event listeners to cards
         document.addEventListener('DOMContentLoaded', function() {
             const cards = document.querySelectorAll('.item-card');
             cards.forEach(card => {
-                card.addEventListener('click', function() {
-                    const itemId = card.dataset.itemId;
-                    const itemName = card.querySelector('h3').textContent;
-                    const itemDescription = card.querySelector('p.text-gray-600').textContent;
-                    const itemPrice = card.querySelector('p.text-xl').textContent;
-                    openModal(itemId, itemName, itemDescription, itemPrice);
-                });
+                if (!card.onclick) { // Skip category cards that already have onclick
+                    card.addEventListener('click', function(e) {
+                        // Prevent click if it's on the add to cart button
+                        if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
+                            return;
+                        }
+                        
+                        const itemId = card.dataset.itemId;
+                        if (!itemId) return; // Skip if not an item card
+                        
+                        const itemName = card.querySelector('h3').textContent;
+                        const itemDescription = card.querySelector('p.text-gray-600').textContent;
+                        const locationElement = card.querySelector('.location-text');
+                        const itemLocation = locationElement ? locationElement.textContent : '';
+                        const itemPrice = card.querySelector('p.text-xl').textContent;
+                        
+                        openModal(itemId, itemName, itemDescription, itemLocation, itemPrice);
+                    });
+                }
             });
         });
     </script>
