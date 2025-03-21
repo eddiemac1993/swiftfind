@@ -13,6 +13,10 @@ def get_cart(request):
     return cart
 
 
+from django.db.models import Exists, OuterRef
+from django.shortcuts import render
+from .models import Category, Item, Cart
+
 def home(request):
     # Annotate each category with a boolean field 'has_items' indicating if it has any associated items
     categories = Category.objects.annotate(
@@ -39,11 +43,31 @@ def home(request):
 
     cart_count = sum(item.quantity for item in cart.cartitem_set.all())
 
+    # Default hero section data
+    hero_data = {
+        'category_icon': 'fa-shopping-bag',  # Default icon
+        'category_title': 'Di-Store',  # Default title
+        'category_description': 'Your one-stop shop for quality products at affordable prices. Find everything you need for your projects.',  # Default description
+    }
+
+    # Update hero section data if a category is selected
+    if category_id:
+        try:
+            selected_category = Category.objects.get(id=category_id)
+            hero_data.update({
+                'category_icon': selected_category.icon_class,  # Use the icon_class field from the Category model
+                'category_title': f'{selected_category.name} Products',  # Dynamic title based on category
+                'category_description': selected_category.description,  # Use the description field from the Category model
+            })
+        except Category.DoesNotExist:
+            pass  # If the category doesn't exist, keep the default hero data
+
     context = {
         'categories': categories,
         'items': items,
         'cart_count': cart_count,
-        'search_query': search_query
+        'search_query': search_query,
+        **hero_data,  # Include hero section data in the context
     }
     return render(request, 'home.html', context)
 

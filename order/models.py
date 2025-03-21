@@ -1,8 +1,11 @@
 from django.db import models
 from decimal import Decimal
 
+# models.py
 class Category(models.Model):
     name = models.CharField(max_length=100)
+    icon_class = models.CharField(max_length=50, default='fa-tag')  # FontAwesome icon class
+    description = models.TextField(default='Explore our wide range of products.')
 
     def __str__(self):
         return self.name
