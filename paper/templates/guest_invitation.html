@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Funditso Matandalizwe & Luyando</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Cormorant Garamond', serif;
+      background-color: #f9f7f5;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4b78f' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #333;
+      flex-direction: column;
+    }
+
+    .invitation-container {
+      width: 85%;
+      max-width: 800px;
+      background: linear-gradient(to bottom right, #ffffff, #f9f7f5);
+      border: 1px solid #e0d8d0;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+      border-radius: 4px;
+      padding: 50px;
+      position: relative;
+      overflow: hidden;
+      margin-top: 30px;
+    }
+
+    .border-frame {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      bottom: 20px;
+      border: 1px solid #d4b78f;
+      pointer-events: none;
+    }
+
+    .corner {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border: 2px solid #d4b78f;
+    }
+
+    .top-left {
+      top: 15px;
+      left: 15px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .top-right {
+      top: 15px;
+      right: 15px;
+      border-left: none;
+      border-bottom: none;
+    }
+
+    .bottom-left {
+      bottom: 15px;
+      left: 15px;
+      border-right: none;
+      border-top: none;
+    }
+
+    .bottom-right {
+      bottom: 15px;
+      right: 15px;
+      border-left: none;
+      border-top: none;
+    }
+
+    .header {
+      text-align: center;
+      position: relative;
+      margin-bottom: 30px;
+    }
+
+    .monogram {
+      font-family: 'Great Vibes', cursive;
+      font-size: 72px;
+      color: #c4a77d;
+      margin: 0;
+      line-height: 1;
+      text-shadow: 1px 1px 1px rgba(0,0,0,0.05);
+    }
+
+    .divider {
+      width: 120px;
+      height: 1px;
+      background: linear-gradient(to right, rgba(212,183,143,0), rgba(212,183,143,1), rgba(212,183,143,0));
+      margin: 20px auto;
+    }
+
+    .small-divider {
+      width: 80px;
+      height: 1px;
+      background: linear-gradient(to right, rgba(212,183,143,0), rgba(212,183,143,0.7), rgba(212,183,143,0));
+      margin: 15px auto;
+    }
+
+    .invitation-text {
+      text-align: center;
+      color: #333;
+    }
+
+    .intro {
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 25px;
+      color: #666;
+    }
+
+    .names {
+      font-family: 'Great Vibes', cursive;
+      font-size: 52px;
+      color: #333;
+      margin: 20px 0;
+      line-height: 1.2;
+    }
+
+    .conjunction {
+      font-family: 'Great Vibes', cursive;
+      font-size: 38px;
+      color: #c4a77d;
+      margin: 15px 0;
+    }
+
+    .details {
+      margin: 35px 0;
+      font-size: 18px;
+      line-height: 1.8;
+    }
+
+    .date {
+      font-size: 22px;
+      font-weight: 500;
+      margin: 15px 0;
+    }
+
+    .location {
+      margin-top: 25px;
+      font-size: 20px;
+    }
+
+    .rsvp {
+      text-align: center;
+      margin-top: 45px;
+      padding: 20px;
+      border-top: 1px solid rgba(212,183,143,0.3);
+      border-bottom: 1px solid rgba(212,183,143,0.3);
+    }
+
+    .rsvp-text {
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+      color: #666;
+    }
+
+    .rsvp-deadline {
+      font-size: 18px;
+      font-style: italic;
+      color: #777;
+      margin-bottom: 10px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 15px;
+      font-style: italic;
+      color: #888;
+    }
+
+    .guest-name {
+      font-size: 22px;
+      margin-top: 25px;
+      color: #555;
+      font-weight: 500;
+    }
+
+    .floral-corner {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      opacity: 0.7;
+    }
+
+    .floral-top-left {
+      top: 5px;
+      left: 5px;
+      transform: rotate(0deg);
+    }
+
+    .floral-top-right {
+      top: 5px;
+      right: 5px;
+      transform: rotate(90deg);
+    }
+
+    .floral-bottom-left {
+      bottom: 5px;
+      left: 5px;
+      transform: rotate(270deg);
+    }
+
+    .floral-bottom-right {
+      bottom: 5px;
+      right: 5px;
+      transform: rotate(180deg);
+    }
+
+    .download-container {
+      text-align: center;
+      margin: 20px 0 40px 0;
+    }
+
+    .download-button {
+      background-color: #d4b78f;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 4px;
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .download-button:hover {
+      background-color: #c4a77d;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .download-button i {
+      margin-right: 8px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .invitation-container {
+        width: 90%;
+        padding: 35px 20px;
+      }
+
+      .monogram {
+        font-size: 56px;
+      }
+
+      .names {
+        font-size: 42px;
+      }
+
+      .conjunction {
+        font-size: 32px;
+      }
+
+      .details {
+        font-size: 16px;
+      }
+
+      .download-button {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+    }
+
+    @media print {
+      body {
+        background: none;
+      }
+
+      .invitation-container {
+        box-shadow: none;
+        border: 1px solid #e0d8d0;
+        margin: 0;
+        padding: 40px;
+        width: 100%;
+      }
+
+      .download-container {
+        display: none;
+      }
+    }
+  </style>
+<style>
+  /* Base floral corner styling */
+  .floral-corner {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    opacity: 0.7;
+  }
+
+  /* Positioning for each corner */
+  .floral-top-left {
+    top: 5px;
+    left: 5px;
+  }
+
+  .floral-top-right {
+    top: 5px;
+    right: 5px;
+  }
+
+  .floral-bottom-left {
+    bottom: 5px;
+    left: 5px;
+  }
+
+  .floral-bottom-right {
+    bottom: 5px;
+    right: 5px;
+  }
+
+  /* CSS Floral decoration */
+  .css-floral {
+    position: relative;
+  }
+
+  /* Main flower petals */
+  .css-floral::before {
+    content: "";
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #f9f1e7, #e9d5c0);
+    box-shadow:
+      20px -12px 0 -8px #e9d5c0,
+      -20px -12px 0 -8px #e9d5c0,
+      0 -22px 0 -8px #e9d5c0,
+      20px 12px 0 -8px #e9d5c0,
+      -20px 12px 0 -8px #e9d5c0,
+      0 22px 0 -8px #e9d5c0;
+  }
+
+  /* Flower center */
+  .css-floral::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #d4b78f, #c4a77d);
+    top: 12px;
+    left: 12px;
+  }
+
+  /* Leaf elements */
+  .leaf {
+    position: absolute;
+    width: 30px;
+    height: 15px;
+    background: linear-gradient(to right, #d1e7dd, #c4dbd2);
+    border-radius: 100% 0 100% 0;
+  }
+
+  /* Position leaves differently for each corner */
+  .floral-top-left .leaf-1 {
+    transform: rotate(45deg);
+    top: 45px;
+    left: 45px;
+  }
+
+  .floral-top-left .leaf-2 {
+    transform: rotate(110deg);
+    top: 60px;
+    left: 25px;
+  }
+
+  .floral-top-right .leaf-1 {
+    transform: rotate(135deg);
+    top: 45px;
+    right: 45px;
+  }
+
+  .floral-top-right .leaf-2 {
+    transform: rotate(200deg);
+    top: 60px;
+    right: 25px;
+  }
+
+  .floral-bottom-left .leaf-1 {
+    transform: rotate(-45deg);
+    bottom: 45px;
+    left: 45px;
+  }
+
+  .floral-bottom-left .leaf-2 {
+    transform: rotate(20deg);
+    bottom: 60px;
+    left: 25px;
+  }
+
+  .floral-bottom-right .leaf-1 {
+    transform: rotate(-135deg);
+    bottom: 45px;
+    right: 45px;
+  }
+
+  .floral-bottom-right .leaf-2 {
+    transform: rotate(-200deg);
+    bottom: 60px;
+    right: 25px;
+  }
+
+  /* Add subtle vines */
+  .vine {
+    position: absolute;
+    height: 1px;
+    width: 40px;
+    background: #d4b78f;
+  }
+
+  .floral-top-left .vine {
+    transform: rotate(45deg);
+    top: 70px;
+    left: 20px;
+  }
+
+  .floral-top-right .vine {
+    transform: rotate(-45deg);
+    top: 70px;
+    right: 20px;
+  }
+
+  .floral-bottom-left .vine {
+    transform: rotate(-45deg);
+    bottom: 70px;
+    left: 20px;
+  }
+
+  .floral-bottom-right .vine {
+    transform: rotate(45deg);
+    bottom: 70px;
+    right: 20px;
+  }
+</style>
+</head>
+<body>
+  <div class="invitation-container">
+    <!-- Decorative elements -->
+    <div class="border-frame"></div>
+    <div class="corner top-left"></div>
+    <div class="corner top-right"></div>
+    <div class="corner bottom-left"></div>
+    <div class="corner bottom-right"></div>
+
+    <!-- Floral decorations -->
+<!-- Replace the image-based floral decorations with this: -->
+<div class="floral-corner floral-top-left">
+  <div class="css-floral"></div>
+  <div class="leaf leaf-1"></div>
+  <div class="leaf leaf-2"></div>
+  <div class="vine"></div>
+</div>
+<div class="floral-corner floral-top-right">
+  <div class="css-floral"></div>
+  <div class="leaf leaf-1"></div>
+  <div class="leaf leaf-2"></div>
+  <div class="vine"></div>
+</div>
+<div class="floral-corner floral-bottom-left">
+  <div class="css-floral"></div>
+  <div class="leaf leaf-1"></div>
+  <div class="leaf leaf-2"></div>
+  <div class="vine"></div>
+</div>
+<div class="floral-corner floral-bottom-right">
+  <div class="css-floral"></div>
+  <div class="leaf leaf-1"></div>
+  <div class="leaf leaf-2"></div>
+  <div class="vine"></div>
+</div>
+
+
+    <!-- Header section -->
+    <div class="header">
+      <h1 class="monogram">F & L</h1>
+      <div class="divider"></div>
+    </div>
+
+    <!-- Main invitation text -->
+    <div class="invitation-text">
+      <p class="intro">Together with their families</p>
+      <h2 class="names">Funditso Matandalizwe</h2>
+      <p class="conjunction">&</p>
+      <h2 class="names">Luyando</h2>
+
+      <div class="small-divider"></div>
+
+      <!-- Guest name section -->
+      <p class="guest-name">
+        Dear <span id="guest-name">{{ guest.name }}</span>,
+      </p>
+
+      <div class="details">
+        <p>request the honor of your presence as they exchange vows and begin their new life together</p>
+        <p class="date">Saturday, the 5<sup>th</sup> of October<br>2025<br>at Four o'clock in the afternoon</p>
+        <p class="location">The Grand Estates<br>1234 Elegant Avenue<br>Beverly Hills, California</p>
+        <p>Cocktail hour, dinner, and dancing to follow</p>
+      </div>
+
+      <div class="rsvp">
+        <p class="rsvp-text">The favor of a reply is requested</p>
+        <p class="rsvp-deadline">by the fifth of September</p>
+        <p>+1 (555) 123-4567 • events@elegantcelebrations.com</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>Black tie optional • Adults only reception • Accommodations information enclosed</p>
+    </div>
+  </div>
+
+  <!-- Single download button at the bottom -->
+  <div class="download-container">
+    <button class="download-button" onclick="downloadInvitation()">
+      <i class="fas fa-download"></i> Download Invitation
+    </button>
+  </div>
+
+  <script>
+    // Function to handle invitation download
+    function downloadInvitation() {
+      window.print();
+      alert("To save as PDF, select 'Save as PDF' in your browser's print dialog");
+    }
+
+
+  </script>
+</body>
+</html>

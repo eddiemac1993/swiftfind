@@ -781,8 +781,8 @@
     {% endif %}
 
     {% if request.user.is_superuser %}
-        <a href="{% url 'create_paper' %}" class="fixed top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700 transition">
-            Create Paper
+        <a href="{% url 'add_guest' %}" class="fixed top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700 transition">
+            Invitation Card
         </a>
     {% endif %}
 </nav>

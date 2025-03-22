@@ -18,7 +18,7 @@ class Paper(models.Model):
     company_address = models.TextField(default="Unknown Address")
     company_email = models.EmailField(default="unknown@example.com")
     phone_number = models.CharField(max_length=50, default="000-000-0000")
-    
+
     PAPER_TYPE_CHOICES = [
         ('QUOTATION', 'Quotation'),
         # ('INVOICE', 'Invoice'),  # Invoice commented out
@@ -71,3 +71,37 @@ class PaperItem(models.Model):
 
     class Meta:
         ordering = ['id']
+
+from django.db import models
+from django.utils import timezone
+from django.utils.text import slugify
+import uuid
+
+def generate_unique_slug(name):
+    slug = slugify(name)
+    unique_slug = slug
+    while Guest.objects.filter(slug=unique_slug).exists():
+        unique_slug = f"{slug}-{uuid.uuid4().hex[:6]}"
+    return unique_slug
+
+class Guest(models.Model):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True)
+    phone_number = models.CharField(max_length=15, null=True, blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def save(self, *args, **kwargs):
+        if not self.slug or self.name != self._original_name:
+            self.slug = generate_unique_slug(self.name)
+        try:
+            super().save(*args, **kwargs)
+        except IntegrityError:
+            self.slug = generate_unique_slug(self.name)
+            super().save(*args, **kwargs)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_name = self.name
+
+    def __str__(self):
+        return f"{self.name} ({self.slug})"

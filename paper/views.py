@@ -173,3 +173,83 @@ def download_paper(request, paper_id):
         return HttpResponse('An error occurred while generating the PDF.')
 
     return response
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.http import Http404
+from django.contrib import messages
+from .models import Guest
+from .forms import GuestForm
+import qrcode
+import io
+import base64
+
+def generate_qr_code(url):
+    # Create a QR code instance
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,  # Changed from ERROR_CORRECTION_L to ERROR_CORRECT_L
+        box_size=10,
+        border=4,
+    )
+    # Add data to the QR code
+    qr.add_data(url)
+    qr.make(fit=True)
+    # Create an image from the QR code
+    img = qr.make_image(fill_color="black", back_color="white")
+    # Save the image to a bytes buffer
+    buffer = io.BytesIO()
+    img.save(buffer)
+    buffer.seek(0)
+    # Convert the buffer to a base64 string
+    qr_image = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    return qr_image
+
+def add_guest(request):
+    if request.method == 'POST':
+        form = GuestForm(request.POST)
+        if form.is_valid():
+            guest = form.save()
+            messages.success(request, "Guest added successfully!")
+            return redirect('guest_invitation', slug=guest.slug)
+    else:
+        form = GuestForm()
+    return render(request, 'add_guest.html', {'form': form})
+
+def guest_invitation(request, slug):
+    guest = get_object_or_404(Guest, slug=slug)
+    return render(request, 'guest_invitation.html', {'guest': guest})
+
+def guest_list(request):
+    guests = Guest.objects.all()
+    # Generate QR code for each guest
+    for guest in guests:
+        # Get the absolute URL for the guest's invitation
+        invitation_url = request.build_absolute_uri(
+            reverse('guest_invitation', args=[guest.slug])
+        )
+        # Generate QR code for the URL
+        guest.qr_code = generate_qr_code(invitation_url)
+    return render(request, 'guest_list.html', {'guests': guests})
+
+def guest_qr_code(request, slug):
+    guest = get_object_or_404(Guest, slug=slug)
+    # Get the absolute URL for the guest's invitation
+    invitation_url = request.build_absolute_uri(
+        reverse('guest_invitation', args=[guest.slug])
+    )
+    # Generate QR code for the URL
+    qr_code = generate_qr_code(invitation_url)
+    return render(request, 'guest_qr_code.html', {
+        'guest': guest,
+        'qr_code': qr_code
+    })
+
+def edit_guest(request, slug):
+    guest = get_object_or_404(Guest, slug=slug)
+    return render(request, 'paper/edit_guest.html', {'guest': guest})
+
+def delete_guest(request, slug):
+    guest = get_object_or_404(Guest, slug=slug)
+    guest.delete()
+    return redirect('guest_list')

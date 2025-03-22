@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Guest List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #d4b78f;
+            --primary-dark: #b4956b;
+            --accent-color: #8d6e63;
+            --light-color: #f9f7f5;
+            --text-color: #3c3c3c;
+            --border-color: #e8e0d8;
+            --hover-bg: #f6f1eb;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-color: var(--light-color);
+            background-image: url("/api/placeholder/400/320");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        
+        .page-container {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 900px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-container::before, .page-container::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background-image: url("/api/placeholder/200/200");
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.08;
+            z-index: 0;
+        }
+        
+        .page-container::before {
+            top: -50px;
+            left: -50px;
+        }
+        
+        .page-container::after {
+            bottom: -50px;
+            right: -50px;
+            transform: rotate(180deg);
+        }
+        
+        .content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+            font-size: 32px;
+            font-weight: 500;
+            margin-bottom: 30px;
+            color: var(--accent-color);
+            letter-spacing: 1px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h1::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 2px;
+            background-color: var(--primary-color);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(212, 183, 143, 0.3);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .search-box {
+            position: relative;
+            min-width: 250px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-color);
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 6px rgba(212, 183, 143, 0.3);
+        }
+        
+        .guest-list {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        .guest-list th {
+            text-align: left;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            font-family: 'Playfair Display', serif;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        
+        .guest-list th:first-child {
+            border-top-left-radius: 8px;
+        }
+        
+        .guest-list th:last-child {
+            border-top-right-radius: 8px;
+            text-align: center;
+        }
+        
+        .guest-list td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+        
+        .guest-list tr:hover {
+            background-color: var(--hover-bg);
+        }
+        
+        .guest-list tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .guest-list tr:last-child td:first-child {
+            border-bottom-left-radius: 8px;
+        }
+        
+        .guest-list tr:last-child td:last-child {
+            border-bottom-right-radius: 8px;
+        }
+        
+        .actions-cell {
+            text-align: center;
+            white-space: nowrap;
+        }
+        
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 3px;
+            background-color: transparent;
+            color: var(--accent-color);
+        }
+        
+        .action-btn:hover {
+            background-color: rgba(212, 183, 143, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .action-btn.edit:hover {
+            color: #4caf50;
+        }
+        
+        .action-btn.delete:hover {
+            color: #f44336;
+        }
+        
+        .empty-list {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--accent-color);
+            font-style: italic;
+            background-color: rgba(212, 183, 143, 0.1);
+            border-radius: 8px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin-top: 30px;
+        }
+        
+        .pagination li {
+            margin: 0 5px;
+        }
+        
+        .pagination a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            text-decoration: none;
+            color: var(--text-color);
+            background-color: white;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+        /* Add this to your existing CSS */
+.action-btn.qr-code {
+    background-color: #4285F4;
+}
+
+.action-btn.qr-code:hover {
+    background-color: #3367D6;
+}
+
+.action-btn.view {
+    background-color: #34A853;
+}
+
+.action-btn.view:hover {
+    background-color: #2E8B57;
+}
+
+/* If you need to adjust the spacing for the additional buttons */
+.actions-cell {
+    min-width: 150px; /* Increase this value as needed */
+    text-align: center;
+}
+
+.action-btn {
+    margin: 0 3px;
+}
+        .pagination a:hover,
+        .pagination a.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .page-container {
+                padding: 30px 20px;
+                width: 95%;
+            }
+            
+            .actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .guest-list {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .guest-list th,
+            .guest-list td {
+                padding: 12px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="content">
+            <h1>Wedding Guest List</h1>
+            
+            <div class="actions">
+                <a href="{% url 'add_guest' %}" class="btn">
+                    <i class="fas fa-plus"></i> Add New Guest
+                </a>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search guests...">
+                </div>
+            </div>
+            
+            {% if guests %}
+            <div style="overflow-x: auto;">
+                <table class="guest-list">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Phone Number</th>
+                            <th>Date Added</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for guest in guests %}
+                        <tr>
+                            <td>{{ guest.name }}</td>
+                            <td>{{ guest.phone_number|default:"Not provided" }}</td>
+                            <td>{{ guest.created_at|date:"F j, Y" }}</td>
+                            <td class="actions-cell">
+                                <a href="{% url 'guest_invitation' guest.slug %}" class="action-btn view" title="View Invitation">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'guest_qr_code' guest.slug %}" class="action-btn qr-code" title="View QR Code">
+                                    <i class="fas fa-qrcode"></i>
+                                </a>
+                                <a href="{% url 'edit_guest' guest.slug %}" class="action-btn edit" title="Edit Guest">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'delete_guest' guest.slug %}" class="action-btn delete" title="Remove Guest">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if is_paginated %}
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li>
+                    <a href="?page=1">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="?page={{ page_obj.previous_page_number }}">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li><a href="?page={{ num }}" class="active">{{ num }}</a></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li><a href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li>
+                    <a href="?page={{ page_obj.next_page_number }}">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                </li>
+                <li>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+            {% endif %}
+            
+            {% else %}
+            <div class="empty-list">
+                <p>No guests have been added yet.</p>
+                <a href="{% url 'add_guest' %}" class="btn">
+                    <i class="fas fa-plus"></i> Add Your First Guest
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const tableRows = document.querySelectorAll('.guest-list tbody tr');
+        
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = searchInput.value.toLowerCase();
+            
+            tableRows.forEach(row => {
+                const name = row.querySelector('td:first-child').textContent.toLowerCase();
+                const phone = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || phone.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>

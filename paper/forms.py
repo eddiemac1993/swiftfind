@@ -1,7 +1,12 @@
 from django import forms
 from .models import Paper, PaperItem
 from django.forms import inlineformset_factory
+from .models import Guest
 
+class GuestForm(forms.ModelForm):
+    class Meta:
+        model = Guest
+        fields = ['name', 'phone_number']
 
 class PaperForm(forms.ModelForm):
     class Meta:

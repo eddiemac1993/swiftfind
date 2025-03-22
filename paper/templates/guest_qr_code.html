@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ guest.name }}'s QR Code</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #3a6ea5;
+            --secondary-color: #004e98;
+            --accent-color: #ff6b6b;
+            --whatsapp-color: #25D366;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 10px;
+            --box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .card {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .card-subtitle {
+            font-size: 16px;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        
+        .qr-container {
+            padding: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+        }
+        
+        .qr-frame {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            margin-bottom: 25px;
+            border: 1px solid #eaeaea;
+        }
+        
+        .qr-code {
+            position: relative;
+        }
+        
+        .qr-code img {
+            display: block;
+            max-width: 220px;
+            height: auto;
+        }
+        
+        .qr-label {
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .qr-label:hover {
+            background: #ff5252;
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+        }
+        
+        .qr-label:active {
+            transform: translateX(-50%) scale(0.98);
+        }
+        
+        .scanning-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        
+        .scanning-overlay.active {
+            opacity: 1;
+        }
+        
+        .scanning-text {
+            color: white;
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .scanning-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .instructions {
+            text-align: center;
+            color: #6c757d;
+            margin: 20px auto;
+            max-width: 400px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(58, 110, 165, 0.3);
+        }
+        
+        .btn-secondary {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-whatsapp {
+            background-color: var(--whatsapp-color);
+            color: white;
+        }
+        
+        .btn-whatsapp:hover {
+            background-color: #128C7E;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        }
+        
+        .divider {
+            width: 40px;
+            height: 5px;
+            background: var(--accent-color);
+            margin: 30px auto;
+            border-radius: 5px;
+        }
+        
+        .sharing-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .sharing-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 13px;
+            background: #f8f9fa;
+        }
+        
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        @media (max-width: 640px) {
+            .card {
+                margin: 20px;
+                width: auto;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">{{ guest.name }}</div>
+            <div class="card-subtitle">Personal QR Invitation</div>
+        </div>
+        
+        <div class="qr-container">
+            <div class="qr-frame">
+                <div class="qr-code">
+                    <img id="qr-image" src="data:image/png;base64,{{ qr_code }}" alt="QR Code for {{ guest.name }}">
+                    <div id="scanning-overlay" class="scanning-overlay">
+                        <div id="scanning-text" class="scanning-text">Scanning...</div>
+                        <div class="scanning-spinner"></div>
+                    </div>
+                </div>
+                <div id="scan-me-button" class="qr-label">SCAN ME</div>
+            </div>
+            
+            <div class="instructions">
+                <p>Scan this unique QR code to view {{ guest.name }}'s personal invitation details. Each code is individually generated and linked to your guest information.</p>
+                <p><strong>Click the "SCAN ME" button to open the invitation directly on this device.</strong></p>
+            </div>
+            
+            <div class="sharing-section">
+                <div class="sharing-title">Share this invitation</div>
+                <a href="https://wa.me/?text=Here's {{ guest.name }}'s invitation QR code: {{ request.build_absolute_uri }}" target="_blank" class="btn btn-whatsapp">
+                    <i class="fab fa-whatsapp"></i> Share via WhatsApp
+                </a>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="button-group">
+                <a href="{% url 'guest_invitation' guest.slug %}" class="btn btn-primary">
+                    <i class="fas fa-eye"></i> View Invitation
+                </a>
+                <a href="{% url 'guest_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This QR code is uniquely generated for {{ guest.name }}</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const whatsappBtn = document.querySelector('.btn-whatsapp');
+            const currentUrl = window.location.href;
+            const guestName = "{{ guest.name }}";
+            const scanMeButton = document.getElementById('scan-me-button');
+            const scanningOverlay = document.getElementById('scanning-overlay');
+            const scanningText = document.getElementById('scanning-text');
+            
+            // Update WhatsApp share link with current URL if not provided by template
+            if (whatsappBtn.href.includes('{{ request.build_absolute_uri }}')) {
+                whatsappBtn.href = `https://wa.me/?text=Here's ${guestName}'s invitation QR code: ${currentUrl}`;
+            }
+
+            // Get invitation URL from the View Invitation button
+            const invitationUrl = document.querySelector('.btn-primary').href;
+            
+            // Add click event listener to the SCAN ME button
+            scanMeButton.addEventListener('click', function() {
+                // Show scanning overlay with "Scanning..." text
+                scanningOverlay.classList.add('active');
+                scanningText.textContent = "Scanning...";
+                
+                // After 2 seconds, change text to "Opening camera..."
+                setTimeout(function() {
+                    scanningText.textContent = "Opening camera...";
+                    
+                    // After another 2 seconds (total 4 seconds), redirect to the URL
+                    setTimeout(function() {
+                        // If we have an invitation URL from the template, use it
+                        if (invitationUrl) {
+                            window.location.href = invitationUrl;
+                        } else {
+                            // Otherwise, use a fallback URL (current URL or a specific endpoint)
+                            const fallbackUrl = "{% url 'guest_invitation' guest.slug %}";
+                            window.location.href = fallbackUrl;
+                        }
+                    }, 2000); // 2 more seconds
+                }, 2000); // First 2 seconds
+            });
+        });
+    </script>
+</body>
+</html>
