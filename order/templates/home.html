@@ -44,11 +44,16 @@
                     },
                     animation: {
                         'fadeIn': 'fadeIn 0.5s ease-in-out',
+                        'slideIn': 'slideIn 0.3s ease-out',
                     },
                     keyframes: {
                         fadeIn: {
                             '0%': { opacity: '0' },
                             '100%': { opacity: '1' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
                         }
                     }
                 },
@@ -75,20 +80,6 @@
         .scale-in {
             animation: scale-in 0.3s ease-out;
         }
-        /* Custom CSS for smaller category cards */
-        .category-card {
-            padding: 0.5rem;  /* Reduced padding */
-        }
-
-        .category-icon {
-            width: 2rem;  /* Further reduce icon size */
-            height: 2rem;  /* Further reduce icon size */
-            font-size: 1rem;  /* Further reduce icon size */
-        }
-
-        .category-name {
-            font-size: 0.75rem;  /* Further reduce text size */
-        }
         @keyframes scale-in {
             0% { transform: scale(0.95); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
@@ -96,10 +87,33 @@
 
         /* Card hover effects */
         .item-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         .item-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Modal animation */
+        .modal-content {
+            animation: modal-appear 0.3s ease-out;
+        }
+        @keyframes modal-appear {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Custom badge */
+        .badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            border-radius: 9999px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            backdrop-filter: blur(4px);
         }
     </style>
 </head>
@@ -113,7 +127,20 @@
                     <a href="{% url 'home' %}" class="text-xl font-bold text-primary-600 dark:text-primary-400 mr-6">
                         <i class="fas fa-store mr-2"></i>
                     </a>
-
+                </div>
+                <div class="hidden md:flex flex-1 mx-4">
+                    <form method="GET" action="{% url 'home' %}" class="w-full max-w-lg">
+                        <div class="relative">
+                            <input type="text"
+                                name="search"
+                                value="{{ search_query }}"
+                                placeholder="Search items..."
+                                class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                        </div>
+                    </form>
                 </div>
                 <div class="flex items-center space-x-4">
                     <button onclick="toggleDarkMode()" class="text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition">
@@ -133,7 +160,7 @@
             </div>
 
             <!-- Mobile Search -->
-            <div class="mt-3 md:hidden">
+            <div class="mt-3 md:hidden hidden" id="mobile-search-form">
                 <form method="GET" action="{% url 'home' %}">
                     <div class="relative">
                         <input type="text"
@@ -161,12 +188,30 @@
     <main class="pt-32 md:pt-32 pb-20">
         <!-- Hero Section -->
         <section class="container mx-auto px-4 mb-8">
-        {% include 'hero_section.html' %}
+            {% include 'hero_section.html' %}
+        </section>
+
+        <!-- Sorting Options -->
+        <section class="container mx-auto px-4 mb-6">
+            <div class="flex flex-wrap items-center justify-between">
+                <h2 class="text-xl font-bold mb-2 flex items-center">
+                    <i class="fas fa-sort mr-2 text-primary-500" aria-hidden="true"></i>
+                    Sort By
+                </h2>
+                <div class="flex space-x-2 mb-2 overflow-x-auto pb-2 category-scroll">
+                    <button onclick="sortItems('price-asc')" class="px-3 py-1 bg-white dark:bg-gray-800 rounded-full text-sm border border-gray-300 dark:border-gray-700 hover:bg-primary-50 dark:hover:bg-gray-700" aria-label="Sort by price low to high">
+                        <i class="fas fa-sort-amount-down-alt mr-1" aria-hidden="true"></i> Price: Low to High
+                    </button>
+                    <button onclick="sortItems('price-desc')" class="px-3 py-1 bg-white dark:bg-gray-800 rounded-full text-sm border border-gray-300 dark:border-gray-700 hover:bg-primary-50 dark:hover:bg-gray-700" aria-label="Sort by price high to low">
+                        <i class="fas fa-sort-amount-up mr-1" aria-hidden="true"></i> Price: High to Low
+                    </button>
+                </div>
+            </div>
         </section>
 
         <!-- Categories with Icons -->
-        <section class="container mx-auto px-4 mb-6">  <!-- Reduced margin-bottom -->
-            <h2 class="text-xl font-bold mb-3 flex items-center">  <!-- Reduced margin-bottom -->
+        <section class="container mx-auto px-4 mb-6">
+            <h2 class="text-xl font-bold mb-3 flex items-center">
                 <i class="fas fa-th-large mr-2 text-primary-500"></i>
                 Order by Category
             </h2>
@@ -200,9 +245,9 @@
                         {% elif category.name == "Hardware" %}
                             <i class="fas fa-tools text-lg"></i>
                         {% elif category.name == "AutoSpare" %}
-                            <i class="fas fa-car text-lg"></i>  <!-- Autospare category added -->
+                            <i class="fas fa-car text-lg"></i>
                         {% elif category.name == "Orders from China" %}
-                        <i class="fas fa-globe text-lg"></i>  <!-- New icon for Orders from China -->
+                            <i class="fas fa-globe text-lg"></i>
                         {% else %}
                             <i class="fas fa-tag text-lg"></i>
                         {% endif %}
@@ -221,65 +266,40 @@
             </h2>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {% for item in items %}
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden item-card" data-item-id="{{ item.id }}">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden item-card cursor-pointer" 
+                     data-item-id="{{ item.id }}" 
+                     data-item-name="{{ item.name }}" 
+                     data-item-description="{{ item.description }}" 
+                     data-item-location="{{ item.location }}" 
+                     data-item-price="K{{ item.selling_price }}"
+                     data-item-category="{{ item.category.name }}"
+                     data-item-source="{{ item.source }}"
+                     onclick="openItemDetails(this)">
                     <!-- Item Image -->
                     <div class="relative">
                         {% if item.image %}
-                            <img src="{{ item.image.url }}" alt="{{ item.name }}" class="w-full h-40 object-cover">
+                            <img src="{{ item.image.url }}" alt="{{ item.name }}" class="w-full h-48 object-cover">
                         {% else %}
-                            <div class="w-full h-40 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                            <div class="w-full h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                                 <i class="fas fa-image text-gray-400 dark:text-gray-500 text-3xl"></i>
                             </div>
                         {% endif %}
-                        <div class="absolute top-2 right-2 bg-gray-900 bg-opacity-70 text-white text-xs px-2 py-1 rounded-full">
+                        <div class="badge bg-black bg-opacity-70 text-white">
                             {{ item.source }}
                         </div>
                     </div>
 
-                    <!-- Item Details -->
-                    <!-- Replace the existing item details section in your code with this: -->
-<div class="p-4">
-    <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-2">
-        <!-- Category on the left -->
-        <span class="flex items-center">
-            {% if item.category.name == "Electrical" %}
-                <i class="fas fa-bolt mr-1"></i>
-            {% elif item.category.name == "Stationary" %}
-                <i class="fas fa-pencil-alt mr-1"></i>
-            {% elif item.category.name == "Plumbing" %}
-                <i class="fas fa-tint mr-1"></i>
-            {% elif item.category.name == "Carpentry" %}
-                <i class="fas fa-hammer mr-1"></i>
-            {% elif item.category.name == "Roofing" %}
-                <i class="fas fa-home mr-1"></i>
-            {% elif item.category.name == "Food" %}
-                <i class="fas fa-utensils mr-1"></i>
-            {% else %}
-                <i class="fas fa-tag mr-1"></i>
-            {% endif %}
-            {{ item.category.name }}
-        </span>
-
-        <!-- Location on the right -->
-        {% if item.location %}
-        <span class="flex items-center">
-            <i class="fas fa-map-marker-alt mr-1"></i>
-            <span class="location-text truncate max-w-[80px]">{{ item.location }}</span>
-        </span>
-        {% endif %}
-    </div>
-
-    <h3 class="text-lg font-semibold mb-1 line-clamp-1">{{ item.name }}</h3>
-    <p class="text-gray-600 dark:text-gray-400 text-sm mb-2 line-clamp-2 h-10">{{ item.description }}</p>
-
-    <div class="flex justify-between items-center">
-        <p class="text-xl font-bold text-primary-600 dark:text-primary-400">K{{ item.selling_price }}</p>
-        <button onclick="addToCart({{ item.id }}, '{{ item.name }}')"
-                class="bg-primary-500 text-white p-2 rounded-lg hover:bg-primary-600 transition flex items-center">
-            <i class="fas fa-cart-plus"></i>
-        </button>
-    </div>
-</div>
+                    <!-- Item Card Preview (Minimal Info) -->
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-1 line-clamp-1">{{ item.name }}</h3>
+                        <div class="flex justify-between items-center mt-2">
+                            <p class="text-xl font-bold text-primary-600 dark:text-primary-400">K{{ item.selling_price }}</p>
+                            <button onclick="addToCart({{ item.id }}, '{{ item.name }}'); event.stopPropagation();"
+                                    class="bg-primary-500 text-white p-2 rounded-lg hover:bg-primary-600 transition flex items-center">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 {% endfor %}
             </div>
@@ -311,28 +331,67 @@
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Enhanced Item Details Modal -->
     <div id="item-modal" class="fixed inset-0 z-50 hidden">
-        <div class="fixed inset-0 bg-black bg-opacity-50"></div>
+        <div class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm" onclick="closeModal()"></div>
         <div class="fixed inset-0 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md p-6 relative">
-                <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md modal-content relative">
+                <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 z-10 bg-white dark:bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center shadow-md">
                     <i class="fas fa-times"></i>
                 </button>
-                <h2 id="modal-item-name" class="text-xl font-bold mb-2"></h2>
-                <p id="modal-item-description" class="text-gray-600 dark:text-gray-400 mb-4"></p>
-
-                <!-- Location in modal -->
-                <div class="flex items-center text-gray-500 dark:text-gray-400 mb-4">
-                    <i class="fas fa-map-marker-alt mr-2"></i>
-                    <span id="modal-item-location">Location not specified</span>
+                
+                <!-- Item Image in Modal -->
+                <div id="modal-image-container" class="w-full h-56 bg-gray-200 dark:bg-gray-700 relative">
+                    <div id="modal-image" class="w-full h-full object-cover"></div>
+                    <div id="modal-source" class="badge bg-primary-600 text-white"></div>
                 </div>
-
-                <div class="flex justify-between items-center">
-                    <p id="modal-item-price" class="text-xl font-bold text-primary-600 dark:text-primary-400"></p>
-                    <button onclick="addToCartFromModal()" class="bg-primary-500 text-white p-2 rounded-lg hover:bg-primary-600 transition flex items-center">
-                        <i class="fas fa-cart-plus"></i>
-                    </button>
+                
+                <div class="p-6">
+                    <!-- Item Basic Info -->
+                    <div class="mb-2">
+                        <div class="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400 mb-1">
+                            <span id="modal-category-icon" class="flex items-center">
+                                <i class="fas fa-tag mr-1"></i>
+                                <span id="modal-category"></span>
+                            </span>
+                        </div>
+                        <h2 id="modal-item-name" class="text-2xl font-bold mb-1"></h2>
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span id="modal-item-location">Location not specified</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Item Description -->
+                    <div class="mb-4">
+                        <h3 class="text-lg font-semibold mb-2">Description</h3>
+                        <p id="modal-item-description" class="text-gray-600 dark:text-gray-300"></p>
+                    </div>
+                    
+                    <!-- Price and Add to Cart -->
+                    <div class="flex justify-between items-center mb-5">
+                        <p id="modal-item-price" class="text-2xl font-bold text-primary-600 dark:text-primary-400"></p>
+                        <button onclick="addToCartFromModal()" class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg transition flex items-center">
+                            <i class="fas fa-cart-plus mr-2"></i>
+                            Add to Cart
+                        </button>
+                    </div>
+                    
+                    <!-- Share Section -->
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                        <h3 class="text-sm font-semibold mb-2 text-gray-500">SHARE THIS PRODUCT</h3>
+                        <div class="flex space-x-4">
+                            <a href="#" id="share-twitter" target="_blank" class="bg-blue-400 text-white p-2 rounded-full hover:bg-blue-500 transition">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" id="share-facebook" target="_blank" class="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" id="share-whatsapp" class="bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -397,61 +456,131 @@
 
         // Toggle mobile search
         function toggleSearch() {
-            const searchForm = document.querySelector('header form');
+            const searchForm = document.getElementById('mobile-search-form');
             searchForm.classList.toggle('hidden');
             if (!searchForm.classList.contains('hidden')) {
                 searchForm.querySelector('input').focus();
             }
         }
 
-        // Modal functionality
-        let currentItemId = null;
+        // Variable to store current item's data
+        let currentItem = null;
 
-        function openModal(itemId, itemName, itemDescription, itemLocation, itemPrice) {
-            currentItemId = itemId;
-            document.getElementById('modal-item-name').textContent = itemName;
-            document.getElementById('modal-item-description').textContent = itemDescription;
-            document.getElementById('modal-item-location').textContent = itemLocation || 'Location not specified';
-            document.getElementById('modal-item-price').textContent = itemPrice;
+        // Open item details modal
+        function openItemDetails(element) {
+            // Get item data from data attributes
+            const item = {
+                id: element.dataset.itemId,
+                name: element.dataset.itemName,
+                description: element.dataset.itemDescription,
+                location: element.dataset.itemLocation,
+                price: element.dataset.itemPrice,
+                category: element.dataset.itemCategory,
+                source: element.dataset.itemSource,
+                imageElement: element.querySelector('img') || null
+            };
+            
+            currentItem = item;
+            
+            // Set modal content
+            document.getElementById('modal-item-name').textContent = item.name;
+            document.getElementById('modal-item-description').textContent = item.description;
+            document.getElementById('modal-item-location').textContent = item.location || 'Location not specified';
+            document.getElementById('modal-item-price').textContent = item.price;
+            document.getElementById('modal-category').textContent = item.category;
+            document.getElementById('modal-source').textContent = item.source;
+            
+            // Set up share links
+            const shareText = encodeURIComponent(`Check out this item: ${item.name}`);
+            const shareUrl = encodeURIComponent(window.location.href);
+            document.getElementById('share-twitter').href = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
+            document.getElementById('share-facebook').href = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+            document.getElementById('share-whatsapp').href = `whatsapp://send?text=${shareText} - ${shareUrl}`;
+            
+            // Handle image
+            const modalImageContainer = document.getElementById('modal-image-container');
+            const modalImage = document.getElementById('modal-image');
+            
+            if (item.imageElement && item.imageElement.src) {
+                modalImage.style.backgroundImage = `url('${item.imageElement.src}')`;
+                modalImage.style.backgroundSize = 'cover';
+                modalImage.style.backgroundPosition = 'center';
+            } else {
+                modalImage.innerHTML = `<div class="w-full h-full flex items-center justify-center"><i class="fas fa-image text-gray-400 dark:text-gray-500 text-5xl"></i></div>`;
+            }
+            
+            // Set category icon
+            const categoryIcon = document.getElementById('modal-category-icon').querySelector('i');
+            switch(item.category) {
+                case "Electrical": categoryIcon.className = "fas fa-bolt mr-1"; break;
+                case "Stationary": categoryIcon.className = "fas fa-pencil-alt mr-1"; break;
+                case "Plumbing": categoryIcon.className = "fas fa-tint mr-1"; break;
+                case "Carpentry": categoryIcon.className = "fas fa-hammer mr-1"; break;
+                case "Roofing": categoryIcon.className = "fas fa-home mr-1"; break;
+                case "Food": categoryIcon.className = "fas fa-utensils mr-1"; break;
+                case "Groceries": categoryIcon.className = "fas fa-shopping-basket mr-1"; break;
+                case "Cleaning Products": categoryIcon.className = "fas fa-soap mr-1"; break;
+                case "Farming": categoryIcon.className = "fas fa-tractor mr-1"; break;
+                case "Thrift": categoryIcon.className = "fas fa-recycle mr-1"; break;
+                case "Hardware": categoryIcon.className = "fas fa-tools mr-1"; break;
+                case "AutoSpare": categoryIcon.className = "fas fa-car mr-1"; break;
+                case "Orders from China": categoryIcon.className = "fas fa-globe mr-1"; break;
+                default: categoryIcon.className = "fas fa-tag mr-1"; break;
+            }
+            
+            // Show modal
             document.getElementById('item-modal').classList.remove('hidden');
+            
+            // Add no-scroll to body
+            document.body.style.overflow = 'hidden';
         }
 
+        // Close modal
         function closeModal() {
             document.getElementById('item-modal').classList.add('hidden');
+            document.body.style.overflow = '';
         }
 
+        // Add to cart from modal
         function addToCartFromModal() {
-            if (currentItemId) {
-                addToCart(currentItemId, document.getElementById('modal-item-name').textContent);
+            if (currentItem) {
+                addToCart(currentItem.id, currentItem.name);
             }
             closeModal();
         }
 
-        // Add event listeners to cards
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.item-card');
-            cards.forEach(card => {
-                if (!card.onclick) { // Skip category cards that already have onclick
-                    card.addEventListener('click', function(e) {
-                        // Prevent click if it's on the add to cart button
-                        if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
-                            return;
-                        }
+        // Sort items
+        function sortItems(sortBy) {
+            window.location.href = "{% url 'home' %}?sort=" + sortBy;
+        }
 
-                        const itemId = card.dataset.itemId;
-                        if (!itemId) return; // Skip if not an item card
-
-                        const itemName = card.querySelector('h3').textContent;
-                        const itemDescription = card.querySelector('p.text-gray-600').textContent;
-                        const locationElement = card.querySelector('.location-text');
-                        const itemLocation = locationElement ? locationElement.textContent : '';
-                        const itemPrice = card.querySelector('p.text-xl').textContent;
-
-                        openModal(itemId, itemName, itemDescription, itemLocation, itemPrice);
-                    });
-                }
-            });
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('item-modal');
+            if (event.target === modal) {
+                closeModal();
+            }
         });
+
+        // Close modal with escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // Register Service Worker for Offline Support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('{% static "service-worker.js" %}')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
     </script>
 </body>
 </html>

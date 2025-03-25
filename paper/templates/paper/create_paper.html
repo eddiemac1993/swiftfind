@@ -25,6 +25,9 @@
     --border-color: #e2e8f0;
     --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --accent-gradient: linear-gradient(135deg, #3b82f6, #2563eb);
+    --success-color: #10b981;
+    --error-color: #ef4444;
+    --warning-color: #f59e0b;
 }
 
 .dark-mode {
@@ -36,41 +39,62 @@
     --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
 }
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background-color: var(--background);
     margin: 0;
     color: var(--text-primary);
-    line-height: 1.5;
+    line-height: 1.6;
     transition: background-color 0.3s ease, color 0.3s ease;
+    padding: 1rem;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 h1, h2, h3 {
     margin: 0;
+    font-weight: 600;
 }
 
 a {
     color: var(--primary-color);
     text-decoration: none;
+    transition: color 0.2s ease;
 }
 
 a:hover {
+    color: var(--primary-hover);
     text-decoration: underline;
+}
+
+/* Main Container */
+.main-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 2rem auto;
 }
 
 /* Form Container */
 .form-container {
-    max-width: 800px;
+    width: 100%;
     background-color: var(--card-bg);
-    padding: 2rem;
+    padding: 2.5rem;
     border-radius: 1rem;
     box-shadow: var(--shadow);
+    margin-top: 1rem;
 }
 
 .form-container h1 {
     font-size: 2rem;
     margin-bottom: 1.5rem;
     color: var(--text-primary);
+    text-align: center;
 }
 
 .form-container label {
@@ -78,19 +102,20 @@ a:hover {
     margin-bottom: 0.5rem;
     font-weight: 500;
     color: var(--text-primary);
+    font-size: 0.95rem;
 }
 
 .form-container input,
 .form-container select,
 .form-container textarea {
     width: 100%;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
     border: 1px solid var(--border-color);
     border-radius: 0.5rem;
     font-size: 1rem;
     color: var(--text-primary);
-    background-color: var(--background);
+    background-color: var(--card-bg);
     transition: all 0.2s ease;
 }
 
@@ -99,7 +124,12 @@ a:hover {
 .form-container textarea:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.form-container textarea {
+    min-height: 120px;
+    resize: vertical;
 }
 
 .form-container form {
@@ -108,38 +138,101 @@ a:hover {
 }
 
 .form-container form button {
-    align-self: flex-end;
-    padding: 0.75rem 1.5rem;
-    background-color: var(--primary-color);
+    margin-top: 1rem;
+    padding: 0.85rem 2rem;
+    background: var(--accent-gradient);
     color: white;
     border: none;
     border-radius: 0.5rem;
     font-weight: 600;
+    font-size: 1rem;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
+    align-self: center;
+    width: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
 .form-container form button:hover {
-    background-color: var(--primary-hover);
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+.form-container form button:active {
+    transform: translateY(0);
+}
+
+/* Form Group */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     body {
-        padding: 0.5rem;
+        padding: 0.75rem;
     }
 
     .form-container {
-        padding: 2rem;
+        padding: 1.5rem;
+    }
+
+    .form-container h1 {
+        font-size: 1.75rem;
     }
 }
 
-/* Home Button */
-.home-button {
+@media (max-width: 480px) {
+    .form-container {
+        padding: 1.25rem;
+    }
+}
+
+/* Navigation Buttons */
+.nav-button {
     position: fixed;
-    top: 2rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+    z-index: 1000;
+    transition: all 0.2s ease;
+    color: white;
+}
+
+.nav-button:hover {
+    transform: scale(1.05);
+}
+
+.home-button {
+    top: 1.5rem;
     right: 1.5rem;
-    background-color: var(--primary-color);
+    background: var(--accent-gradient);
+}
+
+.home-button:hover {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+/* Dark Mode Toggle */
+.theme-toggle {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: var(--accent-gradient);
     color: white;
     border: none;
     border-radius: 50%;
@@ -152,88 +245,117 @@ a:hover {
     justify-content: center;
     box-shadow: var(--shadow);
     z-index: 1000;
-    transition: background-color 0.2s ease;
+    transition: all 0.2s ease;
 }
 
-.home-button:hover {
-    background-color: var(--primary-hover);
+.theme-toggle:hover {
+    transform: scale(1.05);
 }
 
-/* Dark Mode Toggle */
-        .theme-toggle {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            background: var(--accent-gradient);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
-            cursor: pointer;
-            font-size: 1.25rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow);
-            z-index: 1000;
-            transition: transform 0.2s ease;
-        }
+/* Messages */
+.messages {
+    position: fixed;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1100;
+    width: 90%;
+    max-width: 600px;
+}
 
-        .theme-toggle:hover {
-            transform: scale(1.05);
-        }
-
-/* Error Messages */
-.form-errors {
-    color: #dc3545;
+.alert {
+    padding: 1rem 1.5rem;
     margin-bottom: 1rem;
-    padding: 0.75rem;
-    border: 1px solid #dc3545;
     border-radius: 0.5rem;
-    background-color: #f8d7da;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: slideIn 0.3s ease-out;
+    box-shadow: var(--shadow);
 }
 
-.form-errors ul {
-    margin: 0;
-    padding-left: 1.5rem;
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.form-errors li {
-    list-style-type: disc;
+.alert-success {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border-left: 4px solid var(--success-color);
+}
+
+.alert-error {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border-left: 4px solid var(--error-color);
+}
+
+.alert-warning {
+    background-color: #fffbeb;
+    color: #92400e;
+    border-left: 4px solid var(--warning-color);
+}
+
+.dark-mode .alert-success {
+    background-color: #064e3b;
+    color: #d1fae5;
+}
+
+.dark-mode .alert-error {
+    background-color: #7f1d1d;
+    color: #fee2e2;
+}
+
+.dark-mode .alert-warning {
+    background-color: #78350f;
+    color: #fef3c7;
 }
 
 /* Hero Section */
 .hero {
     text-align: center;
-    padding: 2rem 0;
+    padding: 2.5rem 2rem;
     background: var(--accent-gradient);
     color: white;
     border-radius: 1rem;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
+    box-shadow: var(--shadow);
 }
 
 .hero h1 {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
     margin-bottom: 1rem;
+    font-weight: 700;
 }
 
 .hero p {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     color: rgba(255, 255, 255, 0.9);
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-/* Additional Modern Touches */
+/* Form Elements Enhancements */
 .form-container input[type="file"] {
-    padding: 0.5rem;
+    padding: 1rem;
     border: 2px dashed var(--border-color);
     background-color: var(--card-bg);
     text-align: center;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .form-container input[type="file"]:hover {
     border-color: var(--primary-color);
+    background-color: rgba(59, 130, 246, 0.05);
 }
 
 .form-container input[type="file"]::file-selector-button {
@@ -244,66 +366,285 @@ a:hover {
     border-radius: 0.5rem;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    margin-right: 1rem;
 }
 
 .form-container input[type="file"]::file-selector-button:hover {
     background-color: var(--primary-hover);
 }
+
+/* Form Field Styling */
+.field-wrapper {
+    margin-bottom: 1.5rem;
+}
+
+.field-wrapper:last-child {
+    margin-bottom: 0;
+}
+
+.field-wrapper .helptext {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: -0.75rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+/* Loading State */
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.loading.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.loading-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Form Errors */
+.errorlist {
+    color: var(--error-color);
+    font-size: 0.85rem;
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
+    padding-left: 1rem;
+    list-style-type: none;
+}
+
+.errorlist li {
+    position: relative;
+    padding-left: 1.25rem;
+}
+
+.errorlist li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--error-color);
+    font-weight: bold;
+}
+
+/* Input with icons */
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+}
+
+.input-with-icon input {
+    padding-left: 2.5rem !important;
+}
+
+/* Paper Type Selector */
+.paper-type-selector {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.paper-type-option {
+    flex: 1;
+    text-align: center;
+}
+
+.paper-type-option input[type="radio"] {
+    display: none;
+}
+
+.paper-type-option label {
+    display: block;
+    padding: 1.5rem 1rem;
+    background-color: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.paper-type-option label:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.paper-type-option input[type="radio"]:checked + label {
+    border-color: var(--primary-color);
+    background-color: rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.paper-type-option i {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+    display: block;
+}
     </style>
 </head>
 <body>
+    <!-- Loading Overlay -->
+    <div class="loading" id="loading">
+        <div class="loading-spinner"></div>
+    </div>
+
     <!-- Home Button -->
-    <a href="{% url 'business-list' %}" class="home-button" title="Home">
+    <a href="{% url 'business-list' %}" class="nav-button home-button" title="Home">
         <i class="fas fa-home"></i>
     </a>
 
     <!-- Dark Mode Toggle -->
-    <button id="theme-toggle" class="theme-toggle">🌙</button>
+    <button id="theme-toggle" class="theme-toggle">
+        <span id="theme-icon">🌙</span>
+    </button>
 
-    <!-- Display Messages -->
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-            {{ message }}
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Display Messages -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {% if message.tags == 'success' %}
+                <i class="fas fa-check-circle"></i>
+                {% elif message.tags == 'error' %}
+                <i class="fas fa-exclamation-circle"></i>
+                {% elif message.tags == 'warning' %}
+                <i class="fas fa-exclamation-triangle"></i>
+                {% else %}
+                <i class="fas fa-info-circle"></i>
+                {% endif %}
+                {{ message }}
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-    {% endif %}
+        {% endif %}
 
-    <!-- Hero Section -->
-    <!-- Form Container -->
-    <div class="form-container">
-    <section class="hero">
-        <div class="hero-content">
-            <p>Generate quotations, receipts, or delivery notes.</p>
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1>Create New Document</h1>
+            <p>Generate professional quotations, receipts, or delivery notes with ease.</p>
+        </section>
+
+        <!-- Form Container -->
+        <div class="form-container">
+            <form method="post" enctype="multipart/form-data" id="paper-form">
+                {% csrf_token %}
+ 
+                <!-- Form Fields -->
+                <div class="form-group">
+                    {% for field in paper_form %}
+                    <div class="field-wrapper">
+                        {{ field.label_tag }}
+                        {% if field.help_text %}
+                        <span class="helptext">{{ field.help_text }}</span>
+                        {% endif %}
+                        {{ field }}
+                        {% if field.errors %}
+                        <ul class="errorlist">
+                            {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <button type="submit">
+                    <i class="fas fa-file-export"></i>
+                    Generate Document
+                </button>
+            </form>
         </div>
-    </section>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ paper_form.as_p }}
-            <button type="submit">Create Paper</button>
-        </form>
     </div>
 
-    <!-- JavaScript for Dark Mode -->
+    <!-- JavaScript -->
     <script>
         // Dark Mode Toggle
         const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
         const body = document.body;
 
         // Check local storage for dark mode preference
         const isDarkMode = localStorage.getItem('darkMode') === 'true';
         if (isDarkMode) {
             body.classList.add('dark-mode');
-            themeToggle.textContent = '☀️';
+            themeIcon.textContent = '☀️';
         }
 
         themeToggle.addEventListener('click', () => {
             body.classList.toggle('dark-mode');
             const isDark = body.classList.contains('dark-mode');
-            themeToggle.textContent = isDark ? '☀️' : '🌙';
+            themeIcon.textContent = isDark ? '☀️' : '🌙';
             localStorage.setItem('darkMode', isDark);
+        });
+
+        // Form Submission Loading
+        const form = document.getElementById('paper-form');
+        const loading = document.getElementById('loading');
+
+        form.addEventListener('submit', () => {
+            loading.classList.add('active');
+        });
+
+        // Auto-focus first input field
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstInput = document.querySelector('input, select, textarea');
+            if (firstInput) {
+                firstInput.focus();
+            }
+            
+            // Remove messages after 5 seconds
+            const messages = document.querySelector('.messages');
+            if (messages) {
+                setTimeout(() => {
+                    messages.style.opacity = '0';
+                    setTimeout(() => {
+                        messages.remove();
+                    }, 300);
+                }, 5000);
+            }
+        });
+
+        // Enhance radio button selection
+        const paperTypeOptions = document.querySelectorAll('.paper-type-option input[type="radio"]');
+        paperTypeOptions.forEach(option => {
+            option.addEventListener('change', () => {
+                // You could add logic here to change form fields based on selection
+                console.log('Selected paper type:', option.value);
+            });
         });
     </script>
 </body>

@@ -72,7 +72,7 @@ class PaperItem(models.Model):
     class Meta:
         ordering = ['id']
 
-from django.db import models
+from django.db import models, IntegrityError
 from django.utils import timezone
 from django.utils.text import slugify
 import uuid
@@ -85,13 +85,19 @@ def generate_unique_slug(name):
     return unique_slug
 
 class Guest(models.Model):
+    STATUS_CHOICES = [
+        ('in', 'In Venue'),
+        ('out', 'Not in Venue'),
+    ]
+
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
+    status = models.CharField(max_length=3, choices=STATUS_CHOICES, default='out')
 
     def save(self, *args, **kwargs):
-        if not self.slug or self.name != self._original_name:
+        if not self.slug or self.name != getattr(self, '_original_name', None):
             self.slug = generate_unique_slug(self.name)
         try:
             super().save(*args, **kwargs)
@@ -104,4 +110,4 @@ class Guest(models.Model):
         self._original_name = self.name
 
     def __str__(self):
-        return f"{self.name} ({self.slug})"
+        return f"{self.name} ({self.slug}) - {self.get_status_display()}"

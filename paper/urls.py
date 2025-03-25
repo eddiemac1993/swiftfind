@@ -3,7 +3,9 @@ from . import views
 
 urlpatterns = [
     path('create-paper/', views.create_paper, name='create_paper'),
+    path('paper/<int:paper_id>/', views.view_paper, name='view_paper'),
     path('add_guest/', views.add_guest, name='add_guest'),
+    path('guests/<slug:slug>/toggle-status/', views.toggle_guest_status, name='toggle_guest_status'),
     path('qrcode/<slug:slug>/', views.guest_qr_code, name='guest_qr_code'),
     path('guests/', views.guest_list, name='guest_list'),
     path('guest/edit/<slug:slug>/', views.edit_guest, name='edit_guest'),

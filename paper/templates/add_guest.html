@@ -15,7 +15,7 @@
             --text-color: #3c3c3c;
             --border-color: #e8e0d8;
         }
-        
+
         body {
             font-family: 'Montserrat', sans-serif;
             margin: 0;
@@ -31,7 +31,7 @@
             background-attachment: fixed;
             color: var(--text-color);
         }
-        
+
         .form-container {
             background-color: rgba(255, 255, 255, 0.95);
             padding: 40px;
@@ -42,7 +42,7 @@
             overflow: hidden;
             margin: 20px;
         }
-        
+
         .form-container::before, .form-container::after {
             content: '';
             position: absolute;
@@ -54,23 +54,23 @@
             opacity: 0.08;
             z-index: 0;
         }
-        
+
         .form-container::before {
             top: -50px;
             left: -50px;
         }
-        
+
         .form-container::after {
             bottom: -50px;
             right: -50px;
             transform: rotate(180deg);
         }
-        
+
         .form-content {
             position: relative;
             z-index: 1;
         }
-        
+
         h1 {
             font-family: 'Playfair Display', serif;
             text-align: center;
@@ -82,7 +82,7 @@
             position: relative;
             padding-bottom: 15px;
         }
-        
+
         h1::after {
             content: '';
             position: absolute;
@@ -93,7 +93,7 @@
             left: 50%;
             transform: translateX(-50%);
         }
-        
+
         .back-link {
             display: flex;
             align-items: center;
@@ -104,20 +104,20 @@
             font-size: 14px;
             transition: all 0.3s ease;
         }
-        
+
         .back-link:hover {
             color: var(--primary-dark);
         }
-        
+
         .back-link i {
             margin-right: 5px;
         }
-        
+
         .form-group {
             margin-bottom: 20px;
             position: relative;
         }
-        
+
         .form-group label {
             font-family: 'Montserrat', sans-serif;
             font-size: 14px;
@@ -126,7 +126,7 @@
             color: var(--accent-color);
             font-weight: 500;
         }
-        
+
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 12px 15px;
@@ -139,17 +139,17 @@
             background-color: rgba(255, 255, 255, 0.8);
             box-sizing: border-box;
         }
-        
+
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 6px rgba(212, 183, 143, 0.3);
         }
-        
+
         .btn-container {
             margin-top: 30px;
         }
-        
+
         .btn {
             width: 100%;
             padding: 14px;
@@ -167,7 +167,7 @@
             overflow: hidden;
             box-shadow: 0 4px 10px rgba(212, 183, 143, 0.3);
         }
-        
+
         .btn::after {
             content: '';
             position: absolute;
@@ -178,20 +178,136 @@
             background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: all 0.5s ease;
         }
-        
+
         .btn:hover {
             background-color: var(--primary-dark);
         }
-        
+
         .btn:hover::after {
             left: 100%;
         }
-        
+
         @media (max-width: 480px) {
             .form-container {
                 width: 90%;
                 padding: 30px 20px;
             }
+        }
+
+        /* Add Modal Styles */
+        #verificationModal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+            position: relative;
+            animation: modalAppear 0.3s;
+        }
+
+        @keyframes modalAppear {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: var(--accent-color);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .modal-description {
+            margin-bottom: 20px;
+            font-size: 15px;
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        .security-code-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .security-code-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 8px rgba(212, 183, 143, 0.4);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.cancel-btn {
+            background-color: #f1f1f1;
+            color: var(--text-color);
+        }
+
+        .modal-btn.confirm-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-btn.cancel-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .modal-btn.confirm-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 15px;
+            display: none;
         }
     </style>
 </head>
@@ -202,7 +318,7 @@
             <a href="{% url 'guest_list' %}" class="back-link">
                 <i class="fas fa-arrow-left"></i> View Guest List
             </a>
-            <form method="POST">
+            <form method="POST" id="guestForm">
                 {% csrf_token %}
                 {% for field in form %}
                 <div class="form-group">
@@ -216,10 +332,66 @@
                 </div>
                 {% endfor %}
                 <div class="btn-container">
-                    <button type="submit" class="btn">Add Guest</button>
+                    <button type="button" class="btn" id="submitBtn">Add Guest</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Security Verification Modal -->
+    <div id="verificationModal">
+        <div class="modal-content">
+            <h3 class="modal-title">Security Verification</h3>
+            <p class="modal-description">Please enter the security code to proceed.</p>
+            <input type="password" id="securityCode" class="security-code-input" placeholder="Enter security code">
+            <div class="modal-buttons">
+                <button class="modal-btn cancel-btn" id="cancelAction">Cancel</button>
+                <button class="modal-btn confirm-btn" id="confirmAction">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Constants
+            const SECURITY_CODE = '12345';
+
+            // DOM Elements
+            const modal = document.getElementById('verificationModal');
+            const securityCodeInput = document.getElementById('securityCode');
+            const confirmBtn = document.getElementById('confirmAction');
+            const cancelBtn = document.getElementById('cancelAction');
+            const submitBtn = document.getElementById('submitBtn');
+            const guestForm = document.getElementById('guestForm');
+
+            // Open modal when submit button is clicked
+            submitBtn.addEventListener('click', function () {
+                modal.style.display = 'flex';
+            });
+
+            // Close modal when cancel button is clicked
+            cancelBtn.addEventListener('click', function () {
+                modal.style.display = 'none';
+            });
+
+            // Verify security code and submit form
+            confirmBtn.addEventListener('click', function () {
+                const enteredCode = securityCodeInput.value.trim();
+
+                if (enteredCode === SECURITY_CODE) {
+                    guestForm.submit(); // Submit the form
+                } else {
+                    alert('Incorrect security code. Please try again.');
+                }
+            });
+
+            // Allow pressing Enter to confirm
+            securityCodeInput.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    confirmBtn.click();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

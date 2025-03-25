@@ -218,19 +218,33 @@ def add_guest(request):
 
 def guest_invitation(request, slug):
     guest = get_object_or_404(Guest, slug=slug)
-    return render(request, 'guest_invitation.html', {'guest': guest})
+    # Generate the QR code for the invitation URL
+    invitation_url = request.build_absolute_uri(
+        reverse('guest_invitation', args=[guest.slug])
+    )
+    qr_code = generate_qr_code(invitation_url)
+    return render(request, 'guest_invitation.html', {
+        'guest': guest,
+        'qr_code': qr_code  # Pass the QR code to the template
+    })
 
 def guest_list(request):
     guests = Guest.objects.all()
-    # Generate QR code for each guest
+
+    # Count guests in the venue and not in the venue
+    in_venue_count = guests.filter(status='in').count()
+    not_in_venue_count = guests.filter(status='out').count()
+
+    # Generate QR codes for each guest
     for guest in guests:
-        # Get the absolute URL for the guest's invitation
-        invitation_url = request.build_absolute_uri(
-            reverse('guest_invitation', args=[guest.slug])
-        )
-        # Generate QR code for the URL
+        invitation_url = request.build_absolute_uri(reverse('guest_invitation', args=[guest.slug]))
         guest.qr_code = generate_qr_code(invitation_url)
-    return render(request, 'guest_list.html', {'guests': guests})
+
+    return render(request, 'guest_list.html', {
+        'guests': guests,
+        'in_venue_count': in_venue_count,
+        'not_in_venue_count': not_in_venue_count
+    })
 
 def guest_qr_code(request, slug):
     guest = get_object_or_404(Guest, slug=slug)
@@ -247,9 +261,19 @@ def guest_qr_code(request, slug):
 
 def edit_guest(request, slug):
     guest = get_object_or_404(Guest, slug=slug)
-    return render(request, 'paper/edit_guest.html', {'guest': guest})
+    return render(request, 'edit_guest.html', {'guest': guest})
 
 def delete_guest(request, slug):
     guest = get_object_or_404(Guest, slug=slug)
     guest.delete()
+    return redirect('guest_list')
+
+from django.shortcuts import get_object_or_404, redirect
+from django.views.decorators.http import require_POST
+
+@require_POST
+def toggle_guest_status(request, slug):
+    guest = get_object_or_404(Guest, slug=slug)
+    guest.status = 'out' if guest.status == 'in' else 'in'
+    guest.save()
     return redirect('guest_list')
