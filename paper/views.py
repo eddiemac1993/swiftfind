@@ -36,7 +36,6 @@ def create_paper(request):
     return render(request, 'paper/create_paper.html', context)
 
 
-# Add Items to Paper
 def add_items(request, paper_id):
     paper = get_object_or_404(Paper, id=paper_id)
 
@@ -66,16 +65,15 @@ def add_items(request, paper_id):
     else:
         form = PaperItemForm()
 
-    # Fetch all items for the paper and calculate the total
+    # Fetch all items for the paper
     items = paper.items.all()
-    total = sum(item.total_price for item in items)
 
     context = {
         'form': form,
         'paper': paper,
         'items': items,
-        'total': total,
     }
+
     return render(request, 'paper/add_items.html', context)
 
 
@@ -84,13 +82,13 @@ def view_paper(request, paper_id):
     paper = get_object_or_404(Paper, id=paper_id)
     items = paper.items.all()
 
-    # Calculate the grand total
-    grand_total = sum(item.total_price for item in items)
-
     context = {
         'paper': paper,
         'items': items,
-        'grand_total': grand_total,  # Pass the grand total to the template
+        'subtotal': paper.subtotal,
+        'vat_rate': paper.vat_rate,
+        'vat_amount': paper.vat_amount,
+        'grand_total': paper.total_amount,
     }
     return render(request, 'paper/view_paper.html', context)
 
@@ -148,13 +146,17 @@ def download_paper(request, paper_id):
     # Fetch items for the paper
     items = paper.items.all()
 
-    # Calculate the grand total
-    grand_total = sum(item.total_price for item in items)
+    # Use the existing model properties for calculations
+    subtotal = paper.subtotal
+    vat_amount = paper.vat_amount
+    grand_total = paper.total_amount
 
     # Render the HTML template
     html_string = render_to_string('paper/paper_pdf_template.html', {
         'paper': paper,
         'items': items,
+        'subtotal': subtotal,
+        'vat_amount': vat_amount,
         'grand_total': grand_total,
     })
 

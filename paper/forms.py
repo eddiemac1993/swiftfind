@@ -13,7 +13,7 @@ class PaperForm(forms.ModelForm):
         model = Paper
         fields = [
             'company_name', 'logo', 'company_address', 'company_email', 'phone_number',
-            'customer_name', 'date', 'paper_type', 'prepared_by'
+            'customer_name', 'date', 'paper_type', 'prepared_by', 'vat_rate'  # Added vat_rate
         ]
         widgets = {
             'date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
@@ -28,12 +28,15 @@ class PaperForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Upload your company logo (optional)',
             }),
+            'vat_rate': forms.Select(attrs={'class': 'form-control'}),  # Added VAT rate widget
         }
         help_texts = {
             'logo': 'Upload your company logo (optional). Max file size: 2MB. Allowed formats: JPG, PNG.',
+            'vat_rate': 'Select the applicable VAT rate for this document.',  # Added help text
         }
         labels = {
             'logo': 'Company Logo (Optional)',
+            'vat_rate': 'VAT Rate',  # Added label
         }
 
     def clean_phone_number(self):
@@ -60,6 +63,8 @@ class PaperForm(forms.ModelForm):
             if logo.content_type not in allowed_types:
                 raise forms.ValidationError("Only JPG and PNG files are allowed for the logo.")
         return logo
+
+# Rest of the file remains the same
 
 class PaperItemForm(forms.ModelForm):
     class Meta:

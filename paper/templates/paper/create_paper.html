@@ -561,27 +561,32 @@ a:hover {
         <div class="form-container">
             <form method="post" enctype="multipart/form-data" id="paper-form">
                 {% csrf_token %}
- 
+
                 <!-- Form Fields -->
                 <div class="form-group">
                     {% for field in paper_form %}
                     <div class="field-wrapper">
-                        {{ field.label_tag }}
-                        {% if field.help_text %}
-                        <span class="helptext">{{ field.help_text }}</span>
-                        {% endif %}
-                        {{ field }}
-                        {% if field.errors %}
-                        <ul class="errorlist">
-                            {% for error in field.errors %}
-                            <li>{{ error }}</li>
-                            {% endfor %}
-                        </ul>
-                        {% endif %}
-                    </div>
+    {{ field.label_tag }}
+    {% if field.name == 'vat_rate' %}
+    <span class="vat-tooltip" title="Select the VAT (Value Added Tax) rate applicable to this document. This will be used to calculate the total amount.">
+        <i class="fas fa-question-circle"></i>
+    </span>
+    {% endif %}
+    {% if field.help_text %}
+    <span class="helptext">{{ field.help_text }}</span>
+    {% endif %}
+    {{ field }}
+    {% if field.errors %}
+    <ul class="errorlist">
+        {% for error in field.errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
                     {% endfor %}
                 </div>
-                
+
                 <button type="submit">
                     <i class="fas fa-file-export"></i>
                     Generate Document
@@ -625,7 +630,7 @@ a:hover {
             if (firstInput) {
                 firstInput.focus();
             }
-            
+
             // Remove messages after 5 seconds
             const messages = document.querySelector('.messages');
             if (messages) {

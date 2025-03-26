@@ -1,8 +1,9 @@
 from django.db import models
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 import random
 import string
+from decimal import Decimal
 
 def generate_unique_paper_number(prefix):
     """Generate a unique and random numeric paper number."""
@@ -21,9 +22,16 @@ class Paper(models.Model):
 
     PAPER_TYPE_CHOICES = [
         ('QUOTATION', 'Quotation'),
-        # ('INVOICE', 'Invoice'),  # Invoice commented out
         ('RECEIPT', 'Receipt'),
         ('DELIVERY_NOTE', 'Delivery Note'),
+    ]
+
+    VAT_RATE_CHOICES = [
+        (0, 'No VAT (0%)'),
+        (5, 'VAT 5%'),
+        (10, 'VAT 10%'),
+        (16, 'VAT 16%'),
+        (20, 'VAT 20%'),
     ]
 
     customer_name = models.CharField(max_length=255, default="Unknown Customer")
@@ -33,6 +41,13 @@ class Paper(models.Model):
     prepared_by = models.CharField(max_length=255, default="Unknown Preparer")
     logo = models.ImageField(upload_to='logos/', blank=True, null=True)
 
+    # New VAT-related fields
+    vat_rate = models.IntegerField(
+        choices=VAT_RATE_CHOICES,
+        default=0,
+        help_text="Select the applicable VAT rate"
+    )
+
     def clean(self):
         if self.paper_type not in dict(self.PAPER_TYPE_CHOICES).keys():
             raise ValidationError({'paper_type': 'Invalid paper type.'})
@@ -41,7 +56,6 @@ class Paper(models.Model):
         if not self.paper_number:
             prefix_mapping = {
                 'QUOTATION': 'QTN',
-                # 'INVOICE': 'INV',  # Invoice prefix commented out
                 'RECEIPT': 'RCP',
                 'DELIVERY_NOTE': 'DLN',
             }
@@ -49,9 +63,24 @@ class Paper(models.Model):
             self.paper_number = generate_unique_paper_number(prefix)
         super().save(*args, **kwargs)
 
+
+    @property
+    def subtotal(self):
+        return sum(item.total_price for item in self.items.all())
+
+    @property
+    def vat_amount(self):
+        # Ensure both values are Decimal
+        subtotal = Decimal(str(self.subtotal))
+        vat_rate = Decimal(str(self.vat_rate)) / Decimal('100')
+        return subtotal * vat_rate
+
     @property
     def total_amount(self):
-        return sum(item.total_price for item in self.items.all())
+        # Ensure both values are Decimal
+        subtotal = Decimal(str(self.subtotal))
+        vat = Decimal(str(self.vat_amount))
+        return subtotal + vat
 
     def __str__(self):
         return f"{self.get_paper_type_display()} - {self.paper_number} ({self.customer_name})"

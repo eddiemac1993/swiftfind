@@ -302,9 +302,20 @@
     </div>
 
     <!-- Total Section -->
-    <div class="total-section">
-        Total Price: K {{ grand_total|intcomma }}
+<div class="total-breakdown">
+    <div class="subtotal">
+        <span>Subtotal:</span>
+        <span>K {{ subtotal|floatformat:2|intcomma }}</span>
     </div>
+    <div class="vat-line">
+        <span>VAT ({{ vat_rate }}%):</span>
+        <span>K {{ vat_amount|floatformat:2|intcomma }}</span>
+    </div>
+    <div class="grand-total">
+        <span>Grand Total:</span>
+        <span>K {{ grand_total|floatformat:2|intcomma }}</span>
+    </div>
+</div>
 
     <!-- Action Buttons -->
     <div class="action-buttons-container">

@@ -388,9 +388,22 @@
     </div>
 
     <!-- Total Section -->
-    <div class="total-section">
-        Grand Total: K {{ total|intcomma }}
+<div class="total-section">
+    <div class="total-breakdown">
+        <div class="subtotal">
+            <span>Subtotal:</span>
+            <span>K {{ paper.subtotal|floatformat:2|intcomma }}</span>
+        </div>
+        <div class="vat-line">
+            <span>VAT ({{ paper.vat_rate }}%):</span>
+            <span>K {{ paper.vat_amount|floatformat:2|intcomma }}</span>
+        </div>
+        <div class="grand-total">
+            <span>Grand Total:</span>
+            <span>K {{ paper.total_amount|floatformat:2|intcomma }}</span>
+        </div>
     </div>
+</div>
 
     <!-- Finish Button -->
     <div style="text-align: center;">

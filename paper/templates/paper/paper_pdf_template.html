@@ -341,11 +341,23 @@
                     </tr>
                     {% endfor %}
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="text-align: right;">Subtotal:</td>
+                        <td>{{ subtotal|intcomma }}</td>
+                    </tr>
+                    {% if paper.vat_rate > 0 %}
+                    <tr>
+                        <td colspan="3" style="text-align: right;">VAT ({{ paper.vat_rate }}%):</td>
+                        <td>{{ vat_amount|intcomma }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <td colspan="3" style="text-align: right;"><strong>Grand Total:</strong></td>
+                        <td><strong>{{ grand_total|intcomma }}</strong></td>
+                    </tr>
+                </tfoot>
             </table>
-        </div>
-        <!-- Total Section for Quotation and Invoice -->
-        <div class="total-section">
-            Grand Total: {{ paper.currency_symbol }}{{ grand_total|intcomma }}
         </div>
     {% endif %}
 
