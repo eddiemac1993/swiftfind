@@ -61,6 +61,29 @@
         };
     </script>
     <style>
+        /* Add to existing styles */
+        .modal-content {
+            max-height: 90vh; /* Limit height to 90% of viewport height */
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
+
+        /* Custom scrollbar for modal */
+        .modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+            background: rgba(14, 165, 233, 0.7); /* Primary color with opacity */
+            border-radius: 10px;
+        }
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(14, 165, 233, 0.9);
+        }
+    </style>
+    <style>
         /* Custom scrollbar for category menu */
         .category-scroll::-webkit-scrollbar {
             height: 4px;
@@ -93,7 +116,7 @@
             transform: translateY(-3px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
-        
+
         /* Modal animation */
         .modal-content {
             animation: modal-appear 0.3s ease-out;
@@ -102,7 +125,7 @@
             0% { transform: scale(0.9); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
-        
+
         /* Custom badge */
         .badge {
             position: absolute;
@@ -266,11 +289,11 @@
             </h2>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {% for item in items %}
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden item-card cursor-pointer" 
-                     data-item-id="{{ item.id }}" 
-                     data-item-name="{{ item.name }}" 
-                     data-item-description="{{ item.description }}" 
-                     data-item-location="{{ item.location }}" 
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden item-card cursor-pointer"
+                     data-item-id="{{ item.id }}"
+                     data-item-name="{{ item.name }}"
+                     data-item-description="{{ item.description }}"
+                     data-item-location="{{ item.location }}"
                      data-item-price="K{{ item.selling_price }}"
                      data-item-category="{{ item.category.name }}"
                      data-item-source="{{ item.source }}"
@@ -331,21 +354,21 @@
         </div>
     </div>
 
-    <!-- Enhanced Item Details Modal -->
+    <!-- Enhanced Item Details Modal (with scrolling) -->
     <div id="item-modal" class="fixed inset-0 z-50 hidden">
         <div class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm" onclick="closeModal()"></div>
         <div class="fixed inset-0 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md modal-content relative">
-                <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 z-10 bg-white dark:bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center shadow-md">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md modal-content relative overflow-y-auto">
+                <button onclick="closeModal()" class="sticky top-0 right-4 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 z-10 bg-white dark:bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center shadow-md self-end ml-auto mr-4 mt-4">
                     <i class="fas fa-times"></i>
                 </button>
-                
+
                 <!-- Item Image in Modal -->
-                <div id="modal-image-container" class="w-full h-56 bg-gray-200 dark:bg-gray-700 relative">
+                <div id="modal-image-container" class="w-full h-56 bg-gray-200 dark:bg-gray-700 relative sticky top-0 z-10">
                     <div id="modal-image" class="w-full h-full object-cover"></div>
                     <div id="modal-source" class="badge bg-primary-600 text-white"></div>
                 </div>
-                
+
                 <div class="p-6">
                     <!-- Item Basic Info -->
                     <div class="mb-2">
@@ -361,22 +384,22 @@
                             <span id="modal-item-location">Location not specified</span>
                         </div>
                     </div>
-                    
+
                     <!-- Item Description -->
                     <div class="mb-4">
                         <h3 class="text-lg font-semibold mb-2">Description</h3>
                         <p id="modal-item-description" class="text-gray-600 dark:text-gray-300"></p>
                     </div>
-                    
+
                     <!-- Price and Add to Cart -->
-                    <div class="flex justify-between items-center mb-5">
+                    <div class="flex justify-between items-center mb-5 sticky bottom-0 bg-white dark:bg-gray-800 py-4 z-10">
                         <p id="modal-item-price" class="text-2xl font-bold text-primary-600 dark:text-primary-400"></p>
                         <button onclick="addToCartFromModal()" class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg transition flex items-center">
                             <i class="fas fa-cart-plus mr-2"></i>
                             Add to Cart
                         </button>
                     </div>
-                    
+
                     <!-- Share Section -->
                     <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                         <h3 class="text-sm font-semibold mb-2 text-gray-500">SHARE THIS PRODUCT</h3>
@@ -479,9 +502,9 @@
                 source: element.dataset.itemSource,
                 imageElement: element.querySelector('img') || null
             };
-            
+
             currentItem = item;
-            
+
             // Set modal content
             document.getElementById('modal-item-name').textContent = item.name;
             document.getElementById('modal-item-description').textContent = item.description;
@@ -489,18 +512,18 @@
             document.getElementById('modal-item-price').textContent = item.price;
             document.getElementById('modal-category').textContent = item.category;
             document.getElementById('modal-source').textContent = item.source;
-            
+
             // Set up share links
             const shareText = encodeURIComponent(`Check out this item: ${item.name}`);
             const shareUrl = encodeURIComponent(window.location.href);
             document.getElementById('share-twitter').href = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
             document.getElementById('share-facebook').href = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
             document.getElementById('share-whatsapp').href = `whatsapp://send?text=${shareText} - ${shareUrl}`;
-            
+
             // Handle image
             const modalImageContainer = document.getElementById('modal-image-container');
             const modalImage = document.getElementById('modal-image');
-            
+
             if (item.imageElement && item.imageElement.src) {
                 modalImage.style.backgroundImage = `url('${item.imageElement.src}')`;
                 modalImage.style.backgroundSize = 'cover';
@@ -508,7 +531,7 @@
             } else {
                 modalImage.innerHTML = `<div class="w-full h-full flex items-center justify-center"><i class="fas fa-image text-gray-400 dark:text-gray-500 text-5xl"></i></div>`;
             }
-            
+
             // Set category icon
             const categoryIcon = document.getElementById('modal-category-icon').querySelector('i');
             switch(item.category) {
@@ -527,10 +550,10 @@
                 case "Orders from China": categoryIcon.className = "fas fa-globe mr-1"; break;
                 default: categoryIcon.className = "fas fa-tag mr-1"; break;
             }
-            
+
             // Show modal
             document.getElementById('item-modal').classList.remove('hidden');
-            
+
             // Add no-scroll to body
             document.body.style.overflow = 'hidden';
         }
