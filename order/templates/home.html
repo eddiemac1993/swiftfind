@@ -1,10 +1,10 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#000000">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07C160">
     <meta name="description" content="Distribution Platform">
     <title>Distribution Platform</title>
     <link rel="manifest" href="{% static 'manifest.json' %}">
@@ -15,312 +15,1112 @@
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            200: '#bae6fd',
-                            300: '#7dd3fc',
-                            400: '#38bdf8',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            800: '#075985',
-                            900: '#0c4a6e',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    spacing: {
-                        '72': '18rem',
-                        '84': '21rem',
-                        '96': '24rem',
-                    },
-                    animation: {
-                        'fadeIn': 'fadeIn 0.5s ease-in-out',
-                        'slideIn': 'slideIn 0.3s ease-out',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        slideIn: {
-                            '0%': { transform: 'translateY(10px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' },
-                        }
-                    }
-                },
-            },
-        };
-    </script>
     <style>
-        /* Add to existing styles */
-        .modal-content {
-            max-height: 90vh; /* Limit height to 90% of viewport height */
-            overflow-y: auto; /* Enable vertical scrolling */
+        :root {
+            --primary-color: #07C160; /* WeChat green */
+            --primary-dark: #05a54e;
+            --primary-light: #e6f7ef;
+            --secondary-color: #F8F8F8;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #EEE;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
-        /* Custom scrollbar for modal */
-        .modal-content::-webkit-scrollbar {
-            width: 6px;
-        }
-        .modal-content::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.1);
-            border-radius: 10px;
-        }
-        .modal-content::-webkit-scrollbar-thumb {
-            background: rgba(14, 165, 233, 0.7); /* Primary color with opacity */
-            border-radius: 10px;
-        }
-        .modal-content::-webkit-scrollbar-thumb:hover {
-            background: rgba(14, 165, 233, 0.9);
-        }
-    </style>
-    <style>
-        /* Custom scrollbar for category menu */
-        .category-scroll::-webkit-scrollbar {
-            height: 4px;
-        }
-        .category-scroll::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        .category-scroll::-webkit-scrollbar-thumb {
-            background: #0ea5e9;
-            border-radius: 10px;
-        }
-        .category-scroll::-webkit-scrollbar-thumb:hover {
-            background: #0284c7;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
         }
 
-        /* Animations */
-        .scale-in {
-            animation: scale-in 0.3s ease-out;
-        }
-        @keyframes scale-in {
-            0% { transform: scale(0.95); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding-bottom: 72px; /* Space for bottom nav */
         }
 
-        /* Card hover effects */
-        .item-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .item-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
         }
 
-        /* Modal animation */
-        .modal-content {
-            animation: modal-appear 0.3s ease-out;
-        }
-        @keyframes modal-appear {
-            0% { transform: scale(0.9); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        /* Header styles */
+        .app-header {
+            background-color: var(--white);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
         }
 
-        /* Custom badge */
-        .badge {
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 6px 12px;
+            background-color: var(--primary-light);
+            border-radius: 20px;
+            color: var(--primary-dark);
+        }
+
+        .dark-mode .location {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        .location i {
+            margin-right: 5px;
+            color: var(--primary-color);
+        }
+
+        .location i.fa-chevron-down {
+            font-size: 10px;
+            margin-left: 4px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-actions i {
+            font-size: 20px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .user-actions i {
+            color: var(--dark-text);
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--secondary-color);
+        }
+
+        .dark-mode .theme-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-btn .dark-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .light-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .dark-icon {
+            display: block;
+            color: var(--dark-text);
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: var(--secondary-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .dark-mode .search-bar {
+            background-color: rgba(255, 255, 255, 0.08);
+            box-shadow: none;
+        }
+
+        .search-bar i {
+            color: var(--primary-color);
+            margin-right: 12px;
+            font-size: 16px;
+        }
+
+        .dark-mode .search-bar i {
+            color: var(--primary-color);
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .dark-mode .search-bar input {
+            color: var(--dark-text);
+        }
+
+        .dark-mode .search-bar input::placeholder {
+            color: var(--dark-light-text);
+        }
+.categories {
+    display: flex;
+    gap: 12px;
+    padding: 0 16px 16px;
+    overflow-x: auto;
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For IE and Edge */
+    white-space: nowrap;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 16px;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.categories::-webkit-scrollbar {
+    display: none;
+}
+
+/* Category style with improved dark mode visibility */
+.category {
+    flex: 0 0 auto;
+    width: 100px;
+    min-height: 80px;
+    text-align: center;
+    padding: 12px 8px;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background-color: var(--white);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Dark mode specific styles */
+.dark-mode .category {
+    background-color: var(--dark-surface);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--dark-text);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.category i {
+    font-size: 18px;
+    display: block;
+    margin-bottom: 8px;
+    color: var(--primary-color);
+}
+
+.category.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.category.active i {
+    color: white;
+}
+
+/* Ensure text is visible in both modes */
+.category span {
+    color: inherit; /* Inherits from parent (.category or .dark-mode .category) */
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+        /* Banner */
+        .banner {
+            margin: 0 16px 24px;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--shadow);
+            height: 200px;
+            background: linear-gradient(to right, #07C160, #05a54e);
+        }
+
+        .dark-mode .banner {
+            box-shadow: var(--dark-shadow);
+        }
+
+        .banner-slide {
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+            padding: 24px;
+            color: var(--white);
+            position: relative;
+            z-index: 2;
+        }
+
+        .banner-slide::after {
+            content: '';
             position: absolute;
-            top: 10px;
-            right: 10px;
-            border-radius: 9999px;
-            padding: 0.25rem 0.75rem;
-            font-size: 0.75rem;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+            z-index: -1;
+        }
+
+        .banner-content {
+            max-width: 80%;
+        }
+
+        .banner-content h3 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .banner-content p {
+            font-size: 14px;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .shop-now-btn {
+            background-color: var(--white);
+            color: var(--primary-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
             font-weight: 600;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            backdrop-filter: blur(4px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .shop-now-btn:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .shop-now-btn i {
+            font-size: 12px;
+            transition: transform 0.2s ease;
+        }
+
+        .shop-now-btn:hover i {
+            transform: translateX(4px);
+        }
+
+        /* Quick actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            background-color: var(--white);
+            padding: 20px 10px;
+            margin: 0 16px 24px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .quick-actions {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 0;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .action:hover {
+            transform: translateY(-5px);
+        }
+
+        .action i {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            background-color: var(--primary-light);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .action i {
+            background-color: rgba(7, 193, 96, 0.2);
+        }
+
+        .action:hover i {
+            transform: scale(1.1);
+        }
+
+        .action span {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .dark-mode .action span {
+            color: var(--dark-text);
+        }
+
+        /* Products section */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px 16px;
+        }
+
+        .section-header h3 {
+            font-size: 20px;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .section-header h3::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .dark-mode .section-header h3 {
+            color: var(--dark-text);
+        }
+
+        .see-all {
+            font-size: 14px;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 600;
+        }
+
+        .dark-mode .see-all {
+            color: var(--primary-color);
+        }
+
+        .see-all i {
+            font-size: 12px;
+            transition: transform 0.2s ease;
+        }
+
+        .see-all:hover i {
+            transform: translateX(3px);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            padding: 0 16px 32px;
+        }
+
+        @media (min-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .products-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .product-card {
+            background-color: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .dark-mode .product-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+            border-color: rgba(255,255,255,0.05);
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode .product-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1;
+            box-shadow: 0 2px 8px rgba(7, 193, 96, 0.3);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .product-info {
+            padding: 16px;
+        }
+
+        .product-title {
+            font-size: 15px;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-weight: 600;
+            line-height: 1.4;
+            min-height: 42px;
+        }
+
+        .dark-mode .product-title {
+            color: var(--dark-text);
+        }
+
+        .price-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .product-price {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .product-original-price {
+            color: var(--light-text);
+            text-decoration: line-through;
+            font-size: 13px;
+            margin-left: 8px;
+        }
+
+        .dark-mode .product-original-price {
+            color: var(--dark-light-text);
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 13px;
+            background-color: var(--primary-light);
+            padding: 4px 8px;
+            border-radius: 6px;
+            width: fit-content;
+        }
+
+        .dark-mode .product-rating {
+            background-color: rgba(7, 193, 96, 0.1);
+        }
+
+        .product-rating i {
+            color: var(--primary-color);
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .product-rating span {
+            font-size: 12px;
+            color: var(--primary-dark);
+            font-weight: 500;
+        }
+
+        .dark-mode .product-rating span {
+            color: var(--primary-color);
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--white);
+            padding: 12px 0 8px;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--light-text);
+            font-size: 12px;
+            font-weight: 500;
+            position: relative;
+            padding: 6px 16px;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active i {
+            transform: translateY(-2px);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -2px;
+            right: 2px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            border: 2px solid var(--white);
+        }
+
+        .dark-mode .cart-count {
+            border-color: var(--dark-surface);
+        }
+
+        /* Toast Notification */
+        #toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            z-index: 1000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast-content {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            min-width: 200px;
+            justify-content: center;
+        }
+
+        .toast-content i {
+            margin-right: 10px;
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-container {
+            background-color: var(--white);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(30px) scale(0.95);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .dark-mode .modal-container {
+            background-color: var(--dark-surface);
+        }
+
+        .modal-overlay.active .modal-container {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--text-color);
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode .modal-close {
+            background: rgba(30, 30, 30, 0.9);
+            color: var(--dark-text);
+        }
+
+        .modal-image-container {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .modal-container:hover .modal-image {
+            transform: scale(1.05);
+        }
+
+        .modal-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: bold;
+            z-index: 1;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content {
+            padding: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .dark-mode .modal-title {
+            color: var(--dark-text);
+        }
+
+        .modal-price {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .modal-original-price {
+            font-size: 16px;
+            color: var(--light-text);
+            text-decoration: line-through;
+            margin-left: 10px;
+        }
+
+        .dark-mode .modal-original-price {
+            color: var(--dark-light-text);
+        }
+
+        .modal-location {
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: var(--text-color);
+            background-color: var(--primary-light);
+            padding: 8px 16px;
+            border-radius: 30px;
+        }
+
+        .dark-mode .modal-location {
+            color: var(--primary-color);
+            background-color: rgba(7, 193, 96, 0.1);
+        }
+
+        .modal-location i {
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+
+        .modal-description {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--secondary-color);
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .modal-description h4 {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
+        }
+
+        .dark-mode .modal-description {
+            color: var(--dark-text);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .dark-mode .modal-description h4 {
+            color: var(--primary-color);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .dark-mode .modal-actions {
+            border-top-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-add-to-cart {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(7, 193, 96, 0.3);
+        }
+
+        .modal-add-to-cart:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(7, 193, 96, 0.4);
+        }
+
+        .modal-add-to-cart i {
+            font-size: 18px;
+        }
+
+        .modal-share {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-share-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-share-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-share-twitter {
+            background-color: #1DA1F2;
+        }
+
+        .modal-share-facebook {
+            background-color: #3B5998;
+        }
+
+        .modal-share-whatsapp {
+            background-color: #25D366;
+        }
+
+        /* Pulse animation for active elements */
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(7, 193, 96, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(7, 193, 96, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(7, 193, 96, 0);
+            }
+        }
+
+        .nav-item.active i {
+            animation: pulse 2s infinite;
         }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 dark:text-white min-h-screen">
-
-    <!-- Fixed Top Navigation Bar -->
-    <header class="fixed top-0 w-full bg-white dark:bg-gray-800 shadow-md z-50">
-        <div class="container mx-auto px-4 py-3">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center">
-                    <a href="{% url 'home' %}" class="text-xl font-bold text-primary-600 dark:text-primary-400 mr-6">
-                        <i class="fas fa-store mr-2"></i>
-                    </a>
-                </div>
-                <div class="hidden md:flex flex-1 mx-4">
-                    <form method="GET" action="{% url 'home' %}" class="w-full max-w-lg">
-                        <div class="relative">
-                            <input type="text"
-                                name="search"
-                                value="{{ search_query }}"
-                                placeholder="Search items..."
-                                class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3">
-                                <i class="fas fa-search text-gray-400"></i>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <button onclick="toggleDarkMode()" class="text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition">
-                        <i class="fas fa-moon dark:hidden"></i>
-                        <i class="fas fa-sun hidden dark:block"></i>
-                    </button>
-                    <a href="{% url 'cart' %}" class="relative p-2 text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition">
-                        <i class="fas fa-shopping-cart text-xl"></i>
-                        <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
-                            {{ cart_count }}
-                        </span>
-                    </a>
-                    <a href="{% url 'business-list' %}" class="hidden md:block text-gray-600 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition">
-                        <i class="fas fa-building text-xl"></i>
-                    </a>
-                </div>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Header with search -->
+    <header class="app-header">
+        <div class="header-top">
+            <div class="location">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Deliver to: Home</span>
+                <i class="fas fa-chevron-down"></i>
             </div>
-
-            <!-- Mobile Search -->
-            <div class="mt-3 md:hidden hidden" id="mobile-search-form">
-                <form method="GET" action="{% url 'home' %}">
-                    <div class="relative">
-                        <input type="text"
-                            name="search"
-                            value="{{ search_query }}"
-                            placeholder="Search items..."
-                            class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3">
-                            <i class="fas fa-search text-gray-400"></i>
-                        </div>
-                    </div>
-                </form>
+            <div class="user-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
             </div>
+        </div>
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <form method="GET" action="{% url 'home' %}" class="w-full">
+                <input type="text"
+                       name="search"
+                       value="{{ search_query }}"
+                       placeholder="Search for products..."
+                       class="w-full">
+            </form>
         </div>
     </header>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed top-24 right-4 z-50 transform translate-x-full transition-transform duration-300 opacity-0">
-        <div class="bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg flex items-center">
-            <i class="fas fa-check-circle mr-2"></i>
-            <span id="toast-message">Item added to cart!</span>
-        </div>
+    <!-- Main content -->
+    <main class="app-main">
+        <!-- Categories slider -->
+        <br>
+        <section class="categories" style="padding-right: 20px;">
+            {% for category in categories %}
+            <div class="category {% if selected_category == category.id %}active{% endif %}" onclick="filterByCategory('{{ category.id }}')">
+                {% if category.name == "Electrical" %}
+                    <i class="fas fa-bolt"></i>
+                {% elif category.name == "Stationary" %}
+                    <i class="fas fa-pencil-ruler"></i>
+                {% elif category.name == "Plumbing" %}
+                    <i class="fas fa-faucet"></i>
+                {% elif category.name == "Carpentry" %}
+                    <i class="fas fa-hammer"></i>
+                {% elif category.name == "Roofing" %}
+                    <i class="fas fa-home"></i>
+                {% elif category.name == "Food" %}
+                    <i class="fas fa-utensils"></i>
+                {% elif category.name == "Groceries" %}
+                    <i class="fas fa-shopping-basket"></i>
+                {% elif category.name == "Cleaners" %}
+                    <i class="fas fa-broom"></i>
+                {% elif category.name == "Farming" %}
+                    <i class="fas fa-tractor"></i>
+                {% elif category.name == "Thrift" %}
+                    <i class="fas fa-recycle"></i>
+                {% elif category.name == "Hardware" %}
+                    <i class="fas fa-tools"></i>
+                {% elif category.name == "AutoSpare" %}
+                    <i class="fas fa-car"></i>
+                {% elif category.name == "Orders from China" %}
+                    <i class="fas fa-globe"></i>
+                {% else %}
+                    <i class="fas fa-tag"></i>
+                {% endif %}
+                <span>{{ category.name }}</span>
+            </div>
+            {% endfor %}
+        </section>
+
+        <!-- Banner -->
+<!-- templates/hero_section.html -->
+<section class="banner bg-gradient-to-r from-[#7BB32E] to-[#1AAD19] text-white rounded-xl p-8 shadow-lg relative overflow-hidden">
+    <div class="absolute right-0 bottom-0 opacity-10">
+        <i class="fas {{ category_icon }} text-9xl"></i>
     </div>
+    <div class="relative z-10 max-w-2xl">
+        <h1 class="text-3xl md:text-4xl font-bold mb-2">{{ category_title }}</h1>
+        <p class="text-green-100 mb-6">{{ category_description }}</p>
 
-    <main class="pt-32 md:pt-32 pb-20">
-        <!-- Hero Section -->
-        <section class="container mx-auto px-4 mb-8">
-            {% include 'hero_section.html' %}
-        </section>
+    </div>
+</section>
 
-        <!-- Sorting Options -->
-        <section class="container mx-auto px-4 mb-6">
-            <div class="flex flex-wrap items-center justify-between">
-                <h2 class="text-xl font-bold mb-2 flex items-center">
-                    <i class="fas fa-sort mr-2 text-primary-500" aria-hidden="true"></i>
-                    Sort By
-                </h2>
-                <div class="flex space-x-2 mb-2 overflow-x-auto pb-2 category-scroll">
-                    <button onclick="sortItems('price-asc')" class="px-3 py-1 bg-white dark:bg-gray-800 rounded-full text-sm border border-gray-300 dark:border-gray-700 hover:bg-primary-50 dark:hover:bg-gray-700" aria-label="Sort by price low to high">
-                        <i class="fas fa-sort-amount-down-alt mr-1" aria-hidden="true"></i> Price: Low to High
-                    </button>
-                    <button onclick="sortItems('price-desc')" class="px-3 py-1 bg-white dark:bg-gray-800 rounded-full text-sm border border-gray-300 dark:border-gray-700 hover:bg-primary-50 dark:hover:bg-gray-700" aria-label="Sort by price high to low">
-                        <i class="fas fa-sort-amount-up mr-1" aria-hidden="true"></i> Price: High to Low
-                    </button>
-                </div>
+
+        <!-- Quick actions -->
+        <section class="quick-actions">
+            <div class="action">
+                <i class="fas fa-gift"></i>
+                <span>Deals</span>
+            </div>
+            <div class="action">
+                <i class="fas fa-coins"></i>
+                <span>Coupons</span>
+            </div>
+            <div class="action">
+                <i class="fas fa-clock"></i>
+                <span>Flash Sale</span>
+            </div>
+            <div class="action">
+                <i class="fas fa-box-open"></i>
+                <span>Arrivals</span>
             </div>
         </section>
 
-        <!-- Categories with Icons -->
-        <section class="container mx-auto px-4 mb-6">
-            <h2 class="text-xl font-bold mb-3 flex items-center">
-                <i class="fas fa-th-large mr-2 text-primary-500"></i>
-                Order by Category
-            </h2>
-            <div class="grid grid-cols-4 md:grid-cols-6 gap-2">
-                {% for category in categories %}
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 text-center cursor-pointer hover:bg-primary-50 dark:hover:bg-gray-700 transition-all item-card"
-                    onclick="filterByCategory('{{ category.id }}')">
-                    <div class="w-10 h-10 mx-auto bg-primary-100 dark:bg-primary-900
-                                {% if category.has_items %} text-green-500 {% else %} text-gray-500 {% endif %}
-                                rounded-full flex items-center justify-center mb-1">
-                        {% if category.name == "Electrical" %}
-                            <i class="fas fa-bolt text-lg"></i>
-                        {% elif category.name == "Stationary" %}
-                            <i class="fas fa-pencil-alt text-lg"></i>
-                        {% elif category.name == "Plumbing" %}
-                            <i class="fas fa-tint text-lg"></i>
-                        {% elif category.name == "Carpentry" %}
-                            <i class="fas fa-hammer text-lg"></i>
-                        {% elif category.name == "Roofing" %}
-                            <i class="fas fa-home text-lg"></i>
-                        {% elif category.name == "Food" %}
-                            <i class="fas fa-utensils text-lg"></i>
-                        {% elif category.name == "Groceries" %}
-                            <i class="fas fa-shopping-basket text-lg"></i>
-                        {% elif category.name == "Cleaning Products" %}
-                            <i class="fas fa-soap text-lg"></i>
-                        {% elif category.name == "Farming" %}
-                            <i class="fas fa-tractor text-lg"></i>
-                        {% elif category.name == "Thrift" %}
-                            <i class="fas fa-recycle text-lg"></i>
-                        {% elif category.name == "Hardware" %}
-                            <i class="fas fa-tools text-lg"></i>
-                        {% elif category.name == "AutoSpare" %}
-                            <i class="fas fa-car text-lg"></i>
-                        {% elif category.name == "Orders from China" %}
-                            <i class="fas fa-globe text-lg"></i>
-                        {% else %}
-                            <i class="fas fa-tag text-lg"></i>
-                        {% endif %}
-                    </div>
-                    <p class="font-medium text-xs">{{ category.name }}</p>
-                </div>
-                {% endfor %}
+        <!-- Products section -->
+        <section class="products-section">
+            <div class="section-header">
+                <h3>Featured Items</h3>
+                <a href="{% url 'home' %}" class="see-all">See All <i class="fas fa-chevron-right"></i></a>
             </div>
-        </section>
-
-        <!-- Items Grid -->
-        <section id="featured-items" class="container mx-auto px-4">
-            <h2 class="text-xl font-bold mb-4 flex items-center">
-                <i class="fas fa-fire-alt mr-2 text-primary-500"></i>
-                Featured Items
-            </h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            <div class="products-grid">
                 {% for item in items %}
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden item-card cursor-pointer"
+                <!-- Product Card -->
+                <div class="product-card"
                      data-item-id="{{ item.id }}"
                      data-item-name="{{ item.name }}"
                      data-item-description="{{ item.description }}"
                      data-item-location="{{ item.location }}"
                      data-item-price="K{{ item.selling_price }}"
+                     data-item-original-price="{% if item.original_price %}K{{ item.original_price }}{% endif %}"
                      data-item-category="{{ item.category.name }}"
                      data-item-source="{{ item.source }}"
-                     onclick="openItemDetails(this)">
-                    <!-- Item Image -->
-                    <div class="relative">
-                        {% if item.image %}
-                            <img src="{{ item.image.url }}" alt="{{ item.name }}" class="w-full h-48 object-cover">
-                        {% else %}
-                            <div class="w-full h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                <i class="fas fa-image text-gray-400 dark:text-gray-500 text-3xl"></i>
-                            </div>
-                        {% endif %}
-                        <div class="badge bg-black bg-opacity-70 text-white">
-                            {{ item.source }}
-                        </div>
-                    </div>
+                     data-item-image="{% if item.image %}{{ item.image.url }}{% endif %}"
+                     onclick="openItemModal(this)">
+                    {% if item.discount_percentage %}
+                    <div class="product-badge">-{{ item.discount_percentage }}%</div>
+                    {% elif item.source %}
+                    <div class="product-badge">{{ item.source }}</div>
+                    {% endif %}
 
-                    <!-- Item Card Preview (Minimal Info) -->
-                    <div class="p-4">
-                        <h3 class="text-lg font-semibold mb-1 line-clamp-1">{{ item.name }}</h3>
-                        <div class="flex justify-between items-center mt-2">
-                            <p class="text-xl font-bold text-primary-600 dark:text-primary-400">K{{ item.selling_price }}</p>
-                            <button onclick="addToCart({{ item.id }}, '{{ item.name }}'); event.stopPropagation();"
-                                    class="bg-primary-500 text-white p-2 rounded-lg hover:bg-primary-600 transition flex items-center">
-                                <i class="fas fa-cart-plus"></i>
-                            </button>
+                    <!-- Item Image -->
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="product-image">
+                    {% else %}
+                        <div class="product-image bg-gray-200 flex items-center justify-center">
+                            <i class="fas fa-image text-gray-400 text-4xl"></i>
+                        </div>
+                    {% endif %}
+
+                    <div class="product-info">
+                        <h4 class="product-title">{{ item.name }}</h4>
+                        <div class="price-container">
+                            <span class="product-price">K{{ item.selling_price }}</span>
+                            {% if item.original_price %}
+                            <span class="product-original-price">K{{ item.original_price }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-rating">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>{{ item.location }}</span>
+                        </div>
+                        <div class="product-location">
+
                         </div>
                     </div>
                 </div>
@@ -329,91 +1129,87 @@
         </section>
     </main>
 
-    <!-- Mobile Bottom Nav -->
-    <div class="md:hidden fixed bottom-0 w-full bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-40">
-        <div class="grid grid-cols-4 h-16">
-            <a href="{% url 'home' %}" class="flex flex-col items-center justify-center text-primary-500 dark:text-primary-400">
-                <i class="fas fa-home text-lg"></i>
-                <span class="text-xs mt-1">Home</span>
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'home' %}" class="nav-item active">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'cart' %}" class="nav-item">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Cart</span>
+            <span class="cart-count">{{ cart_count }}</span>
+        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
             </a>
-            <a href="{% url 'business-list' %}" class="flex flex-col items-center justify-center text-gray-600 dark:text-gray-400">
-                <i class="fas fa-building text-lg"></i>
-                <span class="text-xs mt-1">Business</span>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
             </a>
-            <button onclick="toggleSearch()" class="flex flex-col items-center justify-center text-gray-600 dark:text-gray-400">
-                <i class="fas fa-search text-lg"></i>
-                <span class="text-xs mt-1">Search</span>
-            </button>
-            <a href="{% url 'cart' %}" class="flex flex-col items-center justify-center text-gray-600 dark:text-gray-400 relative">
-                <i class="fas fa-shopping-cart text-lg"></i>
-                <span id="mobile-cart-count" class="absolute top-1 right-6 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
-                    {{ cart_count }}
-                </span>
-                <span class="text-xs mt-1">Cart</span>
-            </a>
+        {% endif %}
+    </nav>
+
+    <!-- Toast Notification -->
+    <div id="toast">
+        <div class="toast-content">
+            <i class="fas fa-check-circle"></i>
+            <span id="toast-message">Item added to cart!</span>
         </div>
     </div>
 
-    <!-- Enhanced Item Details Modal (with scrolling) -->
-    <div id="item-modal" class="fixed inset-0 z-50 hidden">
-        <div class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm" onclick="closeModal()"></div>
-        <div class="fixed inset-0 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md modal-content relative overflow-y-auto">
-                <button onclick="closeModal()" class="sticky top-0 right-4 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 z-10 bg-white dark:bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center shadow-md self-end ml-auto mr-4 mt-4">
-                    <i class="fas fa-times"></i>
-                </button>
+    <!-- Product Modal -->
+    <div class="modal-overlay" id="product-modal">
+        <div class="modal-container">
+            <button class="modal-close" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
 
-                <!-- Item Image in Modal -->
-                <div id="modal-image-container" class="w-full h-56 bg-gray-200 dark:bg-gray-700 relative sticky top-0 z-10">
-                    <div id="modal-image" class="w-full h-full object-cover"></div>
-                    <div id="modal-source" class="badge bg-primary-600 text-white"></div>
+            <div class="modal-image-container">
+                <img id="modal-item-image" class="modal-image" src="" alt="">
+                <div id="modal-item-badge" class="modal-badge"></div>
+            </div>
+
+            <div class="modal-content">
+                <h2 id="modal-item-title" class="modal-title"></h2>
+                <div>
+                    <span id="modal-item-price" class="modal-price"></span>
+                    <span id="modal-item-original-price" class="modal-original-price"></span>
                 </div>
 
-                <div class="p-6">
-                    <!-- Item Basic Info -->
-                    <div class="mb-2">
-                        <div class="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400 mb-1">
-                            <span id="modal-category-icon" class="flex items-center">
-                                <i class="fas fa-tag mr-1"></i>
-                                <span id="modal-category"></span>
-                            </span>
-                        </div>
-                        <h2 id="modal-item-name" class="text-2xl font-bold mb-1"></h2>
-                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
-                            <i class="fas fa-map-marker-alt mr-2"></i>
-                            <span id="modal-item-location">Location not specified</span>
-                        </div>
-                    </div>
+                <div class="modal-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="modal-item-location"></span>
+                </div>
 
-                    <!-- Item Description -->
-                    <div class="mb-4">
-                        <h3 class="text-lg font-semibold mb-2">Description</h3>
-                        <p id="modal-item-description" class="text-gray-600 dark:text-gray-300"></p>
-                    </div>
+                <div class="modal-description">
+                    <h4>Description</h4>
+                    <p id="modal-item-description"></p>
+                </div>
 
-                    <!-- Price and Add to Cart -->
-                    <div class="flex justify-between items-center mb-5 sticky bottom-0 bg-white dark:bg-gray-800 py-4 z-10">
-                        <p id="modal-item-price" class="text-2xl font-bold text-primary-600 dark:text-primary-400"></p>
-                        <button onclick="addToCartFromModal()" class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg transition flex items-center">
-                            <i class="fas fa-cart-plus mr-2"></i>
-                            Add to Cart
-                        </button>
-                    </div>
+                <div class="modal-actions">
+                    <button id="modal-add-to-cart-btn" class="modal-add-to-cart">
+                        <i class="fas fa-cart-plus"></i>
+                        Add to Cart
+                    </button>
 
-                    <!-- Share Section -->
-                    <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
-                        <h3 class="text-sm font-semibold mb-2 text-gray-500">SHARE THIS PRODUCT</h3>
-                        <div class="flex space-x-4">
-                            <a href="#" id="share-twitter" target="_blank" class="bg-blue-400 text-white p-2 rounded-full hover:bg-blue-500 transition">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                            <a href="#" id="share-facebook" target="_blank" class="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a href="#" id="share-whatsapp" class="bg-green-500 text-white p-2 rounded-full hover:bg-green-600 transition">
-                                <i class="fab fa-whatsapp"></i>
-                            </a>
-                        </div>
+                    <div class="modal-share">
+                        <a id="modal-share-twitter" class="modal-share-btn modal-share-twitter" target="_blank">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a id="modal-share-facebook" class="modal-share-btn modal-share-facebook" target="_blank">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a id="modal-share-whatsapp" class="modal-share-btn modal-share-whatsapp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -422,20 +1218,11 @@
 
     <script>
         // Toggle dark mode
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
-            const isDark = document.documentElement.classList.contains('dark');
-            localStorage.setItem('darkMode', isDark);
-        }
-
-        // Check for saved dark mode preference
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.documentElement.classList.add('dark');
-        } else if (localStorage.getItem('darkMode') === 'false') {
-            document.documentElement.classList.remove('dark');
-        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.documentElement.classList.add('dark');
-        }
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+        });
 
         // Add to cart with toast notification
         function addToCart(itemId, itemName) {
@@ -453,20 +1240,16 @@
                     // Update cart count
                     const count = data.cart_count;
                     document.getElementById('cart-count').textContent = count;
-                    if (document.getElementById('mobile-cart-count')) {
-                        document.getElementById('mobile-cart-count').textContent = count;
-                    }
+                    document.querySelector('.bottom-nav .cart-count').textContent = count;
 
                     // Show toast
                     const toast = document.getElementById('toast');
                     document.getElementById('toast-message').textContent = itemName + ' added to cart!';
-                    toast.classList.remove('translate-x-full', 'opacity-0');
-                    toast.classList.add('translate-x-0', 'opacity-100');
+                    toast.classList.add('show');
 
                     // Hide toast after 3 seconds
                     setTimeout(() => {
-                        toast.classList.add('translate-x-full', 'opacity-0');
-                        toast.classList.remove('translate-x-0', 'opacity-100');
+                        toast.classList.remove('show');
                     }, 3000);
                 }
             });
@@ -477,20 +1260,11 @@
             window.location.href = "{% url 'home' %}?category=" + categoryId;
         }
 
-        // Toggle mobile search
-        function toggleSearch() {
-            const searchForm = document.getElementById('mobile-search-form');
-            searchForm.classList.toggle('hidden');
-            if (!searchForm.classList.contains('hidden')) {
-                searchForm.querySelector('input').focus();
-            }
-        }
-
         // Variable to store current item's data
         let currentItem = null;
 
-        // Open item details modal
-        function openItemDetails(element) {
+        // Open item modal
+        function openItemModal(element) {
             // Get item data from data attributes
             const item = {
                 id: element.dataset.itemId,
@@ -498,96 +1272,79 @@
                 description: element.dataset.itemDescription,
                 location: element.dataset.itemLocation,
                 price: element.dataset.itemPrice,
+                originalPrice: element.dataset.itemOriginalPrice,
                 category: element.dataset.itemCategory,
                 source: element.dataset.itemSource,
-                imageElement: element.querySelector('img') || null
+                image: element.dataset.itemImage
             };
 
             currentItem = item;
 
             // Set modal content
-            document.getElementById('modal-item-name').textContent = item.name;
+            document.getElementById('modal-item-title').textContent = item.name;
             document.getElementById('modal-item-description').textContent = item.description;
-            document.getElementById('modal-item-location').textContent = item.location || 'Location not specified';
+            document.getElementById('modal-item-location').textContent = item.location;
             document.getElementById('modal-item-price').textContent = item.price;
-            document.getElementById('modal-category').textContent = item.category;
-            document.getElementById('modal-source').textContent = item.source;
+
+            if (item.originalPrice) {
+                document.getElementById('modal-item-original-price').textContent = item.originalPrice;
+                document.getElementById('modal-item-original-price').style.display = 'inline';
+            } else {
+                document.getElementById('modal-item-original-price').style.display = 'none';
+            }
+
+            // Set image
+            const modalImage = document.getElementById('modal-item-image');
+            if (item.image) {
+                modalImage.src = item.image;
+                modalImage.style.display = 'block';
+            } else {
+                modalImage.style.display = 'none';
+            }
+
+            // Set badge
+            const modalBadge = document.getElementById('modal-item-badge');
+            if (element.querySelector('.product-badge')) {
+                modalBadge.textContent = element.querySelector('.product-badge').textContent;
+                modalBadge.style.display = 'block';
+            } else {
+                modalBadge.style.display = 'none';
+            }
 
             // Set up share links
             const shareText = encodeURIComponent(`Check out this item: ${item.name}`);
             const shareUrl = encodeURIComponent(window.location.href);
-            document.getElementById('share-twitter').href = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
-            document.getElementById('share-facebook').href = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
-            document.getElementById('share-whatsapp').href = `whatsapp://send?text=${shareText} - ${shareUrl}`;
+            document.getElementById('modal-share-twitter').href = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
+            document.getElementById('modal-share-facebook').href = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+            document.getElementById('modal-share-whatsapp').href = `whatsapp://send?text=${shareText} - ${shareUrl}`;
 
-            // Handle image
-            const modalImageContainer = document.getElementById('modal-image-container');
-            const modalImage = document.getElementById('modal-image');
-
-            if (item.imageElement && item.imageElement.src) {
-                modalImage.style.backgroundImage = `url('${item.imageElement.src}')`;
-                modalImage.style.backgroundSize = 'cover';
-                modalImage.style.backgroundPosition = 'center';
-            } else {
-                modalImage.innerHTML = `<div class="w-full h-full flex items-center justify-center"><i class="fas fa-image text-gray-400 dark:text-gray-500 text-5xl"></i></div>`;
-            }
-
-            // Set category icon
-            const categoryIcon = document.getElementById('modal-category-icon').querySelector('i');
-            switch(item.category) {
-                case "Electrical": categoryIcon.className = "fas fa-bolt mr-1"; break;
-                case "Stationary": categoryIcon.className = "fas fa-pencil-alt mr-1"; break;
-                case "Plumbing": categoryIcon.className = "fas fa-tint mr-1"; break;
-                case "Carpentry": categoryIcon.className = "fas fa-hammer mr-1"; break;
-                case "Roofing": categoryIcon.className = "fas fa-home mr-1"; break;
-                case "Food": categoryIcon.className = "fas fa-utensils mr-1"; break;
-                case "Groceries": categoryIcon.className = "fas fa-shopping-basket mr-1"; break;
-                case "Cleaning Products": categoryIcon.className = "fas fa-soap mr-1"; break;
-                case "Farming": categoryIcon.className = "fas fa-tractor mr-1"; break;
-                case "Thrift": categoryIcon.className = "fas fa-recycle mr-1"; break;
-                case "Hardware": categoryIcon.className = "fas fa-tools mr-1"; break;
-                case "AutoSpare": categoryIcon.className = "fas fa-car mr-1"; break;
-                case "Orders from China": categoryIcon.className = "fas fa-globe mr-1"; break;
-                default: categoryIcon.className = "fas fa-tag mr-1"; break;
-            }
+            // Set up add to cart button
+            document.getElementById('modal-add-to-cart-btn').onclick = function(e) {
+                e.stopPropagation();
+                addToCart(item.id, item.name);
+            };
 
             // Show modal
-            document.getElementById('item-modal').classList.remove('hidden');
-
-            // Add no-scroll to body
+            document.getElementById('product-modal').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
 
         // Close modal
         function closeModal() {
-            document.getElementById('item-modal').classList.add('hidden');
-            document.body.style.overflow = '';
-        }
-
-        // Add to cart from modal
-        function addToCartFromModal() {
-            if (currentItem) {
-                addToCart(currentItem.id, currentItem.name);
-            }
-            closeModal();
-        }
-
-        // Sort items
-        function sortItems(sortBy) {
-            window.location.href = "{% url 'home' %}?sort=" + sortBy;
+            document.getElementById('product-modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
         }
 
         // Close modal when clicking outside
-        document.addEventListener('click', function(event) {
-            const modal = document.getElementById('item-modal');
-            if (event.target === modal) {
+        document.getElementById('product-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
                 closeModal();
             }
         });
 
         // Close modal with escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
                 closeModal();
             }
         });

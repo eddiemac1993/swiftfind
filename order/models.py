@@ -2,7 +2,7 @@ from django.db import models
 from decimal import Decimal
 
 # models.py
-class Category(models.Model):
+class ItemCategory(models.Model):
     name = models.CharField(max_length=100)
     icon_class = models.CharField(max_length=50, default='fa-tag')  # FontAwesome icon class
     description = models.TextField(default='Explore our wide range of products.')
@@ -13,7 +13,7 @@ class Category(models.Model):
 class Item(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(ItemCategory, on_delete=models.CASCADE)
     base_price = models.DecimalField(max_digits=10, decimal_places=2)  # Supplier price
     selling_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)  # Price with 30% markup
     source = models.CharField(max_length=200, default="Unknown", help_text="Brand, restaurant, manufacturer, or shop name")

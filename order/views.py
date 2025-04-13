@@ -1,10 +1,128 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-from .models import Item, Cart, CartItem, Category
+from .models import Item, Cart, CartItem, ItemCategory
 import json
 from django.http import JsonResponse
 from django.db.models import Exists, OuterRef
+from django.shortcuts import render
+from django.views import View
+from directory.models import Business  # Assuming you have a Business model
+from django.db.models import Avg, Count, Q
+from django.utils import timezone
+from directory.models import Advertisement
+from directory.models import SearchQuery, Category, NewsFeed
+from django.core.paginator import Paginator
+
+
+def discover(request):
+    query = request.GET.get('q')
+    city = request.GET.get('city', '')
+    category = request.GET.get('category')
+    sort_by = request.GET.get('sort_by')
+
+    # Log search query if applicable
+    if query or city or category or sort_by:
+        search_query, created = SearchQuery.objects.get_or_create(
+            query=query,
+            city=city,
+            category=category,
+            sort_by=sort_by,
+            defaults={'timestamp': timezone.now()}
+        )
+        if not created:
+            search_query.count += 1
+            search_query.save()
+
+    # Annotate businesses with ratings and review counts
+    businesses = Business.objects.annotate(
+        average_rating=Avg('reviews__rating'),
+        review_count=Count('reviews'),
+        comment_count=Count('reviews', filter=Q(reviews__comment__isnull=False) & ~Q(reviews__comment=""))
+    )
+
+    # Apply filters based on query, city, and category
+    if query:
+        businesses = businesses.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(address__icontains=query) |
+            Q(tags__name__icontains=query)
+        ).distinct()
+
+    if city:
+        businesses = businesses.filter(city__icontains=city)
+
+    if category:
+        businesses = businesses.filter(category__name__icontains=category)
+
+    # Apply sorting
+    if sort_by == 'rating':
+        businesses = businesses.order_by('-average_rating')
+    elif sort_by == 'name':
+        businesses = businesses.order_by('name')
+    elif sort_by == 'reviews':
+        businesses = businesses.order_by('-review_count')
+    elif sort_by == 'newest':
+        businesses = list(businesses)  # Convert queryset to list
+        random.shuffle(businesses)  # Shuffle the list
+    else:
+        businesses = businesses.order_by('?')
+
+    # Fetch active advertisements
+    now = timezone.now()
+    active_ads = Advertisement.objects.filter(
+        start_time__lte=now,  # Advertisements that have started
+        end_time__gte=now,    # Advertisements that have not ended
+        is_active=True        # Advertisements that are active
+    )
+
+    # Fetch newsfeeds
+    newsfeeds = NewsFeed.objects.all().order_by('-created_at')[:5]  # Adjust the number as needed
+
+    # Combine businesses, advertisements, and newsfeeds
+    combined_list = []
+    ad_index = 0
+    newsfeed_index = 0
+    interval = 5  # Show an ad after every 5 businesses
+    newsfeed_interval = 2  # Show a newsfeed after every 2 businesses
+
+    for i, business in enumerate(businesses, start=1):
+        combined_list.append(('business', business))  # Add business to the list
+
+        # Add a newsfeed after every `newsfeed_interval` businesses
+        if i % newsfeed_interval == 0 and newsfeed_index < len(newsfeeds):
+            combined_list.append(('newsfeed', newsfeeds[newsfeed_index]))
+            newsfeed_index += 1
+
+        # Add an ad after every `interval` businesses
+        if i % interval == 0 and active_ads.exists():
+            ad = active_ads[ad_index % len(active_ads)]  # Cycle through ads
+            combined_list.append(('advertisement', ad))
+            ad_index += 1
+
+    # Paginate the combined list
+    paginator = Paginator(combined_list, 100)  # Adjust page size as needed
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Count businesses on the current page
+    businesses_count = businesses.count()
+    businesses_count_on_page = len([item for item in page_obj.object_list if item[0] == 'business'])
+
+    # Fetch all categories for the sidebar/filter
+    categories = Category.objects.all()
+
+    return render(request, 'discover.html', {
+        'page_obj': page_obj,
+        'categories': categories,
+        'query': query,
+        'city': city,
+        'selected_category': category,
+        'sort_by': sort_by,
+        'businesses_count_on_page': businesses_count_on_page,
+        'businesses_count': businesses_count,
+    })
 
 def get_cart(request):
     cart, created = Cart.objects.get_or_create(id=request.session.get('cart_id'))
@@ -14,12 +132,10 @@ def get_cart(request):
 
 
 from django.db.models import Exists, OuterRef
-from django.shortcuts import render
-from .models import Category, Item, Cart
 
 def home(request):
     # Annotate each category with a boolean field 'has_items' indicating if it has any associated items
-    categories = Category.objects.annotate(
+    categories = ItemCategory.objects.annotate(
         has_items=Exists(Item.objects.filter(category=OuterRef('id')))
     )
 
@@ -53,13 +169,13 @@ def home(request):
     # Update hero section data if a category is selected
     if category_id:
         try:
-            selected_category = Category.objects.get(id=category_id)
+            selected_category = ItemCategory.objects.get(id=category_id)
             hero_data.update({
-                'category_icon': selected_category.icon_class,  # Use the icon_class field from the Category model
-                'category_title': f'{selected_category.name} Products',  # Dynamic title based on category
-                'category_description': selected_category.description,  # Use the description field from the Category model
+                'category_icon': selected_category.icon_class,  # Use the icon_class field from the ItemCategory model
+                'category_title': f'{selected_category.name} Products',
+                'category_description': selected_category.description,
             })
-        except Category.DoesNotExist:
+        except ItemCategory.DoesNotExist:
             pass  # If the category doesn't exist, keep the default hero data
 
     context = {
@@ -67,10 +183,9 @@ def home(request):
         'items': items,
         'cart_count': cart_count,
         'search_query': search_query,
-        **hero_data,  # Include hero section data in the context
+        **hero_data,
     }
     return render(request, 'home.html', context)
-
 
 def add_to_cart(request):
     if request.method == 'POST':

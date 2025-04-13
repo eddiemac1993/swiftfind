@@ -3,353 +3,388 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#000000">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07C160">
     <meta name="description" content="Posts List - SwiftFind">
     <title>Posts List - SwiftFind</title>
     <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --primary-color: #3b82f6;
-            --primary-hover: #2563eb;
-            --background: #f8fafc;
-            --card-bg: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-color: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --accent-gradient: linear-gradient(135deg, #3b82f6, #2563eb);
-            --success-color: #22c55e;
-            --warning-color: #eab308;
-            --error-color: #ef4444;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --search-bar-height: 130px; /* Approximate height of search bar */
-        }
-
-        .dark-mode {
-            --background: #0f172a;
-            --card-bg: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --border-color: #334155;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
+            --primary-color: #07C160; /* WeChat green */
+            --primary-dark: #05a54e;
+            --primary-light: #e6f7ef;
+            --secondary-color: #F8F8F8;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #EEE;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
         }
 
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: var(--background);
-            color: var(--text-primary);
-            line-height: 1.6;
-            transition: var(--transition);
-            min-height: 100vh;
-            padding-top: var(--search-bar-height); /* Add padding to body equal to search bar height */
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding-bottom: 72px; /* Space for bottom nav */
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        /* Header styles */
+        .app-header {
+            background-color: var(--white);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
         }
 
         .search-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background-color: var(--card-bg);
-            padding: 1.25rem 1.5rem;
-            box-shadow: var(--shadow);
-            z-index: 1000;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 1rem;
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid var(--border-color);
-            height: var(--search-bar-height); /* Set fixed height */
+            background-color: var(--secondary-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            width: 100%;
         }
 
-        .search-container {
-            position: relative;
-            width: 100%;
-            max-width: 600px;
+        .dark-mode .search-bar {
+            background-color: rgba(255, 255, 255, 0.08);
+            box-shadow: none;
+        }
+
+        .search-bar i {
+            color: var(--primary-color);
+            margin-right: 12px;
+            font-size: 16px;
         }
 
         .search-bar input {
-            width: 100%;
-            padding: 1rem 1rem 1rem 3rem;
-            font-size: 1rem;
-            border-radius: 9999px;
-            border: 2px solid var(--border-color);
-            background-color: var(--background);
-            color: var(--text-primary);
-            transition: var(--transition);
-        }
-
-        .search-bar input:focus {
+            flex: 1;
+            border: none;
+            background: transparent;
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            font-size: 15px;
+            font-weight: 500;
         }
 
-        .search-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-            pointer-events: none;
+        .dark-mode .search-bar input {
+            color: var(--dark-text);
+        }
+
+        .dark-mode .search-bar input::placeholder {
+            color: var(--dark-light-text);
         }
 
         .category-filter {
             display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            justify-content: center;
-            width: 100%;
-            max-width: 800px;
+            gap: 12px;
+            padding: 16px 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            white-space: nowrap;
+            scroll-snap-type: x mandatory;
+            scroll-padding: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .category-filter::-webkit-scrollbar {
+            display: none;
         }
 
         .category-filter button {
-            background: transparent;
-            color: var(--text-primary);
-            border: 2px solid var(--border-color);
-            border-radius: 9999px;
-            padding: 0.5rem 1.25rem;
-            cursor: pointer;
-            font-size: 0.875rem;
+            flex: 0 0 auto;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
             font-weight: 500;
-            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            background-color: var(--white);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .category-filter button {
+            background-color: var(--dark-surface);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--dark-text);
         }
 
         .category-filter button.active {
-            background: var(--primary-color);
+            background-color: var(--primary-color);
             color: white;
             border-color: var(--primary-color);
         }
 
-        .category-filter button:hover {
+        .category-filter button:hover:not(.active) {
             border-color: var(--primary-color);
             color: var(--primary-color);
         }
 
-        .category-filter button.active:hover {
-            color: white;
-        }
-
+        /* Posts list */
         .post-list {
+            padding: 0 16px;
             max-width: 800px;
-            margin: 1.5rem auto 2rem auto;
-            padding: 0 1rem;
+            margin: 0 auto;
         }
 
         .post-item {
-            display: block;
-            text-decoration: none;
-            color: inherit;
-            background-color: var(--card-bg);
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
             box-shadow: var(--shadow);
-            transition: var(--transition);
-            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
         }
 
+        .dark-mode .post-item {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
         .post-item:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
             border-color: var(--primary-color);
+        }
+
+        .dark-mode .post-item:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .post-timestamp {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 12px;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .dark-mode .post-timestamp {
+            color: var(--dark-light-text);
         }
 
         .post-title {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 12px;
+            margin-bottom: 12px;
         }
 
         .post-title i {
+            font-size: 24px;
             color: var(--primary-color);
-            font-size: 1.5rem;
-            background: rgba(59, 130, 246, 0.1);
-            padding: 0.75rem;
+            background-color: var(--primary-light);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border-radius: 12px;
         }
 
+        .dark-mode .post-title i {
+            background-color: rgba(7, 193, 96, 0.2);
+        }
+
         .post-title h2 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 700;
-            line-height: 1.3;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .dark-mode .post-title h2 {
+            color: var(--dark-text);
         }
 
         .post-description {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
+            font-size: 14px;
+            color: var(--light-text);
+            margin-bottom: 16px;
             line-height: 1.6;
+        }
+
+        .dark-mode .post-description {
+            color: var(--dark-light-text);
         }
 
         .post-details {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .location, .price-range {
-            font-size: 0.875rem;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 6px;
         }
 
         .location {
-            background-color: rgba(59, 130, 246, 0.1);
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .dark-mode .location {
+            background-color: rgba(7, 193, 96, 0.2);
             color: var(--primary-color);
         }
 
         .price-range {
             background-color: rgba(34, 197, 94, 0.1);
-            color: var(--success-color);
+            color: #22c55e;
             font-weight: 600;
+        }
+
+        .dark-mode .price-range {
+            background-color: rgba(34, 197, 94, 0.2);
         }
 
         .post-stats {
             display: flex;
-            gap: 1.5rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            padding-top: 1rem;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--light-text);
+            padding-top: 12px;
             border-top: 1px solid var(--border-color);
+        }
+
+        .dark-mode .post-stats {
+            color: var(--dark-light-text);
+            border-top-color: rgba(255, 255, 255, 0.1);
         }
 
         .post-stats span {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 6px;
         }
 
-        .post-timestamp {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .theme-toggle {
+        /* Bottom navigation */
+        .bottom-nav {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--card-bg);
-            color: var(--text-primary);
-            border: 2px solid var(--border-color);
-            border-radius: 50%;
-            width: 3.5rem;
-            height: 3.5rem;
-            cursor: pointer;
-            font-size: 1.5rem;
+            bottom: 0;
+            left: 0;
+            right: 0;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow);
-            z-index: 1000;
-            transition: var(--transition);
+            justify-content: space-around;
+            background-color: var(--white);
+            padding: 12px 0 8px;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
         }
 
-        .theme-toggle:hover {
-            transform: rotate(45deg);
-            border-color: var(--primary-color);
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
         }
 
-        .icon-nav {
-            position: fixed;
-            top: 50%;
-            right: 2rem;
-            transform: translateY(-50%);
+        .nav-item {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            z-index: 1000;
-        }
-
-        .icon-nav a {
-            background: var(--card-bg);
-            color: var(--text-primary);
-            border: 2px solid var(--border-color);
-            border-radius: 50%;
-            width: 3.5rem;
-            height: 3.5rem;
-            display: flex;
             align-items: center;
-            justify-content: center;
             text-decoration: none;
-            font-size: 1.25rem;
-            transition: var(--transition);
-            box-shadow: var(--shadow);
+            color: var(--light-text);
+            font-size: 12px;
+            font-weight: 500;
+            position: relative;
+            padding: 6px 16px;
         }
 
-        .icon-nav a:hover {
-            transform: translateY(-4px);
-            border-color: var(--primary-color);
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
             color: var(--primary-color);
         }
 
-        @media (max-width: 768px) {
-            :root {
-                --search-bar-height: 140px; /* Slightly larger on mobile */
-            }
-
-            .search-bar {
-                padding: 1rem;
-            }
-
-            .category-filter {
-                padding: 0 0.5rem;
-            }
-
-            .category-filter button {
-                padding: 0.4rem 1rem;
-                font-size: 0.75rem;
-            }
-
-            .post-item {
-                padding: 1.25rem;
-                border-radius: 1rem;
-            }
-
-            .icon-nav {
-                bottom: 1.5rem;
-                right: 1.5rem;
-            }
-
-            .theme-toggle {
-                bottom: 1.5rem;
-                right: 1.5rem;
-            }
-
-            .icon-nav a, .theme-toggle {
-                width: 3rem;
-                height: 3rem;
-                font-size: 1rem;
-            }
+        .nav-item.active i {
+            transform: translateY(-2px);
         }
 
+        /* Floating action button */
+        .fab {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(7, 193, 96, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 90;
+        }
+
+        .fab:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 15px rgba(7, 193, 96, 0.4);
+        }
+
+        /* Animations */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -371,21 +406,46 @@
         .post-item:nth-child(3) { animation-delay: 0.3s; }
         .post-item:nth-child(4) { animation-delay: 0.4s; }
         .post-item:nth-child(5) { animation-delay: 0.5s; }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .post-list {
+                padding: 0 12px;
+            }
+            
+            .post-item {
+                padding: 16px;
+            }
+            
+            .post-title h2 {
+                font-size: 16px;
+            }
+            
+            .post-description {
+                font-size: 13px;
+            }
+        }
     </style>
 </head>
-<body>
-    <div class="search-bar">
-        <div class="search-container">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" id="search-input" placeholder="Search posts by title or description...">
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Header with search -->
+    <header class="app-header">
+        <div class="header-top">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="Search posts by title or description...">
+            </div>
         </div>
         <div class="category-filter">
             <button onclick="filterPosts('all')" class="active">All Posts</button>
             <button onclick="filterPosts('service')">Services</button>
             <button onclick="filterPosts('rent')">Rentals</button>
+            <button onclick="filterPosts('sale')">For Sale</button>
+            <button onclick="filterPosts('job')">Jobs</button>
         </div>
-    </div>
+    </header>
 
+    <!-- Posts list -->
     <div class="post-list" id="post-list">
         {% for post in posts %}
             <a href="{% url 'post_detail' post.id %}" class="post-item" data-title="{{ post.title|lower }}" data-description="{{ post.description|lower }}" data-category="{{ post.category }}">
@@ -417,24 +477,53 @@
         {% endfor %}
     </div>
 
-    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
-        <i class="fas fa-moon"></i>
-    </button>
+    <!-- Floating action button for new post -->
+    <a href="{% url 'post_create' %}" class="fab" title="Create New Post">
+        <i class="fas fa-plus"></i>
+    </a>
 
-    <nav class="icon-nav">
-        <a href="{% url 'business-list' %}" title="Home">
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'home' %}" class="nav-item">
             <i class="fas fa-home"></i>
+            <span>Home</span>
         </a>
-        <a href="{% url 'post_create' %}" title="Add Post">
-            <i class="fas fa-plus"></i>
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
         </a>
-        <a href="{% url 'about' %}" title="About">
-            <i class="fas fa-info-circle"></i>
+        <a href="{% url 'post_list' %}" class="nav-item active">
+            <i class="fas fa-list"></i>
+            <span>Posts</span>
         </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
     </nav>
 
     <script>
-        // Improved debounce function
+        // Theme toggle
+        const themeToggle = document.createElement('button');
+        themeToggle.id = 'theme-toggle';
+        themeToggle.className = 'theme-btn';
+        themeToggle.innerHTML = '<i class="fas fa-moon light-icon"></i><i class="fas fa-sun dark-icon"></i>';
+        document.body.appendChild(themeToggle);
+
+        themeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+        });
+
+        // Search functionality
         function debounce(func, wait) {
             let timeout;
             return function executedFunction(...args) {
@@ -447,36 +536,6 @@
             };
         }
 
-        // Dark mode functionality
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
-        const themeIcon = themeToggle.querySelector('i');
-
-        // Check for saved theme preference
-        const isDarkMode = localStorage.getItem('darkMode') === 'true';
-        if (isDarkMode) {
-            body.classList.add('dark-mode');
-            themeIcon.classList.remove('fa-moon');
-            themeIcon.classList.add('fa-sun');
-        }
-
-        // Theme toggle handler
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            const isDark = body.classList.contains('dark-mode');
-
-            // Animate icon change
-            themeIcon.style.transform = 'rotate(180deg)';
-            setTimeout(() => {
-                themeIcon.classList.toggle('fa-moon', !isDark);
-                themeIcon.classList.toggle('fa-sun', isDark);
-                themeIcon.style.transform = 'rotate(0deg)';
-            }, 150);
-
-            localStorage.setItem('darkMode', isDark);
-        });
-
-        // Enhanced search functionality
         const searchInput = document.getElementById('search-input');
         const postList = document.getElementById('post-list');
         const postItems = postList.getElementsByClassName('post-item');
@@ -491,7 +550,7 @@
                 const category = post.getAttribute('data-category');
 
                 const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
-                const matchesCategory = activeCategory === 'all posts' || category === activeCategory.slice(0, -1); // Remove 's' from category name
+                const matchesCategory = activeCategory === 'all posts' || category === activeCategory.slice(0, -1);
 
                 post.style.display = matchesSearch && matchesCategory ? 'block' : 'none';
 
@@ -499,14 +558,14 @@
                 if (matchesSearch && matchesCategory) {
                     post.style.animation = 'none';
                     post.offsetHeight; // Trigger reflow
-                    post.style.animation = null;
+                    post.style.animation = 'fadeInUp 0.5s ease forwards';
                 }
             });
         }, 300);
 
         searchInput.addEventListener('input', handleSearch);
 
-        // Enhanced category filter
+        // Category filter
         function filterPosts(category) {
             const buttons = document.querySelectorAll('.category-filter button');
             const searchTerm = searchInput.value.trim().toLowerCase();
@@ -531,15 +590,14 @@
                 // Reset and re-apply animation
                 if (matchesSearch && matchesCategory) {
                     post.style.animation = 'none';
-                    post.offsetHeight; // Trigger reflow
-                    post.style.animation = null;
+                    post.offsetHeight;
+                    post.style.animation = 'fadeInUp 0.5s ease forwards';
                 }
             });
         }
 
         // Initialize animations on load
         document.addEventListener('DOMContentLoaded', () => {
-            // Add intersection observer for animation on scroll
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -552,7 +610,6 @@
                 threshold: 0.1
             });
 
-            // Observe all post items
             postItems.forEach(post => observer.observe(post));
         });
     </script>
