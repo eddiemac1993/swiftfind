@@ -373,7 +373,40 @@
         .action:hover {
             transform: translateY(-5px);
         }
+/* Product card add to cart button */
+.product-card button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
 
+.product-card button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+}
+
+.dark-mode .product-card button {
+    background-color: var(--primary-color);
+}
+
+.dark-mode .product-card button:hover {
+    background-color: var(--primary-dark);
+}
+
+.product-card button i {
+    font-size: 14px;
+}
         .action i {
             font-size: 24px;
             color: var(--primary-color);
@@ -1102,28 +1135,31 @@
                     {% if item.image %}
                         <img src="{{ item.image.url }}" alt="{{ item.name }}" class="product-image">
                     {% else %}
-                        <div class="product-image bg-gray-200 flex items-center justify-center">
-                            <i class="fas fa-image text-gray-400 text-4xl"></i>
-                        </div>
-                    {% endif %}
+        <div class="product-image bg-gray-200 flex items-center justify-center">
+            <i class="fas fa-image text-gray-400 text-4xl"></i>
+        </div>
+    {% endif %}
 
-                    <div class="product-info">
-                        <h4 class="product-title">{{ item.name }}</h4>
-                        <div class="price-container">
-                            <span class="product-price">K{{ item.selling_price }}</span>
-                            {% if item.original_price %}
-                            <span class="product-original-price">K{{ item.original_price }}</span>
-                            {% endif %}
-                        </div>
-                        <div class="product-rating">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>{{ item.location }}</span>
-                        </div>
-                        <div class="product-location">
-
-                        </div>
-                    </div>
-                </div>
+    <div class="product-info">
+        <h4 class="product-title">{{ item.name }}</h4>
+        <div class="price-container">
+            <span class="product-price">K{{ item.selling_price }}</span>
+            {% if item.original_price %}
+            <span class="product-original-price">K{{ item.original_price }}</span>
+            {% endif %}
+        </div>
+        <div class="product-rating">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>{{ item.location }}</span>
+        </div>
+        <!-- Add to Cart Button -->
+        <button class="w-full mt-3 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center"
+                onclick="event.stopPropagation(); addToCart('{{ item.id }}', '{{ item.name }}')">
+            <i class="fas fa-cart-plus mr-2"></i>
+            Add to Cart
+        </button>
+    </div>
+</div>
                 {% endfor %}
             </div>
         </section>
@@ -1224,36 +1260,56 @@
             document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
         });
 
-        // Add to cart with toast notification
-        function addToCart(itemId, itemName) {
-            fetch('{% url "add_to_cart" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({ item_id: itemId, quantity: 1 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update cart count
-                    const count = data.cart_count;
-                    document.getElementById('cart-count').textContent = count;
-                    document.querySelector('.bottom-nav .cart-count').textContent = count;
-
-                    // Show toast
-                    const toast = document.getElementById('toast');
-                    document.getElementById('toast-message').textContent = itemName + ' added to cart!';
-                    toast.classList.add('show');
-
-                    // Hide toast after 3 seconds
-                    setTimeout(() => {
-                        toast.classList.remove('show');
-                    }, 3000);
-                }
+// Add to cart with toast notification
+function addToCart(itemId, itemName) {
+    fetch('{% url "add_to_cart" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ item_id: itemId, quantity: 1 })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update cart count in both places
+            const cartCountElements = document.querySelectorAll('.cart-count');
+            cartCountElements.forEach(element => {
+                element.textContent = data.cart_count;
             });
+
+            // Show toast
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = `${itemName} added to cart!`;
+            toast.classList.add('show');
+
+            // Hide toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        } else {
+            // Show error toast if needed
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').textContent = data.message || 'Failed to add item to cart';
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-message').textContent = 'Error adding item to cart';
+        toast.classList.add('show');
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    });
+}
 
         // Filter by category
         function filterByCategory(categoryId) {
@@ -1317,6 +1373,11 @@
             document.getElementById('modal-share-twitter').href = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
             document.getElementById('modal-share-facebook').href = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
             document.getElementById('modal-share-whatsapp').href = `whatsapp://send?text=${shareText} - ${shareUrl}`;
+            // In your openItemModal function, replace the button setup with:
+            document.getElementById('modal-add-to-cart-btn').onclick = function(e) {
+                e.stopPropagation();
+                addToCart(item.id, item.name);
+            };
 
             // Set up add to cart button
             document.getElementById('modal-add-to-cart-btn').onclick = function(e) {
