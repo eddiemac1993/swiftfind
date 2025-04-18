@@ -1,0 +1,187 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07C160">
+    <meta name="description" content="Games Hub - SwiftFind">
+    <title>Games Hub - SwiftFind</title>
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Use the same styles as your main template or customize as needed */
+        :root {
+            --primary-color: #07C160;
+            --primary-dark: #05a54e;
+            --primary-light: #e6f7ef;
+            --secondary-color: #F8F8F8;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #EEE;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding-bottom: 72px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .game-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .dark-mode .game-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+
+        /* Add other styles from your main template as needed */
+    </style>
+</head>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Header (same as your main template) -->
+    <header class="app-header">
+        <div class="header-top">
+            <div class="location">
+                <i class="fas fa-gamepad"></i>
+                <span>Games Hub</span>
+            </div>
+            <div class="user-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-8 text-center">Games Hub</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Game 1 -->
+                <a href="{% url 'quiz' %}" class="game-card text-center">
+                    <div class="game-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Quiz Challenge</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Test your knowledge</p>
+                </a>
+                        <a href="#" class="game-card text-center">
+                <div class="game-icon">
+                    <i class="fas fa-chess"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Chess</h3>
+                <p class="text-gray-600 dark:text-gray-400">Classic strategy game</p>
+            </a>
+
+            <!-- Game 2 -->
+            <a href="#" class="game-card text-center">
+                <div class="game-icon">
+                    <i class="fas fa-dice"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Dice Roll</h3>
+                <p class="text-gray-600 dark:text-gray-400">Simple dice game</p>
+            </a>
+
+            <!-- Game 3 -->
+            <a href="#" class="game-card text-center">
+                <div class="game-icon">
+                    <i class="fas fa-puzzle-piece"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Puzzle</h3>
+                <p class="text-gray-600 dark:text-gray-400">Challenge your mind</p>
+            </a>
+
+            <!-- Add more games as needed -->
+        </div>
+    </div>
+
+    <!-- Bottom navigation (same as your main template) -->
+    <nav class="bottom-nav">
+        <a href="{% url 'home' %}" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'games_hub' %}" class="nav-item active">
+            <i class="fas fa-gamepad"></i>
+            <span>Games</span>
+        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
+    </nav>
+
+    <script>
+        // Theme toggle (same as your main template)
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+        });
+
+        // Dropdown menu toggle (same as your main template)
+        document.addEventListener("DOMContentLoaded", function() {
+            const dropdownToggle = document.getElementById("dropdownToggle");
+            const dropdownMenu = document.getElementById("dropdownMenu");
+
+            dropdownToggle.addEventListener("click", function(e) {
+                e.stopPropagation();
+                dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+            });
+
+            document.addEventListener("click", function() {
+                dropdownMenu.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

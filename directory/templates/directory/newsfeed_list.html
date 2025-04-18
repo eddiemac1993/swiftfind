@@ -4,125 +4,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#07C160">
     <meta name="description" content="SwiftFind - Latest News and Updates">
     <title>Newsfeed - SwiftFind</title>
     <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* CSS Reset and Base Styles */
-        *, *::before, *::after {
-            box-sizing: border-box;
+        /* Reuse all the CSS variables and base styles from discover.html */
+        :root {
+            --primary-color: #07C160;
+            --primary-dark: #05a54e;
+            --primary-light: #e6f7ef;
+            --secondary-color: #F8F8F8;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #EEE;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
         }
 
-        /* Global Variables */
-        :root {
-            --max-width: 1200px;
-            --container-padding: clamp(1rem, 5vw, 2rem);
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --background: #f8fafc;
-            --card-bg: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-color: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --border-radius: 0.75rem;
-        }
-
-        /* Dark Mode */
-        .dark-mode {
-            --background: #1e293b;
-            --card-bg: #334155;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --border-color: #475569;
-        }
-
-        /* Global Styles */
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: var(--background);
-            color: var(--text-primary);
-            line-height: 1.6;
-            transition: background-color 0.3s ease;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding-bottom: 72px;
         }
 
-        .container {
-            max-width: var(--max-width);
-            margin: 0 auto;
-            padding: var(--container-padding);
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
         }
 
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-            color: white;
-            padding: 4rem 2rem;
-            text-align: center;
-            border-radius: var(--border-radius);
-            margin-bottom: 2rem;
+        /* Header styles - same as discover.html */
+        .app-header {
+            background-color: var(--white);
+            padding: 16px;
             box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
         }
 
-        .hero-content h1 {
-            font-size: clamp(1.5rem, 5vw, 2.5rem);
-            margin-bottom: 1rem;
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 6px 12px;
+            background-color: var(--primary-light);
+            border-radius: 20px;
+            color: var(--primary-dark);
+        }
+
+        .dark-mode .location {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        .location i {
+            margin-right: 5px;
+            color: var(--primary-color);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-actions i {
+            font-size: 20px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .user-actions i {
+            color: var(--dark-text);
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--secondary-color);
+        }
+
+        .dark-mode .theme-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-btn .dark-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .light-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .dark-icon {
+            display: block;
+            color: var(--dark-text);
+        }
+
+        /* Banner - adapted for newsfeed */
+        .banner {
+            margin: 0 16px 24px;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--shadow);
+            height: 180px;
+            background: linear-gradient(to right, #07C160, #05a54e);
+        }
+
+        .dark-mode .banner {
+            box-shadow: var(--dark-shadow);
+        }
+
+        .banner-slide {
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+            padding: 24px;
+            color: var(--white);
+            position: relative;
+            z-index: 2;
+        }
+
+        .banner-slide::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+            z-index: -1;
+        }
+
+        .banner-content {
+            max-width: 80%;
+        }
+
+        .banner-content h3 {
+            font-size: 24px;
+            margin-bottom: 8px;
             font-weight: 700;
         }
 
-        .hero-content p {
-            font-size: clamp(1rem, 3vw, 1.25rem);
-            color: rgba(255, 255, 255, 0.9);
-            max-width: 800px;
-            margin: 0 auto;
+        .banner-content p {
+            font-size: 14px;
+            margin-bottom: 15px;
+            opacity: 0.9;
         }
 
-        /* Newsfeed List */
-        .newsfeed-list {
-            max-width: var(--max-width);
-            margin: 0 auto;
-            padding: 1rem;
+        /* Category filters */
+        .category-filters {
+            display: flex;
+            gap: 10px;
+            padding: 0 16px 16px;
+            flex-wrap: wrap;
         }
 
+        .category-filter {
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            background-color: var(--white);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .category-filter {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .category-filter.active, .category-filter:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Newsfeed grid */
+        .newsfeed-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            padding: 0 7px 32px;
+        }
+
+        @media (min-width: 768px) {
+            .newsfeed-grid {
+                padding: 0 70px 32px;
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .newsfeed-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Newsfeed card */
         .newsfeed-card {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 1.5rem;
+            background-color: var(--white);
+            border-radius: 16px;
             overflow: hidden;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: var(--shadow);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .dark-mode .newsfeed-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+            border-color: rgba(255,255,255,0.05);
         }
 
         .newsfeed-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
 
-        .newsfeed-card a {
-            text-decoration: none;
-            color: inherit;
+        .dark-mode .newsfeed-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .newsfeed-image-container {
+            width: 100%;
+            height: 180px;
+            position: relative;
         }
 
         .newsfeed-image {
             width: 100%;
-            height: 250px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .newsfeed-image img {
-            width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .newsfeed-card:hover .newsfeed-image {
+            transform: scale(1.05);
         }
 
         .no-image {
@@ -131,90 +301,185 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: var(--background);
-            color: var(--text-secondary);
-            font-size: 1rem;
+            background-color: var(--secondary-color);
+            color: var(--light-text);
         }
 
-        .newsfeed-content {
-            padding: 1.5rem;
+        .dark-mode .no-image {
+            background-color: var(--dark-bg);
+            color: var(--dark-light-text);
         }
 
-        .newsfeed-content h2 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
+        .newsfeed-info {
+            padding: 16px;
+        }
+
+        .newsfeed-title {
+            font-size: 16px;
             font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        .newsfeed-content .category {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
+        .dark-mode .newsfeed-title {
+            color: var(--dark-text);
         }
 
-        .newsfeed-content .excerpt {
-            font-size: 1rem;
-            color: var(--text-primary);
-            margin-bottom: 1rem;
+        .newsfeed-category {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .dark-mode .newsfeed-category {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        .newsfeed-excerpt {
+            font-size: 14px;
+            color: var(--light-text);
+            margin-bottom: 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .dark-mode .newsfeed-excerpt {
+            color: var(--dark-light-text);
         }
 
         .newsfeed-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
+            font-size: 12px;
+            color: var(--light-text);
         }
 
-        .newsfeed-meta .comments {
+        .dark-mode .newsfeed-meta {
+            color: var(--dark-light-text);
+        }
+
+        .newsfeed-meta i {
+            margin-right: 4px;
+        }
+
+        /* Badges - positioned on image */
+        .newsfeed-badge {
+            position: absolute;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 5px;
+            color: white;
         }
 
-        /* No Results */
+        .featured-badge {
+            top: 8px;
+            left: 8px;
+            background-color: #FFB800;
+        }
+
+        /* No results */
         .no-results {
+            grid-column: 1 / -1;
             text-align: center;
-            padding: 2rem;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
+            padding: 40px 20px;
+        }
+
+        .no-results i {
+            font-size: 48px;
+            color: var(--light-text);
+            margin-bottom: 16px;
+        }
+
+        .dark-mode .no-results i {
+            color: var(--dark-light-text);
+        }
+
+        .no-results h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .no-results h3 {
+            color: var(--dark-text);
+        }
+
+        .no-results p {
+            color: var(--light-text);
+        }
+
+        .dark-mode .no-results p {
+            color: var(--dark-light-text);
         }
 
         /* Pagination */
         .pagination {
             display: flex;
             justify-content: center;
-            gap: 1rem;
-            margin: 2rem 0;
+            padding: 20px 0;
+            gap: 10px;
         }
 
-        .pagination a {
-            padding: 0.5rem 1rem;
+        .pagination-button {
+            padding: 8px 16px;
+            border-radius: 8px;
+            background-color: var(--white);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .dark-mode .pagination-button {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .pagination-button:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .dark-mode .pagination-button:hover {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        .pagination-button.active {
             background-color: var(--primary-color);
             color: white;
-            border-radius: var(--border-radius);
-            text-decoration: none;
-            transition: background-color 0.2s ease;
-            font-weight: 500;
+            border-color: var(--primary-color);
         }
 
-        .pagination a:hover {
-            background-color: var(--primary-hover);
+        .pagination-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
-        .pagination .current {
-            padding: 0.5rem 1rem;
-            background-color: var(--card-bg);
-            color: var(--text-primary);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-        }
-
-        /* Bottom Navigation Bar */
+        /* Bottom navigation - same as discover.html */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -222,264 +487,268 @@
             right: 0;
             display: flex;
             justify-content: space-around;
-            background-color: var(--card-bg);
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-            padding: 0.75rem 0;
-            z-index: 1000;
+            background-color: var(--white);
+            padding: 12px 0 8px;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
         }
 
-        .bottom-nav a {
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             text-decoration: none;
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-            transition: color 0.2s ease;
+            color: var(--light-text);
+            font-size: 12px;
+            font-weight: 500;
+            position: relative;
+            padding: 6px 16px;
         }
 
-        .bottom-nav a:hover,
-        .bottom-nav a.active {
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
             color: var(--primary-color);
         }
 
-        .bottom-nav i {
-            font-size: 1.25rem;
-            margin-bottom: 0.25rem;
+        .nav-item.active i {
+            transform: translateY(-2px);
         }
 
-        /* Fixed Buttons */
-        .fixed-buttons {
+        /* Install Button */
+        .install-button {
             position: fixed;
-            top: 20px;
+            bottom: 80px;
             right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 1000;
-        }
-
-        .rounded-button {
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             background-color: var(--primary-color);
             color: white;
             border: none;
-            box-shadow: var(--shadow);
-            transition: background-color 0.3s ease;
-            text-decoration: none;
-        }
-
-        .rounded-button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        /* Dark Mode Toggle */
-        .theme-toggle {
-            position: fixed;
-            bottom: 5rem;
-            right: 2rem;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             cursor: pointer;
-            font-size: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: var(--shadow);
-            transition: background-color 0.2s ease;
-            z-index: 1000;
+            z-index: 99;
+            transition: all 0.3s ease;
         }
 
-        .theme-toggle:hover {
-            background-color: var(--primary-hover);
-        }
-/* Category Filters */
-.category-filters {
-    margin-bottom: 2rem;
-}
-
-.category-filter {
-    padding: 0.5rem 1rem;
-    background-color: var(--card-bg);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    text-decoration: none;
-    font-size: 0.875rem;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-.category-filter:hover {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.category-filter.active {
-    background-color: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .hero {
-                padding: 3rem 1rem;
-            }
-            
-            .bottom-nav span {
-                font-size: 0.7rem;
-            }
+        .dark-mode .install-button {
+            background-color: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Dark Mode Toggle -->
-        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Install Button -->
+    <button id="install-button" class="install-button" style="display: none;" aria-label="Install app">
+        <i class="fas fa-download"></i>
+    </button>
 
-        <!-- Fixed Buttons Container -->
-        <div class="fixed-buttons">
-            <a href="{% url 'home' %}" class="rounded-button" title="Home" aria-label="Home">
-                <i class="fas fa-home"></i>
-            </a>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-top">
+            <div class="location">
+                <i class="fas fa-newspaper"></i>
+                <span>Newsfeed</span>
+            </div>
+            <div class="user-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
+            </div>
         </div>
+    </header>
 
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="hero-content">
-                <h1>Latest News</h1>
-                <p>Stay updated with the latest news and updates from SwiftFind.</p>
+    <!-- Main content -->
+    <main class="app-main">
+        <!-- Banner -->
+        <section class="banner">
+            <div class="banner-slide">
+                <div class="banner-content">
+                    <h3>Latest News</h3>
+                    <p>Stay updated with the latest news and updates</p>
+                    <div class="absolute bottom-2 right-6 text-white text-sm opacity-80">
+                        Alkebulan: Garden of Eden
+                    </div>
+                </div>
             </div>
         </section>
 
-<!-- Category Filter Buttons -->
-<div class="category-filters">
-    <div class="flex flex-wrap justify-center gap-2 my-4">
-        <a href="{% url 'newsfeed-list' %}" class="category-filter {% if not request.GET.category %}active{% endif %}">
-            All
-        </a>
-        {% for category_value, category_label in category_choices %}
-            <a href="?category={{ category_value }}" class="category-filter {% if request.GET.category == category_value %}active{% endif %}">
-                {{ category_label }}
+        <!-- Category filters -->
+        <div class="category-filters">
+            <a href="{% url 'newsfeed-list' %}" class="category-filter {% if not request.GET.category %}active{% endif %}">
+                All
             </a>
-        {% endfor %}
-    </div>
-</div>
-        <!-- Newsfeed List -->
-        <div class="newsfeed-list">
+            {% for category_value, category_label in category_choices %}
+                <a href="?category={{ category_value }}" class="category-filter {% if request.GET.category == category_value %}active{% endif %}">
+                    {{ category_label }}
+                </a>
+            {% endfor %}
+        </div>
+
+        <!-- Newsfeed listings -->
+        <div class="newsfeed-grid">
             {% if newsfeed_items %}
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {% for item in newsfeed_items %}
-                        <div class="newsfeed-card">
-                            <a href="{{ item.get_absolute_url }}">
-                                <div class="newsfeed-image">
-                                    {% if item.image %}
-                                        <img src="{{ item.image.url }}" alt="{{ item.title }}" loading="lazy">
-                                    {% else %}
-                                        <div class="no-image">No Image</div>
-                                    {% endif %}
+                {% for item in newsfeed_items %}
+                    <a href="{{ item.get_absolute_url }}" class="newsfeed-card">
+                        <div class="newsfeed-image-container">
+                            {% if item.image %}
+                                <img src="{{ item.image.url }}" alt="{{ item.title }}" class="newsfeed-image" loading="lazy">
+                            {% else %}
+                                <div class="no-image">
+                                    <i class="fas fa-newspaper"></i>
                                 </div>
-                                <div class="newsfeed-content">
-                                    <h2>{{ item.title }}</h2>
-                                    <p class="category">{{ item.get_category_display }}</p>
-                                    <p class="excerpt">{{ item.content|truncatewords:30|safe }}</p>
-                                    <div class="newsfeed-meta">
-                                        <span class="date">{{ item.created_at|date:"F j, Y" }}</span>
-                                        <span class="comments"><i class="fas fa-comments"></i> {{ item.comment_count }}</span>
-                                    </div>
-                                </div>
-                            </a>
+                            {% endif %}
+                            
+                            {% if item.is_featured %}
+                            <div class="newsfeed-badge featured-badge">
+                                <i class="fas fa-star"></i>
+                                <span>Featured</span>
+                            </div>
+                            {% endif %}
                         </div>
-                    {% endfor %}
-                </div>
+                        
+                        <div class="newsfeed-info">
+                            <h3 class="newsfeed-title">{{ item.title }}</h3>
+                            <div class="newsfeed-category">
+                                <i class="fas fa-tag"></i>
+                                <span>{{ item.get_category_display }}</span>
+                            </div>
+                            <p class="newsfeed-excerpt">{{ item.content|striptags|truncatewords:20 }}</p>
+                            <div class="newsfeed-meta">
+                                <span><i class="far fa-calendar"></i> {{ item.created_at|date:"M j, Y" }}</span>
+                                <span><i class="far fa-comment"></i> {{ item.comment_count }}</span>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
             {% else %}
-                <p class="no-results">No newsfeed items found.</p>
+                <div class="no-results">
+                    <i class="fas fa-search"></i>
+                    <h3>No news items found</h3>
+                    <p>Try adjusting your filters or check back later</p>
+                </div>
             {% endif %}
         </div>
 
         <!-- Pagination -->
         {% if is_paginated %}
-            <div class="pagination">
-                {% if page_obj.has_previous %}
-                    <a href="?page={{ page_obj.previous_page_number }}" aria-label="Previous page">
-                        <i class="fas fa-chevron-left"></i> Previous
-                    </a>
-                {% endif %}
-                <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-                {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}" aria-label="Next page">
-                        Next <i class="fas fa-chevron-right"></i>
-                    </a>
-                {% endif %}
-            </div>
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" class="pagination-button">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </a>
+            {% endif %}
+            
+            <span class="pagination-button active">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+            
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" class="pagination-button">
+                    Next <i class="fas fa-chevron-right"></i>
+                </a>
+            {% endif %}
+        </div>
         {% endif %}
-    </div>
+    </main>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- Bottom navigation -->
     <nav class="bottom-nav">
-        <a href="{% url 'post_list' %}" title="Posts">
-            <i class="fas fa-list"></i>
-            <span>Findit</span>
+        <a href="{% url 'home' %}" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
         </a>
-        <a href="{% url 'home' %}" title="View Orders">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Orders</span>
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
         </a>
-        <a href="{% url 'about' %}" title="About">
-            <i class="fas fa-info-circle"></i>
-            <span>About</span>
+        <a href="{% url 'newsfeed-list' %}" class="nav-item active">
+            <i class="fas fa-newspaper"></i>
+            <span>News</span>
         </a>
         {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}" title="Profile">
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
                 <i class="fas fa-user"></i>
-                <span>Profile</span>
+                <span>Me</span>
             </a>
         {% else %}
-            <a href="{% url 'login' %}" title="Login">
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
                 <i class="fas fa-sign-in-alt"></i>
                 <span>Login</span>
             </a>
         {% endif %}
     </nav>
 
-    <!-- Service Worker Registration -->
     <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('{% static "js/serviceworker.js" %}')
-                .then((registration) => {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                })
-                .catch((error) => {
-                    console.log('ServiceWorker registration failed: ', error);
-                });
-        }
-    </script>
-    
-    <!-- Dark Mode Toggle Script -->
-    <script>
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
+        // ======================
+        // Global Variables
+        // ======================
+        let deferredPrompt;
+        const installButton = document.getElementById('install-button');
 
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            body.classList.add(savedTheme);
-            themeToggle.textContent = savedTheme === 'dark-mode' ? '☀️' : '🌙';
-        }
-
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            const isDarkMode = body.classList.contains('dark-mode');
-            themeToggle.textContent = isDarkMode ? '☀️' : '🌙';
-            localStorage.setItem('theme', isDarkMode ? 'dark-mode' : '');
+        // ======================
+        // Theme Toggle
+        // ======================
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
         });
+
+        // ======================
+        // PWA Installation
+        // ======================
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installButton.style.display = 'flex';
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response: ${outcome}`);
+            deferredPrompt = null;
+            installButton.style.display = 'none';
+        });
+
+        window.addEventListener('appinstalled', () => {
+            installButton.style.display = 'none';
+            deferredPrompt = null;
+            console.log('PWA was installed');
+        });
+
+        // ======================
+        // Service Worker
+        // ======================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('{% static "service-worker.js" %}')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
     </script>
 </body>
 </html>

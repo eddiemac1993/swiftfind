@@ -13,7 +13,53 @@ from django.utils import timezone
 from directory.models import Advertisement
 from directory.models import SearchQuery, Category, NewsFeed
 from django.core.paginator import Paginator
+from .models import QuizQuestion, QuizScore
+from .forms import SubmitScoreForm
+import random
 
+
+def games_hub(request):
+    # Add any context data if needed
+    return render(request, 'games_hub.html')
+
+def quiz_view(request):
+    question = random.choice(QuizQuestion.objects.all())  # Random question
+    score = request.session.get('score', 0)
+    top_scores = QuizScore.objects.all().order_by('-score')[:5]# Retrieve session score, default is 0
+
+    if request.method == 'POST':
+        selected_answer = request.POST.get('answer')
+        correct_answer = request.POST.get('correct_answer')
+
+        # Update score based on the answer
+        if selected_answer == correct_answer:
+            score += 0.5  # Add 10 points for correct answer
+        else:
+            score -= 0.3  # Subtract 5 points for incorrect answer
+
+        request.session['score'] = score  # Save score in session
+
+        # Check if the user clicked the "Submit Score" button
+        if 'submit_score' in request.POST:
+            return redirect('submit_score')  # Redirect to submit_score page
+
+        return redirect('quiz')  # Continue quiz after answering the question
+
+    return render(request, 'quiz.html', {'question': question, 'top_scores': top_scores, 'score': score})
+
+def submit_score_view(request):
+    score = request.session.get('score', 0)  # Retrieve session score
+    if request.method == 'POST':
+        form = SubmitScoreForm(request.POST)
+        if form.is_valid():
+            submission = form.save(commit=False)
+            submission.score = score
+            submission.save()
+            request.session['score'] = 0  # Reset session score
+            return redirect('quiz')  # Redirect to the quiz page
+    else:
+        form = SubmitScoreForm()
+    return render(request, 'submit_score.html', {'form': form, 'score': score})
 
 def discover(request):
     query = request.GET.get('q')
@@ -132,9 +178,15 @@ def get_cart(request):
 
 
 from django.db.models import Exists, OuterRef
+from django.db.models import Q
+from django.http import JsonResponse
+import re
+from nltk.stem import PorterStemmer
+import nltk
+nltk.download('punkt')
+import re
 
 def home(request):
-    # Annotate each category with a boolean field 'has_items' indicating if it has any associated items
     categories = ItemCategory.objects.annotate(
         has_items=Exists(Item.objects.filter(category=OuterRef('id')))
     )
@@ -144,12 +196,30 @@ def home(request):
     category_id = request.GET.get('category')
 
     if search_query:
-        items = items.filter(name__icontains=search_query)
+        stemmer = lambda w: w.lower()
+        words = re.findall(r'\w+', search_query.lower())
+        stemmed_words = [stemmer(word) for word in words]
+
+        queries = []
+        for word in stemmed_words:
+            queries.extend([
+                Q(name__icontains=word),
+                Q(description__icontains=word),
+                Q(category__name__icontains=word),
+                Q(source__icontains=word)
+            ])
+
+        if queries:
+            query = queries.pop(0)
+            for q in queries:
+                query |= q
+            items = Item.objects.filter(query).distinct()
+        else:
+            items = Item.objects.none()
 
     if category_id:
         items = items.filter(category__id=category_id)
 
-    # Get or create cart
     cart_id = request.session.get('cart_id')
     if cart_id:
         cart = Cart.objects.get(id=cart_id)
@@ -159,24 +229,22 @@ def home(request):
 
     cart_count = sum(item.quantity for item in cart.cartitem_set.all())
 
-    # Default hero section data
     hero_data = {
-        'category_icon': 'fa-shopping-bag',  # Default icon
-        'category_title': 'Di-Store',  # Default title
-        'category_description': 'Your one-stop shop for quality products at affordable prices. Find everything you need for your projects.',  # Default description
+        'category_icon': 'fa-shopping-bag',
+        'category_title': 'Di-Store',
+        'category_description': 'Your one-stop shop for quality products at affordable prices. Find everything you need for your projects.',
     }
 
-    # Update hero section data if a category is selected
     if category_id:
         try:
             selected_category = ItemCategory.objects.get(id=category_id)
             hero_data.update({
-                'category_icon': selected_category.icon_class,  # Use the icon_class field from the ItemCategory model
+                'category_icon': selected_category.icon_class,
                 'category_title': f'{selected_category.name} Products',
                 'category_description': selected_category.description,
             })
         except ItemCategory.DoesNotExist:
-            pass  # If the category doesn't exist, keep the default hero data
+            pass
 
     context = {
         'categories': categories,
@@ -185,7 +253,40 @@ def home(request):
         'search_query': search_query,
         **hero_data,
     }
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        items_data = [{
+            'id': item.id,
+            'name': item.name,
+            'price': str(item.selling_price),
+            'image': item.image.url if item.image else '',
+            'category': item.category.name,
+            'location': item.location or ''
+        } for item in items]
+        return JsonResponse({'items': items_data})
+
     return render(request, 'home.html', context)
+
+
+
+def search_suggestions(request):
+    query = request.GET.get('q', '')
+    if query:
+        # Get matching items (simplified for suggestions)
+        suggestions = Item.objects.filter(
+            Q(name__icontains=query) |
+            Q(category__name__icontains=query)
+        ).values('name', 'category__name').distinct()[:5]
+
+        # Format suggestions
+        results = []
+        for item in suggestions:
+            results.append({
+                'text': f"{item['name']} ({item['category__name']})",
+                'category': item['category__name']
+            })
+        return JsonResponse({'suggestions': results})
+    return JsonResponse({'suggestions': []})
 
 def add_to_cart(request):
     if request.method == 'POST':

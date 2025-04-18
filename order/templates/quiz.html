@@ -1,0 +1,827 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07C160">
+    <meta name="description" content="Bible Quiz - SwiftFind">
+    <title>Bible Quiz - SwiftFind</title>
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #07C160;
+            --primary-dark: #05a54e;
+            --primary-light: #e6f7ef;
+            --secondary-color: #F8F8F8;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #EEE;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --danger-color: #ff4d4f;
+            --success-color: #52c41a;
+            --warning-color: #faad14;
+            --info-color: #1890ff;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding-bottom: 72px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        /* Header styling */
+        .app-header {
+            padding: 12px 16px;
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .location {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-color);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            padding: 4px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .dark-mode .theme-btn {
+            color: var(--dark-text);
+        }
+
+        .theme-btn:hover {
+            background-color: var(--primary-light);
+        }
+
+        .dark-mode .theme-btn:hover {
+            background-color: rgba(7, 193, 96, 0.1);
+        }
+
+        .dark-icon {
+            display: none;
+        }
+
+        .dark-mode .dark-icon {
+            display: inline;
+        }
+
+        .dark-mode .light-icon {
+            display: none;
+        }
+
+        /* Quiz container */
+        .quiz-container {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 20px auto;
+            max-width: 600px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dark-mode .quiz-container {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .quiz-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--info-color));
+            border-radius: 16px 16px 0 0;
+        }
+
+        /* Question styling */
+        .question-number {
+            font-size: 0.9rem;
+            color: var(--light-text);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .dark-mode .question-number {
+            color: var(--dark-light-text);
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--primary-dark);
+            line-height: 1.4;
+        }
+
+        .dark-mode .question-text {
+            color: var(--primary-color);
+        }
+
+        /* Options styling */
+        .options-container {
+            margin-bottom: 28px;
+        }
+
+        .option {
+            display: block;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            background-color: var(--secondary-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dark-mode .option {
+            background-color: var(--dark-bg);
+        }
+
+        .option:hover {
+            background-color: var(--primary-light);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .dark-mode .option:hover {
+            background-color: rgba(7, 193, 96, 0.1);
+        }
+
+        .option input[type="radio"] {
+            margin-right: 12px;
+            accent-color: var(--primary-color);
+            transform: scale(1.2);
+        }
+
+        .option-letter {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            font-weight: 600;
+            margin-right: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .dark-mode .option-letter {
+            background-color: rgba(7, 193, 96, 0.1);
+        }
+
+        .option:hover .option-letter {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Button styling */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            text-align: center;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(7, 193, 96, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(7, 193, 96, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .dark-mode .btn-secondary {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            border-color: var(--dark-bg);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .dark-mode .btn-secondary:hover {
+            background-color: var(--dark-bg);
+        }
+
+        /* Score indicator */
+        .score-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-bottom: 24px;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: var(--light-text);
+            margin-bottom: 4px;
+        }
+
+        .dark-mode .score-label {
+            color: var(--dark-light-text);
+        }
+
+        .score-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .positive-score {
+            color: var(--primary-color);
+        }
+
+        .negative-score {
+            color: var(--danger-color);
+        }
+
+        /* Timer styling */
+        .timer-container {
+            position: relative;
+            height: 8px;
+            background-color: var(--secondary-color);
+            border-radius: 4px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .dark-mode .timer-container {
+            background-color: var(--dark-bg);
+        }
+
+        .timer-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--info-color));
+            transition: width 1s linear;
+            border-radius: 4px;
+        }
+
+        .timer-text {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--light-text);
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .dark-mode .timer-text {
+            color: var(--dark-light-text);
+        }
+
+        .timer-critical .timer-bar {
+            background: linear-gradient(90deg, var(--danger-color), var(--warning-color));
+        }
+
+        .timer-critical .timer-text {
+            color: var(--danger-color);
+            font-weight: 600;
+        }
+
+        /* Top scores styling */
+        .top-scores {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 20px auto;
+            max-width: 600px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .top-scores {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .top-scores h4 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dark-mode .top-scores h4 {
+            color: var(--primary-color);
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dark-mode .leaderboard-item {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-rank {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rank-number {
+            width: 28px;
+            height: 28px;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .dark-mode .rank-number {
+            background-color: rgba(7, 193, 96, 0.1);
+        }
+
+        .leaderboard-item:nth-child(2) .rank-number {
+            background-color: #FFD700;
+            color: #333;
+        }
+
+        .leaderboard-item:nth-child(3) .rank-number {
+            background-color: #C0C0C0;
+            color: #333;
+        }
+
+        .leaderboard-item:nth-child(4) .rank-number {
+            background-color: #CD7F32;
+            color: #333;
+        }
+
+        .leaderboard-username {
+            font-weight: 500;
+        }
+
+        .leaderboard-score {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--white);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            padding: 12px 0 8px;
+            border-radius: 20px 20px 0 0;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            z-index: 100;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--light-text);
+            text-decoration: none;
+            font-size: 0.8rem;
+            gap: 4px;
+            transition: color 0.2s ease;
+        }
+
+        .dark-mode .nav-item {
+            color: var(--dark-light-text);
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        /* Progress bar */
+        .progress-container {
+            margin: 16px auto;
+            max-width: 600px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background-color: var(--secondary-color);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .dark-mode .progress-bar {
+            background-color: var(--dark-bg);
+        }
+
+        .progress-bar-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--info-color));
+            border-radius: 3px;
+            width: 30%;  /* Update dynamically based on progress */
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--light-text);
+            margin-top: 6px;
+        }
+
+        .dark-mode .progress-text {
+            color: var(--dark-light-text);
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--white);
+            color: var(--text-color);
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+
+        .dark-mode .toast {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .toast-icon {
+            font-size: 1.2rem;
+        }
+
+        .toast-success .toast-icon {
+            color: var(--primary-color);
+        }
+
+        .toast-error .toast-icon {
+            color: var(--danger-color);
+        }
+    </style>
+</head>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-top">
+            <div class="location">
+                <i class="fas fa-bible"></i>
+                <span>Bible Quiz Challenge</span>
+            </div>
+            <div class="user-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-4">
+        <div class="score-indicator">
+            <div class="score-label">YOUR SCORE</div>
+            <div class="score-value {% if score < 0 %}negative-score{% else %}positive-score{% endif %}">
+                K {{ score|floatformat:2 }}
+            </div>
+        </div>
+
+
+
+        <div class="quiz-container">
+            <p class="question-text">{{ question.question_text }}</p>
+            
+            <div class="timer-container" id="timer-container">
+                <div class="timer-bar" id="timer-bar"></div>
+            </div>
+            <div class="timer-text" id="timer-text">30 seconds remaining</div>
+
+            <form method="post" class="quiz-form">
+                {% csrf_token %}
+                <input type="hidden" name="correct_answer" value="{{ question.correct_answer }}">
+                <div class="options-container">
+                    <label class="option">
+                        <input type="radio" name="answer" value="A" required>
+                        <span class="option-letter">A</span>
+                        {{ question.option_a }}
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="answer" value="B">
+                        <span class="option-letter">B</span>
+                        {{ question.option_b }}
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="answer" value="C">
+                        <span class="option-letter">C</span>
+                        {{ question.option_c }}
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="answer" value="D">
+                        <span class="option-letter">D</span>
+                        {{ question.option_d }}
+                    </label>
+                </div>
+                <div class="button-container">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check-circle"></i>
+                        Submit
+                    </button>
+                    <a href="{% url 'submit_score' %}" class="btn btn-secondary">
+                        <i class="fas fa-trophy"></i>
+                        Done
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <div class="top-scores">
+            <h4>
+                <i class="fas fa-crown" style="color: #FFD700;"></i>
+                Leaderboard
+            </h4>
+            {% for score in top_scores %}
+                <div class="leaderboard-item">
+                    <div class="leaderboard-rank">
+                        <div class="rank-number">{{ forloop.counter }}</div>
+                        <div class="leaderboard-username">{{ score.username }}</div>
+                    </div>
+                    <div class="leaderboard-score">K {{ score.score }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle toast-icon"></i>
+        <span id="toast-message">Answer submitted successfully!</span>
+    </div>
+
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'home' %}" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'games_hub' %}" class="nav-item active">
+            <i class="fas fa-gamepad"></i>
+            <span>Games</span>
+        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
+    </nav>
+
+    <script>
+        // Theme toggle
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+        });
+
+        // Timer functionality
+        let timeLeft = 30; // 30 seconds
+        const timerBar = document.getElementById('timer-bar');
+        const timerText = document.getElementById('timer-text');
+        const timerContainer = document.getElementById('timer-container');
+        
+        // Set initial width
+        timerBar.style.width = '100%';
+        
+        const interval = setInterval(() => {
+            if (timeLeft <= 0) {
+                clearInterval(interval);
+                // Show time's up toast
+                showToast("Time's up! Submitting your answer...", false);
+                // Auto-submit after a short delay
+                setTimeout(() => {
+                    document.querySelector('.quiz-form').submit();
+                }, 1500);
+            } else {
+                // Update timer text
+                timerText.textContent = `${timeLeft} seconds remaining`;
+                
+                // Update progress bar width
+                const percentage = (timeLeft / 30) * 100;
+                timerBar.style.width = `${percentage}%`;
+                
+                // Add critical class when time is running low
+                if (timeLeft <= 10) {
+                    timerContainer.classList.add('timer-critical');
+                    
+                    // Add pulse animation effect when time is critically low
+                    if (timeLeft <= 5) {
+                        timerText.classList.add('pulse');
+                    }
+                }
+                
+                timeLeft--;
+            }
+        }, 1000);
+
+        // Form submission
+        document.querySelector('.quiz-form').addEventListener('submit', function(e) {
+            // Not preventing default as we want the form to submit to server
+            // But we can show a toast notification
+            showToast("Answer submitted successfully!", true);
+        });
+
+        // Toast notification function
+        function showToast(message, isSuccess = true) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = toast.querySelector('.toast-icon');
+            
+            // Set message and styling
+            toastMessage.textContent = message;
+            toast.className = `toast ${isSuccess ? 'toast-success show' : 'toast-error show'}`;
+            toastIcon.className = `fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'} toast-icon`;
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Set progress fill based on question number (example: 5/20 = 25%)
+        document.getElementById('progress-fill').style.width = '25%';
+
+        // Add click animations to options
+        const options = document.querySelectorAll('.option');
+        options.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove active class from all options
+                options.forEach(opt => opt.style.transform = '');
+                
+                // Add active class to clicked option
+                this.style.transform = 'translateY(-2px)';
+            });
+        });
+    </script>
+</body>
+</html>

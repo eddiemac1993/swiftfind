@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#07C160">
     <meta name="description" content="Business Profile - SwiftFind">
-    <title>Business Profile - SwiftFind</title>
+    <title>Profile - SwiftFind</title>
     <link rel="manifest" href="{% static 'manifest.json' %}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
@@ -722,29 +722,29 @@
             .profile-layout {
                 grid-template-columns: 1fr;
             }
-            
+
             .sidebar {
                 display: none;
             }
-            
+
             .form-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .form-actions {
                 flex-direction: column;
             }
-            
+
             .btn {
                 width: 100%;
                 justify-content: center;
             }
-            
+
             .tab-navigation {
                 overflow-x: auto;
                 white-space: nowrap;
             }
-            
+
             .tab {
                 padding: 16px;
             }
@@ -757,7 +757,7 @@
         <div class="header-top">
             <div class="location">
                 <i class="fas fa-store"></i>
-                <span>Business Profile</span>
+                <span>Profile</span>
             </div>
             <div class="user-actions">
                 <button id="theme-toggle" class="theme-btn">
@@ -766,8 +766,8 @@
                 </button>
                 <div class="relative">
                     <button id="dropdownToggle" class="flex items-center gap-2 focus:outline-none">
-                        <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% elif user.businesses.first.logo %}{{ user.businesses.first.logo.url }}{% else %}{% static 'business_logos/default.jpg' %}{% endif %}" 
-                             alt="Profile" 
+                        <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% elif user.businesses.first.logo %}{{ user.businesses.first.logo.url }}{% else %}{% static 'business_logos/default.jpg' %}{% endif %}"
+                             alt="Profile"
                              class="w-8 h-8 rounded-full object-cover">
                         <span class="font-medium">{{ user.username }}</span>
                         <i class="fas fa-caret-down"></i>
@@ -954,10 +954,9 @@
             <i class="fas fa-compass"></i>
             <span>Discover</span>
         </a>
-        <a href="{% url 'cart' %}" class="nav-item">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Cart</span>
-            <span class="cart-count">{{ cart_count }}</span>
+        <a href="{% url 'games_hub' %}" class="nav-item">  <!-- Add this line -->
+            <i class="fas fa-gamepad"></i>               <!-- Game controller icon -->
+            <span>Games</span>
         </a>
         {% if user.is_authenticated %}
             <a href="{% url 'profile' %}" class="nav-item active" title="Profile">

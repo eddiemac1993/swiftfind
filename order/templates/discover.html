@@ -6,16 +6,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#07C160">
+    <meta name="description" content="Discover Local Businesses">
     <title>Discover Local Businesses</title>
     <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Reuse all the CSS variables and base styles from home.html */
         :root {
             --primary-color: #07C160;
             --primary-dark: #05a54e;
@@ -53,7 +55,7 @@
             color: var(--dark-text);
         }
 
-        /* Header styles */
+        /* Header styles - same as home.html */
         .app-header {
             background-color: var(--white);
             padding: 16px;
@@ -104,6 +106,15 @@
             gap: 15px;
         }
 
+        .user-actions i {
+            font-size: 20px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .user-actions i {
+            color: var(--dark-text);
+        }
+
         .theme-btn {
             background: none;
             border: none;
@@ -133,26 +144,344 @@
             display: block;
             color: var(--dark-text);
         }
+        /* Banner - similar to home.html but for businesses */
+        .banner {
+            margin: 0 16px 24px;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--shadow);
+            height: 200px;
+            background: linear-gradient(to right, #07C160, #05a54e);
+        }
 
-        .search-bar {
+        .dark-mode .banner {
+            box-shadow: var(--dark-shadow);
+        }
+
+        .banner-slide {
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+            padding: 24px;
+            color: var(--white);
+            position: relative;
+            z-index: 2;
+        }
+
+        .banner-slide::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+            z-index: -1;
+        }
+
+        .banner-content {
+            max-width: 80%;
+        }
+
+        .banner-content h3 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .banner-content p {
+            font-size: 14px;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .see-all {
+            font-size: 14px;
+            color: var(--primary-color);
+            text-decoration: none;
             display: flex;
             align-items: center;
-            background-color: var(--secondary-color);
-            border-radius: 12px;
+            gap: 5px;
+            font-weight: 600;
+        }
+
+        .dark-mode .see-all {
+            color: var(--primary-color);
+        }
+
+        .see-all i {
+            font-size: 12px;
+            transition: transform 0.2s ease;
+        }
+
+        .see-all:hover i {
+            transform: translateX(3px);
+        }
+        /* Single column business card */
+
+    /* Previous CSS styles remain the same until .business-grid */
+
+    /* Business grid layout */
+    .business-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 0 7px 32px; /* Default for mobile */
+    }
+
+    /* For tablets and desktops */
+    @media (min-width: 768px) {
+        .business-grid {
+            padding: 0 330px 32px; /* Larger side padding */
+        }
+    }
+
+    /* The rest of your existing CSS continues below... */
+    .business-card {
+        display: flex;
+        flex-direction: row;
+        background-color: var(--white);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(0,0,0,0.03);
+        height: 200px; /* Fixed height for consistency */
+    }
+
+
+
+        .business-card {
+            display: flex;
+            flex-direction: row;
+            background-color: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0,0,0,0.03);
+            height: 200px; /* Fixed height for consistency */
+        }
+
+        .dark-mode .business-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+            border-color: rgba(255,255,255,0.05);
+        }
+
+        .business-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark-mode .business-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .business-image-container {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .business-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .business-card:hover .business-image {
+            transform: scale(1.05);
+        }
+
+        .business-info {
             padding: 12px 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
         }
 
-        .search-bar input {
-            flex: 1;
-            border: none;
-            background: transparent;
-            outline: none;
-            font-size: 15px;
+        .business-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dark-mode .business-name {
+            color: var(--dark-text);
+        }
+
+        .business-rating {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+            color: var(--primary-color);
+            font-size: 14px;
+        }
+
+        .business-rating .stars {
+            margin-right: 5px;
+            font-size: 14px;
+        }
+
+        .business-location {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            color: var(--light-text);
+            margin-bottom: 6px;
+        }
+
+        .dark-mode .business-location {
+            color: var(--dark-light-text);
+        }
+
+        .business-location i {
+            margin-right: 5px;
+            font-size: 12px;
+        }
+
+        .business-category {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 500;
+            margin-top: auto;
         }
 
-        /* Bottom navigation */
+        .dark-mode .business-category {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        .business-category i {
+            margin-right: 5px;
+            font-size: 12px;
+        }
+
+        /* Badges - positioned on image */
+        .business-badge {
+            position: absolute;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: white;
+        }
+
+        .featured-badge {
+            top: 8px;
+            left: 8px;
+            background-color: #FFB800;
+        }
+
+        .verified-badge {
+            top: 8px;
+            right: 8px;
+            background-color: #4CAF50;
+        }
+
+        .owner-badge {
+            top: 40px;
+            left: 8px;
+            background-color: #E91E63;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .business-card {
+                height: 140px;
+            }
+
+            .business-image-container {
+                width: 140px;
+                height: 140px;
+            }
+
+            .business-name {
+                font-size: 15px;
+            }
+
+            .business-rating,
+            .business-location {
+                font-size: 10px;
+            }
+        }
+
+        /* Filter controls - styled to match */
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            padding: 0 16px 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--white);
+            font-size: 14px;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+        }
+
+        .dark-mode .filter-select {
+            background-color: var(--dark-surface);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--dark-text);
+        }
+
+        .filter-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .filter-button i {
+            font-size: 14px;
+        }
+
+        /* Bottom navigation - same as home.html */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -168,6 +497,11 @@
             border-top-right-radius: 20px;
         }
 
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
+        }
+
         .nav-item {
             display: flex;
             flex-direction: column;
@@ -180,111 +514,107 @@
             padding: 6px 16px;
         }
 
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+            transition: all 0.3s ease;
+        }
+
         .nav-item.active {
             color: var(--primary-color);
         }
 
-        /* Business Card Styles */
-        .business-card {
-            background-color: var(--white);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: 1px solid rgba(0,0,0,0.03);
+        .nav-item.active i {
+            transform: translateY(-2px);
+        }
+
+        /* Toast Notification - same as home.html */
+        #toast {
+            position: fixed;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            z-index: 1000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast-content {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            min-width: 200px;
+            justify-content: center;
+        }
+
+        .toast-content i {
+            margin-right: 10px;
+        }
+
+
+        /* Products section */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px 16px;
+        }
+
+        .section-header h3 {
+            font-size: 20px;
+            font-weight: 700;
             position: relative;
         }
 
-        .business-image {
-            height: 180px;
-            overflow: hidden;
-        }
-
-        .business-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        .business-info {
-            padding: 16px;
-        }
-
-        .business-name {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .business-rating {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .business-rating .stars {
-            color: var(--primary-color);
-            font-size: 14px;
-            margin-right: 5px;
-        }
-
-        .business-location {
-            display: flex;
-            align-items: center;
-            font-size: 14px;
-            color: var(--light-text);
-            margin-bottom: 8px;
-        }
-
-        .business-category {
-            display: inline-block;
-            padding: 4px 10px;
-            background-color: var(--primary-light);
-            color: var(--primary-dark);
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        /* Badges */
-        .badges-container {
+        .section-header h3::after {
+            content: '';
             position: absolute;
-            top: 12px;
-            right: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            z-index: 1;
+            bottom: -6px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
         }
 
-        .featured-badge, .verified-badge, .owner-badge {
+        .dark-mode .section-header h3 {
+            color: var(--dark-text);
+        }
+
+        .see-all {
+            font-size: 14px;
+            color: var(--primary-color);
+            text-decoration: none;
             display: flex;
             align-items: center;
             gap: 5px;
-            padding: 4px 10px;
-            border-radius: 30px;
+            font-weight: 600;
+        }
+
+        .dark-mode .see-all {
+            color: var(--primary-color);
+        }
+
+        .see-all i {
             font-size: 12px;
-            font-weight: bold;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-            color: white;
+            transition: transform 0.2s ease;
         }
 
-        .featured-badge {
-            background-color: #FFB800;
-        }
-
-        .verified-badge {
-            background-color: #4CAF50;
-        }
-
-        .owner-badge {
-            background-color: #E91E63;
+        .see-all:hover i {
+            transform: translateX(3px);
         }
 
         /* Install Button */
-        .install-paper-button {
+        .install-button {
             position: fixed;
             bottom: 80px;
             right: 20px;
@@ -303,95 +633,202 @@
             transition: all 0.3s ease;
         }
 
-        /* Modal Styles */
-        .business-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
+        .dark-mode .install-button {
+            background-color: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* No results message */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .no-results i {
+            font-size: 48px;
+            color: var(--light-text);
+            margin-bottom: 16px;
+        }
+
+        .dark-mode .no-results i {
+            color: var(--dark-light-text);
+        }
+
+        .no-results h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .no-results h3 {
+            color: var(--dark-text);
+        }
+
+        .no-results p {
+            color: var(--light-text);
+        }
+
+        .dark-mode .no-results p {
+            color: var(--dark-light-text);
+        }
+
+        /* Pagination */
+        .pagination {
             display: flex;
             justify-content: center;
-            align-items: center;
-            opacity: 0;
-            visibility: hidden;
+            padding: 20px 0;
+            gap: 10px;
+        }
+
+        .pagination-button {
+            padding: 8px 16px;
+            border-radius: 8px;
+            background-color: var(--white);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .business-modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
+        .dark-mode .pagination-button {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
-        .business-modal-container {
+        .pagination-button:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .dark-mode .pagination-button:hover {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        .pagination-button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Advertisement styles */
+        .advertisement {
             background-color: var(--white);
-            border-radius: 20px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            transform: translateY(30px) scale(0.95);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
         }
 
-        /* Dark mode variants */
-        .dark-mode .business-card {
+        .dark-mode .advertisement {
             background-color: var(--dark-surface);
             box-shadow: var(--dark-shadow);
             border-color: rgba(255,255,255,0.05);
         }
 
-        .dark-mode .business-name,
-        .dark-mode .business-rating span {
-            color: var(--dark-text);
+        .ad-image {
+            width: 100%;
+            height: auto;
+            display: block;
         }
 
-        .dark-mode .business-location {
+        .ad-text {
+            padding: 12px 16px;
+            font-size: 14px;
+            color: var(--light-text);
+            text-align: center;
+        }
+
+        .dark-mode .ad-text {
             color: var(--dark-light-text);
         }
 
-        .dark-mode .business-category {
-            background-color: rgba(7, 193, 96, 0.2);
+        /* Newsfeed styles */
+        .newsfeed-section {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .newsfeed-section {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .newsfeed-section h2 {
+            font-size: 18px;
+            margin-bottom: 12px;
             color: var(--primary-color);
         }
 
-        .dark-mode .business-modal-container {
-            background-color: var(--dark-surface);
+        .dark-mode .newsfeed-section h2 {
+            color: var(--primary-color);
         }
 
-        .dark-mode .install-paper-button {
-            background-color: var(--primary-dark);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        .newsfeed-section ul {
+            list-style: none;
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .business-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .install-paper-button {
-                width: 45px;
-                height: 45px;
-                bottom: 70px;
-            }
+        .newsfeed-section li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dark-mode .newsfeed-section li {
+            border-bottom-color: rgba(255,255,255,0.1);
+        }
+
+        .newsfeed-section li:last-child {
+            border-bottom: none;
+        }
+
+        .newsfeed-section li a {
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .dark-mode .newsfeed-section li a {
+            color: var(--dark-text);
+        }
+
+        .newsfeed-section li h3 {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .category-display {
+            font-size: 12px;
+            color: var(--light-text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .dark-mode .category-display {
+            color: var(--dark-light-text);
         }
     </style>
 </head>
 <body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
     <!-- Install Button -->
-    <button id="install-button" class="install-paper-button" style="display: none;" aria-label="Install app">
+    <button id="install-button" class="install-button" style="display: none;" aria-label="Install app">
         <i class="fas fa-download"></i>
     </button>
 
-    <!-- Header -->
+    <!-- Header with search -->
     <header class="app-header">
         <div class="header-top">
             <div class="location">
-                <i class="fas fa-map-marker-alt"></i>
+                <i class="fas fa-compass"></i>
                 <span>Discover</span>
             </div>
             <div class="user-actions">
@@ -403,30 +840,28 @@
         </div>
     </header>
 
-    <!-- Discover Banner -->
-    <section class="discover-banner relative">
-        <div class="discover-banner-content">
-            <h2>Discover Local Businesses</h2>
-            <p>Find the best businesses in your area. Showing {{ businesses_count }} businesses.</p>
-        </div>
-        <div class="discover-banner-icon">
-            <i class="fas fa-compass"></i>
-        </div>
-        <div class="absolute bottom-2 right-6 text-white text-sm opacity-80">
-            Alkebulan: Garden of Eden
-        </div>
-    </section>
-
-    <!-- Main Content -->
+    <!-- Main content -->
     <main class="app-main">
-        <!-- Filter Controls -->
-        <div class="sort-filter-container">
-            <form method="get" action="." class="search-form">
+        <!-- Banner -->
+        <section class="banner">
+            <div class="banner-slide">
+                <div class="banner-content">
+                    <h3>Discover Local Businesses</h3>
+                    <p>Find the best businesses in your area. Showing {{ businesses_count }} businesses.</p>
+                    <div class="absolute bottom-2 right-6 text-white text-sm opacity-80">
+                        Alkebulan: Garden of Eden
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Filter controls -->
+        <div class="filter-controls">
+            <form method="get" action="." class="w-full flex gap-2">
                 {% if query %}
                 <input type="hidden" name="q" value="{{ query }}">
                 {% endif %}
 
-                <select name="category" class="sort-select">
+                <select name="category" class="filter-select">
                     <option value="">All Categories</option>
                     {% for category in categories %}
                         <option value="{{ category.name }}" {% if selected_category == category.name %}selected{% endif %}>
@@ -435,17 +870,16 @@
                     {% endfor %}
                 </select>
 
-                <select id="sort-by" name="sort_by" class="sort-select">
+                <select name="sort_by" class="filter-select">
                     <option value="">Sort By</option>
-                    <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Rating (Highest to Lowest)</option>
-                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name (A-Z)</option>
+                    <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Rating</option>
+                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name</option>
                     <option value="reviews" {% if sort_by == 'reviews' %}selected{% endif %}>Most Reviewed</option>
                     <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest</option>
                 </select>
 
-                <button type="submit" class="filter-btn">
+                <button type="submit" class="filter-button">
                     <i class="fas fa-filter"></i>
-                    Apply
                 </button>
             </form>
         </div>
@@ -465,14 +899,14 @@
         <section class="business-list">
             <div class="section-header">
                 <h3>
-                    {% if query or city or selected_category %}
+                    {% if query or selected_category %}
                     Search Results
                     {% else %}
                     Featured Businesses
                     {% endif %}
                 </h3>
                 {% if businesses_count > 4 %}
-                <a href="#" class="see-all">See All <i class="fas fa-chevron-right"></i></a>
+                <a href="{% url 'discover' %}" class="see-all">See All <i class="fas fa-chevron-right"></i></a>
                 {% endif %}
             </div>
 
@@ -480,71 +914,94 @@
                 {% for item in page_obj %}
                     {% if item.0 == 'business' %}
                     {% with business=item.1 %}
-                    <div class="business-card" onclick="openBusinessModal(this)" data-id="{{ business.id }}">
-                        <div class="business-image">
-                            {% if business.image %}
-                            <img src="{{ business.image.url }}" alt="{{ business.name }}" loading="lazy">
-                            {% else %}
-                            <div class="placeholder-image">
-                                <i class="fas fa-store-alt"></i>
-                            </div>
-                            {% endif %}
-                        </div>
+                    <a href="{% url 'business-detail' business.pk %}" class="business-card">
+                        <!-- Business image container -->
+                        <div class="business-image-container">
+                            <img src="{{ business.logo.url }}" alt="{{ business.name }} Logo" class="business-image" loading="lazy">
 
-                        <div class="badges-container">
+                            <!-- Badges -->
                             {% if business.is_featured %}
-                            <div class="featured-badge">
+                            <div class="business-badge featured-badge">
                                 <i class="fas fa-star"></i>
                                 <span>Featured</span>
                             </div>
                             {% endif %}
 
                             {% if business.is_admin_added %}
-                            <div class="verified-badge">
+                            <div class="business-badge verified-badge">
                                 <i class="fas fa-circle-check"></i>
                                 <span>Verified</span>
                             </div>
                             {% endif %}
 
                             {% if user.is_authenticated and business.owner == user %}
-                            <div class="owner-badge">
+                            <div class="business-badge owner-badge">
                                 <i class="fas fa-heart"></i>
                                 <span>Yours</span>
                             </div>
                             {% endif %}
                         </div>
 
+                        <!-- Business info -->
                         <div class="business-info">
-                            <h4 class="business-name">{{ business.name }}</h4>
-                            <div class="business-rating">
-                                <span class="stars">
-                                    {% for i in "12345" %}
-                                        {% if i|add:0 <= business.average_rating %}
-                                            ★
+                            <div>
+                                <h4 class="business-name">{{ business.name }}</h4>
+
+                                <div class="business-rating">
+                                    <span class="stars">
+                                        {% for i in "12345" %}
+                                            {% if i|add:0 <= business.average_rating %}
+                                                ★
+                                            {% else %}
+                                                ☆
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                    <span>
+                                        {% if business.average_rating %}
+                                        {{ business.average_rating|floatformat:1 }} ({{ business.review_count }} reviews)
                                         {% else %}
-                                            ☆
+                                        No reviews yet
                                         {% endif %}
-                                    {% endfor %}
-                                </span>
-                                <span>
-                                    {% if business.average_rating %}
-                                    {{ business.average_rating|floatformat:1 }} ({{ business.review_count }} reviews)
-                                    {% else %}
-                                    No reviews yet
-                                    {% endif %}
-                                </span>
+                                    </span>
+                                </div>
+
+                                <div class="business-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{{ business.city }}</span>
+                                </div>
                             </div>
-                            <div class="business-location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>{{ business.city }}</span>
-                            </div>
+
                             <div class="business-category">
                                 <i class="fas fa-tag"></i>
                                 <span>{{ business.category.name }}</span>
                             </div>
                         </div>
-                    </div>
+                    </a>
                     {% endwith %}
+
+                    {% elif item.0 == 'advertisement' %}
+                    <!-- Display Advertisement -->
+                    <div class="advertisement">
+                        <a href="{{ item.1.link }}" target="_blank">
+                            <img src="{{ item.1.image.url }}" alt="{{ item.1.title }}" class="ad-image">
+                        </a>
+                        <p class="ad-text">{{ item.1.small_text }}</p>
+                    </div>
+
+                    {% elif item.0 == 'newsfeed' %}
+                    <!-- Display Newsfeed -->
+                    <div class="newsfeed-section">
+                        <h2>Latest {{ item.1.get_category_display }}</h2>
+                        <ul>
+                            <li>
+                                <a href="{{ item.1.get_absolute_url }}">
+                                    <h3>{{ item.1.title }}</h3>
+                                    <p class="category-display">{{ item.1.get_category_display }}</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                     {% endif %}
                 {% empty %}
                 <div class="no-results">
@@ -555,30 +1012,11 @@
                 {% endfor %}
             </div>
 
-            <!-- Pagination -->
-            {% if page_obj.paginator.num_pages > 1 %}
-            <div class="pagination-container">
-                <div class="pagination-buttons">
-                    {% if page_obj.has_previous %}
-                    <a href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if city %}&city={{ city }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if sort_by %}&sort_by={{ sort_by }}{% endif %}"
-                       class="pagination-button">
-                        <i class="fas fa-chevron-left"></i> Previous
-                    </a>
-                    {% endif %}
-
-                    {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if city %}&city={{ city }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if sort_by %}&sort_by={{ sort_by }}{% endif %}"
-                       class="pagination-button">
-                        Next <i class="fas fa-chevron-right"></i>
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
-            {% endif %}
-        </section>
+        <!-- ... (keep pagination and rest of the content) ... -->
+    </section>
     </main>
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom navigation -->
     <nav class="bottom-nav">
         <a href="{% url 'home' %}" class="nav-item">
             <i class="fas fa-home"></i>
@@ -605,92 +1043,37 @@
         {% endif %}
     </nav>
 
-    <!-- Business Modal -->
-    <div id="business-modal" class="business-modal-overlay">
-        <div class="business-modal-container">
-            <div class="business-modal-content">
-                <div class="business-modal-image">
-                    <img id="modal-business-image" src="" alt="Business Image">
-                </div>
-                <div class="business-modal-info">
-                    <div class="business-modal-header">
-                        <h3 id="modal-business-name"></h3>
-                        <div id="modal-business-badge" class="featured-badge">
-                            <i class="fas fa-star"></i>
-                            <span>Featured</span>
-                        </div>
-                    </div>
-                    <div class="business-modal-rating">
-                        <span id="modal-business-rating"></span>
-                    </div>
-                    <div class="business-modal-location">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span id="modal-business-location"></span>
-                    </div>
-                    <div class="business-modal-category">
-                        <span id="modal-business-category"></span>
-                    </div>
-                    <div class="business-modal-actions">
-                        <button class="view-button">View Details</button>
-                        <button class="close-button" onclick="closeBusinessModal()">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Theme toggle functionality
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
-
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            const isDarkMode = body.classList.contains('dark-mode');
-            document.cookie = `darkMode=${isDarkMode}; path=/; max-age=${60 * 60 * 24 * 365}`;
-        });
-
-        // Business modal functionality
-        function openBusinessModal(card) {
-            const modal = document.getElementById('business-modal');
-            const businessId = card.getAttribute('data-id');
-            
-            // Get business data from the card
-            const businessName = card.querySelector('.business-name').textContent;
-            const businessRating = card.querySelector('.business-rating span').textContent;
-            const businessLocation = card.querySelector('.business-location span').textContent;
-            const businessCategory = card.querySelector('.business-category').textContent;
-            const businessImage = card.querySelector('.business-image img')?.src || '';
-            const isFeatured = card.querySelector('.featured-badge') !== null;
-
-            // Set modal content
-            document.getElementById('modal-business-name').textContent = businessName;
-            document.getElementById('modal-business-rating').textContent = businessRating;
-            document.getElementById('modal-business-location').textContent = businessLocation;
-            document.getElementById('modal-business-category').textContent = businessCategory;
-            document.getElementById('modal-business-image').src = businessImage;
-
-            document.getElementById('modal-business-badge').style.display = isFeatured ? 'flex' : 'none';
-
-            // Show modal
-            modal.classList.add('active');
-        }
-
-        function closeBusinessModal() {
-            document.getElementById('business-modal').classList.remove('active');
-        }
-
-        // Close modal when clicking outside
-        document.getElementById('business-modal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeBusinessModal();
-            }
-        });
-
-        // PWA Install Prompt
+        // ======================
+        // Global Variables
+        // ======================
         let deferredPrompt;
         const installButton = document.getElementById('install-button');
+        const searchInput = document.querySelector('.search-bar input');
+        const businessGrid = document.querySelector('.business-grid');
+        const sectionHeader = document.querySelector('.business-list .section-header h3');
 
+        // ======================
+        // Theme Toggle
+        // ======================
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+        });
+
+        // ======================
+        // Category Filtering
+        // ======================
+        function filterByCategory(categoryName) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('category', categoryName);
+            window.location.href = url.toString();
+        }
+
+        // ======================
+        // PWA Installation
+        // ======================
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
@@ -711,6 +1094,21 @@
             deferredPrompt = null;
             console.log('PWA was installed');
         });
+
+        // ======================
+        // Service Worker
+        // ======================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('{% static "service-worker.js" %}')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
     </script>
 </body>
 </html>

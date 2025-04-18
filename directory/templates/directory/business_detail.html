@@ -3,710 +3,1072 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#000000">
-    <meta name="description" content="Alkebulan">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ business.name }} - SwiftFind</title>
-    <link rel="manifest" href="{% static 'manifest.json' %}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
-    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
-    <link rel="manifest" href="/static/manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#07C160">
+    <title>{{ business.name }} - Business Details</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* CSS Reset and Base Styles */
-        *, *::before, *::after {
-            box-sizing: border-box;
+        /* Reuse all the CSS variables and base styles from discover.html */
+        :root {
+            --primary-color: #07C160;
+            --primary-dark: #05a54e;
+            --primary-light: #e6f7ef;
+            --secondary-color: #F8F8F8;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #EEE;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
         }
 
-        /* Global Variables */
-        :root {
-            --max-width: 1200px;
-            --container-padding: clamp(1rem, 5vw, 2rem);
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --background: #f8fafc;
-            --card-bg: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-color: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --border-radius: 0.75rem;
-        }
-
-        /* Dark Mode */
-        .dark-mode {
-            --background: #1e293b;
-            --card-bg: #334155;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --border-color: #475569;
-        }
-
-        /* Global Styles */
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: var(--background);
-            color: var(--text-primary);
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding-bottom: 72px;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        /* Header styles - same as discover.html */
+        .app-header {
+            background-color: var(--white);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 6px 12px;
+            background-color: var(--primary-light);
+            border-radius: 20px;
+            color: var(--primary-dark);
+        }
+
+        .dark-mode .location {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        .location i {
+            margin-right: 5px;
+            color: var(--primary-color);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-actions i {
+            font-size: 20px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .user-actions i {
+            color: var(--dark-text);
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--secondary-color);
+        }
+
+        .dark-mode .theme-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-btn .dark-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .light-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .dark-icon {
+            display: block;
+            color: var(--dark-text);
+        }
+
+        /* Business Hero Section */
+       .business-hero {
+        position: relative;
+        height: 250px;
+        overflow: hidden;
+        margin: 0 16px 16px;
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+    }
+
+    .business-hero-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.7); /* Darken the image slightly */
+    }
+
+    .business-hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 20px;
+        color: white;
+        background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+    }
+
+    .business-badges {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .business-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .business-name {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Add text shadow for better contrast */
+    }
+
+    .business-meta {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.5); /* Add text shadow for better contrast */
+    }
+
+    .business-rating {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #FFD700; /* Gold color for stars */
+        font-weight: 600;
+    }
+
+    .business-review-count {
+        color: rgba(255,255,255,0.9);
+        font-size: 14px;
+    }
+
+    .business-category {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        background-color: rgba(7, 193, 96, 0.9); /* More opaque version of your primary color */
+        color: white;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    @media (max-width: 480px) {
+        .business-hero {
+            height: 200px;
+        }
+        
+        .business-name {
+            font-size: 18px;
+        }
+        
+        .business-meta {
+            gap: 10px;
+        }
+    }
+
+        .dark-mode .business-category {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        .business-description {
+            margin: 20px 0;
             line-height: 1.6;
-            transition: background-color 0.3s ease;
+            color: var(--text-color);
         }
 
-        .container {
-            max-width: var(--max-width);
-            margin: 0 auto;
-            padding: var(--container-padding);
+        .dark-mode .business-description {
+            color: var(--dark-text);
         }
 
-        /* Business Details Section */
-        .business-details {
+        .business-details-grid {
             display: grid;
-            grid-template-columns: minmax(200px, 300px) 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
         }
 
-        @media (max-width: 768px) {
-            .business-details {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
+        .detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
         }
 
-        .business-logo img {
-            width: 100%;
-            height: auto;
-            border-radius: var(--border-radius);
-            aspect-ratio: 1;
-            object-fit: cover;
+        .detail-icon {
+            color: var(--primary-color);
+            font-size: 18px;
+            margin-top: 2px;
+        }
+
+        .detail-content h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .detail-content h4 {
+            color: var(--dark-text);
+        }
+
+        .detail-content p {
+            font-size: 14px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .detail-content p {
+            color: var(--dark-light-text);
         }
 
         /* Action Buttons */
-        .call-to-action {
+        .action-buttons {
             display: flex;
+            gap: 10px;
+            margin: 20px 16px;
             flex-wrap: wrap;
-            gap: 1rem;
-            margin: 1.5rem 0;
-            justify-content: center;
         }
 
         .action-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: var(--border-radius);
-            text-decoration: none;
-            transition: background-color 0.2s ease;
-            text-align: center;
-            flex: 1 1 150px;
-        }
-
-        .action-button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        /* Related Businesses */
-/* Related Businesses Section */
-.related-businesses {
-    margin-top: 2rem;
-}
-
-.related-businesses h2 {
-    font-size: clamp(1.25rem, 4vw, 2rem);
-    margin-bottom: 1.5rem;
-    color: var(--text-primary);
-}
-
-.business-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-}
-
-.business-item {
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: var(--shadow);
-    color: white; /* White text for the card */
-    text-decoration: none; /* Remove text decoration */
-}
-
-.business-item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.business-logo img {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-}
-
-.business-details {
-    padding: 1rem;
-}
-
-.business-details h2 {
-    font-size: 1.25rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-secondary);
-}
-
-.business-details p {
-    font-size: 0.875rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-secondary);
-}
-
-.business-rating {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-}
-
-.stars {
-    color: #f6ad55; /* Gold color for stars */
-}
-
-.review-count {
-    font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.8); /* Slightly transparent white text */
-}
-
-/* Reviews Section */
-.user-reviews {
-    margin-top: 2rem;
-}
-
-.review-item {
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius);
-    padding: 1rem;
-    margin-bottom: 1rem;
-    color: var(--text-primary); /* Default text color for reviews */
-}
-
-.review-rating {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.review-rating .stars {
-    color: #f6ad55; /* Gold color for stars */
-}
-
-.review-date {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-}
-
-.review-title {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
-}
-
-.review-comment {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    margin-bottom: 0.5rem;
-}
-
-.review-author {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-}
-
-.helpful-votes {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-}
-        .business-rating {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
         }
 
-        .stars {
-            color: #f6ad55; /* Gold color for stars */
+        .primary-action {
+            background-color: var(--primary-color);
+            color: white;
         }
 
-        .review-count {
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.8); /* Slightly transparent white text */
+        .primary-action:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .secondary-action {
+            background-color: var(--white);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .dark-mode .secondary-action {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .secondary-action:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .dark-mode .secondary-action:hover {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
         }
 
         /* Reviews Section */
-        .user-reviews {
-            margin-top: 2rem;
+        .reviews-section {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
         }
 
-        .review-item {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius);
-            padding: 1rem;
-            margin-bottom: 1rem;
-            color: var(--text-primary); /* Default text color for reviews */
+        .dark-mode .reviews-section {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
         }
 
-        .review-rating {
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-color);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 0.5rem;
+            gap: 10px;
         }
 
-        .review-rating .stars {
-            color: #f6ad55; /* Gold color for stars */
+        .dark-mode .section-title {
+            color: var(--dark-text);
+        }
+
+        .review-card {
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dark-mode .review-card {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .review-card:last-child {
+            border-bottom: none;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .review-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .dark-mode .user-name {
+            color: var(--dark-text);
         }
 
         .review-date {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
+            font-size: 12px;
+            color: var(--light-text);
         }
 
-        .review-title {
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
+        .dark-mode .review-date {
+            color: var(--dark-light-text);
         }
 
-        .review-comment {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
+        .review-rating {
+            color: var(--primary-color);
+            margin-bottom: 8px;
         }
 
-        .review-author {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
+        .review-content {
+            color: var(--text-color);
+            line-height: 1.5;
         }
 
-        .helpful-votes {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
+        .dark-mode .review-content {
+            color: var(--dark-text);
         }
 
         /* Review Form */
         .review-form {
-            background-color: var(--card-bg);
-            padding: 2rem;
-            border-radius: var(--border-radius);
-            margin: 2rem 0;
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .review-form {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
         }
 
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 15px;
         }
 
-        .form-group label {
+        .form-label {
             display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
         }
 
-        .form-group input,
-        .form-group textarea {
+        .dark-mode .form-label {
+            color: var(--dark-text);
+        }
+
+        .form-control {
             width: 100%;
-            padding: 0.75rem;
+            padding: 12px;
+            border-radius: 8px;
             border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            background-color: var(--background);
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
+            background-color: var(--white);
+            color: var(--text-color);
         }
 
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        .dark-mode .form-control {
+            background-color: var(--dark-surface);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--dark-text);
         }
 
-        .review-form button {
-            padding: 0.75rem 1.5rem;
+        .rating-stars {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .star {
+            font-size: 24px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .star.active {
+            color: var(--primary-color);
+        }
+
+        .submit-button {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 0.5rem;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s ease;
             width: 100%;
+            transition: background-color 0.3s;
         }
 
-        .review-form button:hover {
-            background-color: var(--primary-hover);
+        .submit-button:hover {
+            background-color: var(--primary-dark);
         }
 
+        /* Related Businesses */
+        .related-businesses {
+            margin: 0 16px 20px;
+        }
+
+        .related-business-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .dark-mode .related-business-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .related-business-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .related-business-info {
+            flex: 1;
+        }
+
+        .related-business-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .related-business-name {
+            color: var(--dark-text);
+        }
+
+        .related-business-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--primary-color);
+            font-size: 14px;
+        }
 
         /* Social Sharing */
         .social-sharing {
-            margin-top: 2rem;
-            text-align: center;
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .social-sharing {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
         }
 
         .social-buttons {
             display: flex;
-            justify-content: center;
-            gap: 1rem;
+            gap: 10px;
+            margin-top: 15px;
         }
 
         .social-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
             width: 40px;
             height: 40px;
             border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: white;
-            text-decoration: none;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            font-size: 18px;
+            transition: transform 0.3s;
         }
 
         .social-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
         }
 
-        .social-button.facebook {
-            background-color: #1877f2;
+        .facebook {
+            background-color: #3b5998;
         }
 
-        .social-button.twitter {
-            background-color: #1da1f2;
+        .whatsapp {
+            background-color: #25D366;
         }
 
-        .social-button.whatsapp {
-            background-color: #25d366;
+        .sms {
+            background-color: #07C160;
         }
 
-        /* Fixed Buttons */
-        .fixed-buttons {
+        /* Bottom navigation - same as discover.html */
+        .bottom-nav {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--white);
+            padding: 12px 0 8px;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            z-index: 1000;
-        }
-
-        .rounded-button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
             align-items: center;
-            justify-content: center;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            box-shadow: var(--shadow);
-            transition: background-color 0.3s ease;
             text-decoration: none;
-        }
-        /* Social Sharing Buttons */
-        .social-sharing {
-            margin-top: 2rem;
-            text-align: center;
-        }
-
-        .social-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
+            color: var(--light-text);
+            font-size: 12px;
+            font-weight: 500;
+            position: relative;
+            padding: 6px 16px;
         }
 
-        .social-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            color: white;
-            text-decoration: none;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+            transition: all 0.3s ease;
         }
 
-        .social-button:hover {
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active i {
             transform: translateY(-2px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .social-button.facebook {
-            background-color: #1877f2; /* Facebook blue */
-        }
 
-        .social-button.whatsapp {
-            background-color: #25d366; /* WhatsApp green */
-        }
-
-        .social-button.sms {
-            background-color: #34b7f1; /* SMS blue */
-        }
-        .rounded-button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        /* Dark Mode Toggle */
-        .theme-toggle {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
-            cursor: pointer;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow);
-            transition: background-color 0.2s ease;
-        }
-
-        .theme-toggle:hover {
-            background-color: var(--primary-hover);
+            
+            .business-details-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-button {
+                min-width: 100%;
+            }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Dark Mode Toggle -->
-        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
-
-        <!-- Fixed Buttons Container -->
-        <div class="fixed-buttons">
-            <a href="{% url 'business-list' %}" class="rounded-button" title="Home" aria-label="Home">
-                <i class="fas fa-home"></i>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-top">
+            <a href="{% url 'discover' %}" class="location">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back</span>
             </a>
-        </div>
-
-        <!-- Business Details -->
-        <div class="business-details">
-            <div class="business-logo">
-                <img src="{{ business.logo.url }}" alt="{{ business.name }} Logo" loading="lazy">
-            </div>
-            <div class="business-info">
-                <h1><strong>{{ business.name }}</strong></h1>
-                <p><strong>Category:</strong> {{ business.category.name }}</p>
-                <p><strong>Address:</strong> {{ business.address }}</p>
-                <p><strong>Phone:</strong> <span id="phone-number">{{ business.phone_number }}</span></p>
-                {% if business.email %}
-                    <p><strong>Email:</strong> {{ business.email }}</p>
-                {% endif %}
+            <div class="user-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
             </div>
         </div>
+    </header>
 
-        <!-- Call and Website Buttons -->
-        <div class="flex flex-wrap gap-4 justify-center my-6">
-            <a href="tel:{{ business.phone_number }}" class="bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors duration-200" aria-label="Call {{ business.name }}">
-                <i class="fas fa-phone"></i> Call
-            </a>
-        {% if business.email %}
-            <a href="mailto:{{ business.email }}" class="bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 hover:bg-blue-700 transition-colors duration-200" aria-label="Send an email to {{ business.name }}">
-                <i class="fas fa-envelope"></i> Send Email
-            </a>
-        {% endif %}
-        </div>
-        {# {% if business.is_admin_added %} #}
-            <!-- Social Sharing Section -->
-            <div class="social-sharing">
-                <h2>Share this business</h2>
-                <div class="social-buttons">
-                    <!-- Facebook Share Button -->
-                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}"
-                       target="_blank"
-                       class="social-button facebook"
-                       aria-label="Share on Facebook">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-
-                    <!-- WhatsApp Share Button -->
-                    <a href="https://wa.me/?text=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
-                       target="_blank"
-                       class="social-button whatsapp"
-                       aria-label="Share on WhatsApp">
-                        <i class="fab fa-whatsapp"></i>
-                    </a>
-
-                    <!-- SMS Share Button -->
-                    <a href="sms:?body=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
-                       class="social-button sms"
-                       aria-label="Share via SMS">
-                        <i class="fas fa-comment-alt"></i>
-                    </a>
-                </div>
+    <!-- Main Content -->
+    <main class="app-main">
+        <!-- Business Hero Section -->
+<section class="business-hero">
+    <img src="{{ business.logo.url }}" alt="{{ business.name }}" class="business-hero-image">
+    <div class="business-hero-overlay">
+        <div class="business-badges">
+            {% if business.is_featured %}
+            <div class="business-badge featured-badge">
+                <i class="fas fa-star"></i>
+                <span>Featured</span>
             </div>
-        {# {% endif %} #}
-
-        <br>
-        <hr>
-        <br>
-        <!-- Business Description -->
-        <p><strong>Description:</strong> {{ business.description|safe }}</p>
-
-        <!-- Related Businesses -->
-        <div class="mt-8">
-            <h2 class="text-2xl font-bold mb-6">Related Businesses</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {% for related_business in related_businesses %}
-                    {% if related_business.category == business.category %}
-                        <a href="{% url 'business-detail' related_business.pk %}" class="block bg-white dark:bg-gray-700 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-200">
-                            <div class="p-4">
-                                <h3 class="text-gray-600 dark:text-gray-300 text-xl font-semibold mb-2">{{ related_business.name }}</h3>
-                                <p class="text-gray-600 dark:text-gray-300">{{ related_business.city }}</p>
-                            </div>
-                        </a>
-                    {% endif %}
-                {% endfor %}
+            {% endif %}
+            {% if business.is_admin_added %}
+            <div class="business-badge verified-badge">
+                <i class="fas fa-circle-check"></i>
+                <span>Verified</span>
             </div>
+            {% endif %}
+            {% if user.is_authenticated and business.owner == user %}
+            <div class="business-badge owner-badge">
+                <i class="fas fa-heart"></i>
+                <span>Yours</span>
+            </div>
+            {% endif %}
         </div>
-
-        <!-- Business Rating -->
-        <div class="business-rating">
-            <span class="stars">
-                {% if business.average_rating %}
-                    {% for _ in "12345" %}
-                        {% if forloop.counter <= business.average_rating %}
+        <h1 class="business-name">{{ business.name }}</h1>
+        <div class="business-meta">
+            <div class="business-rating">
+                <span class="stars">
+                    {% for i in "12345" %}
+                        {% if i|add:0 <= business.average_rating %}
                             ★
                         {% else %}
                             ☆
                         {% endif %}
                     {% endfor %}
-                {% else %}
-                    No ratings yet
-                {% endif %}
+                </span>
+                <span>{{ business.average_rating|floatformat:1 }}</span>
+            </div>
+            <span class="business-review-count">{{ business.review_count }} reviews</span>
+            <span class="business-category">
+                <i class="fas fa-tag"></i>
+                {{ business.category.name }}
             </span>
-            <span class="review-count">({{ business.review_count }} reviews)</span>
+        </div>
+    </div>
+</section>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="action-button primary-action">
+                <i class="fas fa-phone-alt"></i>
+                Call Now
+            </button>
+            <button class="action-button secondary-action">
+                <i class="fas fa-directions"></i>
+                Get Directions
+            </button>
+            <button class="action-button secondary-action">
+                <i class="fas fa-globe"></i>
+                Visit Website
+            </button>
         </div>
 
-        <!-- User Reviews -->
-        <div class="user-reviews">
-            <h2>User Reviews</h2>
+        <!-- Business Info Card -->
+        <div class="business-info-card">
+            <h2 class="section-title">
+                <i class="fas fa-info-circle"></i>
+                About
+            </h2>
+            <p class="business-description">{{ business.description }}</p>
+            
+            <div class="business-details-grid">
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="detail-content">
+                        <h4>Address</h4>
+                        <p>{{ business.address }}, {{ business.city }}</p>
+                    </div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="detail-content">
+                        <h4>Hours</h4>
+                        <p>Open today until 9:00 PM</p>
+                    </div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="detail-content">
+                        <h4>Phone</h4>
+                        <p>{{ business.phone }}</p>
+                    </div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="detail-content">
+                        <h4>Website</h4>
+                        <p>{{ business.website|default:"Not available" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Sharing -->
+        <div class="social-sharing">
+            <h2 class="section-title">
+                <i class="fas fa-share-alt"></i>
+                Share this business
+            </h2>
+            <div class="social-buttons">
+                <!-- Facebook Share Button -->
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}"
+                   target="_blank"
+                   class="social-button facebook"
+                   aria-label="Share on Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+
+                <!-- WhatsApp Share Button -->
+                <a href="https://wa.me/?text=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
+                   target="_blank"
+                   class="social-button whatsapp"
+                   aria-label="Share on WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+
+                <!-- SMS Share Button -->
+                <a href="sms:?body=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
+                   class="social-button sms"
+                   aria-label="Share via SMS">
+                    <i class="fas fa-comment-alt"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="reviews-section">
+            <h2 class="section-title">
+                <i class="fas fa-star"></i>
+                Reviews
+                <span class="business-review-count">({{ business.review_count }})</span>
+            </h2>
+            
             {% for review in reviews %}
-                <div class="review-item">
-                    <div class="review-rating">
-                        <span class="stars">
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-user">
+                        <div class="user-avatar">
+                            {{ review.user.username|first|upper }}
+                        </div>
+                        <div>
+                            <div class="user-name">
+                                {% if review.user %}
+                                    {{ review.user.username }}
+                                {% else %}
+                                    Anonymous
+                                {% endif %}
+                            </div>
+                            <div class="review-date">{{ review.created_at|date:"F j, Y" }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="review-rating">
+                    {% for i in "12345" %}
+                        {% if i|add:0 <= review.rating %}
+                            ★
+                        {% else %}
+                            ☆
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <p class="review-content">{{ review.comment }}</p>
+            </div>
+            {% empty %}
+            <p>No reviews yet. Be the first to review!</p>
+            {% endfor %}
+            
+            <!-- Pagination -->
+            {% if reviews.has_other_pages %}
+            <div class="pagination">
+                {% if reviews.has_previous %}
+                <a href="?page={{ reviews.previous_page_number }}" class="pagination-button">Previous</a>
+                {% endif %}
+                
+                {% for num in reviews.paginator.page_range %}
+                    {% if reviews.number == num %}
+                    <span class="pagination-button active">{{ num }}</span>
+                    {% else %}
+                    <a href="?page={{ num }}" class="pagination-button">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if reviews.has_next %}
+                <a href="?page={{ reviews.next_page_number }}" class="pagination-button">Next</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Review Form -->
+        <div class="review-form">
+            <h2 class="section-title">
+                <i class="fas fa-edit"></i>
+                Write a Review
+            </h2>
+            
+            <form method="post" action="{% url 'business-detail' pk=business.pk %}">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label class="form-label">Your Rating</label>
+                    <div class="rating-stars" id="rating-stars">
+                        <span class="star" data-value="1">☆</span>
+                        <span class="star" data-value="2">☆</span>
+                        <span class="star" data-value="3">☆</span>
+                        <span class="star" data-value="4">☆</span>
+                        <span class="star" data-value="5">☆</span>
+                    </div>
+                    <input type="hidden" name="rating" id="rating-input" value="">
+                </div>
+                
+                <div class="form-group">
+                    <label for="comment" class="form-label">Your Review</label>
+                    <textarea name="comment" id="comment" class="form-control" rows="4" placeholder="Share your experience..."></textarea>
+                </div>
+                
+                <button type="submit" class="submit-button">Submit Review</button>
+            </form>
+        </div>
+
+        <!-- Related Businesses -->
+        <div class="related-businesses">
+            <h2 class="section-title">
+                <i class="fas fa-store"></i>
+                Similar Businesses
+            </h2>
+            
+            {% for related_business in related_businesses %}
+            <a href="{% url 'business-detail' related_business.pk %}" class="related-business-card">
+                <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }}" class="related-business-image">
+                <div class="related-business-info">
+                    <h3 class="related-business-name">{{ related_business.name }}</h3>
+                    <div class="related-business-rating">
+                        <span>
                             {% for i in "12345" %}
-                                {% if forloop.counter <= review.rating %}
+                                {% if i|add:0 <= related_business.average_rating %}
                                     ★
                                 {% else %}
                                     ☆
                                 {% endif %}
                             {% endfor %}
                         </span>
-                        <span class="review-date">{{ review.created_at|date:"M d, Y" }}</span>
+                        <span>{{ related_business.average_rating|floatformat:1 }}</span>
                     </div>
-
-                    <p class="review-comment">{{ review.comment }}</p>
-                    <p class="review-author">- {{ review.user.username|default:"Anonymous" }}</p>
                 </div>
+                <i class="fas fa-chevron-right" style="color: var(--light-text);"></i>
+            </a>
             {% endfor %}
-
-            <!-- Pagination -->
-            <div class="pagination">
-                <span class="step-links">
-                    {% if reviews.has_previous %}
-                        <a href="?page=1" aria-label="First page">&laquo; first</a>
-                        <a href="?page={{ reviews.previous_page_number }}" aria-label="Previous page">previous</a>
-                    {% endif %}
-                    <span class="current">
-                        Page {{ reviews.number }} of {{ reviews.paginator.num_pages }}.
-                    </span>
-                    {% if reviews.has_next %}
-                        <a href="?page={{ reviews.next_page_number }}" aria-label="Next page">next</a>
-                        <a href="?page={{ reviews.paginator.num_pages }}" aria-label="Last page">last &raquo;</a>
-                    {% endif %}
-                </span>
-            </div>
         </div>
+    </main>
 
-        <!-- Review Form -->
-        <div class="review-form">
-            <h2>Leave a Review</h2>
-            <form method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="id_rating">Rating (1-5):</label>
-                    {{ form.rating }}
-                    <div class="rating-info">Rate this business from 1 (lowest) to 5 (highest).</div>
-                </div>
-                <div class="form-group">
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'home' %}" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'add-business' %}" class="nav-item">
+            <i class="fas fa-plus"></i>
+            <span>Add Business</span>
+        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
+    </nav>
 
-                </div>
-                <div class="form-group">
-                    <label for="id_comment">Comment:</label>
-                    {{ form.comment }}
-                </div>
-                <button type="submit" aria-label="Submit review">Submit Review</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Service Worker Registration -->
     <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('{% static "js/serviceworker.js" %}')
-                .then((registration) => {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                })
-                .catch((error) => {
-                    console.log('ServiceWorker registration failed: ', error);
+        // Theme Toggle
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+        });
+
+        // Rating Stars
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('rating-input');
+        
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const value = parseInt(this.getAttribute('data-value'));
+                ratingInput.value = value;
+                
+                stars.forEach((s, index) => {
+                    if (index < value) {
+                        s.textContent = '★';
+                        s.classList.add('active');
+                    } else {
+                        s.textContent = '☆';
+                        s.classList.remove('active');
+                    }
                 });
-        }
-    </script>
-    <!-- Dark Mode Toggle Script -->
-    <script>
-        function formatPhoneNumber(phoneNumber) {
-            if (phoneNumber.startsWith('+260')) {
-                return phoneNumber;
-            } else if (phoneNumber.startsWith('26')) {
-                return '+' + phoneNumber;
-            } else {
-                return '+26' + phoneNumber;
-            }
-        }
+            });
+            
+            star.addEventListener('mouseover', function() {
+                const value = parseInt(this.getAttribute('data-value'));
+                
+                stars.forEach((s, index) => {
+                    if (index < value) {
+                        s.textContent = '★';
+                    } else {
+                        s.textContent = '☆';
+                    }
+                });
+            });
+            
+            star.addEventListener('mouseout', function() {
+                const currentRating = parseInt(ratingInput.value) || 0;
+                
+                stars.forEach((s, index) => {
+                    if (index < currentRating) {
+                        s.textContent = '★';
+                    } else {
+                        s.textContent = '☆';
+                    }
+                });
+            });
+        });
 
-        const phoneNumberElement = document.getElementById('phone-number');
-        phoneNumberElement.textContent = formatPhoneNumber(phoneNumberElement.textContent);
-    </script>
-    <script>
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
-
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            body.classList.add(savedTheme);
-            themeToggle.textContent = savedTheme === 'dark-mode' ? '☀️' : '🌙';
-        }
-
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            const isDarkMode = body.classList.contains('dark-mode');
-            themeToggle.textContent = isDarkMode ? '☀️' : '🌙';
-            localStorage.setItem('theme', isDarkMode ? 'dark-mode' : '');
+        // Action Buttons Functionality
+        document.querySelector('.action-button.primary-action').addEventListener('click', function() {
+            window.location.href = `tel:{{ business.phone }}`;
+        });
+        
+        document.querySelectorAll('.action-button.secondary-action')[0].addEventListener('click', function() {
+            const address = encodeURIComponent('{{ business.address }}, {{ business.city }}');
+            window.open(`https://www.google.com/maps/dir/?api=1&destination=${address}`);
+        });
+        
+        document.querySelectorAll('.action-button.secondary-action')[1].addEventListener('click', function() {
+            {% if business.website %}
+            window.open('{{ business.website }}', '_blank');
+            {% endif %}
         });
     </script>
 </body>

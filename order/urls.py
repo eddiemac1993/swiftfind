@@ -4,6 +4,10 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('games/', views.games_hub, name='games_hub'),
+    path('quiz/', views.quiz_view, name='quiz'),
+    path('submit-score/', views.submit_score_view, name='submit_score'),
+    path('search-suggestions/', views.search_suggestions, name='search_suggestions'),
     path('discover/', views.discover, name='discover'),
     path('cart/', views.cart, name='cart'),
     path('add-to-cart/', views.add_to_cart, name='add_to_cart'),

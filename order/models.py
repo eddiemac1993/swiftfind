@@ -1,6 +1,33 @@
 from django.db import models
 from decimal import Decimal
 
+from django.db import models
+
+class QuizQuestion(models.Model):
+    question_text = models.TextField()
+    option_a = models.CharField(max_length=255)
+    option_b = models.CharField(max_length=255)
+    option_c = models.CharField(max_length=255)
+    option_d = models.CharField(max_length=255)
+    correct_answer = models.CharField(max_length=1, choices=[('A', 'A'), ('B', 'B'), ('C', 'C'), ('D', 'D')])
+
+    def __str__(self):
+        return self.question_text[:50] + "..." if len(self.question_text) > 50 else self.question_text
+
+class QuizScore(models.Model):
+    username = models.CharField(max_length=255)
+    phone_number = models.CharField(max_length=15)
+    score = models.IntegerField(default=0)
+    date_submitted = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-score', '-date_submitted']
+        verbose_name = "Quiz Score"
+        verbose_name_plural = "Quiz Scores"
+
+    def __str__(self):
+        return f"{self.username} ({self.phone_number}) - {self.score} points"
+
 # models.py
 class ItemCategory(models.Model):
     name = models.CharField(max_length=100)
