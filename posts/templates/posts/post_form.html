@@ -3,119 +3,260 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Create Post - SwiftFind</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07C160">
+    <meta name="description" content="Create Post - SwiftFind">
+    <title>Create Post | SwiftFind</title>
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --primary-color: #3b82f6;
-            --primary-hover: #2563eb;
-            --background: #f8fafc;
-            --card-bg: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-color: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --accent-gradient: linear-gradient(135deg, #3b82f6, #2563eb);
-        }
-
-        .dark-mode {
-            --background: #0f172a;
-            --card-bg: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --border-color: #334155;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
+            --primary-color: #07C160;
+            --primary-dark: #05a54e;
+            --primary-light: #e6f7ef;
+            --secondary-color: #F8F8F8;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #EEE;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: var(--background);
-            margin: 0;
-            padding: 0;
-            color: var(--text-primary);
-            line-height: 1.6;
-            transition: all 0.3s ease;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding-bottom: 80px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .theme-toggle {
-            position: fixed;
-            top: 1.5rem;
-            right: 1.5rem;
-            background: var(--accent-gradient);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
-            cursor: pointer;
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .form-card {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .form-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .section-title {
             font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .dark-mode .section-title {
+            color: var(--dark-text);
+            border-bottom-color: #333;
+        }
+
+        .app-header {
+            background-color: var(--white);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .location {
+            font-weight: 600;
+            font-size: 18px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow);
-            z-index: 1000;
-            transition: transform 0.2s ease;
         }
 
-        .theme-toggle:hover {
-            transform: scale(1.05);
-        }
-
-        .form-container {
-            background-color: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 1rem;
-            box-shadow: var(--shadow);
-            width: 100%;
-            max-width: 500px;
-            border: 1px solid var(--border-color);
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .form-container h2 {
-            text-align: center;
-            margin-bottom: 1.5rem;
+        .location i {
+            margin-right: 10px;
             color: var(--primary-color);
-            font-size: 1.75rem;
         }
 
+        .theme-btn {
+            background: none;
+            border: none;
+            color: var(--light-text);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .dark-mode .theme-btn:hover {
+            background-color: #333;
+        }
+
+        .light-icon {
+            display: inline-block;
+        }
+
+        .dark-icon {
+            display: none;
+        }
+
+        .dark-mode .light-icon {
+            display: none;
+        }
+
+        .dark-mode .dark-icon {
+            display: inline-block;
+            color: var(--dark-text);
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--white);
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 0;
+            flex: 1;
+            text-decoration: none;
+            color: var(--light-text);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .dark-mode .nav-item {
+            color: var(--dark-light-text);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .banner {
+            background: linear-gradient(135deg, #7BB32E, #1AAD19);
+            color: white;
+            border-radius: 16px;
+            padding: 28px 24px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(7, 193, 96, 0.15);
+        }
+
+        .banner-icon {
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            opacity: 0.1;
+            font-size: 8rem;
+        }
+
+        /* Form styling */
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
             font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
+            margin-bottom: 8px;
+            color: var(--text-color);
         }
 
-        .form-group input, .form-group textarea, .form-group select {
+        .dark-mode .form-group label {
+            color: var(--dark-text);
+        }
+
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
             width: 100%;
-            padding: 0.75rem;
+            padding: 12px;
             border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            box-shadow: var(--shadow);
-            background-color: var(--card-bg);
-            color: var(--text-primary);
-            transition: border-color 0.3s ease;
+            border-radius: 10px;
+            font-size: 16px;
+            background-color: var(--white);
+            color: var(--text-color);
+            transition: all 0.3s ease;
         }
 
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+        .dark-mode .form-group input, 
+        .dark-mode .form-group textarea, 
+        .dark-mode .form-group select {
+            background-color: var(--dark-surface);
+            border-color: #333;
+            color: var(--dark-text);
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus, 
+        .form-group select:focus {
             border-color: var(--primary-color);
             outline: none;
+            box-shadow: 0 0 0 2px rgba(7, 193, 96, 0.2);
         }
 
         .form-group textarea {
@@ -123,174 +264,273 @@
             min-height: 120px;
         }
 
-        .form-group button {
-            width: 100%;
-            padding: 0.75rem;
-            font-size: 1rem;
-            font-weight: 600;
-            color: white;
+        .action-button {
             background-color: var(--primary-color);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(7, 193, 96, 0.2);
+            font-size: 16px;
+            text-decoration: none;
             border: none;
-            border-radius: 0.5rem;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
         }
 
-        .form-group button:hover {
-            background-color: var(--primary-hover);
+        .action-button:hover {
+            background-color: var(--primary-dark);
             transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(7, 193, 96, 0.3);
         }
 
         .error-message {
-            color: #dc3545;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
+            color: #e53e3e;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .dark-mode .error-message {
+            color: #fc8181;
         }
 
         .back-link {
             display: block;
             text-align: center;
-            margin-top: 1.5rem;
+            margin-top: 20px;
             color: var(--primary-color);
             text-decoration: none;
             font-weight: 500;
-            transition: color 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .back-link:hover {
-            color: var(--primary-hover);
             text-decoration: underline;
         }
 
-        .bottom-nav {
-            display: flex;
-            justify-content: space-around;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: var(--card-bg);
-            padding: 1rem 0;
-            box-shadow: var(--shadow);
+        .dark-mode .back-link {
+            color: #4ade80;
         }
 
-        .bottom-nav a {
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
+        /* Install button */
+        .install-button {
+            width: 50px;
+            height: 50px;
+            padding: 0;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            transition: color 0.3s ease;
+            justify-content: center;
+            font-size: 20px;
         }
 
-        .bottom-nav a:hover {
-            color: var(--primary-color);
-        }
+        /* Responsive */
+        @media (max-width: 640px) {
+            .form-card {
+                padding: 20px 16px;
+                border-radius: 12px;
+            }
 
-        .bottom-nav a i {
-            font-size: 1.2rem;
-            margin-bottom: 0.3rem;
+            .banner {
+                padding: 20px 16px;
+            }
+
+            .action-button {
+                padding: 12px 20px;
+            }
         }
     </style>
 </head>
-<body>
-    <button class="theme-toggle" id="theme-toggle">🌙</button>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Install Button -->
+    <button id="install-button" class="install-button fixed bottom-20 right-4 z-50 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 transition-all" style="display: none;" aria-label="Install app">
+        <i class="fas fa-download"></i>
+    </button>
+    
+    <header class="app-header">
+        <div class="header-top">
+            <div class="location">
+                <i class="fas fa-edit"></i>
+                <span>Create Post</span>
+            </div>
+            <div class="user-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
 
-    <div class="form-container">
-        <form method="post">
-            {% csrf_token %}
-            <!-- Display form errors -->
-            {% if form.errors %}
-                <div class="error-message">
-                    Please correct the errors below.
+    <!-- Main content -->
+    <main class="container mx-auto px-4 py-4 max-w-4xl">
+        <!-- Banner -->
+        <div class="banner">
+            <div class="banner-icon">
+                <i class="fas fa-pencil-alt"></i>
+            </div>
+            <div class="relative z-10">
+                <h1 class="text-2xl font-bold mb-1">Create New Post</h1>
+                <p class="text-green-100">Fill out the details below to create your post</p>
+            </div>
+        </div>
+
+        <!-- Form Card -->
+        <div class="form-card">
+            <h3 class="section-title">
+                <i class="fas fa-info-circle mr-2 text-green-600 dark:text-green-400"></i>
+                Post Details
+            </h3>
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Display form errors -->
+                {% if form.errors %}
+                    <div class="bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 dark:bg-red-900 dark:border-red-800 dark:text-red-200">
+                        <p class="font-medium">Please correct the errors below.</p>
+                    </div>
+                {% endif %}
+
+                <!-- Title Field -->
+                <div class="form-group">
+                    <label for="id_title">Title</label>
+                    <input type="text" id="id_title" name="title" value="{{ form.title.value|default:'' }}" required placeholder="Enter a descriptive title">
+                    {% if form.title.errors %}
+                        <div class="error-message">{{ form.title.errors }}</div>
+                    {% endif %}
                 </div>
-            {% endif %}
 
-            <!-- Title Field -->
-            <div class="form-group">
-                <label for="id_title">Title</label>
-                <input type="text" id="id_title" name="title" value="{{ form.title.value|default:'' }}" required>
-                {% if form.title.errors %}
-                    <div class="error-message">{{ form.title.errors }}</div>
-                {% endif %}
+                <!-- Description Field -->
+                <div class="form-group">
+                    <label for="id_description">Description</label>
+                    <textarea id="id_description" name="description" required placeholder="Provide a detailed description">{{ form.description.value|default:'' }}</textarea>
+                    {% if form.description.errors %}
+                        <div class="error-message">{{ form.description.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Category Field -->
+                <div class="form-group">
+                    <label for="id_category">Category</label>
+                    <select id="id_category" name="category" required>
+                        <option value="">Select a category</option>
+                        {% for value, label in form.category.field.choices %}
+                            <option value="{{ value }}" {% if form.category.value == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if form.category.errors %}
+                        <div class="error-message">{{ form.category.errors }}</div>
+                    {% endif %}
+                </div>
             </div>
 
-            <!-- Description Field -->
-            <div class="form-group">
-                <label for="id_description">Description</label>
-                <textarea id="id_description" name="description" required>{{ form.description.value|default:'' }}</textarea>
-                {% if form.description.errors %}
-                    <div class="error-message">{{ form.description.errors }}</div>
-                {% endif %}
-            </div>
+            <!-- Contact Information Card -->
+            <div class="form-card">
+                <h3 class="section-title">
+                    <i class="fas fa-address-card mr-2 text-green-600 dark:text-green-400"></i>
+                    Contact Information
+                </h3>
 
-            <!-- Category Field -->
-            <div class="form-group">
-                <label for="id_category">Category</label>
-                <select id="id_category" name="category" required>
-                    <option value="">Select a category</option>
-                    {% for value, label in form.category.field.choices %}
-                        <option value="{{ value }}" {% if form.category.value == value %}selected{% endif %}>{{ label }}</option>
-                    {% endfor %}
-                </select>
-                {% if form.category.errors %}
-                    <div class="error-message">{{ form.category.errors }}</div>
-                {% endif %}
-            </div>
+                <!-- Phone Number Field -->
+                <div class="form-group">
+                    <label for="id_phone_number">Phone Number</label>
+                    <input type="text" id="id_phone_number" name="phone_number" value="{{ form.phone_number.value|default:'' }}" pattern="[0-9]{10}" placeholder="Enter a 10-digit phone number">
+                    {% if form.phone_number.errors %}
+                        <div class="error-message">{{ form.phone_number.errors }}</div>
+                    {% endif %}
+                </div>
 
-            <!-- Phone Number Field -->
-            <div class="form-group">
-                <label for="id_phone_number">Phone Number</label>
-                <input type="text" id="id_phone_number" name="phone_number" value="{{ form.phone_number.value|default:'' }}" pattern="[0-9]{10}" placeholder="Enter a 10-digit phone number">
-                {% if form.phone_number.errors %}
-                    <div class="error-message">{{ form.phone_number.errors }}</div>
-                {% endif %}
-            </div>
+                <!-- Location Field -->
+                <div class="form-group">
+                    <label for="id_location">Location</label>
+                    <input type="text" id="id_location" name="location" value="{{ form.location.value|default:'' }}" placeholder="Enter the location (optional)">
+                    {% if form.location.errors %}
+                        <div class="error-message">{{ form.location.errors }}</div>
+                    {% endif %}
+                </div>
 
-            <!-- Location Field -->
-            <div class="form-group">
-                <label for="id_location">Location</label>
-                <input type="text" id="id_location" name="location" value="{{ form.location.value|default:'' }}" placeholder="Enter the location (optional)">
-                {% if form.location.errors %}
-                    <div class="error-message">{{ form.location.errors }}</div>
-                {% endif %}
-            </div>
+                <!-- Price Range Field -->
+                <div class="form-group">
+                    <label for="id_price_range">Price Range</label>
+                    <input type="text" id="id_price_range" name="price_range" value="{{ form.price_range.value|default:'' }}" placeholder="Enter the price range (optional)">
+                    {% if form.price_range.errors %}
+                        <div class="error-message">{{ form.price_range.errors }}</div>
+                    {% endif %}
+                </div>
 
-            <!-- Price Range Field -->
-            <div class="form-group">
-                <label for="id_price_range">Price Range</label>
-                <input type="text" id="id_price_range" name="price_range" value="{{ form.price_range.value|default:'' }}" placeholder="Enter the price range (optional)">
-                {% if form.price_range.errors %}
-                    <div class="error-message">{{ form.price_range.errors }}</div>
-                {% endif %}
-            </div>
+                <!-- Submit Button -->
+                <button type="submit" class="action-button mt-6">
+                    <i class="fas fa-paper-plane mr-2"></i> Create Post
+                </button>
 
-            <!-- Submit Button -->
-            <div class="form-group">
-                <button type="submit">Post</button>
-            </div>
-        </form>
+                <!-- Back Link -->
+                <a href="{% url 'post_list' %}" class="back-link">
+                    <i class="fas fa-arrow-left mr-1"></i> Back to Posts
+                </a>
+            </form>
+        </div>
+    </main>
 
-        <!-- Back Link -->
-        <a href="{% url 'post_list' %}" class="back-link">← Back to Posts</a>
-    </div>
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'home' %}" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'post_list' %}" class="nav-item active">
+            <i class="fas fa-edit"></i>
+            <span>Post</span>
+        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
+    </nav>
 
     <script>
-        // Dark mode toggle
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
+        // Theme toggle
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+        });
 
-        const isDarkMode = localStorage.getItem('darkMode') === 'true';
-        if (isDarkMode) {
-            body.classList.add('dark-mode');
-            themeToggle.textContent = '☀️';
-        }
+        // PWA installation
+        let deferredPrompt;
 
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            const isDark = body.classList.contains('dark-mode');
-            themeToggle.textContent = isDark ? '☀️' : '🌙';
-            localStorage.setItem('darkMode', isDark);
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-button').style.display = 'block';
+        });
+
+        document.getElementById('install-button').addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User ${outcome} the install prompt`);
+            deferredPrompt = null;
+            document.getElementById('install-button').style.display = 'none';
+        });
+
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('install-button').style.display = 'none';
         });
     </script>
 </body>

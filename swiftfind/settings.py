@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'posts',
     'order',
     'ckeditor',
+    'taxi',
+    'tracking',
 ]
 
 # settings.py

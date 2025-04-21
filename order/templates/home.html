@@ -104,23 +104,24 @@
 
         <!-- Quick actions -->
         <section class="quick-actions">
-            <div class="action">
-                <i class="fas fa-gift"></i>
-                <span>Deals</span>
-            </div>
-            <div class="action">
-                <i class="fas fa-coins"></i>
-                <span>Coupons</span>
-            </div>
-            <div class="action">
-                <i class="fas fa-clock"></i>
-                <span>Flash Sale</span>
-            </div>
-            <div class="action">
-                <i class="fas fa-box-open"></i>
-                <span>Arrivals</span>
-            </div>
+            <a href="{% url 'create_paper' %}" class="action">
+                <i class="fas fa-file-alt"></i>
+                <span>Paper</span>
+            </a>
+            <a href="{% url 'post_list' %}" class="action">
+                <i class="fas fa-hands-helping"></i>
+                <span>Services</span>
+            </a>
+            <a href="{% url 'taxi_request' %}" class="action">
+                <i class="fas fa-taxi"></i>
+                <span>Taxi Hailing</span>
+            </a>
+            <a href="{% url 'order_tracking' %}" class="action">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>Track Order</span>
+            </a>
         </section>
+
 
         <!-- Products section -->
         <section class="products-section" id="search-results-section">

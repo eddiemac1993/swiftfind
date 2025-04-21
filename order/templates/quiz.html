@@ -22,6 +22,8 @@
             --primary-dark: #05a54e;
             --primary-light: #e6f7ef;
             --secondary-color: #F8F8F8;
+            --accent-color: #5D5FEF;
+            --accent-dark: #4B4DC9;
             --text-color: #333;
             --light-text: #999;
             --border-color: #EEE;
@@ -46,11 +48,15 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
             min-height: 100vh;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('{% static "images/bible-bg.jpg" %}');
+            background-size: cover;
+            background-attachment: fixed;
         }
 
         body.dark-mode {
             background-color: var(--dark-bg);
             color: var(--dark-text);
+            background-image: linear-gradient(rgba(18, 18, 18, 0.95), rgba(18, 18, 18, 0.95)), url('{% static "images/bible-bg-dark.jpg" %}');
         }
 
         /* Header styling */
@@ -127,11 +133,170 @@
             display: none;
         }
 
+        /* Nav score */
+        .nav-score {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .nav-score {
+            background-color: rgba(7, 193, 96, 0.15);
+            color: var(--primary-color);
+        }
+
+        .nav-score i {
+            font-size: 0.8rem;
+        }
+
+        /* Leaderboard collapsible */
+        .leaderboard-collapsible {
+            background-color: var(--white);
+            border-radius: 16px;
+            max-width: 600px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .dark-mode .leaderboard-collapsible {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .leaderboard-header {
+            padding: 16px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.2s ease;
+        }
+
+        .dark-mode .leaderboard-header {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-header:hover {
+            background-color: var(--primary-light);
+        }
+
+        .dark-mode .leaderboard-header:hover {
+            background-color: rgba(7, 193, 96, 0.1);
+        }
+
+        .leaderboard-header h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .dark-mode .leaderboard-header h4 {
+            color: var(--primary-color);
+        }
+
+        .leaderboard-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .leaderboard-content.open {
+            max-height: 500px;
+        }
+
+        .leaderboard-toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .leaderboard-toggle-icon.open {
+            transform: rotate(180deg);
+        }
+
+        .leaderboard-items {
+            padding: 0 20px 16px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dark-mode .leaderboard-item {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+
+        .leaderboard-rank {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rank-number {
+            width: 28px;
+            height: 28px;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .dark-mode .rank-number {
+            background-color: rgba(7, 193, 96, 0.1);
+        }
+
+        .leaderboard-item:nth-child(1) .rank-number {
+            background-color: #FFD700;
+            color: #333;
+        }
+
+        .leaderboard-item:nth-child(2) .rank-number {
+            background-color: #C0C0C0;
+            color: #333;
+        }
+
+        .leaderboard-item:nth-child(3) .rank-number {
+            background-color: #CD7F32;
+            color: #333;
+        }
+
+        .leaderboard-username {
+            font-weight: 500;
+        }
+
+        .leaderboard-score {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
         /* Quiz container */
         .quiz-container {
             background-color: var(--white);
             border-radius: 16px;
-            padding: 24px;
+            padding: 20px;
             margin: 20px auto;
             max-width: 600px;
             box-shadow: var(--shadow);
@@ -152,26 +317,15 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--info-color));
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
             border-radius: 16px 16px 0 0;
         }
 
         /* Question styling */
-        .question-number {
-            font-size: 0.9rem;
-            color: var(--light-text);
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .dark-mode .question-number {
-            color: var(--dark-light-text);
-        }
-
         .question-text {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: 600;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             color: var(--primary-dark);
             line-height: 1.4;
         }
@@ -182,13 +336,13 @@
 
         /* Options styling */
         .options-container {
-            margin-bottom: 28px;
+            margin-bottom: 20px;
         }
 
         .option {
             display: block;
-            padding: 14px 18px;
-            margin-bottom: 12px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
             border-radius: 10px;
             background-color: var(--secondary-color);
             cursor: pointer;
@@ -196,6 +350,7 @@
             border: 2px solid transparent;
             position: relative;
             overflow: hidden;
+            font-size: 0.95rem;
         }
 
         .dark-mode .option {
@@ -220,16 +375,17 @@
 
         .option-letter {
             display: inline-block;
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             background-color: var(--primary-light);
             color: var(--primary-color);
             border-radius: 50%;
             text-align: center;
-            line-height: 28px;
+            line-height: 24px;
             font-weight: 600;
-            margin-right: 12px;
+            margin-right: 10px;
             transition: all 0.2s ease;
+            font-size: 0.85rem;
         }
 
         .dark-mode .option-letter {
@@ -241,16 +397,61 @@
             color: white;
         }
 
+        /* Timer styling */
+        .timer-container {
+            position: relative;
+            height: 6px;
+            background-color: var(--secondary-color);
+            border-radius: 3px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .dark-mode .timer-container {
+            background-color: var(--dark-bg);
+        }
+
+        .timer-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            transition: width 1s linear;
+            border-radius: 3px;
+        }
+
+        .timer-text {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--light-text);
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .dark-mode .timer-text {
+            color: var(--dark-light-text);
+        }
+
+        .timer-critical .timer-bar {
+            background: linear-gradient(90deg, var(--danger-color), var(--warning-color));
+        }
+
+        .timer-critical .timer-text {
+            color: var(--danger-color);
+            font-weight: 600;
+        }
+
         /* Button styling */
         .button-container {
             display: flex;
             justify-content: space-between;
             gap: 16px;
-            margin-top: 24px;
+            margin-top: 20px;
         }
 
         .btn {
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 10px;
             border: none;
             font-weight: 600;
@@ -258,7 +459,7 @@
             transition: all 0.3s ease;
             flex: 1;
             text-align: center;
-            font-size: 1rem;
+            font-size: 0.95rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -298,266 +499,68 @@
             background-color: var(--dark-bg);
         }
 
-        /* Score indicator */
-        .score-indicator {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            margin-bottom: 24px;
-        }
-
-        .score-label {
-            font-size: 0.9rem;
-            color: var(--light-text);
-            margin-bottom: 4px;
-        }
-
-        .dark-mode .score-label {
-            color: var(--dark-light-text);
-        }
-
-        .score-value {
-            font-size: 2rem;
-            font-weight: 700;
-        }
-
-        .positive-score {
-            color: var(--primary-color);
-        }
-
-        .negative-score {
-            color: var(--danger-color);
-        }
-
-        /* Timer styling */
-        .timer-container {
+        /* Game elements */
+        .game-progress {
             position: relative;
-            height: 8px;
-            background-color: var(--secondary-color);
-            border-radius: 4px;
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
-
-        .dark-mode .timer-container {
-            background-color: var(--dark-bg);
-        }
-
-        .timer-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary-color), var(--info-color));
-            transition: width 1s linear;
-            border-radius: 4px;
-        }
-
-        .timer-text {
-            text-align: center;
-            font-size: 0.9rem;
-            color: var(--light-text);
-            margin-top: 6px;
-            font-weight: 500;
-        }
-
-        .dark-mode .timer-text {
-            color: var(--dark-light-text);
-        }
-
-        .timer-critical .timer-bar {
-            background: linear-gradient(90deg, var(--danger-color), var(--warning-color));
-        }
-
-        .timer-critical .timer-text {
-            color: var(--danger-color);
-            font-weight: 600;
-        }
-
-        /* Top scores styling */
-        .top-scores {
-            background-color: var(--white);
-            border-radius: 16px;
-            padding: 24px;
-            margin: 20px auto;
-            max-width: 600px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-        }
-
-        .dark-mode .top-scores {
-            background-color: var(--dark-surface);
-            box-shadow: var(--dark-shadow);
-        }
-
-        .top-scores h4 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: var(--primary-dark);
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-
-        .dark-mode .top-scores h4 {
-            color: var(--primary-color);
-        }
-
-        .leaderboard-item {
-            display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 12px;
+            padding: 0 4px;
         }
 
-        .dark-mode .leaderboard-item {
-            border-bottom-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .leaderboard-rank {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .rank-number {
-            width: 28px;
-            height: 28px;
-            background-color: var(--primary-light);
-            color: var(--primary-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .dark-mode .rank-number {
-            background-color: rgba(7, 193, 96, 0.1);
-        }
-
-        .leaderboard-item:nth-child(2) .rank-number {
-            background-color: #FFD700;
-            color: #333;
-        }
-
-        .leaderboard-item:nth-child(3) .rank-number {
-            background-color: #C0C0C0;
-            color: #333;
-        }
-
-        .leaderboard-item:nth-child(4) .rank-number {
-            background-color: #CD7F32;
-            color: #333;
-        }
-
-        .leaderboard-username {
-            font-weight: 500;
-        }
-
-        .leaderboard-score {
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        /* Bottom navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-around;
-            background-color: var(--white);
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-            padding: 12px 0 8px;
-            border-radius: 20px 20px 0 0;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            z-index: 100;
-        }
-
-        .dark-mode .bottom-nav {
-            background-color: var(--dark-surface);
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--light-text);
-            text-decoration: none;
+        .question-counter {
             font-size: 0.8rem;
-            gap: 4px;
-            transition: color 0.2s ease;
-        }
-
-        .dark-mode .nav-item {
-            color: var(--dark-light-text);
-        }
-
-        .nav-item i {
-            font-size: 1.2rem;
-        }
-
-        .nav-item.active {
-            color: var(--primary-color);
+            color: var(--light-text);
             font-weight: 500;
         }
 
-        /* Progress bar */
-        .progress-container {
-            margin: 16px auto;
-            max-width: 600px;
-        }
-
-        .progress-bar {
-            height: 6px;
-            background-color: var(--secondary-color);
-            border-radius: 3px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .dark-mode .progress-bar {
-            background-color: var(--dark-bg);
-        }
-
-        .progress-bar-fill {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary-color), var(--info-color));
-            border-radius: 3px;
-            width: 30%;  /* Update dynamically based on progress */
-        }
-
-        .progress-text {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: var(--light-text);
-            margin-top: 6px;
-        }
-
-        .dark-mode .progress-text {
+        .dark-mode .question-counter {
             color: var(--dark-light-text);
         }
 
-        /* Animations */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .difficulty-badge {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
         }
 
-        .pulse {
-            animation: pulse 1s infinite;
+        .dark-mode .difficulty-badge {
+            background-color: rgba(7, 193, 96, 0.1);
+            color: var(--primary-color);
+        }
+
+        .difficulty-badge.easy {
+            background-color: #E6F7EF;
+            color: #05a54e;
+        }
+
+        .difficulty-badge.medium {
+            background-color: #FFF7E6;
+            color: #fa8c16;
+        }
+
+        .difficulty-badge.hard {
+            background-color: #FFF1F0;
+            color: #f5222d;
+        }
+
+        .dark-mode .difficulty-badge.easy {
+            background-color: rgba(5, 165, 78, 0.1);
+            color: #07C160;
+        }
+
+        .dark-mode .difficulty-badge.medium {
+            background-color: rgba(250, 140, 22, 0.1);
+            color: #fa8c16;
+        }
+
+        .dark-mode .difficulty-badge.hard {
+            background-color: rgba(245, 34, 45, 0.1);
+            color: #f5222d;
         }
 
         /* Toast notification */
@@ -611,6 +614,217 @@
         .toast-error .toast-icon {
             color: var(--danger-color);
         }
+
+        /* Experience Bar */
+        .xp-container {
+            position: relative;
+            height: 8px;
+            background-color: var(--secondary-color);
+            border-radius: 4px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .dark-mode .xp-container {
+            background-color: var(--dark-bg);
+        }
+
+        .xp-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 65%;
+            background: linear-gradient(90deg, var(--accent-color), #9C9EFF);
+            border-radius: 4px;
+        }
+
+        .xp-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: var(--light-text);
+            margin-top: 4px;
+        }
+
+        .dark-mode .xp-labels {
+            color: var(--dark-light-text);
+        }
+
+        .xp-level {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--white);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            padding: 12px 0 8px;
+            border-radius: 20px 20px 0 0;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            z-index: 100;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--light-text);
+            text-decoration: none;
+            font-size: 0.8rem;
+            gap: 4px;
+            transition: color 0.2s ease;
+        }
+
+        .dark-mode .nav-item {
+            color: var(--dark-light-text);
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px rgba(7, 193, 96, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(7, 193, 96, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(7, 193, 96, 0.5); }
+        }
+
+        .correct-answer {
+            animation: glow 1.5s infinite;
+            background-color: var(--primary-light) !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        .dark-mode .correct-answer {
+            background-color: rgba(7, 193, 96, 0.2) !important;
+        }
+
+        .streak-indicator {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(7, 193, 96, 0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Achievement popup */
+        .achievement-popup {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100%);
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: var(--shadow);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            max-width: 90%;
+            width: 320px;
+        }
+
+        .dark-mode .achievement-popup {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .achievement-popup.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .achievement-icon {
+            background: linear-gradient(135deg, var(--accent-color), #9C9EFF);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .achievement-content {
+            flex: 1;
+        }
+
+        .achievement-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .achievement-title {
+            color: var(--dark-text);
+        }
+
+        .achievement-desc {
+            font-size: 0.8rem;
+            color: var(--light-text);
+        }
+
+        .dark-mode .achievement-desc {
+            color: var(--dark-light-text);
+        }
+        .positive-score {
+            color: var(--primary-color);
+        }
+
+        .negative-score {
+            color: var(--danger-color);
+        }
     </style>
 </head>
 <body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
@@ -619,9 +833,14 @@
         <div class="header-top">
             <div class="location">
                 <i class="fas fa-bible"></i>
-                <span>Bible Quiz Challenge</span>
+                <span>Bible Quiz</span>
             </div>
             <div class="user-actions">
+                <div class="nav-score">
+                    <i class="fas fa-star"></i>
+                    <span class="score-value {% if score < 0 %}negative-score{% else %}positive-score{% endif %}">
+                        K {{ score|floatformat:2 }}</span>
+                </div>
                 <button id="theme-toggle" class="theme-btn">
                     <i class="fas fa-moon light-icon"></i>
                     <i class="fas fa-sun dark-icon"></i>
@@ -631,16 +850,32 @@
     </header>
 
     <div class="container mx-auto px-4 py-4">
-        <div class="score-indicator">
-            <div class="score-label">YOUR SCORE</div>
-            <div class="score-value {% if score < 0 %}negative-score{% else %}positive-score{% endif %}">
-                K {{ score|floatformat:2 }}
+        <!-- Leaderboard Dropdown -->
+        <div class="leaderboard-collapsible">
+            <div class="leaderboard-header" id="leaderboard-toggle">
+                <h4>
+                    <i class="fas fa-crown" style="color: #FFD700;"></i>
+                    Leaderboard
+                </h4>
+                <i class="fas fa-chevron-down leaderboard-toggle-icon" id="leaderboard-icon"></i>
+            </div>
+            <div class="leaderboard-content" id="leaderboard-content">
+                <div class="leaderboard-items">
+                    {% for score in top_scores %}
+                    <div class="leaderboard-item">
+                        <div class="leaderboard-rank">
+                            <div class="rank-number">{{ forloop.counter }}</div>
+                            <div class="leaderboard-username">{{ score.username }}</div>
+                        </div>
+                        <div class="leaderboard-score">K {{ score.score|floatformat:2 }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
 
-
-
-        <div class="quiz-container">
+        <!-- Quiz Container -->
+        <div class="quiz-container" id="quiz-container">
             <p class="question-text">{{ question.question_text }}</p>
             
             <div class="timer-container" id="timer-container">
@@ -685,22 +920,6 @@
                 </div>
             </form>
         </div>
-
-        <div class="top-scores">
-            <h4>
-                <i class="fas fa-crown" style="color: #FFD700;"></i>
-                Leaderboard
-            </h4>
-            {% for score in top_scores %}
-                <div class="leaderboard-item">
-                    <div class="leaderboard-rank">
-                        <div class="rank-number">{{ forloop.counter }}</div>
-                        <div class="leaderboard-username">{{ score.username }}</div>
-                    </div>
-                    <div class="leaderboard-score">K {{ score.score }}</div>
-                </div>
-            {% endfor %}
-        </div>
     </div>
 
     <!-- Toast notification -->
@@ -742,6 +961,16 @@
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
             document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+        });
+
+        // Leaderboard toggle
+        const leaderboardToggle = document.getElementById('leaderboard-toggle');
+        const leaderboardContent = document.getElementById('leaderboard-content');
+        const leaderboardIcon = document.getElementById('leaderboard-icon');
+        
+        leaderboardToggle.addEventListener('click', function() {
+            leaderboardContent.classList.toggle('open');
+            leaderboardIcon.classList.toggle('open');
         });
 
         // Timer functionality
@@ -808,9 +1037,6 @@
             }, 3000);
         }
 
-        // Set progress fill based on question number (example: 5/20 = 25%)
-        document.getElementById('progress-fill').style.width = '25%';
-
         // Add click animations to options
         const options = document.querySelectorAll('.option');
         options.forEach(option => {
@@ -822,6 +1048,30 @@
                 this.style.transform = 'translateY(-2px)';
             });
         });
+
+        // Show achievement popup if there's one to show
+        {% if achievement %}
+        setTimeout(() => {
+            const popup = document.createElement('div');
+            popup.className = 'achievement-popup show';
+            popup.innerHTML = `
+                <div class="achievement-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="achievement-content">
+                    <div class="achievement-title">Achievement Unlocked!</div>
+                    <div class="achievement-desc">{{ achievement.name }}</div>
+                </div>
+            `;
+            document.body.appendChild(popup);
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                popup.classList.remove('show');
+                setTimeout(() => popup.remove(), 500);
+            }, 5000);
+        }, 1000);
+        {% endif %}
     </script>
 </body>
 </html>

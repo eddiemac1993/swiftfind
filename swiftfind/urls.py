@@ -10,6 +10,8 @@ urlpatterns = [
     path('pos/', include('pos.urls')),
     path('posts/', include('posts.urls')),
     path('', include('order.urls')),
+    path('taxi/', include('taxi.urls')),
+    path('tracking/', include('tracking.urls')),
 
     path('accounts/', include('django.contrib.auth.urls')),
 
