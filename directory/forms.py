@@ -27,16 +27,44 @@ class ProfileUpdateForm(forms.ModelForm):
         fields = ['profile_picture', 'phone_number', 'address', 'bio']
 
 from django import forms
-from .models import Business
-from ckeditor.widgets import CKEditorWidget  # Import CKEditor widget
+from ckeditor.widgets import CKEditorWidget
+from django.core.validators import FileExtensionValidator
 
 class BusinessUpdateForm(forms.ModelForm):
     description = forms.CharField(widget=CKEditorWidget(), required=False)
 
     class Meta:
         model = Business
-        fields = ['logo', 'name', 'email', 'city', 'phone_number', 'category', 'description']
+        fields = [
+            'logo',
+            'name',
+            'email',
+            'city',
+            'phone_number',
+            'category',
+            'description',
+            'company_profile'  # Add this field
+        ]
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Customize the company_profile field
+        self.fields['company_profile'].widget.attrs.update({
+            'accept': '.pdf',  # Only show PDF files in file selector
+        })
+        self.fields['company_profile'].required = False
+        self.fields['company_profile'].help_text = "Upload a PDF file (max 5MB)"
+        self.fields['company_profile'].validators = [
+            FileExtensionValidator(allowed_extensions=['pdf'])
+        ]
+
+    def clean_company_profile(self):
+        company_profile = self.cleaned_data.get('company_profile')
+        if company_profile:
+            # Check file size (5MB limit)
+            if company_profile.size > 5 * 1024 * 1024:
+                raise forms.ValidationError("File size must be under 5MB.")
+        return company_profile
 
 from django.core.exceptions import ValidationError
 from urllib.parse import urlparse

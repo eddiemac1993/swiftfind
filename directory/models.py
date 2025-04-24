@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import FileExtensionValidator
+from django.core.exceptions import ValidationError
 from django.utils.text import slugify
 from taggit.managers import TaggableManager
 from django.db.models import Avg
@@ -90,6 +92,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+
 class Business(models.Model):
     STATUS_CHOICES = [
         ('active', 'Active'),
@@ -112,16 +115,28 @@ class Business(models.Model):
     is_admin_added = models.BooleanField(default=False)
     email = models.EmailField(blank=True, null=True)
     website = models.URLField(blank=True, null=True)
-    city = models.CharField(max_length=100, blank=True, null=True)  # New city field
+    city = models.CharField(max_length=100, blank=True, null=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='active')
     tags = TaggableManager(blank=True)
+    company_profile = models.FileField(
+        upload_to='company_profiles/',
+        validators=[FileExtensionValidator(allowed_extensions=['pdf'])],
+        blank=True,
+        null=True,
+        help_text="Upload a PDF file. Max size: 5MB"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def clean(self):
+        super().clean()
+        if self.company_profile:
+            if self.company_profile.size > 5 * 1024 * 1024:  # 5MB limit
+                raise ValidationError({'company_profile': "File size must be under 5MB."})
 
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
-            # Ensure the slug is unique
             original_slug = self.slug
             counter = 1
             while Business.objects.filter(slug=self.slug).exists():

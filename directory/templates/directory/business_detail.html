@@ -57,7 +57,7 @@
             padding: 8px;
             z-index: 100;
         }
-        
+
         .skip-link:focus {
             left: 0;
         }
@@ -881,7 +881,7 @@
                 align-self: start;
             }
 
-            .reviews-section, 
+            .reviews-section,
             .review-form,
             .related-businesses,
             .social-sharing,
@@ -920,11 +920,11 @@
             .business-hero {
                 height: 200px;
             }
-            
+
             .business-name {
                 font-size: 18px;
             }
-            
+
             .business-meta {
                 gap: 10px;
             }
@@ -1000,21 +1000,74 @@
             </div>
         </section>
 
-        <!-- Image Gallery -->
-        {% if business.images.all %}
-        <div class="image-gallery">
-            <div class="main-image">
-                <img src="{{ business.images.first.url }}" alt="{{ business.name }}" loading="lazy">
-            </div>
-            <div class="thumbnail-container">
-                {% for image in business.images.all %}
-                <div class="thumbnail">
-                    <img src="{{ image.url }}" alt="{{ business.name }} image {{ forloop.counter }}" loading="lazy">
-                </div>
-                {% endfor %}
+<!-- Add this section after the business details grid -->
+<div class="business-document-section" style="margin: 20px 16px;">
+    <h2 class="section-title">
+        <i class="fas fa-file-pdf"></i>
+        Company Profile
+    </h2>
+
+    {% if business.company_profile %}
+    <div class="document-card" style="background-color: var(--white); border-radius: 12px; padding: 16px; margin-top: 12px; box-shadow: var(--shadow);">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <i class="fas fa-file-pdf" style="font-size: 32px; color: #e74c3c;"></i>
+            <div>
+                <h3 style="font-weight: 600; margin-bottom: 4px; color: var(--text-color);">Business Profile Document</h3>
+                <p style="font-size: 14px; color: var(--light-text);">
+                    Uploaded: {{ business.updated_at|date:"M d, Y" }}
+                </p>
             </div>
         </div>
+
+        <div style="margin-top: 16px; display: flex; gap: 10px;">
+            <a href="{{ business.company_profile.url }}"
+               target="_blank"
+               class="btn-primary"
+               style="padding: 8px 16px; border-radius: 8px; background-color: var(--primary-color); color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+                <i class="fas fa-eye"></i> View PDF
+            </a>
+            <a href="{{ business.company_profile.url }}"
+               download
+               class="btn-secondary"
+               style="padding: 8px 16px; border-radius: 8px; background-color: var(--secondary-color); color: var(--text-color); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border-color);">
+                <i class="fas fa-download"></i> Download
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div style="background-color: var(--white); border-radius: 12px; padding: 16px; margin-top: 12px; box-shadow: var(--shadow); text-align: center;">
+        <p style="color: var(--light-text); margin-bottom: 12px;">
+            <i class="fas fa-info-circle" style="color: var(--primary-color);"></i>
+            No company profile document available
+        </p>
+        {% if user.is_authenticated and business.owner == user %}
+        <a href="{% url 'business-update' business.pk %}"
+           class="btn-primary"
+           style="padding: 8px 16px; border-radius: 8px; background-color: var(--primary-color); color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fas fa-upload"></i> Upload PDF
+        </a>
         {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Dark mode styles for the document section -->
+<style>
+    .dark-mode .document-card {
+        background-color: var(--dark-surface);
+        box-shadow: var(--dark-shadow);
+    }
+
+    .dark-mode .document-card h3 {
+        color: var(--dark-text);
+    }
+
+    .dark-mode .btn-secondary {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--dark-text);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+</style>
 
         <!-- Business Info Container -->
         <div class="business-info-container">
@@ -1026,7 +1079,7 @@
                 <p class="business-description formatted-text">
                     {{ business.description|safe }}
                 </p>
-                
+
                 <div class="business-details-grid">
                     <div class="detail-item">
                         <div class="detail-icon">
@@ -1037,8 +1090,8 @@
                             <p>{{ business.address }}, {{ business.city }}</p>
                         </div>
                     </div>
-                
-                    
+
+
                     <div class="detail-item">
                         <div class="detail-icon">
                             <i class="fas fa-phone"></i>
@@ -1048,7 +1101,7 @@
                             <p>{{ business.phone_number }}</p>
                         </div>
                     </div>
-                    
+
                     <div class="detail-item">
                         <div class="detail-icon">
                             <i class="fas fa-globe"></i>
@@ -1130,7 +1183,7 @@
                 Reviews
                 <span class="business-review-count">({{ business.review_count }})</span>
             </h2>
-            
+
             {% for review in reviews %}
             <div class="review-card">
                 <div class="review-header">
@@ -1164,14 +1217,14 @@
             {% empty %}
             <p>No reviews yet. Be the first to review!</p>
             {% endfor %}
-            
+
             <!-- Pagination -->
             {% if reviews.has_other_pages %}
             <div class="pagination">
                 {% if reviews.has_previous %}
                 <a href="?page={{ reviews.previous_page_number }}" class="pagination-button">Previous</a>
                 {% endif %}
-                
+
                 {% for num in reviews.paginator.page_range %}
                     {% if reviews.number == num %}
                     <span class="pagination-button active">{{ num }}</span>
@@ -1179,7 +1232,7 @@
                     <a href="?page={{ num }}" class="pagination-button">{{ num }}</a>
                     {% endif %}
                 {% endfor %}
-                
+
                 {% if reviews.has_next %}
                 <a href="?page={{ reviews.next_page_number }}" class="pagination-button">Next</a>
                 {% endif %}
@@ -1194,10 +1247,10 @@
                 <i class="fas fa-edit"></i>
                 Write a Review
             </h2>
-            
+
             <form method="post" action="{% url 'business-detail' pk=business.pk %}">
                 {% csrf_token %}
-                
+
                 <div class="form-group">
                     <label class="form-label">Your Rating</label>
                     <div class="rating-stars" id="rating-stars">
@@ -1209,13 +1262,13 @@
                     </div>
                     <input type="hidden" name="rating" id="rating-input" value="">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="comment" class="form-label">Your Review</label>
                     <textarea name="comment" id="comment" class="form-control" rows="4" placeholder="Share your experience..." maxlength="500"></textarea>
                     <div class="char-counter">500 characters remaining</div>
                 </div>
-                
+
                 <button type="submit" class="submit-button">Submit Review</button>
             </form>
         </div>
@@ -1232,13 +1285,13 @@
                 <i class="fas fa-store"></i>
                 Similar Businesses
             </h2>
-            
+
             {% for related_business in related_businesses %}
             <a href="{% url 'business-detail' related_business.pk %}" class="related-business-card">
                 <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }}" class="related-business-image" loading="lazy">
                 <div class="related-business-info">
                     <h3 class="related-business-name">{{ related_business.name }}</h3>
-                    
+
                                         <div class="related-business-rating">
                         <span>
                             {% for i in "12345" %}
@@ -1297,12 +1350,12 @@
         // Rating Stars
         const stars = document.querySelectorAll('.star');
         const ratingInput = document.getElementById('rating-input');
-        
+
         stars.forEach(star => {
             star.addEventListener('click', function() {
                 const value = parseInt(this.getAttribute('data-value'));
                 ratingInput.value = value;
-                
+
                 stars.forEach((s, index) => {
                     if (index < value) {
                         s.textContent = '★';
@@ -1313,10 +1366,10 @@
                     }
                 });
             });
-            
+
             star.addEventListener('mouseover', function() {
                 const value = parseInt(this.getAttribute('data-value'));
-                
+
                 stars.forEach((s, index) => {
                     if (index < value) {
                         s.textContent = '★';
@@ -1325,10 +1378,10 @@
                     }
                 });
             });
-            
+
             star.addEventListener('mouseout', function() {
                 const currentRating = parseInt(ratingInput.value) || 0;
-                
+
                 stars.forEach((s, index) => {
                     if (index < currentRating) {
                         s.textContent = '★';
@@ -1343,12 +1396,12 @@
         document.querySelector('.action-button.primary-action').addEventListener('click', function() {
             window.location.href = `tel:{{ business.phone }}`;
         });
-        
+
         document.querySelectorAll('.action-button.secondary-action')[0].addEventListener('click', function() {
             const address = encodeURIComponent('{{ business.address }}, {{ business.city }}');
             window.open(`https://www.google.com/maps/dir/?api=1&destination=${address}`);
         });
-        
+
         {% if business.website %}
         document.querySelectorAll('.action-button.secondary-action')[1].addEventListener('click', function() {
             window.open('{{ business.website }}', '_blank');
@@ -1383,7 +1436,7 @@
         // Image gallery functionality
         const thumbnails = document.querySelectorAll('.thumbnail');
         const mainImage = document.querySelector('.main-image img');
-        
+
         if (thumbnails.length && mainImage) {
             thumbnails.forEach(thumbnail => {
                 thumbnail.addEventListener('click', function() {
@@ -1654,7 +1707,7 @@
         // Lazy load images with Intersection Observer
         if ('IntersectionObserver' in window) {
             const lazyImages = [].slice.call(document.querySelectorAll('img[loading="lazy"]'));
-            
+
             let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
                 entries.forEach(function(entry) {
                     if (entry.isIntersecting) {
