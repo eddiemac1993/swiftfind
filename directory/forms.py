@@ -38,6 +38,9 @@ class BusinessUpdateForm(forms.ModelForm):
         fields = ['logo', 'name', 'email', 'city', 'phone_number', 'category', 'description']
 
 
+from django.core.exceptions import ValidationError
+from urllib.parse import urlparse
+
 class UserRegistrationForm(UserCreationForm):
     business_name = forms.CharField(max_length=200, required=True)
     business_address = forms.CharField(max_length=255, required=True)
@@ -49,6 +52,17 @@ class UserRegistrationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2', 'business_name', 'business_address', 'business_phone_number', 'business_email', 'business_website', 'business_city']
+
+    def clean_business_website(self):
+        website = self.cleaned_data.get('business_website')
+
+        # If there's a website URL entered, make sure it includes http:// or https://
+        if website:
+            parsed_url = urlparse(website)
+            if not parsed_url.scheme:
+                # If there's no scheme, add "https://"
+                website = 'https://' + website
+        return website
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -65,6 +79,7 @@ class UserRegistrationForm(UserCreationForm):
             )
             UserProfile.objects.get_or_create(user=user, defaults={'business': business})
         return user
+
 
 class ReviewForm(forms.ModelForm):
     class Meta:

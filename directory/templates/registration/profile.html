@@ -15,6 +15,7 @@
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
     <style>
         :root {
             --primary-color: #07C160; /* WeChat green */
@@ -919,17 +920,17 @@
                         </div>
                     </div>
 
-                    <div class="form-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-align-left"></i> Business Description
-                        </h3>
-                        <div class="form-group">
-                            <label for="{{ business_form.description.id_for_label }}">
-                                <i class="fas fa-align-left"></i> Description
-                            </label>
-                            {{ business_form.description }}
-                        </div>
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-align-left"></i> Business Description
+                    </h3>
+                    <div class="form-group">
+                        <label for="{{ business_form.description.id_for_label }}">
+                            <i class="fas fa-align-left"></i> Description
+                        </label>
+                        {{ business_form.description }}
                     </div>
+                </div>
 
                     <div class="form-actions">
                         <button type="reset" class="btn btn-secondary">
@@ -970,7 +971,15 @@
             </a>
         {% endif %}
     </nav>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if(typeof CKEDITOR !== 'undefined') {
+                CKEDITOR.replace('{{ business_form.description.id_for_label }}');
+            } else {
+                console.error('CKEditor not loaded');
+            }
+        });
+    </script>
     <script>
         // Theme toggle
         document.getElementById('theme-toggle').addEventListener('click', function() {

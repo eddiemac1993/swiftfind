@@ -3,338 +3,404 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#000000">
-    <meta name="description" content="Register - SwiftFind">
-    <title>Register - SwiftFind</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07C160">
+    <meta name="description" content="Register - Distribution Platform">
+    <title>Register - Distribution Platform</title>
     <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-/* Modern CSS Reset */
-*, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-/* Global Variables with expanded color palette */
-:root {
-    --primary-color: #2563eb;
-    --primary-hover: #1d4ed8;
-    --secondary-color: #4f46e5;
-    --success-color: #059669;
-    --error-color: #dc2626;
-    --background: #f8fafc;
-    --card-bg: #ffffff;
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
-    --border-color: #e2e8f0;
-    --input-focus: rgba(37, 99, 235, 0.1);
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-}
-
-/* Dark Mode Variables */
-.dark-mode {
-    --background: #0f172a;
-    --card-bg: #1e293b;
-    --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
-    --border-color: #334155;
-    --input-focus: rgba(37, 99, 235, 0.2);
-}
-
-/* Base Styles */
-body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    background-color: var(--background);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem;
-    color: var(--text-primary);
-    line-height: 1.6;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Enhanced Hero Section */
-.hero {
-    background: var(--gradient);
-    width: 100%;
-    max-width: 1200px;
-    padding: 4rem 2rem;
-    border-radius: 1.5rem;
-    margin-bottom: 2rem;
-    position: relative;
-    overflow: hidden;
-    box-shadow: var(--shadow-lg);
-}
-
-.hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5z' fill='%23ffffff' fill-opacity='0.1'/%3E%3C/svg%3E");
-    opacity: 0.4;
-}
-
-.hero-content {
-    position: relative;
-    z-index: 2;
-    max-width: 800px;
-    margin: 0 auto;
-    text-align: center;
-}
-
-.hero h1 {
-    font-size: 3.5rem;
-    font-weight: 800;
-    margin-bottom: 1.5rem;
-    letter-spacing: -0.025em;
-    color: white;
-}
-
-.hero p {
-    font-size: 1.25rem;
-    color: rgba(255, 255, 255, 0.9);
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-/* Enhanced Registration Form */
-.registration-form {
-    width: 100%;
-    max-width: 540px;
-    padding: 2.5rem;
-    background-color: var(--card-bg);
-    border-radius: 1.25rem;
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--border-color);
-}
-
-.registration-form form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-}
-
-/* Django Form Styling */
-.registration-form p {
-    margin-bottom: 1.25rem;
-}
-
-.registration-form label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: var(--text-primary);
-}
-
-.registration-form input,
-.registration-form select {
-    width: 100%;
-    padding: 1rem 1.25rem;
-    border: 2px solid var(--border-color);
-    border-radius: 0.75rem;
-    font-size: 1rem;
-    color: var(--text-primary);
-    background-color: var(--card-bg);
-    transition: all 0.2s ease;
-}
-
-.registration-form input:focus,
-.registration-form select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px var(--input-focus);
-}
-
-/* Error Handling */
-.registration-form .errorlist {
-    list-style: none;
-    color: var(--error-color);
-    font-size: 0.875rem;
-    margin-top: 0.5rem;
-    padding: 0;
-}
-
-.registration-form .error input,
-.registration-form .error select {
-    border-color: var(--error-color);
-}
-
-/* Submit Button */
-.registration-form button {
-    width: 100%;
-    padding: 1rem 1.5rem;
-    background: var(--gradient);
-    color: white;
-    border: none;
-    border-radius: 0.75rem;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: var(--shadow-sm);
-    margin-top: 1rem;
-}
-
-.registration-form button:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-}
-
-.registration-form button:active {
-    transform: translateY(0);
-}
-
-/* Login Link */
-.registration-form p:last-child {
-    text-align: center;
-    margin-top: 1.5rem;
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-}
-
-.registration-form a {
-    color: var(--primary-color);
-    font-weight: 600;
-    transition: color 0.2s ease;
-}
-
-.registration-form a:hover {
-    color: var(--primary-hover);
-    text-decoration: none;
-}
-
-/* Theme Toggle */
-.theme-toggle {
-    position: fixed;
-    top: 1.5rem;
-    right: 1.5rem;
-    background: var(--card-bg);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 1rem;
-    width: 3.5rem;
-    height: 3.5rem;
-    cursor: pointer;
-    font-size: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--shadow-md);
-    transition: all 0.2s ease;
-}
-
-.theme-toggle:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-
-/* Required Field Indicator */
-.required label::after {
-    content: '*';
-    color: var(--error-color);
-    margin-left: 0.25rem;
-}
-
-/* Help Text */
-.helptext {
-    display: block;
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    margin-top: 0.25rem;
-}
-
-/* Animations */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.hero, .registration-form {
-    animation: fadeIn 0.6s ease-out;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    body {
-        padding: 1rem;
-    }
-
-    .hero {
-        border-radius: 1rem;
-    }
-
-    .hero h1 {
-        font-size: 2.5rem;
-    }
-
-    .hero p {
-        font-size: 1.125rem;
-    }
-
-    .registration-form {
-        padding: 1.5rem;
-    }
-
-    .theme-toggle {
-        top: 1rem;
-        right: 1rem;
-    }
-}
-    </style>
-</head>
-<body>
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Create Your Account</h1>
-            <p>Register to create your business and start managing your profile.</p>
-        </div>
-    </section>
-
-    <!-- Registration Form -->
-    <div class="registration-form">
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Register</button>
-</form>
-        <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
-    </div>
-
-    <!-- Dark Mode Toggle -->
-    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
-
-    <script>
-        // Dark Mode Toggle
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
-
-        const isDarkMode = localStorage.getItem('darkMode') === 'true';
-        if (isDarkMode) {
-            body.classList.add('dark-mode');
-            themeToggle.textContent = '☀️';
+        :root {
+            --primary-color: #07C160; /* WeChat green */
+            --primary-dark: #05a54e;
+            --primary-light: #e6f7ef;
+            --secondary-color: #F8F8F8;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #EEE;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            const isDark = body.classList.contains('dark-mode');
-            themeToggle.textContent = isDark ? '☀️' : '🌙';
-            localStorage.setItem('darkMode', isDark);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding-bottom: 72px; /* Space for bottom nav */
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        /* Header styles */
+        .app-header {
+            background-color: var(--white);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .dark-mode .header-title {
+            color: var(--dark-text);
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--secondary-color);
+        }
+
+        .dark-mode .theme-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-btn .dark-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .light-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .dark-icon {
+            display: block;
+            color: var(--dark-text);
+        }
+
+        /* Registration form styles */
+        .register-container {
+            padding: 24px 16px;
+            max-width: 450px;
+            margin: 20px auto;
+        }
+
+        .register-card {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .dark-mode .register-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .register-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .dark-mode .register-header h2 {
+            color: var(--dark-text);
+        }
+
+        .register-header p {
+            color: var(--light-text);
+            font-size: 14px;
+        }
+
+        .dark-mode .register-header p {
+            color: var(--dark-light-text);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .dark-mode .form-group label {
+            color: var(--dark-text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--white);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .form-control {
+            background-color: var(--dark-surface);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--dark-text);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .dark-mode .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.2);
+        }
+
+        .register-btn {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(7, 193, 96, 0.3);
+            margin-top: 8px;
+        }
+
+        .register-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(7, 193, 96, 0.4);
+        }
+
+        /* Django Form Styling */
+        form p {
+            margin-bottom: 20px;
+        }
+
+        form p label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        form p input, form p select {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--white);
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode form p input, .dark-mode form p select {
+            background-color: var(--dark-surface);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--dark-text);
+        }
+
+        form p input:focus, form p select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .dark-mode form p input:focus, .dark-mode form p select:focus {
+            box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.2);
+        }
+
+        /* Help Text */
+        .helptext {
+            display: block;
+            font-size: 12px;
+            color: var(--light-text);
+            margin-top: 6px;
+        }
+
+        .dark-mode .helptext {
+            color: var(--dark-light-text);
+        }
+
+        /* Error Handling */
+        .errorlist {
+            list-style: none;
+            color: #dc2626;
+            font-size: 12px;
+            margin-top: 6px;
+            padding: 0;
+        }
+
+        .login-prompt {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .login-prompt {
+            color: var(--dark-light-text);
+        }
+
+        .login-prompt a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--white);
+            padding: 12px 0 8px;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--light-text);
+            font-size: 12px;
+            font-weight: 500;
+            position: relative;
+            padding: 6px 16px;
+        }
+
+        .dark-mode .nav-item {
+            color: var(--dark-light-text);
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active i {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-title">Register Account</div>
+        <button id="theme-toggle" class="theme-btn">
+            <i class="fas fa-moon light-icon"></i>
+            <i class="fas fa-sun dark-icon"></i>
+        </button>
+    </header>
+
+    <!-- Registration Container -->
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-header">
+                <h2>Create Account</h2>
+                <p>Join us to start shopping</p>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="register-btn">Register</button>
+            </form>
+            <div class="login-prompt">
+                Already have an account? <a href="{% url 'login' %}">Sign in</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'home' %}" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'post_list' %}" class="nav-item">
+            <i class="fas fa-list"></i>
+            <span>Find</span>
+        </a>
+        <a href="{% url 'login' %}" class="nav-item">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Login</span>
+        </a>
+    </nav>
+
+    <script>
+        // Toggle dark mode
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
         });
     </script>
 </body>

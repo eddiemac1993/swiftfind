@@ -16,816 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root {
-            --primary-color: #07C160;
-            --primary-dark: #05a54e;
-            --primary-light: #e6f7ef;
-            --secondary-color: #F8F8F8;
-            --accent-color: #5D5FEF;
-            --accent-dark: #4B4DC9;
-            --text-color: #333;
-            --light-text: #999;
-            --border-color: #EEE;
-            --white: #FFFFFF;
-            --black: #1A1A1A;
-            --dark-bg: #121212;
-            --dark-surface: #1E1E1E;
-            --dark-text: #E0E0E0;
-            --dark-light-text: #A0A0A0;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            --danger-color: #ff4d4f;
-            --success-color: #52c41a;
-            --warning-color: #faad14;
-            --info-color: #1890ff;
-        }
-
-        body {
-            background-color: var(--secondary-color);
-            color: var(--text-color);
-            padding-bottom: 72px;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease;
-            min-height: 100vh;
-            background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('{% static "images/bible-bg.jpg" %}');
-            background-size: cover;
-            background-attachment: fixed;
-        }
-
-        body.dark-mode {
-            background-color: var(--dark-bg);
-            color: var(--dark-text);
-            background-image: linear-gradient(rgba(18, 18, 18, 0.95), rgba(18, 18, 18, 0.95)), url('{% static "images/bible-bg-dark.jpg" %}');
-        }
-
-        /* Header styling */
-        .app-header {
-            padding: 12px 16px;
-            background-color: var(--white);
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .dark-mode .app-header {
-            background-color: var(--dark-surface);
-            box-shadow: var(--dark-shadow);
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .location {
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--primary-color);
-        }
-
-        .user-actions {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .theme-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-color);
-            font-size: 1.2rem;
-            padding: 4px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s ease;
-        }
-
-        .dark-mode .theme-btn {
-            color: var(--dark-text);
-        }
-
-        .theme-btn:hover {
-            background-color: var(--primary-light);
-        }
-
-        .dark-mode .theme-btn:hover {
-            background-color: rgba(7, 193, 96, 0.1);
-        }
-
-        .dark-icon {
-            display: none;
-        }
-
-        .dark-mode .dark-icon {
-            display: inline;
-        }
-
-        .dark-mode .light-icon {
-            display: none;
-        }
-
-        /* Nav score */
-        .nav-score {
-            background-color: var(--primary-light);
-            color: var(--primary-dark);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.3s ease;
-        }
-
-        .dark-mode .nav-score {
-            background-color: rgba(7, 193, 96, 0.15);
-            color: var(--primary-color);
-        }
-
-        .nav-score i {
-            font-size: 0.8rem;
-        }
-
-        /* Leaderboard collapsible */
-        .leaderboard-collapsible {
-            background-color: var(--white);
-            border-radius: 16px;
-            max-width: 600px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-
-        .dark-mode .leaderboard-collapsible {
-            background-color: var(--dark-surface);
-            box-shadow: var(--dark-shadow);
-        }
-
-        .leaderboard-header {
-            padding: 16px 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            transition: background-color 0.2s ease;
-        }
-
-        .dark-mode .leaderboard-header {
-            border-bottom-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .leaderboard-header:hover {
-            background-color: var(--primary-light);
-        }
-
-        .dark-mode .leaderboard-header:hover {
-            background-color: rgba(7, 193, 96, 0.1);
-        }
-
-        .leaderboard-header h4 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--primary-dark);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin: 0;
-        }
-
-        .dark-mode .leaderboard-header h4 {
-            color: var(--primary-color);
-        }
-
-        .leaderboard-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-
-        .leaderboard-content.open {
-            max-height: 500px;
-        }
-
-        .leaderboard-toggle-icon {
-            transition: transform 0.3s ease;
-        }
-
-        .leaderboard-toggle-icon.open {
-            transform: rotate(180deg);
-        }
-
-        .leaderboard-items {
-            padding: 0 20px 16px;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .dark-mode .leaderboard-item {
-            border-bottom-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .leaderboard-item:last-child {
-            border-bottom: none;
-        }
-
-        .leaderboard-rank {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .rank-number {
-            width: 28px;
-            height: 28px;
-            background-color: var(--primary-light);
-            color: var(--primary-color);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .dark-mode .rank-number {
-            background-color: rgba(7, 193, 96, 0.1);
-        }
-
-        .leaderboard-item:nth-child(1) .rank-number {
-            background-color: #FFD700;
-            color: #333;
-        }
-
-        .leaderboard-item:nth-child(2) .rank-number {
-            background-color: #C0C0C0;
-            color: #333;
-        }
-
-        .leaderboard-item:nth-child(3) .rank-number {
-            background-color: #CD7F32;
-            color: #333;
-        }
-
-        .leaderboard-username {
-            font-weight: 500;
-        }
-
-        .leaderboard-score {
-            font-weight: 600;
-            color: var(--primary-color);
-        }
-
-        /* Quiz container */
-        .quiz-container {
-            background-color: var(--white);
-            border-radius: 16px;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 600px;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .dark-mode .quiz-container {
-            background-color: var(--dark-surface);
-            box-shadow: var(--dark-shadow);
-        }
-
-        .quiz-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            border-radius: 16px 16px 0 0;
-        }
-
-        /* Question styling */
-        .question-text {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--primary-dark);
-            line-height: 1.4;
-        }
-
-        .dark-mode .question-text {
-            color: var(--primary-color);
-        }
-
-        /* Options styling */
-        .options-container {
-            margin-bottom: 20px;
-        }
-
-        .option {
-            display: block;
-            padding: 12px 16px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            background-color: var(--secondary-color);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: 2px solid transparent;
-            position: relative;
-            overflow: hidden;
-            font-size: 0.95rem;
-        }
-
-        .dark-mode .option {
-            background-color: var(--dark-bg);
-        }
-
-        .option:hover {
-            background-color: var(--primary-light);
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-        }
-
-        .dark-mode .option:hover {
-            background-color: rgba(7, 193, 96, 0.1);
-        }
-
-        .option input[type="radio"] {
-            margin-right: 12px;
-            accent-color: var(--primary-color);
-            transform: scale(1.2);
-        }
-
-        .option-letter {
-            display: inline-block;
-            width: 24px;
-            height: 24px;
-            background-color: var(--primary-light);
-            color: var(--primary-color);
-            border-radius: 50%;
-            text-align: center;
-            line-height: 24px;
-            font-weight: 600;
-            margin-right: 10px;
-            transition: all 0.2s ease;
-            font-size: 0.85rem;
-        }
-
-        .dark-mode .option-letter {
-            background-color: rgba(7, 193, 96, 0.1);
-        }
-
-        .option:hover .option-letter {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        /* Timer styling */
-        .timer-container {
-            position: relative;
-            height: 6px;
-            background-color: var(--secondary-color);
-            border-radius: 3px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .dark-mode .timer-container {
-            background-color: var(--dark-bg);
-        }
-
-        .timer-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            transition: width 1s linear;
-            border-radius: 3px;
-        }
-
-        .timer-text {
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--light-text);
-            margin-top: 6px;
-            font-weight: 500;
-        }
-
-        .dark-mode .timer-text {
-            color: var(--dark-light-text);
-        }
-
-        .timer-critical .timer-bar {
-            background: linear-gradient(90deg, var(--danger-color), var(--warning-color));
-        }
-
-        .timer-critical .timer-text {
-            color: var(--danger-color);
-            font-weight: 600;
-        }
-
-        /* Button styling */
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 16px;
-            margin-top: 20px;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            flex: 1;
-            text-align: center;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-            box-shadow: 0 4px 10px rgba(7, 193, 96, 0.2);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(7, 193, 96, 0.3);
-        }
-
-        .btn-secondary {
-            background-color: var(--secondary-color);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-        }
-
-        .dark-mode .btn-secondary {
-            background-color: var(--dark-surface);
-            color: var(--dark-text);
-            border-color: var(--dark-bg);
-        }
-
-        .btn-secondary:hover {
-            background-color: #e0e0e0;
-            transform: translateY(-2px);
-        }
-
-        .dark-mode .btn-secondary:hover {
-            background-color: var(--dark-bg);
-        }
-
-        /* Game elements */
-        .game-progress {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            padding: 0 4px;
-        }
-
-        .question-counter {
-            font-size: 0.8rem;
-            color: var(--light-text);
-            font-weight: 500;
-        }
-
-        .dark-mode .question-counter {
-            color: var(--dark-light-text);
-        }
-
-        .difficulty-badge {
-            background-color: var(--primary-light);
-            color: var(--primary-dark);
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .dark-mode .difficulty-badge {
-            background-color: rgba(7, 193, 96, 0.1);
-            color: var(--primary-color);
-        }
-
-        .difficulty-badge.easy {
-            background-color: #E6F7EF;
-            color: #05a54e;
-        }
-
-        .difficulty-badge.medium {
-            background-color: #FFF7E6;
-            color: #fa8c16;
-        }
-
-        .difficulty-badge.hard {
-            background-color: #FFF1F0;
-            color: #f5222d;
-        }
-
-        .dark-mode .difficulty-badge.easy {
-            background-color: rgba(5, 165, 78, 0.1);
-            color: #07C160;
-        }
-
-        .dark-mode .difficulty-badge.medium {
-            background-color: rgba(250, 140, 22, 0.1);
-            color: #fa8c16;
-        }
-
-        .dark-mode .difficulty-badge.hard {
-            background-color: rgba(245, 34, 45, 0.1);
-            color: #f5222d;
-        }
-
-        /* Toast notification */
-        .toast {
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--white);
-            color: var(--text-color);
-            padding: 12px 24px;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            pointer-events: none;
-        }
-
-        .dark-mode .toast {
-            background-color: var(--dark-surface);
-            color: var(--dark-text);
-            box-shadow: var(--dark-shadow);
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-            pointer-events: auto;
-        }
-
-        .toast-success {
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .toast-error {
-            border-left: 4px solid var(--danger-color);
-        }
-
-        .toast-icon {
-            font-size: 1.2rem;
-        }
-
-        .toast-success .toast-icon {
-            color: var(--primary-color);
-        }
-
-        .toast-error .toast-icon {
-            color: var(--danger-color);
-        }
-
-        /* Experience Bar */
-        .xp-container {
-            position: relative;
-            height: 8px;
-            background-color: var(--secondary-color);
-            border-radius: 4px;
-            margin-top: 12px;
-            overflow: hidden;
-        }
-
-        .dark-mode .xp-container {
-            background-color: var(--dark-bg);
-        }
-
-        .xp-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 65%;
-            background: linear-gradient(90deg, var(--accent-color), #9C9EFF);
-            border-radius: 4px;
-        }
-
-        .xp-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.7rem;
-            color: var(--light-text);
-            margin-top: 4px;
-        }
-
-        .dark-mode .xp-labels {
-            color: var(--dark-light-text);
-        }
-
-        .xp-level {
-            color: var(--accent-color);
-            font-weight: 600;
-        }
-
-        /* Bottom navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-around;
-            background-color: var(--white);
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-            padding: 12px 0 8px;
-            border-radius: 20px 20px 0 0;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
-            z-index: 100;
-        }
-
-        .dark-mode .bottom-nav {
-            background-color: var(--dark-surface);
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--light-text);
-            text-decoration: none;
-            font-size: 0.8rem;
-            gap: 4px;
-            transition: color 0.2s ease;
-        }
-
-        .dark-mode .nav-item {
-            color: var(--dark-light-text);
-        }
-
-        .nav-item i {
-            font-size: 1.2rem;
-        }
-
-        .nav-item.active {
-            color: var(--primary-color);
-            font-weight: 500;
-        }
-
-        /* Animations */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .pulse {
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-            100% { transform: translateY(0px); }
-        }
-
-        .float {
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes glow {
-            0% { box-shadow: 0 0 5px rgba(7, 193, 96, 0.5); }
-            50% { box-shadow: 0 0 20px rgba(7, 193, 96, 0.8); }
-            100% { box-shadow: 0 0 5px rgba(7, 193, 96, 0.5); }
-        }
-
-        .correct-answer {
-            animation: glow 1.5s infinite;
-            background-color: var(--primary-light) !important;
-            border-color: var(--primary-color) !important;
-        }
-
-        .dark-mode .correct-answer {
-            background-color: rgba(7, 193, 96, 0.2) !important;
-        }
-
-        .streak-indicator {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 700;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(7, 193, 96, 0.4);
-            animation: float 3s ease-in-out infinite;
-        }
-
-        /* Achievement popup */
-        .achievement-popup {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100%);
-            background-color: var(--white);
-            border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: var(--shadow);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 1000;
-            max-width: 90%;
-            width: 320px;
-        }
-
-        .dark-mode .achievement-popup {
-            background-color: var(--dark-surface);
-            box-shadow: var(--dark-shadow);
-        }
-
-        .achievement-popup.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .achievement-icon {
-            background: linear-gradient(135deg, var(--accent-color), #9C9EFF);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-        }
-
-        .achievement-content {
-            flex: 1;
-        }
-
-        .achievement-title {
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: var(--text-color);
-        }
-
-        .dark-mode .achievement-title {
-            color: var(--dark-text);
-        }
-
-        .achievement-desc {
-            font-size: 0.8rem;
-            color: var(--light-text);
-        }
-
-        .dark-mode .achievement-desc {
-            color: var(--dark-light-text);
-        }
-        .positive-score {
-            color: var(--primary-color);
-        }
-
-        .negative-score {
-            color: var(--danger-color);
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/quiz.css' %}">
 </head>
 <body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
     <!-- Header -->
@@ -877,7 +68,7 @@
         <!-- Quiz Container -->
         <div class="quiz-container" id="quiz-container">
             <p class="question-text">{{ question.question_text }}</p>
-            
+
             <div class="timer-container" id="timer-container">
                 <div class="timer-bar" id="timer-bar"></div>
             </div>
@@ -956,122 +147,137 @@
     </nav>
 
     <script>
-        // Theme toggle
-        document.getElementById('theme-toggle').addEventListener('click', function() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
-        });
+// Quiz Module
+const Quiz = (() => {
+  // Private variables
+  let timeLeft = 30;
+  let timerInterval;
 
-        // Leaderboard toggle
-        const leaderboardToggle = document.getElementById('leaderboard-toggle');
-        const leaderboardContent = document.getElementById('leaderboard-content');
-        const leaderboardIcon = document.getElementById('leaderboard-icon');
-        
-        leaderboardToggle.addEventListener('click', function() {
-            leaderboardContent.classList.toggle('open');
-            leaderboardIcon.classList.toggle('open');
-        });
+  // Private methods
+  const initThemeToggle = () => {
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+    });
+  };
 
-        // Timer functionality
-        let timeLeft = 30; // 30 seconds
-        const timerBar = document.getElementById('timer-bar');
-        const timerText = document.getElementById('timer-text');
-        const timerContainer = document.getElementById('timer-container');
-        
-        // Set initial width
-        timerBar.style.width = '100%';
-        
-        const interval = setInterval(() => {
-            if (timeLeft <= 0) {
-                clearInterval(interval);
-                // Show time's up toast
-                showToast("Time's up! Submitting your answer...", false);
-                // Auto-submit after a short delay
-                setTimeout(() => {
-                    document.querySelector('.quiz-form').submit();
-                }, 1500);
-            } else {
-                // Update timer text
-                timerText.textContent = `${timeLeft} seconds remaining`;
-                
-                // Update progress bar width
-                const percentage = (timeLeft / 30) * 100;
-                timerBar.style.width = `${percentage}%`;
-                
-                // Add critical class when time is running low
-                if (timeLeft <= 10) {
-                    timerContainer.classList.add('timer-critical');
-                    
-                    // Add pulse animation effect when time is critically low
-                    if (timeLeft <= 5) {
-                        timerText.classList.add('pulse');
-                    }
-                }
-                
-                timeLeft--;
-            }
-        }, 1000);
+  const initLeaderboardToggle = () => {
+    const leaderboardToggle = document.getElementById('leaderboard-toggle');
+    const leaderboardContent = document.getElementById('leaderboard-content');
+    const leaderboardIcon = document.getElementById('leaderboard-icon');
 
-        // Form submission
-        document.querySelector('.quiz-form').addEventListener('submit', function(e) {
-            // Not preventing default as we want the form to submit to server
-            // But we can show a toast notification
-            showToast("Answer submitted successfully!", true);
-        });
+    leaderboardToggle.addEventListener('click', () => {
+      leaderboardContent.classList.toggle('open');
+      leaderboardIcon.classList.toggle('open');
+    });
+  };
 
-        // Toast notification function
-        function showToast(message, isSuccess = true) {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toast-message');
-            const toastIcon = toast.querySelector('.toast-icon');
-            
-            // Set message and styling
-            toastMessage.textContent = message;
-            toast.className = `toast ${isSuccess ? 'toast-success show' : 'toast-error show'}`;
-            toastIcon.className = `fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'} toast-icon`;
-            
-            // Hide after 3 seconds
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
+  const startTimer = () => {
+    const timerBar = document.getElementById('timer-bar');
+    const timerText = document.getElementById('timer-text');
+    const timerContainer = document.getElementById('timer-container');
 
-        // Add click animations to options
-        const options = document.querySelectorAll('.option');
-        options.forEach(option => {
-            option.addEventListener('click', function() {
-                // Remove active class from all options
-                options.forEach(opt => opt.style.transform = '');
-                
-                // Add active class to clicked option
-                this.style.transform = 'translateY(-2px)';
-            });
-        });
+    timerInterval = setInterval(() => {
+      if (timeLeft <= 0) {
+        handleTimeExpired();
+      } else {
+        updateTimerDisplay(timerBar, timerText, timerContainer);
+        timeLeft--;
+      }
+    }, 1000);
+  };
 
-        // Show achievement popup if there's one to show
-        {% if achievement %}
-        setTimeout(() => {
-            const popup = document.createElement('div');
-            popup.className = 'achievement-popup show';
-            popup.innerHTML = `
-                <div class="achievement-icon">
-                    <i class="fas fa-trophy"></i>
-                </div>
-                <div class="achievement-content">
-                    <div class="achievement-title">Achievement Unlocked!</div>
-                    <div class="achievement-desc">{{ achievement.name }}</div>
-                </div>
-            `;
-            document.body.appendChild(popup);
-            
-            // Hide after 5 seconds
-            setTimeout(() => {
-                popup.classList.remove('show');
-                setTimeout(() => popup.remove(), 500);
-            }, 5000);
-        }, 1000);
-        {% endif %}
+  const handleTimeExpired = () => {
+    clearInterval(timerInterval);
+    Toast.show("Time's up! Submitting your answer...", false);
+    setTimeout(() => {
+      document.querySelector('.quiz-form').submit();
+    }, 1500);
+  };
+
+  const updateTimerDisplay = (timerBar, timerText, timerContainer) => {
+    timerText.textContent = `${timeLeft} seconds remaining`;
+    const percentage = (timeLeft / 30) * 100;
+    timerBar.style.width = `${percentage}%`;
+
+    if (timeLeft <= 10) {
+      timerContainer.classList.add('timer-critical');
+      if (timeLeft <= 5) timerText.classList.add('pulse');
+    }
+  };
+
+  const initOptionSelection = () => {
+    document.querySelectorAll('.option').forEach(option => {
+      option.addEventListener('click', function() {
+        document.querySelectorAll('.option').forEach(opt => opt.style.transform = '');
+        this.style.transform = 'translateY(-2px)';
+      });
+    });
+  };
+
+  // Public API
+  return {
+    init: function() {
+      initThemeToggle();
+      initLeaderboardToggle();
+      startTimer();
+      initOptionSelection();
+    }
+  };
+})();
+
+// Toast Module
+const Toast = (() => {
+  const show = (message, isSuccess = true) => {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    const toastIcon = toast.querySelector('.toast-icon');
+
+    toastMessage.textContent = message;
+    toast.className = `toast ${isSuccess ? 'toast-success show' : 'toast-error show'}`;
+    toastIcon.className = `fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'} toast-icon`;
+
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  };
+
+  return { show };
+})();
+
+// Achievement Module
+const Achievement = (() => {
+  const show = (name) => {
+    const popup = document.createElement('div');
+    popup.className = 'achievement-popup show';
+    popup.innerHTML = `
+      <div class="achievement-icon">
+        <i class="fas fa-trophy"></i>
+      </div>
+      <div class="achievement-content">
+        <div class="achievement-title">Achievement Unlocked!</div>
+        <div class="achievement-desc">${name}</div>
+      </div>
+    `;
+    document.body.appendChild(popup);
+
+    setTimeout(() => {
+      popup.classList.remove('show');
+      setTimeout(() => popup.remove(), 500);
+    }, 5000);
+  };
+
+  return { show };
+})();
+
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  Quiz.init();
+
+  // Show achievement if available
+  {% if achievement %}
+  setTimeout(() => Achievement.show("{{ achievement.name }}"), 1000);
+  {% endif %}
+});
     </script>
 </body>
 </html>

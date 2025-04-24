@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Reuse all the CSS variables and base styles from discover.html */
         :root {
             --primary-color: #07C160;
             --primary-dark: #05a54e;
@@ -48,21 +47,41 @@
             color: var(--dark-text);
         }
 
-        /* Header styles - same as discover.html */
+        /* Accessibility */
+        .skip-link {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px;
+            z-index: 100;
+        }
+        
+        .skip-link:focus {
+            left: 0;
+        }
+
+        *:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Header */
         .app-header {
             background-color: var(--white);
             padding: 16px;
-            box-shadow: var(--shadow);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             border-bottom-left-radius: 16px;
             border-bottom-right-radius: 16px;
         }
 
         .dark-mode .app-header {
             background-color: var(--dark-surface);
-            box-shadow: var(--dark-shadow);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
         .header-top {
@@ -139,114 +158,158 @@
         }
 
         /* Business Hero Section */
-       .business-hero {
-        position: relative;
-        height: 250px;
-        overflow: hidden;
-        margin: 0 16px 16px;
-        border-radius: 16px;
-        box-shadow: var(--shadow);
-    }
-
-    .business-hero-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        filter: brightness(0.7); /* Darken the image slightly */
-    }
-
-    .business-hero-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-        padding: 20px;
-        color: white;
-        background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
-    }
-
-    .business-badges {
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-    }
-
-    .business-badge {
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: bold;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        color: white;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .business-name {
-        font-size: 28px;
-        font-weight: 700;
-        margin-bottom: 8px;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Add text shadow for better contrast */
-    }
-
-    .business-meta {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 15px;
-        flex-wrap: wrap;
-        text-shadow: 0 1px 3px rgba(0,0,0,0.5); /* Add text shadow for better contrast */
-    }
-
-    .business-rating {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        color: #FFD700; /* Gold color for stars */
-        font-weight: 600;
-    }
-
-    .business-review-count {
-        color: rgba(255,255,255,0.9);
-        font-size: 14px;
-    }
-
-    .business-category {
-        display: inline-flex;
-        align-items: center;
-        padding: 6px 12px;
-        background-color: rgba(7, 193, 96, 0.9); /* More opaque version of your primary color */
-        color: white;
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: 500;
-    }
-
-    @media (max-width: 480px) {
         .business-hero {
-            height: 200px;
+            position: relative;
+            height: 250px;
+            overflow: hidden;
+            margin: 0 16px 16px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
         }
-        
+
+        .dark-mode .business-hero {
+            box-shadow: var(--dark-shadow);
+        }
+
+        .business-hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7);
+            loading: lazy;
+        }
+
+        .business-hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 20px;
+            color: white;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+        }
+
+        .business-badges {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .business-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
         .business-name {
-            font-size: 18px;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
-        
+
         .business-meta {
-            gap: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
-    }
+
+        .business-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #FFD700;
+            font-weight: 600;
+        }
+
+        .business-review-count {
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+        }
+
+        .business-category {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            background-color: rgba(7, 193, 96, 0.9);
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
 
         .dark-mode .business-category {
             background-color: rgba(7, 193, 96, 0.2);
             color: var(--primary-color);
+        }
+
+        /* Image Gallery */
+        .image-gallery {
+            margin: 20px 16px;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 300px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            loading: lazy;
+        }
+
+        .thumbnail-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .thumbnail:hover {
+            transform: scale(1.05);
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            loading: lazy;
+        }
+
+        /* Business Info Container */
+        .business-info-container {
+            margin: 0 16px 20px;
         }
 
         .business-description {
@@ -261,7 +324,7 @@
 
         .business-details-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: 1fr;
             gap: 15px;
             margin-top: 20px;
         }
@@ -298,6 +361,47 @@
             color: var(--dark-light-text);
         }
 
+        /* Hours Table */
+        .hours-table {
+            margin-top: 8px;
+        }
+
+        .hours-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dark-mode .hours-row {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .hours-row.today {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .hours-row:last-child {
+            border-bottom: none;
+        }
+
+        /* Map Container */
+        .map-container {
+            margin: 20px 16px;
+        }
+
+        #business-map {
+            height: 250px;
+            border-radius: 12px;
+            margin-top: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode #business-map {
+            box-shadow: var(--dark-shadow);
+        }
+
         /* Action Buttons */
         .action-buttons {
             display: flex;
@@ -319,6 +423,11 @@
             cursor: pointer;
             border: none;
             transition: all 0.3s ease;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         .primary-action {
@@ -504,11 +613,22 @@
             font-size: 24px;
             color: #ddd;
             cursor: pointer;
-            transition: color 0.2s;
+            transition: all 0.2s ease;
+        }
+
+        .star:hover {
+            transform: scale(1.1);
         }
 
         .star.active {
             color: var(--primary-color);
+        }
+
+        .char-counter {
+            font-size: 12px;
+            color: var(--light-text);
+            text-align: right;
+            margin-top: 4px;
         }
 
         .submit-button {
@@ -541,6 +661,13 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .related-business-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
 
         .dark-mode .related-business-card {
@@ -553,6 +680,7 @@
             height: 60px;
             border-radius: 12px;
             object-fit: cover;
+            loading: lazy;
         }
 
         .related-business-info {
@@ -606,7 +734,7 @@
             justify-content: center;
             color: white;
             font-size: 18px;
-            transition: transform 0.3s;
+            transition: all 0.3s ease;
         }
 
         .social-button:hover {
@@ -625,7 +753,7 @@
             background-color: #07C160;
         }
 
-        /* Bottom navigation - same as discover.html */
+        /* Bottom navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -656,6 +784,7 @@
             font-weight: 500;
             position: relative;
             padding: 6px 16px;
+            transition: all 0.3s ease;
         }
 
         .nav-item i {
@@ -672,19 +801,140 @@
             transform: translateY(-2px);
         }
 
+        .formatted-text {
+            line-height: 1.7;
+            margin-bottom: 1.5em;
+            white-space: pre-line;
+        }
 
-            
+        .formatted-text p {
+            margin-bottom: 1em;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .pagination-button {
+            padding: 8px 12px;
+            border-radius: 8px;
+            background-color: var(--white);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .pagination-button {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .pagination-button:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .dark-mode .pagination-button:hover {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        .pagination-button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Responsive Layout */
+        @media (min-width: 768px) {
+            .business-hero {
+                height: 350px;
+                margin: 0 auto 24px;
+                max-width: 1200px;
+            }
+
+            .business-info-container {
+                display: grid;
+                grid-template-columns: 2fr 1fr;
+                gap: 24px;
+                max-width: 1200px;
+                margin: 0 auto 24px;
+            }
+
+            .business-info-card {
+                grid-column: 1;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                grid-column: 2;
+                grid-row: 1;
+                margin: 0;
+                position: sticky;
+                top: 80px;
+                align-self: start;
+            }
+
+            .reviews-section, 
+            .review-form,
+            .related-businesses,
+            .social-sharing,
+            .image-gallery,
+            .map-container {
+                max-width: 1200px;
+                margin: 0 auto 24px;
+            }
+
             .business-details-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .business-hero {
+                height: 400px;
+            }
+
+            .business-details-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .related-businesses {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+            }
+
+            .related-business-card {
+                margin-bottom: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .business-hero {
+                height: 200px;
             }
             
-            .action-button {
-                min-width: 100%;
+            .business-name {
+                font-size: 18px;
+            }
+            
+            .business-meta {
+                gap: 10px;
             }
         }
     </style>
 </head>
 <body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Skip to Content Link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
     <!-- Header -->
     <header class="app-header">
         <div class="header-top">
@@ -702,120 +952,144 @@
     </header>
 
     <!-- Main Content -->
-    <main class="app-main">
+    <main class="app-main" id="main-content">
         <!-- Business Hero Section -->
-<section class="business-hero">
-    <img src="{{ business.logo.url }}" alt="{{ business.name }}" class="business-hero-image">
-    <div class="business-hero-overlay">
-        <div class="business-badges">
-            {% if business.is_featured %}
-            <div class="business-badge featured-badge">
-                <i class="fas fa-star"></i>
-                <span>Featured</span>
+        <section class="business-hero">
+            <img src="{{ business.logo.url }}" alt="{{ business.name }}" class="business-hero-image" loading="lazy">
+            <div class="business-hero-overlay">
+                <div class="business-badges">
+                    {% if business.is_featured %}
+                    <div class="business-badge featured-badge">
+                        <i class="fas fa-star"></i>
+                        <span>Featured</span>
+                    </div>
+                    {% endif %}
+                    {% if business.is_admin_added %}
+                    <div class="business-badge verified-badge">
+                        <i class="fas fa-circle-check"></i>
+                        <span>Verified</span>
+                    </div>
+                    {% endif %}
+                    {% if user.is_authenticated and business.owner == user %}
+                    <div class="business-badge owner-badge">
+                        <i class="fas fa-heart"></i>
+                        <span>Yours</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <h1 class="business-name">{{ business.name }}</h1>
+                <div class="business-meta">
+                    <div class="business-rating">
+                        <span class="stars">
+                            {% for i in "12345" %}
+                                {% if i|add:0 <= business.average_rating %}
+                                    ★
+                                {% else %}
+                                    ☆
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        <span>{{ business.average_rating|floatformat:1 }}</span>
+                    </div>
+                    <span class="business-review-count">{{ business.review_count }} reviews</span>
+                    <span class="business-category">
+                        <i class="fas fa-tag"></i>
+                        {{ business.category.name }}
+                    </span>
+                </div>
             </div>
-            {% endif %}
-            {% if business.is_admin_added %}
-            <div class="business-badge verified-badge">
-                <i class="fas fa-circle-check"></i>
-                <span>Verified</span>
-            </div>
-            {% endif %}
-            {% if user.is_authenticated and business.owner == user %}
-            <div class="business-badge owner-badge">
-                <i class="fas fa-heart"></i>
-                <span>Yours</span>
-            </div>
-            {% endif %}
-        </div>
-        <h1 class="business-name">{{ business.name }}</h1>
-        <div class="business-meta">
-            <div class="business-rating">
-                <span class="stars">
-                    {% for i in "12345" %}
-                        {% if i|add:0 <= business.average_rating %}
-                            ★
-                        {% else %}
-                            ☆
-                        {% endif %}
-                    {% endfor %}
-                </span>
-                <span>{{ business.average_rating|floatformat:1 }}</span>
-            </div>
-            <span class="business-review-count">{{ business.review_count }} reviews</span>
-            <span class="business-category">
-                <i class="fas fa-tag"></i>
-                {{ business.category.name }}
-            </span>
-        </div>
-    </div>
-</section>
+        </section>
 
-        <!-- Action Buttons -->
-        <div class="action-buttons">
-            <button class="action-button primary-action">
-                <i class="fas fa-phone-alt"></i>
-                Call Now
-            </button>
-            <button class="action-button secondary-action">
-                <i class="fas fa-directions"></i>
-                Get Directions
-            </button>
-            <button class="action-button secondary-action">
-                <i class="fas fa-globe"></i>
-                Visit Website
-            </button>
+        <!-- Image Gallery -->
+        {% if business.images.all %}
+        <div class="image-gallery">
+            <div class="main-image">
+                <img src="{{ business.images.first.url }}" alt="{{ business.name }}" loading="lazy">
+            </div>
+            <div class="thumbnail-container">
+                {% for image in business.images.all %}
+                <div class="thumbnail">
+                    <img src="{{ image.url }}" alt="{{ business.name }} image {{ forloop.counter }}" loading="lazy">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Business Info Container -->
+        <div class="business-info-container">
+            <div class="business-info-card">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle"></i>
+                    About
+                </h2>
+                <p class="business-description formatted-text">
+                    {{ business.description|safe }}
+                </p>
+                
+                <div class="business-details-grid">
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="detail-content">
+                            <h4>Address</h4>
+                            <p>{{ business.address }}, {{ business.city }}</p>
+                        </div>
+                    </div>
+                
+                    
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="detail-content">
+                            <h4>Phone</h4>
+                            <p>{{ business.phone_number }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="detail-content">
+                            <h4>Website</h4>
+                            <p>{{ business.website|default:"Not available" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="action-button primary-action" aria-label="Call {{ business.name }}">
+                    <i class="fas fa-phone-alt"></i>
+                    Call Now
+                </button>
+                <button class="action-button secondary-action" aria-label="Get directions to {{ business.name }}">
+                    <i class="fas fa-directions"></i>
+                    Get Directions
+                </button>
+                {% if business.website %}
+                <button class="action-button secondary-action" aria-label="Visit {{ business.name }} website">
+                    <i class="fas fa-globe"></i>
+                    Visit Website
+                </button>
+                {% endif %}
+            </div>
         </div>
 
-        <!-- Business Info Card -->
-        <div class="business-info-card">
+        <!-- Map Integration -->
+        {% if business.latitude and business.longitude %}
+        <div class="map-container">
             <h2 class="section-title">
-                <i class="fas fa-info-circle"></i>
-                About
+                <i class="fas fa-map-marked-alt"></i>
+                Location
             </h2>
-            <p class="business-description">{{ business.description }}</p>
-            
-            <div class="business-details-grid">
-                <div class="detail-item">
-                    <div class="detail-icon">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-                    <div class="detail-content">
-                        <h4>Address</h4>
-                        <p>{{ business.address }}, {{ business.city }}</p>
-                    </div>
-                </div>
-                
-                <div class="detail-item">
-                    <div class="detail-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="detail-content">
-                        <h4>Hours</h4>
-                        <p>Open today until 9:00 PM</p>
-                    </div>
-                </div>
-                
-                <div class="detail-item">
-                    <div class="detail-icon">
-                        <i class="fas fa-phone"></i>
-                    </div>
-                    <div class="detail-content">
-                        <h4>Phone</h4>
-                        <p>{{ business.phone }}</p>
-                    </div>
-                </div>
-                
-                <div class="detail-item">
-                    <div class="detail-icon">
-                        <i class="fas fa-globe"></i>
-                    </div>
-                    <div class="detail-content">
-                        <h4>Website</h4>
-                        <p>{{ business.website|default:"Not available" }}</p>
-                    </div>
-                </div>
-            </div>
+            <div id="business-map" style="height: 300px; border-radius: 12px;"></div>
         </div>
+        {% endif %}
 
         <!-- Social Sharing -->
         <div class="social-sharing">
@@ -914,6 +1188,7 @@
         </div>
 
         <!-- Review Form -->
+        {% if user.is_authenticated %}
         <div class="review-form">
             <h2 class="section-title">
                 <i class="fas fa-edit"></i>
@@ -937,14 +1212,21 @@
                 
                 <div class="form-group">
                     <label for="comment" class="form-label">Your Review</label>
-                    <textarea name="comment" id="comment" class="form-control" rows="4" placeholder="Share your experience..."></textarea>
+                    <textarea name="comment" id="comment" class="form-control" rows="4" placeholder="Share your experience..." maxlength="500"></textarea>
+                    <div class="char-counter">500 characters remaining</div>
                 </div>
                 
                 <button type="submit" class="submit-button">Submit Review</button>
             </form>
         </div>
+        {% else %}
+        <div class="reviews-section">
+            <p>Please <a href="{% url 'login' %}?next={{ request.path }}">log in</a> to leave a review.</p>
+        </div>
+        {% endif %}
 
         <!-- Related Businesses -->
+        {% if related_businesses %}
         <div class="related-businesses">
             <h2 class="section-title">
                 <i class="fas fa-store"></i>
@@ -953,10 +1235,11 @@
             
             {% for related_business in related_businesses %}
             <a href="{% url 'business-detail' related_business.pk %}" class="related-business-card">
-                <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }}" class="related-business-image">
+                <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }}" class="related-business-image" loading="lazy">
                 <div class="related-business-info">
                     <h3 class="related-business-name">{{ related_business.name }}</h3>
-                    <div class="related-business-rating">
+                    
+                                        <div class="related-business-rating">
                         <span>
                             {% for i in "12345" %}
                                 {% if i|add:0 <= related_business.average_rating %}
@@ -973,6 +1256,7 @@
             </a>
             {% endfor %}
         </div>
+        {% endif %}
     </main>
 
     <!-- Bottom Navigation -->
@@ -1065,11 +1349,331 @@
             window.open(`https://www.google.com/maps/dir/?api=1&destination=${address}`);
         });
         
+        {% if business.website %}
         document.querySelectorAll('.action-button.secondary-action')[1].addEventListener('click', function() {
-            {% if business.website %}
             window.open('{{ business.website }}', '_blank');
-            {% endif %}
         });
+        {% endif %}
+
+        // Character counter for review text
+        const reviewTextarea = document.getElementById('comment');
+        if (reviewTextarea) {
+            const charCounter = document.createElement('div');
+            charCounter.className = 'char-counter';
+            charCounter.style.fontSize = '12px';
+            charCounter.style.color = 'var(--light-text)';
+            charCounter.style.textAlign = 'right';
+            charCounter.style.marginTop = '4px';
+            reviewTextarea.parentNode.appendChild(charCounter);
+
+            reviewTextarea.addEventListener('input', function() {
+                const remaining = 500 - this.value.length;
+                charCounter.textContent = `${remaining} characters remaining`;
+                if (remaining < 50) {
+                    charCounter.style.color = 'var(--primary-color)';
+                } else {
+                    charCounter.style.color = 'var(--light-text)';
+                }
+            });
+
+            // Initialize counter
+            charCounter.textContent = '500 characters remaining';
+        }
+
+        // Image gallery functionality
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        const mainImage = document.querySelector('.main-image img');
+        
+        if (thumbnails.length && mainImage) {
+            thumbnails.forEach(thumbnail => {
+                thumbnail.addEventListener('click', function() {
+                    const imgSrc = this.querySelector('img').src;
+                    mainImage.src = imgSrc;
+                });
+            });
+        }
+
+        // Initialize Google Maps if needed
+        function initMap() {
+            {% if business.latitude and business.longitude %}
+            const location = { lat: {{ business.latitude }}, lng: {{ business.longitude }} };
+            const map = new google.maps.Map(document.getElementById("business-map"), {
+                zoom: 15,
+                center: location,
+                styles: [
+                    {
+                        "featureType": "all",
+                        "elementType": "labels.text.fill",
+                        "stylers": [
+                            {
+                                "color": "#7c93a3"
+                            },
+                            {
+                                "lightness": "-10"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "administrative.country",
+                        "elementType": "geometry",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "administrative.country",
+                        "elementType": "geometry.stroke",
+                        "stylers": [
+                            {
+                                "color": "#a0a4a5"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "administrative.province",
+                        "elementType": "geometry.stroke",
+                        "stylers": [
+                            {
+                                "color": "#62838e"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "landscape",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "color": "#dde3e3"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "landscape.man_made",
+                        "elementType": "geometry.stroke",
+                        "stylers": [
+                            {
+                                "color": "#3f4a51"
+                            },
+                            {
+                                "weight": "0.30"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "simplified"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.attraction",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.business",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.government",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.park",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.place_of_worship",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.school",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "poi.sports_complex",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "saturation": "-100"
+                            },
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road",
+                        "elementType": "geometry.stroke",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "color": "#bbcacf"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "geometry.stroke",
+                        "stylers": [
+                            {
+                                "lightness": "0"
+                            },
+                            {
+                                "color": "#bbcacf"
+                            },
+                            {
+                                "weight": "0.50"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "labels",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway",
+                        "elementType": "labels.text",
+                        "stylers": [
+                            {
+                                "visibility": "on"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway.controlled_access",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "color": "#ffffff"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.highway.controlled_access",
+                        "elementType": "geometry.stroke",
+                        "stylers": [
+                            {
+                                "color": "#a9b4b8"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "road.arterial",
+                        "elementType": "labels.icon",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "transit",
+                        "elementType": "all",
+                        "stylers": [
+                            {
+                                "visibility": "off"
+                            }
+                        ]
+                    },
+                    {
+                        "featureType": "water",
+                        "elementType": "geometry.fill",
+                        "stylers": [
+                            {
+                                "color": "#a3c7df"
+                            }
+                        ]
+                    }
+                ]
+            });
+            new google.maps.Marker({
+                position: location,
+                map: map,
+                title: "{{ business.name }}"
+            });
+            {% endif %}
+        }
+
+        // Lazy load images with Intersection Observer
+        if ('IntersectionObserver' in window) {
+            const lazyImages = [].slice.call(document.querySelectorAll('img[loading="lazy"]'));
+            
+            let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        let lazyImage = entry.target;
+                        lazyImage.src = lazyImage.dataset.src;
+                        lazyImageObserver.unobserve(lazyImage);
+                    }
+                });
+            });
+
+            lazyImages.forEach(function(lazyImage) {
+                lazyImage.dataset.src = lazyImage.src;
+                lazyImage.src = '';
+                lazyImageObserver.observe(lazyImage);
+            });
+        }
     </script>
+    {% if business.latitude and business.longitude %}
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+    {% endif %}
 </body>
 </html>
