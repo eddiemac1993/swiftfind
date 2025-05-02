@@ -359,17 +359,11 @@
             display: inline-flex;
             align-items: center;
             padding: 4px 10px;
-            background-color: var(--primary-light);
             color: var(--primary-dark);
             border-radius: 20px;
             font-size: 12px;
             font-weight: 500;
             margin-top: auto;
-        }
-
-        .dark-mode .business-category {
-            background-color: rgba(7, 193, 96, 0.2);
-            color: var(--primary-color);
         }
 
         .business-category i {
@@ -1026,9 +1020,9 @@
             <i class="fas fa-compass"></i>
             <span>Discover</span>
         </a>
-        <a href="{% url 'add-business' %}" class="nav-item">
-            <i class="fas fa-plus"></i>
-            <span>Add Business</span>
+        <a href="{% url 'about' %}" class="nav-item">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
         </a>
         {% if user.is_authenticated %}
             <a href="{% url 'profile' %}" class="nav-item" title="Profile">

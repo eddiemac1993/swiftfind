@@ -7,25 +7,32 @@
     <meta name="theme-color" content="#07C160">
     <title>{{ business.name }} - Business Details</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --primary-color: #07C160;
             --primary-dark: #05a54e;
             --primary-light: #e6f7ef;
+            --primary-extra-light: #f5fdf9;
             --secondary-color: #F8F8F8;
-            --text-color: #333;
-            --light-text: #999;
-            --border-color: #EEE;
+            --text-color: #1a1a1a;
+            --light-text: #666;
+            --lighter-text: #999;
+            --border-color: #e0e0e0;
             --white: #FFFFFF;
             --black: #1A1A1A;
             --dark-bg: #121212;
             --dark-surface: #1E1E1E;
-            --dark-text: #E0E0E0;
-            --dark-light-text: #A0A0A0;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --dark-surface-light: #2a2a2a;
+            --dark-text: #f0f0f0;
+            --dark-light-text: #b0b0b0;
+            --dark-lighter-text: #808080;
+            --dark-border-color: #333;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.12);
+            --dark-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            --dark-shadow-md: 0 6px 16px rgba(0, 0, 0, 0.3);
         }
 
         * {
@@ -33,13 +40,14 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
         }
 
         body {
             background-color: var(--secondary-color);
             color: var(--text-color);
-            padding-bottom: 72px;
+            padding-bottom: 80px;
+            line-height: 1.6;
         }
 
         body.dark-mode {
@@ -56,10 +64,12 @@
             color: white;
             padding: 8px;
             z-index: 100;
+            border-radius: 4px;
         }
 
         .skip-link:focus {
-            left: 0;
+            left: 10px;
+            top: 10px;
         }
 
         *:focus {
@@ -74,14 +84,14 @@
             position: sticky;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
             border-bottom-left-radius: 16px;
             border-bottom-right-radius: 16px;
         }
 
         .dark-mode .app-header {
             background-color: var(--dark-surface);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            box-shadow: var(--dark-shadow);
         }
 
         .header-top {
@@ -96,10 +106,16 @@
             align-items: center;
             font-size: 14px;
             font-weight: 500;
-            padding: 6px 12px;
+            padding: 8px 14px;
             background-color: var(--primary-light);
             border-radius: 20px;
             color: var(--primary-dark);
+            transition: all 0.2s ease;
+        }
+
+        .location:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
         }
 
         .dark-mode .location {
@@ -108,14 +124,14 @@
         }
 
         .location i {
-            margin-right: 5px;
+            margin-right: 6px;
             color: var(--primary-color);
         }
 
         .user-actions {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .user-actions i {
@@ -138,6 +154,11 @@
             align-items: center;
             justify-content: center;
             background-color: var(--secondary-color);
+            transition: all 0.2s ease;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.05);
         }
 
         .dark-mode .theme-btn {
@@ -160,15 +181,15 @@
         /* Business Hero Section */
         .business-hero {
             position: relative;
-            height: 250px;
+            height: 280px;
             overflow: hidden;
-            margin: 0 16px 16px;
+            margin: 0 16px 20px;
             border-radius: 16px;
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-md);
         }
 
         .dark-mode .business-hero {
-            box-shadow: var(--dark-shadow);
+            box-shadow: var(--dark-shadow-md);
         }
 
         .business-hero-image {
@@ -177,6 +198,11 @@
             object-fit: cover;
             filter: brightness(0.7);
             loading: lazy;
+            transition: transform 0.5s ease;
+        }
+
+        .business-hero:hover .business-hero-image {
+            transform: scale(1.02);
         }
 
         .business-hero-overlay {
@@ -188,15 +214,15 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
-            padding: 20px;
+            padding: 24px;
             color: white;
             background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
         }
 
         .business-badges {
             position: absolute;
-            top: 10px;
-            right: 15px;
+            top: 12px;
+            right: 16px;
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
@@ -212,6 +238,8 @@
             gap: 5px;
             color: white;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(4px);
+            background-color: rgba(0,0,0,0.2);
         }
 
         .business-name {
@@ -219,13 +247,14 @@
             font-weight: 700;
             margin-bottom: 8px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            line-height: 1.3;
         }
 
         .business-meta {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 16px;
+            margin-bottom: 16px;
             flex-wrap: wrap;
             text-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
@@ -233,7 +262,7 @@
         .business-rating {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
             color: #FFD700;
             font-weight: 600;
         }
@@ -261,7 +290,23 @@
 
         /* Image Gallery */
         .image-gallery {
-            margin: 20px 16px;
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .image-gallery {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
         }
 
         .main-image {
@@ -269,7 +314,8 @@
             height: 300px;
             border-radius: 12px;
             overflow: hidden;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
         }
 
         .main-image img {
@@ -277,13 +323,38 @@
             height: 100%;
             object-fit: cover;
             loading: lazy;
+            transition: transform 0.5s ease;
+        }
+
+        .main-image:hover img {
+            transform: scale(1.03);
         }
 
         .thumbnail-container {
             display: flex;
             gap: 10px;
             overflow-x: auto;
-            padding-bottom: 10px;
+            padding-bottom: 6px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--border-color);
+        }
+
+        .thumbnail-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .thumbnail-container::-webkit-scrollbar-track {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .dark-mode .thumbnail-container::-webkit-scrollbar-track {
+            background: var(--dark-border-color);
+        }
+
+        .thumbnail-container::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 3px;
         }
 
         .thumbnail {
@@ -293,11 +364,19 @@
             overflow: hidden;
             flex-shrink: 0;
             cursor: pointer;
-            transition: transform 0.2s ease;
+            transition: all 0.2s ease;
+            position: relative;
+            border: 2px solid transparent;
         }
 
         .thumbnail:hover {
             transform: scale(1.05);
+            box-shadow: var(--shadow);
+            border-color: var(--primary-color);
+        }
+
+        .thumbnail.active {
+            border-color: var(--primary-color);
         }
 
         .thumbnail img {
@@ -312,9 +391,21 @@
             margin: 0 16px 20px;
         }
 
+        .business-info-card {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .business-info-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
         .business-description {
-            margin: 20px 0;
-            line-height: 1.6;
+            margin: 16px 0;
+            line-height: 1.7;
             color: var(--text-color);
         }
 
@@ -325,26 +416,44 @@
         .business-details-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 15px;
+            gap: 16px;
             margin-top: 20px;
         }
 
         .detail-item {
             display: flex;
             align-items: flex-start;
-            gap: 10px;
+            gap: 12px;
+            padding: 12px;
+            background-color: var(--primary-extra-light);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .detail-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .detail-item {
+            background-color: var(--dark-surface-light);
         }
 
         .detail-icon {
             color: var(--primary-color);
-            font-size: 18px;
+            font-size: 20px;
             margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .detail-content {
+            flex: 1;
         }
 
         .detail-content h4 {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             color: var(--text-color);
         }
 
@@ -361,6 +470,16 @@
             color: var(--dark-light-text);
         }
 
+        .detail-content a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .detail-content a:hover {
+            text-decoration: underline;
+        }
+
         /* Hours Table */
         .hours-table {
             margin-top: 8px;
@@ -369,12 +488,12 @@
         .hours-row {
             display: flex;
             justify-content: space-between;
-            padding: 6px 0;
+            padding: 8px 0;
             border-bottom: 1px solid var(--border-color);
         }
 
         .dark-mode .hours-row {
-            border-bottom-color: rgba(255, 255, 255, 0.1);
+            border-bottom-color: var(--dark-border-color);
         }
 
         .hours-row.today {
@@ -388,24 +507,35 @@
 
         /* Map Container */
         .map-container {
-            margin: 20px 16px;
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .map-container {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
         }
 
         #business-map {
-            height: 250px;
+            height: 280px;
             border-radius: 12px;
-            margin-top: 10px;
+            margin-top: 12px;
             box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
         }
 
         .dark-mode #business-map {
             box-shadow: var(--dark-shadow);
+            border-color: var(--dark-border-color);
         }
 
         /* Action Buttons */
         .action-buttons {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             margin: 20px 16px;
             flex-wrap: wrap;
         }
@@ -413,7 +543,7 @@
         .action-button {
             flex: 1;
             min-width: 120px;
-            padding: 12px;
+            padding: 14px;
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -423,11 +553,16 @@
             cursor: pointer;
             border: none;
             transition: all 0.3s ease;
+            font-size: 15px;
         }
 
         .action-button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .action-button:active {
+            transform: translateY(0);
         }
 
         .primary-action {
@@ -448,17 +583,203 @@
         .dark-mode .secondary-action {
             background-color: var(--dark-surface);
             color: var(--dark-text);
-            border-color: rgba(255, 255, 255, 0.1);
+            border-color: var(--dark-border-color);
         }
 
         .secondary-action:hover {
             background-color: var(--primary-light);
             color: var(--primary-dark);
+            border-color: var(--primary-color);
         }
 
         .dark-mode .secondary-action:hover {
             background-color: rgba(7, 193, 96, 0.2);
             color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* Document Section */
+        .business-document-section {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .business-document-section {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .document-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .dark-mode .document-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+        
+        .document-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .document-icon {
+            font-size: 36px;
+            color: #e74c3c;
+        }
+        
+        .document-meta {
+            flex: 1;
+        }
+        
+        .document-title {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-color);
+        }
+        
+        .dark-mode .document-title {
+            color: var(--dark-text);
+        }
+        
+        .document-details {
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+            color: var(--light-text);
+        }
+        
+        .dark-mode .document-details {
+            color: var(--dark-light-text);
+        }
+        
+        .document-details i {
+            margin-right: 6px;
+            color: var(--primary-color);
+        }
+        
+        .document-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .document-action {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .view-action {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .dark-mode .view-action {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .download-action {
+            background-color: var(--white);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        .dark-mode .download-action {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            border-color: var(--dark-border-color);
+        }
+        
+        .replace-action {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .document-action:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        /* No Document State */
+        .no-document-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 24px 16px;
+            margin-top: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            border: 2px dashed var(--border-color);
+        }
+        
+        .dark-mode .no-document-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+            border-color: var(--dark-border-color);
+        }
+        
+        .no-document-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .no-document-icon {
+            font-size: 36px;
+            color: var(--primary-color);
+            opacity: 0.7;
+        }
+        
+        .no-document-card p {
+            color: var(--light-text);
+            margin-bottom: 16px;
+            font-size: 15px;
+        }
+        
+        .dark-mode .no-document-card p {
+            color: var(--dark-light-text);
+        }
+        
+        .upload-document-btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 15px;
+        }
+        
+        .upload-document-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
 
         /* Reviews Section */
@@ -482,11 +803,15 @@
             color: var(--text-color);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .dark-mode .section-title {
             color: var(--dark-text);
+        }
+
+        .section-title i {
+            color: var(--primary-color);
         }
 
         .review-card {
@@ -495,7 +820,7 @@
         }
 
         .dark-mode .review-card {
-            border-bottom-color: rgba(255, 255, 255, 0.1);
+            border-bottom-color: var(--dark-border-color);
         }
 
         .review-card:last-child {
@@ -506,18 +831,18 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
 
         .review-user {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             background-color: var(--primary-light);
             display: flex;
@@ -525,11 +850,17 @@
             justify-content: center;
             color: var(--primary-color);
             font-weight: bold;
+            font-size: 18px;
+        }
+
+        .dark-mode .user-avatar {
+            background-color: rgba(7, 193, 96, 0.2);
         }
 
         .user-name {
             font-weight: 600;
             color: var(--text-color);
+            font-size: 15px;
         }
 
         .dark-mode .user-name {
@@ -537,7 +868,7 @@
         }
 
         .review-date {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--light-text);
         }
 
@@ -547,12 +878,15 @@
 
         .review-rating {
             color: var(--primary-color);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            letter-spacing: 1px;
         }
 
         .review-content {
             color: var(--text-color);
-            line-height: 1.5;
+            line-height: 1.6;
+            font-size: 15px;
         }
 
         .dark-mode .review-content {
@@ -574,7 +908,7 @@
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
 
         .form-label {
@@ -582,6 +916,7 @@
             margin-bottom: 8px;
             font-weight: 600;
             color: var(--text-color);
+            font-size: 15px;
         }
 
         .dark-mode .form-label {
@@ -590,27 +925,38 @@
 
         .form-control {
             width: 100%;
-            padding: 12px;
+            padding: 12px 16px;
             border-radius: 8px;
             border: 1px solid var(--border-color);
             background-color: var(--white);
             color: var(--text-color);
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(7, 193, 96, 0.2);
         }
 
         .dark-mode .form-control {
             background-color: var(--dark-surface);
-            border-color: rgba(255, 255, 255, 0.1);
+            border-color: var(--dark-border-color);
             color: var(--dark-text);
+        }
+
+        .dark-mode .form-control:focus {
+            box-shadow: 0 0 0 2px rgba(7, 193, 96, 0.3);
         }
 
         .rating-stars {
             display: flex;
-            gap: 5px;
-            margin-bottom: 15px;
+            gap: 8px;
+            margin-bottom: 16px;
         }
 
         .star {
-            font-size: 24px;
+            font-size: 28px;
             color: #ddd;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -622,65 +968,94 @@
 
         .star.active {
             color: var(--primary-color);
+            text-shadow: 0 2px 4px rgba(7, 193, 96, 0.3);
         }
 
         .char-counter {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--light-text);
             text-align: right;
-            margin-top: 4px;
+            margin-top: 6px;
+        }
+
+        .dark-mode .char-counter {
+            color: var(--dark-light-text);
         }
 
         .submit-button {
             background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 12px 20px;
+            padding: 14px 20px;
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
+            font-size: 16px;
         }
 
         .submit-button:hover {
             background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
         }
 
         /* Related Businesses */
         .related-businesses {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
             margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .related-businesses {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
         }
 
         .related-business-card {
             background-color: var(--white);
             border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
             box-shadow: var(--shadow);
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 16px;
             transition: all 0.3s ease;
             text-decoration: none;
+            border: 1px solid var(--border-color);
         }
 
         .related-business-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
         }
 
         .dark-mode .related-business-card {
             background-color: var(--dark-surface);
             box-shadow: var(--dark-shadow);
+            border-color: var(--dark-border-color);
+        }
+
+        .dark-mode .related-business-card:hover {
+            border-color: var(--primary-color);
         }
 
         .related-business-image {
-            width: 60px;
-            height: 60px;
+            width: 64px;
+            height: 64px;
             border-radius: 12px;
             object-fit: cover;
             loading: lazy;
+            flex-shrink: 0;
         }
 
         .related-business-info {
@@ -689,8 +1064,10 @@
 
         .related-business-name {
             font-weight: 600;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             color: var(--text-color);
+            font-size: 15px;
+            line-height: 1.3;
         }
 
         .dark-mode .related-business-name {
@@ -700,9 +1077,18 @@
         .related-business-rating {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
             color: var(--primary-color);
             font-size: 14px;
+        }
+
+        .related-business-arrow {
+            color: var(--light-text);
+            font-size: 14px;
+        }
+
+        .dark-mode .related-business-arrow {
+            color: var(--dark-light-text);
         }
 
         /* Social Sharing */
@@ -721,13 +1107,13 @@
 
         .social-buttons {
             display: flex;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 12px;
+            margin-top: 16px;
         }
 
         .social-button {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -738,7 +1124,8 @@
         }
 
         .social-button:hover {
-            transform: translateY(-3px);
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
 
         .facebook {
@@ -753,6 +1140,22 @@
             background-color: #07C160;
         }
 
+        .twitter {
+            background-color: #1DA1F2;
+        }
+
+        .copy-link {
+            background-color: var(--white);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .dark-mode .copy-link {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            border-color: var(--dark-border-color);
+        }
+
         /* Bottom navigation */
         .bottom-nav {
             position: fixed;
@@ -762,8 +1165,8 @@
             display: flex;
             justify-content: space-around;
             background-color: var(--white);
-            padding: 12px 0 8px;
-            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+            padding: 12px 0 10px;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.1);
             z-index: 100;
             border-top-left-radius: 20px;
             border-top-right-radius: 20px;
@@ -783,8 +1186,10 @@
             font-size: 12px;
             font-weight: 500;
             position: relative;
-            padding: 6px 16px;
+            padding: 6px 12px;
             transition: all 0.3s ease;
+            flex: 1;
+            max-width: 25%;
         }
 
         .nav-item i {
@@ -799,6 +1204,22 @@
 
         .nav-item.active i {
             transform: translateY(-2px);
+        }
+
+        .nav-item .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
         }
 
         .formatted-text {
@@ -816,39 +1237,196 @@
             display: flex;
             justify-content: center;
             gap: 8px;
-            margin-top: 20px;
+            margin-top: 24px;
         }
 
         .pagination-button {
-            padding: 8px 12px;
+            padding: 8px 14px;
             border-radius: 8px;
             background-color: var(--white);
             color: var(--text-color);
             border: 1px solid var(--border-color);
             text-decoration: none;
             transition: all 0.3s ease;
+            font-size: 14px;
+            min-width: 40px;
+            text-align: center;
         }
 
         .dark-mode .pagination-button {
             background-color: var(--dark-surface);
             color: var(--dark-text);
-            border-color: rgba(255, 255, 255, 0.1);
+            border-color: var(--dark-border-color);
         }
 
         .pagination-button:hover {
             background-color: var(--primary-light);
             color: var(--primary-dark);
+            border-color: var(--primary-color);
         }
 
         .dark-mode .pagination-button:hover {
             background-color: rgba(7, 193, 96, 0.2);
             color: var(--primary-color);
+            border-color: var(--primary-color);
         }
 
         .pagination-button.active {
             background-color: var(--primary-color);
             color: white;
             border-color: var(--primary-color);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .dark-mode .modal-content {
+            background-color: var(--dark-surface);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--light-text);
+        }
+
+        .dark-mode .modal-close {
+            color: var(--dark-light-text);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .modal-title
+                    color: var(--dark-text);
+        }
+
+        .modal-body {
+            margin-bottom: 24px;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .dark-mode .modal-body {
+            color: var(--dark-text);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .modal-btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .modal-btn-secondary {
+            background-color: var(--white);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .dark-mode .modal-btn-secondary {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            border-color: var(--dark-border-color);
+        }
+
+        .modal-btn-secondary:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            border-color: var(--primary-color);
+        }
+
+        .dark-mode .modal-btn-secondary:hover {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--white);
+            color: var(--text-color);
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .dark-mode .toast {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            box-shadow: var(--dark-shadow-md);
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .toast-icon {
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+
+        .toast-message {
+            font-size: 14px;
         }
 
         /* Responsive Layout */
@@ -886,7 +1464,8 @@
             .related-businesses,
             .social-sharing,
             .image-gallery,
-            .map-container {
+            .map-container,
+            .business-document-section {
                 max-width: 1200px;
                 margin: 0 auto 24px;
             }
@@ -918,15 +1497,29 @@
 
         @media (max-width: 480px) {
             .business-hero {
-                height: 200px;
+                height: 220px;
             }
 
             .business-name {
-                font-size: 18px;
+                font-size: 22px;
             }
 
             .business-meta {
                 gap: 10px;
+                font-size: 14px;
+            }
+
+            .action-button {
+                min-width: 100%;
+            }
+
+            .document-actions {
+                flex-direction: column;
+            }
+
+            .document-action {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -1000,75 +1593,6 @@
             </div>
         </section>
 
-<!-- Add this section after the business details grid -->
-<div class="business-document-section" style="margin: 20px 16px;">
-    <h2 class="section-title">
-        <i class="fas fa-file-pdf"></i>
-        Company Profile
-    </h2>
-
-    {% if business.company_profile %}
-    <div class="document-card" style="background-color: var(--white); border-radius: 12px; padding: 16px; margin-top: 12px; box-shadow: var(--shadow);">
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <i class="fas fa-file-pdf" style="font-size: 32px; color: #e74c3c;"></i>
-            <div>
-                <h3 style="font-weight: 600; margin-bottom: 4px; color: var(--text-color);">Business Profile Document</h3>
-                <p style="font-size: 14px; color: var(--light-text);">
-                    Uploaded: {{ business.updated_at|date:"M d, Y" }}
-                </p>
-            </div>
-        </div>
-
-        <div style="margin-top: 16px; display: flex; gap: 10px;">
-            <a href="{{ business.company_profile.url }}"
-               target="_blank"
-               class="btn-primary"
-               style="padding: 8px 16px; border-radius: 8px; background-color: var(--primary-color); color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-                <i class="fas fa-eye"></i> View PDF
-            </a>
-            <a href="{{ business.company_profile.url }}"
-               download
-               class="btn-secondary"
-               style="padding: 8px 16px; border-radius: 8px; background-color: var(--secondary-color); color: var(--text-color); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border-color);">
-                <i class="fas fa-download"></i> Download
-            </a>
-        </div>
-    </div>
-    {% else %}
-    <div style="background-color: var(--white); border-radius: 12px; padding: 16px; margin-top: 12px; box-shadow: var(--shadow); text-align: center;">
-        <p style="color: var(--light-text); margin-bottom: 12px;">
-            <i class="fas fa-info-circle" style="color: var(--primary-color);"></i>
-            No company profile document available
-        </p>
-        {% if user.is_authenticated and business.owner == user %}
-        <a href="{% url 'business-update' business.pk %}"
-           class="btn-primary"
-           style="padding: 8px 16px; border-radius: 8px; background-color: var(--primary-color); color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
-            <i class="fas fa-upload"></i> Upload PDF
-        </a>
-        {% endif %}
-    </div>
-    {% endif %}
-</div>
-
-<!-- Dark mode styles for the document section -->
-<style>
-    .dark-mode .document-card {
-        background-color: var(--dark-surface);
-        box-shadow: var(--dark-shadow);
-    }
-
-    .dark-mode .document-card h3 {
-        color: var(--dark-text);
-    }
-
-    .dark-mode .btn-secondary {
-        background-color: rgba(255, 255, 255, 0.1);
-        color: var(--dark-text);
-        border-color: rgba(255, 255, 255, 0.1);
-    }
-</style>
-
         <!-- Business Info Container -->
         <div class="business-info-container">
             <div class="business-info-card">
@@ -1091,7 +1615,6 @@
                         </div>
                     </div>
 
-
                     <div class="detail-item">
                         <div class="detail-icon">
                             <i class="fas fa-phone"></i>
@@ -1108,7 +1631,36 @@
                         </div>
                         <div class="detail-content">
                             <h4>Website</h4>
-                            <p>{{ business.website|default:"Not available" }}</p>
+                            <p>
+                                {% if business.website %}
+                                    <a href="{{ business.website }}" target="_blank">{{ business.website }}</a>
+                                {% else %}
+                                    Not available
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="detail-content">
+                            <h4>Hours</h4>
+                            <div class="hours-table">
+                                {% for hour in business.hours.all %}
+                                <div class="hours-row {% if hour.is_today %}today{% endif %}">
+                                    <span>{{ hour.get_day_display }}</span>
+                                    <span>
+                                        {% if hour.is_closed %}
+                                            Closed
+                                        {% else %}
+                                            {{ hour.opening_time|time:"g:i A" }} - {{ hour.closing_time|time:"g:i A" }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                {% endfor %}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1116,21 +1668,80 @@
 
             <!-- Action Buttons -->
             <div class="action-buttons">
-                <button class="action-button primary-action" aria-label="Call {{ business.name }}">
+                <button class="action-button primary-action" aria-label="Call {{ business.name }}" id="call-button">
                     <i class="fas fa-phone-alt"></i>
                     Call Now
                 </button>
-                <button class="action-button secondary-action" aria-label="Get directions to {{ business.name }}">
+                <button class="action-button secondary-action" aria-label="Get directions to {{ business.name }}" id="directions-button">
                     <i class="fas fa-directions"></i>
                     Get Directions
                 </button>
                 {% if business.website %}
-                <button class="action-button secondary-action" aria-label="Visit {{ business.name }} website">
+                <button class="action-button secondary-action" aria-label="Visit {{ business.name }} website" id="website-button">
                     <i class="fas fa-globe"></i>
                     Visit Website
                 </button>
                 {% endif %}
+                {% if user.is_authenticated and business.owner == user %}
+                <button class="action-button secondary-action" aria-label="Edit business" id="edit-button">
+                    <i class="fas fa-edit"></i>
+                    Edit Business
+                </button>
+                {% endif %}
             </div>
+        </div>
+
+        <!-- Document Section -->
+        <div class="business-document-section">
+            <h2 class="section-title">
+                <i class="fas fa-file-pdf"></i>
+                Company Profile
+            </h2>
+
+            {% if business.company_profile %}
+            <div class="document-card">
+                <div class="document-header">
+                    <i class="fas fa-file-pdf document-icon"></i>
+                    <div class="document-meta">
+                        <h3 class="document-title">Business Profile Document</h3>
+                        <div class="document-details">
+                            <span><i class="fas fa-calendar-alt"></i> {{ business.updated_at|date:"M d, Y" }}</span>
+                            <span><i class="fas fa-file-alt"></i> PDF</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="document-actions">
+                    <a href="{{ business.company_profile.url }}" 
+                       target="_blank" 
+                       class="document-action view-action">
+                        <i class="fas fa-eye"></i> View Document
+                    </a>
+                    <a href="{{ business.company_profile.url }}" 
+                       download 
+                       class="document-action download-action">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                    {% if user.is_authenticated and business.owner == user %}
+                    <button class="document-action replace-action" id="replace-document">
+                        <i class="fas fa-sync-alt"></i> Replace
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div class="no-document-card">
+                <div class="no-document-content">
+                    <i class="fas fa-file-upload no-document-icon"></i>
+                    <p>No company profile document has been uploaded yet.</p>
+                    {% if user.is_authenticated and business.owner == user %}
+                    <button class="upload-document-btn" id="upload-document">
+                        <i class="fas fa-upload"></i> Upload Document
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
         </div>
 
         <!-- Map Integration -->
@@ -1140,7 +1751,7 @@
                 <i class="fas fa-map-marked-alt"></i>
                 Location
             </h2>
-            <div id="business-map" style="height: 300px; border-radius: 12px;"></div>
+            <div id="business-map"></div>
         </div>
         {% endif %}
 
@@ -1167,12 +1778,25 @@
                     <i class="fab fa-whatsapp"></i>
                 </a>
 
+                <!-- Twitter Share Button -->
+                <a href="https://twitter.com/intent/tweet?text=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
+                   target="_blank"
+                   class="social-button twitter"
+                   aria-label="Share on Twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+
                 <!-- SMS Share Button -->
                 <a href="sms:?body=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
                    class="social-button sms"
                    aria-label="Share via SMS">
                     <i class="fas fa-comment-alt"></i>
                 </a>
+
+                <!-- Copy Link Button -->
+                <button class="social-button copy-link" id="copy-link-button" aria-label="Copy link">
+                    <i class="fas fa-link"></i>
+                </button>
             </div>
         </div>
 
@@ -1291,8 +1915,7 @@
                 <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }}" class="related-business-image" loading="lazy">
                 <div class="related-business-info">
                     <h3 class="related-business-name">{{ related_business.name }}</h3>
-
-                                        <div class="related-business-rating">
+                    <div class="related-business-rating">
                         <span>
                             {% for i in "12345" %}
                                 {% if i|add:0 <= related_business.average_rating %}
@@ -1305,7 +1928,7 @@
                         <span>{{ related_business.average_rating|floatformat:1 }}</span>
                     </div>
                 </div>
-                <i class="fas fa-chevron-right" style="color: var(--light-text);"></i>
+                <i class="fas fa-chevron-right related-business-arrow"></i>
             </a>
             {% endfor %}
         </div>
@@ -1314,22 +1937,25 @@
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <a href="{% url 'home' %}" class="nav-item">
+        <a href="{% url 'home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
             <i class="fas fa-home"></i>
             <span>Home</span>
         </a>
-        <a href="{% url 'discover' %}" class="nav-item">
+        <a href="{% url 'discover' %}" class="nav-item {% if request.resolver_match.url_name == 'discover' %}active{% endif %}">
             <i class="fas fa-compass"></i>
             <span>Discover</span>
         </a>
-        <a href="{% url 'add-business' %}" class="nav-item">
-            <i class="fas fa-plus"></i>
-            <span>Add Business</span>
+        <a href="{% url 'about' %}" class="nav-item {% if request.resolver_match.url_name == 'add-business' %}active{% endif %}">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
         </a>
         {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+            <a href="{% url 'profile' %}" class="nav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" title="Profile">
                 <i class="fas fa-user"></i>
                 <span>Me</span>
+                {% if unread_notifications > 0 %}
+                <span class="notification-badge">{{ unread_notifications }}</span>
+                {% endif %}
             </a>
         {% else %}
             <a href="{% url 'login' %}" class="nav-item" title="Login">
@@ -1339,12 +1965,46 @@
         {% endif %}
     </nav>
 
+    <!-- Document Upload Modal -->
+    <div class="modal" id="document-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">&times;</button>
+            <h3 class="modal-title">Upload Company Profile</h3>
+            <div class="modal-body">
+                <p>Please upload a PDF document containing your company profile. The file should be less than 5MB.</p>
+                <form id="document-upload-form" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="document-file" class="form-label">Select PDF File</label>
+                        <input type="file" id="document-file" name="company_profile" accept=".pdf" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" id="cancel-upload">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="confirm-upload">Upload</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast-notification">
+        <i class="fas fa-check-circle toast-icon"></i>
+        <span class="toast-message" id="toast-message">Link copied to clipboard!</span>
+    </div>
+
     <script>
         // Theme Toggle
         document.getElementById('theme-toggle').addEventListener('click', function() {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
             document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+            
+            // Update map theme if it exists
+            if (window.map) {
+                const theme = isDark ? 'dark' : 'light';
+                updateMapTheme(theme);
+            }
         });
 
         // Rating Stars
@@ -1393,32 +2053,32 @@
         });
 
         // Action Buttons Functionality
-        document.querySelector('.action-button.primary-action').addEventListener('click', function() {
-            window.location.href = `tel:{{ business.phone }}`;
+        document.getElementById('call-button').addEventListener('click', function() {
+            window.location.href = `tel:{{ business.phone_number }}`;
         });
 
-        document.querySelectorAll('.action-button.secondary-action')[0].addEventListener('click', function() {
+        document.getElementById('directions-button').addEventListener('click', function() {
             const address = encodeURIComponent('{{ business.address }}, {{ business.city }}');
             window.open(`https://www.google.com/maps/dir/?api=1&destination=${address}`);
         });
 
         {% if business.website %}
-        document.querySelectorAll('.action-button.secondary-action')[1].addEventListener('click', function() {
+        document.getElementById('website-button').addEventListener('click', function() {
             window.open('{{ business.website }}', '_blank');
+        });
+        {% endif %}
+
+        {% if user.is_authenticated and business.owner == user %}
+        document.getElementById('edit-button').addEventListener('click', function() {
+            window.location.href = "{% url 'profile' %}";
         });
         {% endif %}
 
         // Character counter for review text
         const reviewTextarea = document.getElementById('comment');
         if (reviewTextarea) {
-            const charCounter = document.createElement('div');
-            charCounter.className = 'char-counter';
-            charCounter.style.fontSize = '12px';
-            charCounter.style.color = 'var(--light-text)';
-            charCounter.style.textAlign = 'right';
-            charCounter.style.marginTop = '4px';
-            reviewTextarea.parentNode.appendChild(charCounter);
-
+            const charCounter = reviewTextarea.nextElementSibling;
+            
             reviewTextarea.addEventListener('input', function() {
                 const remaining = 500 - this.value.length;
                 charCounter.textContent = `${remaining} characters remaining`;
@@ -1433,276 +2093,155 @@
             charCounter.textContent = '500 characters remaining';
         }
 
-        // Image gallery functionality
-        const thumbnails = document.querySelectorAll('.thumbnail');
-        const mainImage = document.querySelector('.main-image img');
+        // Document Upload Modal
+        const documentModal = document.getElementById('document-modal');
+        const uploadDocumentBtn = document.getElementById('upload-document');
+        const replaceDocumentBtn = document.getElementById('replace-document');
+        const modalCloseBtn = document.getElementById('modal-close');
+        const cancelUploadBtn = document.getElementById('cancel-upload');
+        const confirmUploadBtn = document.getElementById('confirm-upload');
+        const documentUploadForm = document.getElementById('document-upload-form');
 
-        if (thumbnails.length && mainImage) {
-            thumbnails.forEach(thumbnail => {
-                thumbnail.addEventListener('click', function() {
-                    const imgSrc = this.querySelector('img').src;
-                    mainImage.src = imgSrc;
+        if (uploadDocumentBtn) {
+            uploadDocumentBtn.addEventListener('click', function() {
+                documentModal.style.display = 'flex';
+            });
+        }
+
+        if (replaceDocumentBtn) {
+            replaceDocumentBtn.addEventListener('click', function() {
+                documentModal.style.display = 'flex';
+            });
+        }
+
+        modalCloseBtn.addEventListener('click', function() {
+            documentModal.style.display = 'none';
+        });
+
+        cancelUploadBtn.addEventListener('click', function() {
+            documentModal.style.display = 'none';
+        });
+
+        confirmUploadBtn.addEventListener('click', function() {
+            const fileInput = document.getElementById('document-file');
+            if (fileInput.files.length > 0) {
+                documentUploadForm.action = "{% url 'profile' %}";
+                documentUploadForm.submit();
+            } else {
+                alert('Please select a PDF file to upload.');
+            }
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === documentModal) {
+                documentModal.style.display = 'none';
+            }
+        });
+
+        // Copy Link Functionality
+        const copyLinkBtn = document.getElementById('copy-link-button');
+        const toastNotification = document.getElementById('toast-notification');
+        const toastMessage = document.getElementById('toast-message');
+
+        if (copyLinkBtn) {
+            copyLinkBtn.addEventListener('click', function() {
+                const url = window.location.href;
+                navigator.clipboard.writeText(url).then(function() {
+                    toastMessage.textContent = 'Link copied to clipboard!';
+                    showToast();
+                }, function() {
+                    // Fallback for browsers that don't support clipboard API
+                    const textarea = document.createElement('textarea');
+                    textarea.value = url;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    toastMessage.textContent = 'Link copied to clipboard!';
+                    showToast();
                 });
             });
         }
 
-        // Initialize Google Maps if needed
-        function initMap() {
-            {% if business.latitude and business.longitude %}
-            const location = { lat: {{ business.latitude }}, lng: {{ business.longitude }} };
-            const map = new google.maps.Map(document.getElementById("business-map"), {
-                zoom: 15,
-                center: location,
-                styles: [
-                    {
-                        "featureType": "all",
-                        "elementType": "labels.text.fill",
-                        "stylers": [
-                            {
-                                "color": "#7c93a3"
-                            },
-                            {
-                                "lightness": "-10"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "administrative.country",
-                        "elementType": "geometry",
-                        "stylers": [
-                            {
-                                "visibility": "on"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "administrative.country",
-                        "elementType": "geometry.stroke",
-                        "stylers": [
-                            {
-                                "color": "#a0a4a5"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "administrative.province",
-                        "elementType": "geometry.stroke",
-                        "stylers": [
-                            {
-                                "color": "#62838e"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "landscape",
-                        "elementType": "geometry.fill",
-                        "stylers": [
-                            {
-                                "color": "#dde3e3"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "landscape.man_made",
-                        "elementType": "geometry.stroke",
-                        "stylers": [
-                            {
-                                "color": "#3f4a51"
-                            },
-                            {
-                                "weight": "0.30"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "poi",
-                        "elementType": "all",
-                        "stylers": [
-                            {
-                                "visibility": "simplified"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "poi.attraction",
-                        "elementType": "all",
-                        "stylers": [
-                            {
-                                "visibility": "on"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "poi.business",
-                        "elementType": "all",
-                        "stylers": [
-                            {
-                                "visibility": "off"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "poi.government",
-                        "elementType": "all",
-                        "stylers": [
-                            {
-                                "visibility": "off"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "poi.park",
-                        "elementType": "all",
-                        "stylers": [
-                            {
-                                "visibility": "on"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "poi.place_of_worship",
-                        "elementType": "all",
-                        "stylers": [
-                            {
-                                "visibility": "off"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "poi.school",
-                        "elementType": "all",
-                        "stylers": [
-                            {
-                                "visibility": "off"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "poi.sports_complex",
-                        "elementType": "all",
-                        "stylers": [
-                            {
-                                "visibility": "off"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "road",
-                        "elementType": "all",
-                        "stylers": [
-                            {
-                                "saturation": "-100"
-                            },
-                            {
-                                "visibility": "on"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "road",
-                        "elementType": "geometry.stroke",
-                        "stylers": [
-                            {
-                                "visibility": "on"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "road.highway",
-                        "elementType": "geometry.fill",
-                        "stylers": [
-                            {
-                                "color": "#bbcacf"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "road.highway",
-                        "elementType": "geometry.stroke",
-                        "stylers": [
-                            {
-                                "lightness": "0"
-                            },
-                            {
-                                "color": "#bbcacf"
-                            },
-                            {
-                                "weight": "0.50"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "road.highway",
-                        "elementType": "labels",
-                        "stylers": [
-                            {
-                                "visibility": "on"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "road.highway",
-                        "elementType": "labels.text",
-                        "stylers": [
-                            {
-                                "visibility": "on"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "road.highway.controlled_access",
-                        "elementType": "geometry.fill",
-                        "stylers": [
-                            {
-                                "color": "#ffffff"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "road.highway.controlled_access",
-                        "elementType": "geometry.stroke",
-                        "stylers": [
-                            {
-                                "color": "#a9b4b8"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "road.arterial",
-                        "elementType": "labels.icon",
-                        "stylers": [
-                            {
-                                "visibility": "off"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "transit",
-                        "elementType": "all",
-                        "stylers": [
-                            {
-                                "visibility": "off"
-                            }
-                        ]
-                    },
-                    {
-                        "featureType": "water",
-                        "elementType": "geometry.fill",
-                        "stylers": [
-                            {
-                                "color": "#a3c7df"
-                            }
-                        ]
-                    }
-                ]
-            });
-            new google.maps.Marker({
-                position: location,
-                map: map,
-                title: "{{ business.name }}"
-            });
-            {% endif %}
+        function showToast() {
+            toastNotification.classList.add('show');
+            setTimeout(function() {
+                toastNotification.classList.remove('show');
+            }, 3000);
         }
+
+        // Map Integration
+        {% if business.latitude and business.longitude %}
+        function initMap() {
+            const mapElement = document.getElementById('business-map');
+            if (!mapElement) return;
+
+            const isDark = document.body.classList.contains('dark-mode');
+            const mapStyle = isDark ? 'dark' : 'light';
+            
+            const map = L.map('business-map').setView([{{ business.latitude }}, {{ business.longitude }}], 15);
+            window.map = map;
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            const marker = L.marker([{{ business.latitude }}, {{ business.longitude }}]).addTo(map)
+                .bindPopup('<b>{{ business.name }}</b><br>{{ business.address }}');
+
+            // Add dark mode tile layer if needed
+            if (isDark) {
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                }).addTo(map);
+            }
+        }
+
+        function updateMapTheme(theme) {
+            if (!window.map) return;
+            
+            // Remove all tile layers
+            window.map.eachLayer(function(layer) {
+                if (layer instanceof L.TileLayer) {
+                    window.map.removeLayer(layer);
+                }
+            });
+
+            // Add appropriate tile layer based on theme
+            if (theme === 'dark') {
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                }).addTo(window.map);
+            } else {
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(window.map);
+            }
+        }
+
+        // Load Leaflet CSS and JS dynamically
+        function loadLeaflet() {
+            const leafletCSS = document.createElement('link');
+            leafletCSS.rel = 'stylesheet';
+            leafletCSS.href = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
+            leafletCSS.integrity = 'sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==';
+            leafletCSS.crossOrigin = '';
+            document.head.appendChild(leafletCSS);
+
+            const leafletJS = document.createElement('script');
+            leafletJS.src = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js';
+            leafletJS.integrity = 'sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==';
+            leafletJS.crossOrigin = '';
+            leafletJS.onload = initMap;
+            document.head.appendChild(leafletJS);
+        }
+
+        // Only load Leaflet if map element exists
+        if (document.getElementById('business-map')) {
+            loadLeaflet();
+        }
+        {% endif %}
 
         // Lazy load images with Intersection Observer
         if ('IntersectionObserver' in window) {
@@ -1725,8 +2264,5 @@
             });
         }
     </script>
-    {% if business.latitude and business.longitude %}
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
-    {% endif %}
 </body>
 </html>

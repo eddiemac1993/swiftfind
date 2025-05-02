@@ -135,14 +135,15 @@ class UserProfileForm(forms.ModelForm):
 
 from django import forms
 from .models import Business
-from ckeditor.widgets import CKEditorWidget  # Import CKEditor widget
+from .widgets import CKEditorCDNWidget
 
 class BusinessForm(forms.ModelForm):
-    description = forms.CharField(widget=CKEditorWidget(), required=False)
+    description = forms.CharField(widget=CKEditorCDNWidget(), required=False)
 
     class Meta:
         model = Business
         fields = ['logo', 'name', 'address', 'email', 'city', 'phone_number', 'category', 'description']
+
 
 
 from django import forms
