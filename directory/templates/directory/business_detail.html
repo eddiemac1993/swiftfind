@@ -620,60 +620,60 @@
             box-shadow: var(--shadow);
             border-left: 4px solid var(--primary-color);
         }
-        
+
         .dark-mode .document-card {
             background-color: var(--dark-surface);
             box-shadow: var(--dark-shadow);
         }
-        
+
         .document-header {
             display: flex;
             align-items: center;
             gap: 16px;
             margin-bottom: 16px;
         }
-        
+
         .document-icon {
             font-size: 36px;
             color: #e74c3c;
         }
-        
+
         .document-meta {
             flex: 1;
         }
-        
+
         .document-title {
             font-weight: 600;
             margin-bottom: 6px;
             color: var(--text-color);
         }
-        
+
         .dark-mode .document-title {
             color: var(--dark-text);
         }
-        
+
         .document-details {
             display: flex;
             gap: 16px;
             font-size: 14px;
             color: var(--light-text);
         }
-        
+
         .dark-mode .document-details {
             color: var(--dark-light-text);
         }
-        
+
         .document-details i {
             margin-right: 6px;
             color: var(--primary-color);
         }
-        
+
         .document-actions {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
         }
-        
+
         .document-action {
             padding: 10px 16px;
             border-radius: 8px;
@@ -685,31 +685,31 @@
             text-decoration: none;
             transition: all 0.2s ease;
         }
-        
+
         .view-action {
             background-color: var(--primary-light);
             color: var(--primary-dark);
             border: 1px solid var(--primary-color);
         }
-        
+
         .dark-mode .view-action {
             background-color: rgba(7, 193, 96, 0.2);
             color: var(--primary-color);
             border-color: var(--primary-color);
         }
-        
+
         .download-action {
             background-color: var(--white);
             color: var(--text-color);
             border: 1px solid var(--border-color);
         }
-        
+
         .dark-mode .download-action {
             background-color: var(--dark-surface);
             color: var(--dark-text);
             border-color: var(--dark-border-color);
         }
-        
+
         .replace-action {
             background-color: transparent;
             color: var(--primary-color);
@@ -720,7 +720,7 @@
             transform: translateY(-2px);
             box-shadow: var(--shadow);
         }
-        
+
         /* No Document State */
         .no-document-card {
             background-color: var(--white);
@@ -731,36 +731,36 @@
             text-align: center;
             border: 2px dashed var(--border-color);
         }
-        
+
         .dark-mode .no-document-card {
             background-color: var(--dark-surface);
             box-shadow: var(--dark-shadow);
             border-color: var(--dark-border-color);
         }
-        
+
         .no-document-content {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 12px;
         }
-        
+
         .no-document-icon {
             font-size: 36px;
             color: var(--primary-color);
             opacity: 0.7;
         }
-        
+
         .no-document-card p {
             color: var(--light-text);
             margin-bottom: 16px;
             font-size: 15px;
         }
-        
+
         .dark-mode .no-document-card p {
             color: var(--dark-light-text);
         }
-        
+
         .upload-document-btn {
             padding: 12px 20px;
             border-radius: 8px;
@@ -775,7 +775,7 @@
             transition: all 0.2s ease;
             font-size: 15px;
         }
-        
+
         .upload-document-btn:hover {
             background-color: var(--primary-dark);
             transform: translateY(-2px);
@@ -1328,8 +1328,8 @@
             color: var(--text-color);
         }
 
-        .dark-mode .modal-title
-                    color: var(--dark-text);
+        .dark-mode .modal-title {
+            color: var(--dark-text);
         }
 
         .modal-body {
@@ -1358,8 +1358,7 @@
 
         .modal-btn-primary {
             background-color: var(--primary-color);
-            color: white;
-            border: none;
+            color: white;            border: none;
         }
 
         .modal-btn-primary:hover {
@@ -1427,6 +1426,213 @@
 
         .toast-message {
             font-size: 14px;
+        }
+
+        /* Products & Services Section */
+        .business-posts-section {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .business-posts-section {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .post-form-card {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .post-form-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .form-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .form-title {
+            color: var(--dark-text);
+        }
+
+        .post-form .form-group {
+            margin-bottom: 16px;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .post-card {
+            background-color: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .dark-mode .post-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+            border-color: var(--dark-border-color);
+        }
+
+        .post-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+        }
+
+        .post-image-container {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .post-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .post-card:hover .post-image {
+            transform: scale(1.05);
+        }
+
+        .post-content {
+            padding: 16px;
+        }
+
+        .post-badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .post-type-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .dark-mode .post-type-badge {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        .featured-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .post-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .post-title {
+            color: var(--dark-text);
+        }
+
+        .post-text {
+            color: var(--text-color);
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .dark-mode .post-text {
+            color: var(--dark-text);
+        }
+
+        .post-price {
+            font-size: 16px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+
+        .post-meta {
+            font-size: 13px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .post-meta {
+            color: var(--dark-light-text);
+        }
+
+        .no-posts-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 24px 16px;
+            text-align: center;
+            border: 2px dashed var(--border-color);
+        }
+
+        .dark-mode .no-posts-card {
+            background-color: var(--dark-surface);
+            border-color: var(--dark-border-color);
+        }
+
+        .no-posts-icon {
+            font-size: 36px;
+            color: var(--primary-color);
+            opacity: 0.7;
+            margin-bottom: 12px;
+        }
+
+        /* Form Checkbox */
+        .form-checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .form-checkbox-label {
+            color: var(--dark-text);
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .posts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .business-posts-section {
+                max-width: 1200px;
+                margin: 0 auto 24px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .posts-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         /* Responsive Layout */
@@ -1710,23 +1916,24 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="document-actions">
-                    <a href="{{ business.company_profile.url }}" 
-                       target="_blank" 
+                    <a href="{{ business.company_profile.url }}"
+                       target="_blank"
                        class="document-action view-action">
                         <i class="fas fa-eye"></i> View Document
                     </a>
-                    <a href="{{ business.company_profile.url }}" 
-                       download 
+                    <a href="{{ business.company_profile.url }}"
+                       download
                        class="document-action download-action">
                         <i class="fas fa-download"></i> Download
                     </a>
                     {% if user.is_authenticated and business.owner == user %}
-                    <button class="document-action replace-action" id="replace-document">
-                        <i class="fas fa-sync-alt"></i> Replace
-                    </button>
+                        <a href="{% url 'profile' %}" class="document-action replace-action">
+                            <i class="fas fa-sync-alt"></i> Replace
+                        </a>
                     {% endif %}
+
                 </div>
             </div>
             {% else %}
@@ -1735,10 +1942,11 @@
                     <i class="fas fa-file-upload no-document-icon"></i>
                     <p>No company profile document has been uploaded yet.</p>
                     {% if user.is_authenticated and business.owner == user %}
-                    <button class="upload-document-btn" id="upload-document">
-                        <i class="fas fa-upload"></i> Upload Document
-                    </button>
+                        <a href="{% url 'profile' %}" class="upload-document-btn" id="upload-document">
+                            <i class="fas fa-upload"></i> Upload Document
+                        </a>
                     {% endif %}
+
                 </div>
             </div>
             {% endif %}
@@ -1933,6 +2141,290 @@
             {% endfor %}
         </div>
         {% endif %}
+
+        <!-- Products & Services Section -->
+        <div class="business-posts-section">
+            <h2 class="section-title">
+                <i class="fas fa-boxes"></i>
+                Products & Services
+            </h2>
+
+            {% if is_owner_or_admin %}
+<div class="products-services-section">
+
+  <div class="add-post-form">
+    <button class="toggle-form-btn" onclick="toggleForm()">Add New Product/Service</button>
+
+    <form id="postForm" method="post" enctype="multipart/form-data" style="display: none;">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="post_type">Post Type</label>
+        <select id="post_type" name="post_type" class="form-control">
+          <option value="product">Product</option>
+          <option value="service">Service</option>
+          <option value="announcement">Announcement</option>
+          <option value="offer">Special Offer</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" class="form-control" placeholder="Enter title" required>
+      </div>
+
+      <div class="form-group">
+        <label for="content">Content</label>
+        <textarea id="content" name="content" class="form-control rich-text-editor" rows="5" placeholder="Describe your product or service"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="price">Price (zmw)</label>
+        <input type="number" id="price" name="price" class="form-control" min="0" step="0.01" placeholder="0.00">
+      </div>
+
+      <div class="form-group">
+        <label for="image">Image</label>
+        <div class="file-upload-wrapper">
+          <input type="file" id="image" name="image" class="file-upload-input" accept="image/jpeg,image/png,image/gif">
+          <label for="image" class="file-upload-label">
+            <span class="file-upload-text">No file chosen</span>
+            <span class="file-upload-btn">Choose File</span>
+          </label>
+        </div>
+        <small class="form-text text-muted">Upload an image (JPG, PNG, GIF). Max size: 2MB</small>
+      </div>
+
+      <div class="form-group form-check">
+        <input type="checkbox" id="is_featured" name="is_featured" class="form-check-input">
+        <label class="form-check-label" for="is_featured">Feature this post (show at the top)</label>
+      </div>
+
+      <button type="submit" name="submit_post" class="btn btn-primary">Add Post</button>
+    </form>
+  </div>
+</div>
+
+<style>
+.products-services-section {
+  margin: 30px 0;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  color: #333;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.add-post-form {
+  margin-top: 20px;
+}
+
+.toggle-form-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.toggle-form-btn:hover {
+  background-color: #45a049;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.form-control:focus {
+  border-color: #66afe9;
+  outline: none;
+  box-shadow: 0 0 5px rgba(102, 175, 233, 0.5);
+}
+
+.rich-text-editor {
+  min-height: 150px;
+}
+
+.file-upload-wrapper {
+  position: relative;
+  margin-bottom: 5px;
+}
+
+.file-upload-input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.file-upload-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.file-upload-text {
+  color: #6c757d;
+}
+
+.file-upload-btn {
+  background-color: #e9ecef;
+  padding: 5px 10px;
+  border-radius: 4px;
+  color: #495057;
+}
+
+.form-check {
+  display: flex;
+  align-items: center;
+}
+
+.form-check-input {
+  margin-right: 10px;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.btn-primary:hover {
+  background-color: #0069d9;
+}
+
+.form-text {
+  color: #6c757d;
+  font-size: 14px;
+}
+</style>
+
+<script>
+function toggleForm() {
+  const form = document.getElementById('postForm');
+  const btn = document.querySelector('.toggle-form-btn');
+
+  if (form.style.display === 'none') {
+    form.style.display = 'block';
+    btn.textContent = 'Cancel';
+  } else {
+    form.style.display = 'none';
+    btn.textContent = 'Add New Product/Service';
+  }
+}
+
+// Update file input label text
+document.getElementById('image').addEventListener('change', function(e) {
+  const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
+  document.querySelector('.file-upload-text').textContent = fileName;
+});
+</script>
+            {% endif %}
+
+            <div class="posts-grid">
+                {% for post in posts %}
+                <div class="post-card">
+                    {% if post.image %}
+                    <div class="post-image-container">
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image" loading="lazy">
+                    </div>
+                    {% endif %}
+
+                    <div class="post-content">
+                        <div class="post-badges">
+                            <span class="post-type-badge">
+                                {{ post.get_post_type_display }}
+                            </span>
+                            {% if post.is_featured %}
+                            <span class="featured-badge">
+                                Featured
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <h3 class="post-title">{{ post.title }}</h3>
+                        <div class="post-text">
+                            {{ post.content|safe|truncatewords:30 }}
+                        </div>
+
+                        {% if post.price %}
+                        <div class="post-price">
+                            <strong>Price: ${{ post.price }}</strong>
+                        </div>
+                        {% endif %}
+
+                        <div class="post-meta">
+                            <small>Posted {{ post.created_at|timesince }} ago</small>
+                        </div>
+                    </div>
+
+                    {% if is_owner_or_admin %}
+                    <div class="post-actions">
+                        <!-- Delete Button -->
+                        <form method="post" action="{% url 'business-detail' pk=business.pk %}" onsubmit="return confirm('Are you sure you want to delete this post?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="delete_post" value="1">
+                            <input type="hidden" name="post_id" value="{{ post.id }}">
+                            <button type="submit" class="delete-btn">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <div class="no-posts-card">
+                    <i class="fas fa-box-open no-posts-icon"></i>
+                    <p>No products or services posted yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if posts.has_other_pages %}
+            <div class="pagination">
+                {% if posts.has_previous %}
+                <a href="?post_page={{ posts.previous_page_number }}#posts" class="pagination-button">Previous</a>
+                {% endif %}
+
+                {% for i in posts.paginator.page_range %}
+                    {% if posts.number == i %}
+                    <span class="pagination-button active">{{ i }}</span>
+                    {% else %}
+                    <a href="?post_page={{ i }}#posts" class="pagination-button">{{ i }}</a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if posts.has_next %}
+                <a href="?post_page={{ posts.next_page_number }}#posts" class="pagination-button">Next</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
     </main>
 
     <!-- Bottom Navigation -->
@@ -1999,7 +2491,7 @@
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
             document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
-            
+
             // Update map theme if it exists
             if (window.map) {
                 const theme = isDark ? 'dark' : 'light';
@@ -2078,7 +2570,7 @@
         const reviewTextarea = document.getElementById('comment');
         if (reviewTextarea) {
             const charCounter = reviewTextarea.nextElementSibling;
-            
+
             reviewTextarea.addEventListener('input', function() {
                 const remaining = 500 - this.value.length;
                 charCounter.textContent = `${remaining} characters remaining`;
@@ -2179,7 +2671,7 @@
 
             const isDark = document.body.classList.contains('dark-mode');
             const mapStyle = isDark ? 'dark' : 'light';
-            
+
             const map = L.map('business-map').setView([{{ business.latitude }}, {{ business.longitude }}], 15);
             window.map = map;
 
@@ -2200,7 +2692,7 @@
 
         function updateMapTheme(theme) {
             if (!window.map) return;
-            
+
             // Remove all tile layers
             window.map.eachLayer(function(layer) {
                 if (layer instanceof L.TileLayer) {

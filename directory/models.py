@@ -155,6 +155,32 @@ class Business(models.Model):
     def __str__(self):
         return self.name
 
+
+class BusinessPost(models.Model):
+    POST_TYPE_CHOICES = [
+        ('product', 'Product'),
+        ('service', 'Service'),
+        ('announcement', 'Announcement'),
+        ('offer', 'Special Offer'),
+    ]
+    
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='posts')
+    title = models.CharField(max_length=200)
+    content = RichTextField()
+    post_type = models.CharField(max_length=20, choices=POST_TYPE_CHOICES, default='product')
+    image = models.ImageField(upload_to='business_posts/', blank=True, null=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    is_featured = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-is_featured', '-created_at']
+    
+    def __str__(self):
+        return f"{self.title} - {self.business.name}"
+
+
 class Review(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),

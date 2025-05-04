@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta name="theme-color" content="#07C160">
     <meta name="description" content="Register - Distribution Platform">
     <title>Register - Distribution Platform</title>
@@ -16,7 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #07C160; /* WeChat green */
+            --primary-color: #07C160;
             --primary-dark: #05a54e;
             --primary-light: #e6f7ef;
             --secondary-color: #F8F8F8;
@@ -45,7 +46,7 @@
             background-color: var(--secondary-color);
             color: var(--text-color);
             min-height: 100vh;
-            padding-bottom: 72px; /* Space for bottom nav */
+            padding-bottom: 72px;
         }
 
         body.dark-mode {
@@ -219,56 +220,6 @@
             box-shadow: 0 6px 15px rgba(7, 193, 96, 0.4);
         }
 
-        /* Django Form Styling */
-        form p {
-            margin-bottom: 20px;
-        }
-
-        form p label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        form p input, form p select {
-            width: 100%;
-            padding: 14px 16px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            background-color: var(--white);
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .dark-mode form p input, .dark-mode form p select {
-            background-color: var(--dark-surface);
-            border-color: rgba(255, 255, 255, 0.1);
-            color: var(--dark-text);
-        }
-
-        form p input:focus, form p select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-
-        .dark-mode form p input:focus, .dark-mode form p select:focus {
-            box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.2);
-        }
-
-        /* Help Text */
-        .helptext {
-            display: block;
-            font-size: 12px;
-            color: var(--light-text);
-            margin-top: 6px;
-        }
-
-        .dark-mode .helptext {
-            color: var(--dark-light-text);
-        }
-
         /* Error Handling */
         .errorlist {
             list-style: none;
@@ -345,7 +296,34 @@
         .nav-item.active i {
             transform: translateY(-2px);
         }
+
+        /* Help Text */
+        .helptext {
+            display: block;
+            font-size: 12px;
+            color: var(--light-text);
+            margin-top: 6px;
+        }
+
+        .dark-mode .helptext {
+            color: var(--dark-light-text);
+        }
+
+        .helptext ul {
+            margin-top: 4px;
+            padding-left: 20px;
+        }
+
+        .helptext li {
+            margin-bottom: 2px;
+        }
     </style>
+    <script>
+        // Force HTTPS if not in development
+        if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+            window.location.href = 'https:' + window.location.href.substring(window.location.protocol.length);
+        }
+    </script>
 </head>
 <body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
     <!-- Header -->
@@ -364,13 +342,127 @@
                 <h2>Create Account</h2>
                 <p>Join us to start shopping</p>
             </div>
-            <form method="post">
+            <form method="post" action="{% url 'register' %}">
                 {% csrf_token %}
-                {{ form.as_p }}
+                
+                {% if form.non_field_errors %}
+                    <div class="errorlist">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <!-- User Fields -->
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-control" required
+                           value="{% if form.username.value %}{{ form.username.value }}{% endif %}"
+                           minlength="4" maxlength="150" pattern="[a-zA-Z0-9@.+-_]+">
+                    {% if form.username.errors %}
+                        <div class="errorlist">{{ form.username.errors }}</div>
+                    {% endif %}
+                    <small class="helptext">Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" required
+                           value="{% if form.email.value %}{{ form.email.value }}{% endif %}">
+                    {% if form.email.errors %}
+                        <div class="errorlist">{{ form.email.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="password1">Password</label>
+                    <input type="password" id="password1" name="password1" class="form-control" required
+                           minlength="8">
+                    {% if form.password1.errors %}
+                        <div class="errorlist">{{ form.password1.errors }}</div>
+                    {% endif %}
+                    <small class="helptext">
+                        <ul>
+                            <li>Your password can't be too similar to your other personal information.</li>
+                            <li>Your password must contain at least 8 characters.</li>
+                            <li>Your password can't be a commonly used password.</li>
+                            <li>Your password can't be entirely numeric.</li>
+                        </ul>
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password2">Password Confirmation</label>
+                    <input type="password" id="password2" name="password2" class="form-control" required
+                           minlength="8">
+                    {% if form.password2.errors %}
+                        <div class="errorlist">{{ form.password2.errors }}</div>
+                    {% endif %}
+                    <small class="helptext">Enter the same password as before, for verification.</small>
+                </div>
+                
+                <!-- Business Fields -->
+                <div class="form-group">
+                    <label for="business_name">Business Name</label>
+                    <input type="text" id="business_name" name="business_name" class="form-control" required
+                           value="{% if form.business_name.value %}{{ form.business_name.value }}{% endif %}">
+                    {% if form.business_name.errors %}
+                        <div class="errorlist">{{ form.business_name.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="business_address">Business Address</label>
+                    <input type="text" id="business_address" name="business_address" class="form-control" required
+                           value="{% if form.business_address.value %}{{ form.business_address.value }}{% endif %}">
+                    {% if form.business_address.errors %}
+                        <div class="errorlist">{{ form.business_address.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="business_phone_number">Business Phone Number</label>
+                    <input type="tel" id="business_phone_number" name="business_phone_number" class="form-control" required
+                           value="{% if form.business_phone_number.value %}{{ form.business_phone_number.value }}{% endif %}"
+                           pattern="[0-9]{10,15}">
+                    {% if form.business_phone_number.errors %}
+                        <div class="errorlist">{{ form.business_phone_number.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="business_email">Business Email</label>
+                    <input type="email" id="business_email" name="business_email" class="form-control" required
+                           value="{% if form.business_email.value %}{{ form.business_email.value }}{% endif %}">
+                    {% if form.business_email.errors %}
+                        <div class="errorlist">{{ form.business_email.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="business_website">Business Website (optional)</label>
+                    <input type="url" id="business_website" name="business_website" class="form-control"
+                           value="{% if form.business_website.value %}{{ form.business_website.value }}{% endif %}"
+                           placeholder="https://www.example.com">
+                    {% if form.business_website.errors %}
+                        <div class="errorlist">{{ form.business_website.errors }}</div>
+                    {% endif %}
+                    <small class="helptext">Include http:// or https://</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="business_city">Business City</label>
+                    <input type="text" id="business_city" name="business_city" class="form-control" required
+                           value="{% if form.business_city.value %}{{ form.business_city.value }}{% endif %}">
+                    {% if form.business_city.errors %}
+                        <div class="errorlist">{{ form.business_city.errors }}</div>
+                    {% endif %}
+                </div>
+                
                 <button type="submit" class="register-btn">Register</button>
             </form>
             <div class="login-prompt">
-                Already have an account? <a href="{% url 'login' %}">Sign in</a>
+                Already have an account? <a href="{% url 'login' %}" class="secure-link">Sign in</a>
             </div>
         </div>
     </div>
@@ -400,8 +492,24 @@
         document.getElementById('theme-toggle').addEventListener('click', function() {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
-            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}; Secure; SameSite=Lax`;
         });
+
+        // Ensure all links are HTTPS
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('a');
+            links.forEach(link => {
+                if (link.href.startsWith('http://') && !link.href.includes('localhost')) {
+                    link.href = link.href.replace('http://', 'https://');
+                }
+            });
+        });
+
+        // Force HTTPS form submission
+        const form = document.querySelector('form');
+        if (form && window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
+            form.action = form.action.replace('http://', 'https://');
+        }
     </script>
 </body>
 </html>
