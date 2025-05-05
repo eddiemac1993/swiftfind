@@ -22,6 +22,9 @@ def games_hub(request):
     # Add any context data if needed
     return render(request, 'games_hub.html')
 
+def mobile_view(request):
+    return render(request, 'skyhopper.html')
+
 def quiz_view(request):
     question = random.choice(QuizQuestion.objects.all())  # Random question
     score = request.session.get('score', 0)

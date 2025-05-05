@@ -4,13 +4,14 @@ from random import shuffle
 # Django imports
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth import login as auth_login
 from django.db import transaction
 from django.db.models import Q, Count, Avg
 from django.core.paginator import Paginator
 from django.utils import timezone
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
+from django.contrib.auth.models import Permission
 
 # Local imports
 from .models import (
@@ -24,7 +25,10 @@ from .models import (
     UserProfile,
     BusinessPost,
     ChatRoom,
-    ChatMessage
+    ChatMessage,
+    BusinessMember,
+    BusinessRole,
+    BusinessDepartment
 )
 from .forms import (
     BusinessForm,
@@ -35,10 +39,64 @@ from .forms import (
     UserUpdateForm,
     ProfileUpdateForm,
     BusinessPostForm,
-    BusinessImageForm
+    BusinessImageForm,
+    BusinessMemberForm,
+    BusinessRoleForm,
+    BusinessDepartmentForm
 )
 from .utils import get_client_ip, generate_random_name
+from .auth_backends import BusinessAuthBackend
 
+# Helper functions
+def handle_review_submission(request, business):
+    review_form = ReviewForm(request.POST)
+    if review_form.is_valid():
+        review = review_form.save(commit=False)
+        review.business = business
+        
+        if request.user.is_authenticated:
+            review.user = request.user
+        else:
+            session_key = request.session.session_key
+            if not session_key:
+                request.session.save()
+                session_key = request.session.session_key
+            review.session_key = session_key
+        
+        review.save()
+        messages.success(request, 'Your review has been submitted and is pending approval.')
+        return redirect('business-detail', pk=business.pk)
+    
+    # If form is invalid, we'll return to the view with the invalid form
+    return None
+
+def handle_post_submission(request, business, pk):
+    post_form = BusinessPostForm(request.POST, request.FILES)
+    if post_form.is_valid():
+        post = post_form.save(commit=False)
+        post.business = business
+        
+        # Set default values if needed
+        if not post.price:
+            post.price = None  # Explicitly set to None if empty
+            
+        post.save()
+        
+        # Handle image separately if needed
+        if 'image' in request.FILES:
+            # Additional image processing could go here
+            pass
+            
+        messages.success(request, 'Your post has been added successfully!')
+        return redirect('business-detail', pk=pk)
+    
+    # If form is invalid, we'll return to the view with the invalid form
+    return None
+
+def paginate_queryset(request, queryset, page_param, per_page):
+    paginator = Paginator(queryset, per_page)
+    page_number = request.GET.get(page_param)
+    return paginator.get_page(page_number)
 
 def business_list(request):
     query = request.GET.get('q')
@@ -149,13 +207,6 @@ def business_list(request):
         'businesses_count': businesses_count,
     })
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.core.exceptions import PermissionDenied
-from .forms import BusinessPostForm
-from .models import Business, BusinessPost
-
 @login_required
 def add_business_post(request, pk):
     business = get_object_or_404(Business, pk=pk)
@@ -163,9 +214,8 @@ def add_business_post(request, pk):
     # Check if user has permission to post for this business
     if not (request.user == business.owner or 
             request.user.is_staff or 
-            hasattr(request.user, 'userprofile') and 
-            request.user.userprofile.business == business):
-        raise PermissionDenied("You don't have permission to post for this business.")
+            BusinessMember.objects.filter(user=request.user, business=business).exists()):
+        return HttpResponseForbidden("You don't have permission to post for this business.")
     
     if request.method == 'POST':
         form = BusinessPostForm(request.POST, request.FILES)
@@ -191,9 +241,8 @@ def edit_business_post(request, pk):
     # Check if user has permission to edit this post
     if not (request.user == business.owner or 
             request.user.is_staff or 
-            hasattr(request.user, 'userprofile') and 
-            request.user.userprofile.business == business):
-        raise PermissionDenied("You don't have permission to edit this post.")
+            BusinessMember.objects.filter(user=request.user, business=business).exists()):
+        return HttpResponseForbidden("You don't have permission to edit this post.")
     
     if request.method == 'POST':
         form = BusinessPostForm(request.POST, request.FILES, instance=post)
@@ -218,9 +267,8 @@ def delete_business_post(request, pk):
     # Check if user has permission to delete this post
     if not (request.user == business.owner or 
             request.user.is_staff or 
-            hasattr(request.user, 'userprofile') and 
-            request.user.userprofile.business == business):
-        raise PermissionDenied("You don't have permission to delete this post.")
+            BusinessMember.objects.filter(user=request.user, business=business).exists()):
+        return HttpResponseForbidden("You don't have permission to delete this post.")
     
     if request.method == 'POST':
         post.delete()
@@ -238,13 +286,18 @@ def business_detail(request, pk):
     reviews = Review.objects.filter(business=business, status='approved')
     posts = BusinessPost.objects.filter(business=business).order_by('-is_featured', '-created_at')
 
+    # Check if user is a member of this business
+    is_member = False
+    if request.user.is_authenticated:
+        is_member = BusinessMember.objects.filter(user=request.user, business=business).exists()
+
     # SAFE permission check
     is_owner_or_admin = False
     if request.user.is_authenticated:
         is_owner_or_admin = any([
             request.user == business.owner,
             request.user.is_staff,
-            hasattr(request.user, 'userprofile') and request.user.userprofile.business == business
+            is_member
         ])
 
     # Handle form submissions
@@ -274,10 +327,10 @@ def business_detail(request, pk):
         'review_form': review_form,
         'post_form': post_form,
         'is_owner_or_admin': is_owner_or_admin,
+        'is_member': is_member,
     }
     return render(request, 'directory/business_detail.html', context)
 
-# Add these new helper functions
 def handle_post_edit(request, business, pk):
     post_id = request.POST.get('post_id')
     post = get_object_or_404(BusinessPost, id=post_id, business=business)
@@ -298,58 +351,6 @@ def handle_post_delete(request, business, pk):
     messages.success(request, 'Post deleted successfully!')
     return redirect('business-detail', pk=pk)
 
-# Helper functions
-def handle_review_submission(request, business):
-    review_form = ReviewForm(request.POST)
-    if review_form.is_valid():
-        review = review_form.save(commit=False)
-        review.business = business
-        
-        if request.user.is_authenticated:
-            review.user = request.user
-        else:
-            session_key = request.session.session_key
-            if not session_key:
-                request.session.save()
-                session_key = request.session.session_key
-            review.session_key = session_key
-        
-        review.save()
-        messages.success(request, 'Your review has been submitted and is pending approval.')
-        return redirect('business-detail', pk=business.pk)
-    
-    # If form is invalid, we'll return to the view with the invalid form
-    return None
-
-def handle_post_submission(request, business, pk):
-    post_form = BusinessPostForm(request.POST, request.FILES)
-    if post_form.is_valid():
-        post = post_form.save(commit=False)
-        post.business = business
-        
-        # Set default values if needed
-        if not post.price:
-            post.price = None  # Explicitly set to None if empty
-            
-        post.save()
-        
-        # Handle image separately if needed
-        if 'image' in request.FILES:
-            # Additional image processing could go here
-            pass
-            
-        messages.success(request, 'Your post has been added successfully!')
-        return redirect('business-detail', pk=pk)
-    
-    # If form is invalid, we'll return to the view with the invalid form
-    return None
-
-def paginate_queryset(request, queryset, page_param, per_page):
-    paginator = Paginator(queryset, per_page)
-    page_number = request.GET.get(page_param)
-    return paginator.get_page(page_number)
-
-
 def add_business(request):
     if request.method == 'POST':
         form = BusinessForm(request.POST, request.FILES)
@@ -367,7 +368,6 @@ def add_business(request):
         form = BusinessForm()
     return render(request, 'directory/add_business.html', {'form': form})
 
-
 def upload_business_image(request, business_id):
     business = get_object_or_404(Business, id=business_id)
     if request.method == 'POST':
@@ -376,11 +376,10 @@ def upload_business_image(request, business_id):
             image = form.save(commit=False)
             image.business = business
             image.save()
-            return redirect('business_detail', business_id=business.id)
+            return redirect('business-detail', pk=business.id)
     else:
         form = BusinessImageForm()
     return render(request, 'upload_image.html', {'form': form, 'business': business})
-
 
 def newsfeed_list(request):
     category = request.GET.get('category', None)
@@ -398,7 +397,6 @@ def newsfeed_list(request):
         'category_choices': NewsFeed.CATEGORY_CHOICES,
     }
     return render(request, 'directory/newsfeed_list.html', context)
-
 
 def newsfeed_detail(request, pk):
     newsfeed = get_object_or_404(NewsFeed, pk=pk)
@@ -428,7 +426,6 @@ def newsfeed_detail(request, pk):
         'comments': comments,
     })
 
-
 def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
@@ -441,14 +438,18 @@ def register(request):
         form = UserRegistrationForm()
     return render(request, 'registration/register.html', {'form': form})
 
-
 @login_required
 def profile(request):
+    # Get the user's primary business (first owned business)
+    primary_business = request.user.owned_businesses.first()
+    
+    # Get all businesses the user is a member of (including those they don't own)
+    member_businesses = BusinessMember.objects.filter(user=request.user).select_related('business')
+    
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=request.user)
         profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
-        business = request.user.businesses.first()
-        business_form = BusinessUpdateForm(request.POST, request.FILES, instance=business) if business else None
+        business_form = BusinessUpdateForm(request.POST, request.FILES, instance=primary_business) if primary_business else None
 
         if all(form.is_valid() for form in filter(None, [user_form, profile_form, business_form])):
             try:
@@ -466,20 +467,21 @@ def profile(request):
     else:
         user_form = UserUpdateForm(instance=request.user)
         profile_form = ProfileUpdateForm(instance=request.user.profile)
-        business = request.user.businesses.first()
-        business_form = BusinessUpdateForm(instance=business) if business else None
+        business_form = BusinessUpdateForm(instance=primary_business) if primary_business else None
 
-    return render(request, 'registration/profile.html', {
+    context = {
         'user_form': user_form,
         'profile_form': profile_form,
         'business_form': business_form,
-    })
-
+        'business': primary_business,  # This is the key variable needed for your tabs
+        'member_businesses': member_businesses,
+    }
+    
+    return render(request, 'registration/profile.html', context)
 
 def chat_room_list(request):
     rooms = ChatRoom.objects.all().order_by('-created_at')
     return render(request, 'chat/room_list.html', {'rooms': rooms})
-
 
 def create_chat_room(request):
     if request.method == 'POST':
@@ -490,11 +492,9 @@ def create_chat_room(request):
             return redirect('chat_room_list')
     return render(request, 'chat/create_room.html')
 
-
 def chat_room_detail(request, room_id):
     room = get_object_or_404(ChatRoom, id=room_id)
     return render(request, 'chat/chat_room_detail.html', {'room': room})
-
 
 def send_message(request, room_id):
     if request.method == 'POST':
@@ -517,27 +517,196 @@ def send_message(request, room_id):
     else:
         return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
+# Business Management Views
+@login_required
+def business_dashboard(request, business_slug):
+    business = get_object_or_404(Business, slug=business_slug)
+    
+    # Check if user is owner or member of this business
+    if not (request.user == business.owner or 
+            BusinessMember.objects.filter(user=request.user, business=business).exists()):
+        return HttpResponseForbidden("You don't have access to this business dashboard.")
+    
+    context = {
+        'business': business,
+        'members': business.members.all(),
+        'departments': business.departments.all(),
+        'roles': BusinessRole.objects.all(),
+    }
+    return render(request, 'business/dashboard.html', context)
+
+@login_required
+def add_business_member(request, business_slug):
+    business = get_object_or_404(Business, slug=business_slug)
+    
+    # Check if user is owner or has permission to add members
+    if not (request.user == business.owner or 
+            request.user.has_perm('directory.add_businessmember')):
+        return HttpResponseForbidden("You don't have permission to add members.")
+    
+    if request.method == 'POST':
+        form = BusinessMemberForm(request.POST)
+        if form.is_valid():
+            member = form.save(commit=False)
+            member.business = business
+            member.set_password(form.cleaned_data['password'])
+            member.save()
+            messages.success(request, 'Member added successfully')
+            return redirect('business_dashboard', business_slug=business.slug)
+    else:
+        form = BusinessMemberForm()
+    
+    return render(request, 'business/add_member.html', {
+        'form': form, 
+        'business': business,
+        'roles': BusinessRole.objects.all()
+    })
+
+@login_required
+def manage_roles(request, business_slug):
+    business = get_object_or_404(Business, slug=business_slug)
+    
+    # Check if user is owner or has permission to manage roles
+    if not (request.user == business.owner or 
+            request.user.has_perm('directory.manage_roles')):
+        return HttpResponseForbidden("You don't have permission to manage roles.")
+    
+    if request.method == 'POST':
+        form = BusinessRoleForm(request.POST)
+        if form.is_valid():
+            role = form.save()
+            messages.success(request, 'Role created successfully')
+            return redirect('manage_roles', business_slug=business.slug)
+    else:
+        form = BusinessRoleForm()
+    
+    roles = BusinessRole.objects.all()
+    return render(request, 'business/manage_roles.html', {
+        'form': form,
+        'roles': roles,
+        'business': business,
+        'permissions': Permission.objects.filter(content_type__model='business')
+    })
+
+@login_required
+def manage_departments(request, business_slug):
+    business = get_object_or_404(Business, slug=business_slug)
+    
+    # Check if user is owner or has permission to manage departments
+    if not (request.user == business.owner or 
+            request.user.has_perm('directory.manage_departments')):
+        return HttpResponseForbidden("You don't have permission to manage departments.")
+    
+    if request.method == 'POST':
+        form = BusinessDepartmentForm(request.POST)
+        if form.is_valid():
+            department = form.save(commit=False)
+            department.business = business
+            department.save()
+            messages.success(request, 'Department created successfully')
+            return redirect('manage_departments', business_slug=business.slug)
+    else:
+        form = BusinessDepartmentForm()
+    
+    departments = business.departments.all()
+    return render(request, 'business/manage_departments.html', {
+        'form': form,
+        'departments': departments,
+        'business': business
+    })
+
+@login_required
+def edit_business_member(request, business_slug, member_id):
+    business = get_object_or_404(Business, slug=business_slug)
+    member = get_object_or_404(BusinessMember, id=member_id, business=business)
+    
+    # Check if user is owner or has permission to edit members
+    if not (request.user == business.owner or 
+            request.user.has_perm('directory.change_businessmember')):
+        return HttpResponseForbidden("You don't have permission to edit members.")
+    
+    if request.method == 'POST':
+        form = BusinessMemberForm(request.POST, instance=member)
+        if form.is_valid():
+            member = form.save()
+            if form.cleaned_data['password']:
+                member.set_password(form.cleaned_data['password'])
+                member.save()
+            messages.success(request, 'Member updated successfully')
+            return redirect('business_dashboard', business_slug=business.slug)
+    else:
+        form = BusinessMemberForm(instance=member)
+    
+    return render(request, 'business/edit_member.html', {
+        'form': form,
+        'business': business,
+        'member': member,
+        'roles': BusinessRole.objects.all()
+    })
+
+@login_required
+def delete_business_member(request, business_slug, member_id):
+    business = get_object_or_404(Business, slug=business_slug)
+    member = get_object_or_404(BusinessMember, id=member_id, business=business)
+    
+    # Check if user is owner or has permission to delete members
+    if not (request.user == business.owner or 
+            request.user.has_perm('directory.delete_businessmember')):
+        return HttpResponseForbidden("You don't have permission to delete members.")
+    
+    if request.method == 'POST':
+        member.delete()
+        messages.success(request, 'Member deleted successfully')
+        return redirect('business_dashboard', business_slug=business.slug)
+    
+    return render(request, 'business/delete_member.html', {
+        'business': business,
+        'member': member
+    })
+
+def business_login(request, business_slug):
+    business = get_object_or_404(Business, slug=business_slug)
+    
+    if request.method == 'POST':
+        business_username = request.POST.get('business_username')
+        business_password = request.POST.get('business_password')
+        
+        backend = BusinessAuthBackend()
+        user = backend.authenticate(
+            request,
+            business_username=business_username,
+            business_password=business_password
+        )
+        
+        if user is not None:
+            auth_login(request, user, backend='yourapp.auth_backends.BusinessAuthBackend')
+            # Update last login for the business member
+            BusinessMember.objects.filter(
+                user=user,
+                business=business,
+                business_username=business_username
+            ).update(last_login=timezone.now())
+            return redirect('business_dashboard', business_slug=business.slug)
+        else:
+            messages.error(request, 'Invalid business credentials')
+    
+    return render(request, 'business/login.html', {'business': business})
 
 # Simple views
 def become_partner(request):
     return render(request, 'directory/become_partner.html')
 
-
 def about(request):
     return render(request, 'about.html')
-
 
 def contact(request):
     return render(request, 'contact.html')
 
-
 def privacy(request):
     return render(request, 'privacy.html')
 
-
 def terms(request):
     return render(request, 'terms.html')
-
 
 def offline(request):
     return render(request, 'offline.html')

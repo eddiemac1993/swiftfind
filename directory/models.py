@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.validators import FileExtensionValidator
 from django.core.exceptions import ValidationError
@@ -10,6 +10,7 @@ from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from django.utils import timezone
 from ckeditor.fields import RichTextField
+from django.contrib.auth.hashers import make_password
 
 class NewsFeed(models.Model):
     CATEGORY_CHOICES = [
@@ -40,7 +41,7 @@ class NewsFeed(models.Model):
 
 class Comment(models.Model):
     newsfeed = models.ForeignKey('NewsFeed', on_delete=models.CASCADE, related_name='comments')
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # Optional: Track logged-in users
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     is_approved = models.BooleanField(default=True)
@@ -49,16 +50,16 @@ class Comment(models.Model):
         return f"Comment on {self.newsfeed.title}"
 
 class Advertisement(models.Model):
-    SLOT_CHOICES = [(i, f'Slot {i}') for i in range(1, 11)]  # 10 slots
+    SLOT_CHOICES = [(i, f'Slot {i}') for i in range(1, 11)]
 
     title = models.CharField(max_length=200)
     image = models.ImageField(upload_to='advertisements/')
-    link = models.URLField(blank=True, null=True)  # Link to redirect when the ad is clicked
-    small_text = models.CharField(max_length=100, default="Paid Advert")  # Text to indicate it's an ad
-    slot = models.IntegerField(choices=SLOT_CHOICES, unique=True)  # Unique slot number (1-10)
-    start_time = models.DateTimeField()  # When the ad starts running
-    end_time = models.DateTimeField()  # When the ad stops running
-    is_active = models.BooleanField(default=True)  # To manually enable/disable the ad
+    link = models.URLField(blank=True, null=True)
+    small_text = models.CharField(max_length=100, default="Paid Advert")
+    slot = models.IntegerField(choices=SLOT_CHOICES, unique=True)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -66,7 +67,6 @@ class Advertisement(models.Model):
         return f"{self.title} (Slot {self.slot})"
 
     def is_running(self):
-        """Check if the ad is currently running based on the time."""
         now = timezone.now()
         return self.start_time <= now <= self.end_time and self.is_active
 
@@ -81,7 +81,6 @@ class Category(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
-            # Ensure the slug is unique
             original_slug = self.slug
             counter = 1
             while Category.objects.filter(slug=self.slug).exists():
@@ -92,6 +91,33 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+class BusinessRole(models.Model):
+    """
+    Defines roles within a business (e.g., Teacher, Student, Manager, Employee)
+    """
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    permissions = models.ManyToManyField(
+        Permission,
+        blank=True,
+        help_text="Specific permissions for this role",
+        related_name="business_roles"
+    )
+    is_default = models.BooleanField(default=False, help_text="Is this a default role for new members?")
+    
+    def __str__(self):
+        return self.name
+
+class BusinessDepartment(models.Model):
+    """
+    Organizational units within a business (e.g., Math Department, HR Department)
+    """
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    parent_department = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
+    
+    def __str__(self):
+        return self.name
 
 class Business(models.Model):
     STATUS_CHOICES = [
@@ -107,7 +133,7 @@ class Business(models.Model):
         blank=True,
         null=True
     )
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='businesses', null=True, blank=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_businesses', null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     description = RichTextField(blank=True, null=True)
     address = models.CharField(max_length=255)
@@ -127,11 +153,13 @@ class Business(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    default_roles = models.ManyToManyField(BusinessRole, blank=True, related_name='default_businesses')
+    departments = models.ManyToManyField(BusinessDepartment, blank=True, related_name='businesses')
 
     def clean(self):
         super().clean()
         if self.company_profile:
-            if self.company_profile.size > 5 * 1024 * 1024:  # 5MB limit
+            if self.company_profile.size > 5 * 1024 * 1024:
                 raise ValidationError({'company_profile': "File size must be under 5MB."})
 
     def save(self, *args, **kwargs):
@@ -155,6 +183,41 @@ class Business(models.Model):
     def __str__(self):
         return self.name
 
+class BusinessMember(models.Model):
+    """
+    Represents a user's membership in a business with specific credentials and role
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='business_memberships')
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='members')
+    role = models.ForeignKey(BusinessRole, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    # Business-specific credentials
+    business_username = models.CharField(max_length=150, unique=True)
+    business_password = models.CharField(max_length=128)
+    
+    # Status fields
+    is_active = models.BooleanField(default=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    last_login = models.DateTimeField(null=True, blank=True)
+    
+    # Additional business-specific profile
+    employee_id = models.CharField(max_length=50, blank=True, null=True)
+    department = models.ForeignKey(BusinessDepartment, on_delete=models.SET_NULL, null=True, blank=True)
+    position = models.CharField(max_length=100, blank=True, null=True)
+    
+    class Meta:
+        unique_together = ('user', 'business')
+    
+    def __str__(self):
+        return f"{self.user.username} at {self.business.name} as {self.role.name if self.role else 'No Role'}"
+    
+    def set_password(self, raw_password):
+        self.business_password = make_password(raw_password)
+        self.save()
+    
+    def check_password(self, raw_password):
+        from django.contrib.auth.hashers import check_password
+        return check_password(raw_password, self.business_password)
 
 class BusinessPost(models.Model):
     POST_TYPE_CHOICES = [
@@ -180,7 +243,6 @@ class BusinessPost(models.Model):
     def __str__(self):
         return f"{self.title} - {self.business.name}"
 
-
 class Review(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
@@ -204,25 +266,21 @@ class Review(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ('business', 'session_key')  # Ensure one review per session per business
+        unique_together = ('business', 'session_key')
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            # Save the object first to get an ID
             super().save(*args, **kwargs)
             self.slug = slugify(f"{self.business.name}-{self.id}")
-            # Save again to update the slug
             super().save(*args, **kwargs)
         else:
             super().save(*args, **kwargs)
 
-        # Ensure session_key is set for anonymous users
         if not self.user and not self.session_key:
             self.session_key = self._get_session_key()
             super().save(*args, **kwargs)
 
     def _get_session_key(self):
-        # Get or create a session key for anonymous users
         if not self.session_key:
             from django.contrib.sessions.backends.db import SessionStore
             session = SessionStore()
@@ -238,7 +296,7 @@ class BusinessImage(models.Model):
     image = models.ImageField(upload_to='business_images/', blank=True, null=True)
     thumbnail = ImageSpecField(
         source='image',
-        processors=[ResizeToFill(200, 200)],  # Resize to 200x200
+        processors=[ResizeToFill(200, 200)],
         format='JPEG',
         options={'quality': 80}
     )
@@ -260,8 +318,8 @@ class ChatRoom(models.Model):
 
 class ChatMessage(models.Model):
     room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages')
-    ip_address = models.GenericIPAddressField(null=True, blank=True)  # Store the user's IP address
-    user_name = models.CharField(max_length=100)  # Store the random name
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_name = models.CharField(max_length=100)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -269,19 +327,19 @@ class ChatMessage(models.Model):
         return f"{self.user_name}: {self.message[:50]}"
 
 class SearchQuery(models.Model):
-    query = models.CharField(max_length=255, blank=True, null=True)  # The search query
-    city = models.CharField(max_length=100, blank=True, null=True)  # City filter
-    category = models.CharField(max_length=100, blank=True, null=True)  # Category filter
-    sort_by = models.CharField(max_length=50, blank=True, null=True)  # Sorting parameter
-    timestamp = models.DateTimeField(default=timezone.now)  # When the search was performed
-    count = models.PositiveIntegerField(default=1)  # Track the number of times this query has been performed
+    query = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    category = models.CharField(max_length=100, blank=True, null=True)
+    sort_by = models.CharField(max_length=50, blank=True, null=True)
+    timestamp = models.DateTimeField(default=timezone.now)
+    count = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return f"{self.query} - {self.timestamp} (Count: {self.count})"
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    business = models.ForeignKey(Business, on_delete=models.SET_NULL, null=True, blank=True, related_name='employees')
+    primary_business = models.ForeignKey(Business, on_delete=models.SET_NULL, null=True, blank=True, related_name='primary_employees')
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
@@ -292,6 +350,5 @@ class UserProfile(models.Model):
     def __str__(self):
         return f"{self.user.username}'s Profile"
 
-
-# Add this method to the User model (or a custom user model)
+# Add this method to the User model
 User.add_to_class('get_profile', lambda user: UserProfile.objects.get_or_create(user=user)[0])

@@ -3,389 +3,247 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#000000">
-    <meta name="description" content="Business Directory PWA">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="description" content="About SwiftFind - Business Directory">
     <title>About Us - SwiftFind</title>
     <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Global Variables */
         :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --background: #f8fafc;
-            --card-bg: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-color: #e2e8f0;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --primary-color: #07C160;
+            --primary-dark: #05a54e;
+            --primary-light: #e6f7ef;
+            --secondary-color: #F8F8F8;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #EEE;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
-        /* Dark Mode Variables */
+
         .dark-mode {
             --background: #1e293b;
             --card-bg: #334155;
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --border-color: #475569;
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
         }
 
-        /* Global Styles */
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background-color: var(--background);
-            margin: 0;
-            padding: 0;
             color: var(--text-primary);
-            line-height: 1.6;
             transition: background-color 0.3s ease, color 0.3s ease;
+            padding-bottom: 80px;
         }
 
-        h1, h2, h3 {
-            margin: 0;
+        .app-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        a {
-            color: var(--primary-color);
-            text-decoration: none;
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        a:hover {
-            text-decoration: underline;
+        .location {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
         }
 
-        /* Hero Section */
-        .hero {
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .dark-icon {
+            display: none;
+        }
+
+        .dark-mode .dark-icon {
+            display: inline;
+        }
+
+        .dark-mode .light-icon {
+            display: none;
+        }
+
+        .hero-section {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
             color: white;
-            padding: 6rem 2rem;
+            padding: 3rem 1rem;
             text-align: center;
-            margin-bottom: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.1);
-            z-index: 1;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
             margin-bottom: 1rem;
-            font-weight: 700;
         }
 
-        .hero p {
-            font-size: 1.25rem;
-            color: rgba(255, 255, 255, 0.9);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* About Content Section */
-        .about-content {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
-            background-color: var(--card-bg);
-            border-radius: 1rem;
-            box-shadow: var(--shadow);
-            margin-top: -4rem;
-            position: relative;
-            z-index: 2;
-        }
-
-        .about-content h2 {
+        .hero-section h1 {
             font-size: 2rem;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
-            font-weight: 600;
+            margin-bottom: 1rem;
         }
 
-        .about-content p {
+        .hero-section p {
             font-size: 1rem;
-            line-height: 1.75;
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
+            opacity: 0.9;
         }
 
-        .about-content ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .about-content ul li {
-            margin-bottom: 1rem;
-            padding-left: 1.5rem;
-            position: relative;
-        }
-
-        .about-content ul li::before {
-            content: '✔';
-            position: absolute;
-            left: 0;
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-
-        /* Partner Section */
-        .partner-section {
-            margin-top: 4rem;
-            padding: 2rem;
+        .card {
             background-color: var(--card-bg);
-            border-radius: 1rem;
-            box-shadow: var(--shadow);
-            text-align: center;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .partner-section h2 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .partner-subtitle {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-        }
-
-        .partner-content {
-            display: flex;
-            gap: 2rem;
-            justify-content: space-between;
-            align-items: flex-start;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .partner-benefits {
-            text-align: left;
-            flex: 1;
-        }
-
-        .partner-benefits h3 {
+        .card h2 {
             font-size: 1.5rem;
             margin-bottom: 1rem;
-            color: var(--text-primary);
+            color: var(--primary-color);
         }
 
-        .partner-benefits ul {
+        .card ul {
             list-style: none;
             padding: 0;
         }
 
-        .partner-benefits ul li {
-            margin-bottom: 1rem;
+        .card ul li {
+            margin-bottom: 0.5rem;
             padding-left: 1.5rem;
             position: relative;
-            color: var(--text-secondary);
         }
 
-        .partner-benefits ul li::before {
+        .card ul li::before {
             content: '✔';
             position: absolute;
             left: 0;
             color: var(--primary-color);
-            font-weight: bold;
         }
 
         .partner-cta {
             background-color: var(--primary-color);
-            padding: 2rem;
-            border-radius: 1rem;
             color: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
             text-align: center;
-            flex: 1;
-            max-width: 400px;
+            margin: 1rem;
         }
 
-        .partner-cta h3 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .partner-cta p {
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .cta-button {
-            background-color: white;
-            color: var(--primary-color);
+        .btn {
+            display: inline-block;
             padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
-            font-size: 1rem;
             font-weight: 600;
             text-decoration: none;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            margin-top: 1rem;
         }
 
-        .cta-button:hover {
-            background-color: var(--primary-hover);
-            color: white;
-        }
-
-
-        /* Footer Section */
-        .footer {
-            margin-top: 4rem;
-            padding: 2rem 0;
-            text-align: center;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .footer-links a {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-        }
-
-        .footer-links a:hover {
+        .btn-primary {
+            background-color: white;
             color: var(--primary-color);
         }
 
-        .footer p {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin: 0;
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.75rem 0;
+            border-top: 1px solid var(--border-color);
+            z-index: 100;
         }
 
-        /* Fixed Buttons */
-        .fixed-buttons {
-            position: fixed;
-            top: 20px;
-            left: 20px;
+        .nav-item {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            z-index: 1000;
-        }
-
-        .rounded-button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
             align-items: center;
-            justify-content: center;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            box-shadow: var(--shadow);
-            transition: background-color 0.3s ease;
+            color: var(--text-secondary);
             text-decoration: none;
+            font-size: 0.75rem;
         }
 
-        .rounded-button:hover {
-            background-color: var(--primary-hover);
+        .nav-item.active {
+            color: var(--primary-color);
         }
 
-        /* Dark Mode Toggle */
-        .theme-toggle {
-            position: fixed;
-            bottom: 2rem;
-            left: 2rem;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 3rem;
-            height: 3rem;
-            cursor: pointer;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow);
-            z-index: 1000;
+        .nav-item i {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
         }
-        /* Responsive Design for Partner Section */
-        @media (max-width: 768px) {
-            .partner-content {
-                flex-direction: column;
-                align-items: center;
-            }
 
-            .partner-cta {
-                max-width: 100%;
-            }
-        }
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            body {
-                padding: 1rem;
-            }
-
-            .hero {
+        @media (min-width: 768px) {
+            .hero-section {
                 padding: 4rem 1rem;
             }
-
-            .hero h1 {
-                font-size: 2rem;
+            
+            .hero-section h1 {
+                font-size: 2.5rem;
             }
-
-            .about-content {
-                padding: 1rem;
-                margin-top: -2rem;
-            }
-
-            .team-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .footer-links {
-                flex-direction: column;
-                gap: 0.5rem;
+            
+            .card {
+                margin: 1rem auto;
+                max-width: 800px;
             }
         }
     </style>
 </head>
-<body>
-    <!-- Fixed Buttons Container -->
-    <div class="fixed-buttons">
-        <!-- Home Button -->
-        <a href="{% url 'business-list' %}" class="rounded-button" title="Home">
-            <i class="fas fa-home"></i>
-        </a>
-    </div>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-top">
+            <div class="location">
+                <i class="fas fa-info-circle"></i>
+                <span>About Us</span>
+            </div>
+            <div class="user-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
 
     <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>About SwiftFind</h1>
-            <p>Your trusted partner in connecting locals with businesses and services in their area.</p>
-        </div>
+    <section class="hero-section">
+        <h1>About SwiftFind</h1>
+        <p>Your trusted partner in connecting locals with businesses and services in their area.</p>
     </section>
 
-    <!-- About Content Section -->
-    <div class="about-content">
+    <!-- Mission Section -->
+    <div class="card">
         <h2>Our Mission</h2>
         <p>
             At SwiftFind, we are dedicated to simplifying how people discover and interact with local businesses.
@@ -396,33 +254,31 @@
             We believe in fostering strong local economies and creating meaningful connections between businesses
             and their communities. SwiftFind is designed to make local discovery effortless, transparent, and rewarding.
         </p>
+    </div>
 
-        <!-- What SwiftFind Offers -->
+    <!-- What We Offer Section -->
+    <div class="card">
         <h2>What We Offer</h2>
-        <p>
-            SwiftFind is more than just a business directory. It’s a comprehensive platform designed to meet the needs
-            of both users and businesses. Here’s what makes SwiftFind stand out:
-        </p>
         <ul>
             <li>
                 <strong>Local Business Discovery:</strong> Easily find businesses in your area with advanced search and
-                filtering options. Browse by category, location, or ratings to find exactly what you need.
+                filtering options.
             </li>
             <li>
                 <strong>Business Listings:</strong> Businesses can create detailed profiles, showcasing their services,
-                contact information, operating hours, and more. Verified profiles ensure trust and credibility.
+                contact information, operating hours, and more.
             </li>
             <li>
                 <strong>Offers and Listings:</strong> Post and discover job opportunities, services, rentals, and items
-                for sale. Whether you're hiring or looking for something specific, SwiftFind has you covered.
+                for sale.
             </li>
             <li>
                 <strong>Document Management:</strong> Generate professional quotations, invoices, receipts, and delivery
-                notes directly on the platform. Export documents as PDFs for easy sharing and printing.
+                notes directly on the platform.
             </li>
             <li>
                 <strong>User Reviews and Ratings:</strong> Share your experiences and read reviews from other users to
-                make informed decisions. Our transparent review system builds trust and accountability.
+                make informed decisions.
             </li>
             <li>
                 <strong>Seamless Communication:</strong> Connect with businesses through our messaging system for inquiries,
@@ -431,53 +287,61 @@
         </ul>
     </div>
 
-    <!-- Become Our Partner Section -->
-    <section class="partner-section">
-        <h2>Become Our Partner</h2>
-        <p class="partner-subtitle">Join SwiftFind and grow your business with us!</p>
-        <div class="partner-content">
-            <div class="partner-benefits">
-                <h3>Why Partner With Us?</h3>
-                <ul>
-                    <li>
-                        <strong>Increased Visibility:</strong> Reach thousands of potential customers in your local area.
-                    </li>
-                    <li>
-                        <strong>Verified Profiles:</strong> Build trust with customers through verified business profiles.
-                    </li>
-                    <li>
-                        <strong>Exclusive Offers:</strong> Promote special deals and discounts to attract more customers.
-                    </li>
-                    <li>
-                        <strong>Seamless Communication:</strong> Connect with customers directly through our platform.
-                    </li>
-                    <li>
-                        <strong>Analytics Dashboard:</strong> Track your performance and customer engagement with our tools.
-                    </li>
-                </ul>
-            </div>
-            <div class="partner-cta">
-                <h3>Ready to Join?</h3>
-                <p>Sign up today and start growing your business with SwiftFind.</p>
-                <a href="https://wa.me/+260772447190?text=Hi%2C%20I%27m%20interested%20in%20becoming%20a%20partner%20with%20SwiftFind%21" class="cta-button" target="_blank">Become a Partner</a>
-            </div>
-        </div>
-    </section>
+    <!-- Partner Section -->
+    <div class="card">
+        <h2>Why Partner With Us?</h2>
+        <ul>
+            <li>
+                <strong>Increased Visibility:</strong> Reach thousands of potential customers in your local area.
+            </li>
+            <li>
+                <strong>Verified Profiles:</strong> Build trust with customers through verified business profiles.
+            </li>
+            <li>
+                <strong>Exclusive Offers:</strong> Promote special deals and discounts to attract more customers.
+            </li>
+            <li>
+                <strong>Analytics Dashboard:</strong> Track your performance and customer engagement with our tools.
+            </li>
+        </ul>
+    </div>
 
-    <!-- Footer Section -->
-    <footer class="footer">
-        <div class="footer-links">
-            <a href="{% url 'contact' %}">Contact</a>
-            <a href="{% url 'privacy' %}">Privacy Policy</a>
-            <a href="{% url 'terms' %}">Terms and Conditions</a>
-        </div>
-        <p>&copy; 2025 SwiftFind. All rights reserved.</p>
-    </footer>
+    <!-- Partner CTA -->
+    <div class="partner-cta">
+        <h3>Ready to Join?</h3>
+        <p>Sign up today and start growing your business with SwiftFind.</p>
+        <a href="https://wa.me/+260772447190?text=Hi%2C%20I%27m%20interested%20in%20becoming%20a%20partner%20with%20SwiftFind%21" class="btn btn-primary" target="_blank">Become a Partner</a>
+    </div>
 
-    <!-- Dark Mode Toggle -->
-    <button id="theme-toggle" class="theme-toggle">🌙</button>
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'business-list' %}" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'games_hub' %}" class="nav-item">
+            <i class="fas fa-gamepad"></i>
+            <span>Games</span>
+        </a>
+        <a href="{% url 'about' %}" class="nav-item active">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
+        </a>
+    </nav>
 
     <script>
+        // Theme Toggle
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+        });
+
+        // Service Worker Registration
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/static/js/serviceworker.js')
                 .then((registration) => {
@@ -487,25 +351,6 @@
                     console.log('ServiceWorker registration failed: ', error);
                 });
         }
-    </script>
-    <script>
-        // Dark Mode Toggle
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
-
-        // Check local storage for dark mode preference
-        const isDarkMode = localStorage.getItem('darkMode') === 'true';
-        if (isDarkMode) {
-            body.classList.add('dark-mode');
-            themeToggle.textContent = '☀️';
-        }
-
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
-            const isDark = body.classList.contains('dark-mode');
-            themeToggle.textContent = isDark ? '☀️' : '🌙';
-            localStorage.setItem('darkMode', isDark);
-        });
     </script>
 </body>
 </html>

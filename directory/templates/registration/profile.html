@@ -870,11 +870,32 @@ input[type="file"] {
                     <h2 class="content-title">Edit Business Information</h2>
                 </div>
 
-                <div class="tab-navigation">
-                    <div class="tab active">Basic Information: </div>
-                    <div class="tab"></div>
-                    <div class="tab">1000 Units</div>
-                </div>
+<div class="tab-navigation">
+    {% if business %}
+        <a href="{% url 'business_dashboard' business.slug %}" class="tab {% if request.path == '/business/dashboard/' %}active{% endif %}">
+            <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+        </a>
+        <a href="{% url 'manage_roles' business.slug %}" class="tab {% if 'roles' in request.path %}active{% endif %}">
+            <i class="fas fa-user-tag mr-2"></i> Roles
+        </a>
+        <a href="{% url 'manage_departments' business.slug %}" class="tab {% if 'departments' in request.path %}active{% endif %}">
+            <i class="fas fa-sitemap mr-2"></i> Departments
+        </a>
+    {% else %}
+        <div class="tab active">
+            <i class="fas fa-info-circle mr-2"></i> Personal Profile
+        </div>
+        {% if member_businesses %}
+            <a href="{% url 'business_dashboard' member_businesses.first.business.slug %}" class="tab">
+                <i class="fas fa-store mr-2"></i> Switch to Business
+            </a>
+        {% else %}
+            <a href="{% url 'add-business' %}" class="tab">
+                <i class="fas fa-plus-circle mr-2"></i> Create Business
+            </a>
+        {% endif %}
+    {% endif %}
+</div>
 
                 {% if messages %}
                     {% for message in messages %}

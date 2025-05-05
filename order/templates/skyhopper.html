@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyHopper</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        :root {
+            --sky-day: #70c5ce;
+            --sky-dusk: #ff9966;
+            --sky-night: #0a1128;
+            --ground: #deb887;
+            --ground-border: #8b4513;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Press Start 2P', cursive;
+            background-color: var(--sky-day);
+            transition: background-color 1s;
+            touch-action: manipulation;
+        }
+        
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .helicopter {
+            position: absolute;
+            width: 60px;
+            height: 30px;
+            z-index: 10;
+            transition: transform 0.1s;
+        }
+        
+        .helicopter-body {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #555;
+            border-radius: 10px 20px 20px 10px;
+        }
+        
+        .helicopter-cockpit {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #9cf;
+            border-radius: 50%;
+            top: -5px;
+            left: 5px;
+            border: 2px solid #333;
+        }
+        
+        .helicopter-tail {
+            position: absolute;
+            width: 40px;
+            height: 5px;
+            background-color: #777;
+            left: 50px;
+            top: 12px;
+        }
+        
+        .helicopter-rotor {
+            position: absolute;
+            width: 70px;
+            height: 5px;
+            background-color: #333;
+            top: -10px;
+            left: -5px;
+            transform-origin: center center;
+            animation: rotorSpin 0.1s linear infinite;
+        }
+        
+        .helicopter-tail-rotor {
+            position: absolute;
+            width: 15px;
+            height: 3px;
+            background-color: #333;
+            left: 85px;
+            top: 13px;
+            transform-origin: left center;
+            animation: tailRotorSpin 0.05s linear infinite;
+        }
+        
+        @keyframes rotorSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes tailRotorSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .pipe {
+            position: absolute;
+            width: 80px;
+            background-color: #5cb85c;
+            border: 3px solid #4cae4c;
+            box-sizing: border-box;
+            z-index: 2;
+        }
+        
+        .pipe-top {
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+            background-image: linear-gradient(to bottom, #5cb85c, #4cae4c);
+        }
+        
+        .pipe-bottom {
+            border-top: none;
+            border-radius: 0 0 10px 10px;
+            background-image: linear-gradient(to top, #5cb85c, #4cae4c);
+        }
+        
+        .pipe-cap {
+            position: absolute;
+            width: 86px;
+            height: 15px;
+            background-color: #4cae4c;
+            z-index: 3;
+        }
+        
+        .pipe-top .pipe-cap {
+            bottom: -15px;
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .pipe-bottom .pipe-cap {
+            top: -15px;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .ground {
+            position: absolute;
+            width: 100%;
+            height: 80px;
+            background-color: var(--ground);
+            border-top: 3px solid var(--ground-border);
+            bottom: 0;
+            z-index: 5;
+        }
+        
+        .cloud {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            z-index: 1;
+            filter: blur(2px);
+        }
+        
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+            z-index: 100;
+            width: 80%;
+            max-width: 400px;
+        }
+        
+        .score-display {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 20px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            z-index: 50;
+        }
+        
+        .start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .coin {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: gold;
+            border-radius: 50%;
+            z-index: 4;
+            box-shadow: 0 0 5px yellow;
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotateY(0); }
+            100% { transform: rotateY(360deg); }
+        }
+        
+        .flap-animation {
+            animation: flap 0.3s ease-out;
+        }
+        
+        @keyframes flap {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(-5deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+        
+        .particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background-color: white;
+            border-radius: 50%;
+            z-index: 20;
+            pointer-events: none;
+        }
+        
+        .controls {
+            position: absolute;
+            bottom: 100px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            z-index: 10;
+        }
+        
+        .control-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            user-select: none;
+            touch-action: manipulation;
+        }
+        
+        .pause-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 60;
+            cursor: pointer;
+        }
+        
+        .audio-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 60;
+            cursor: pointer;
+        }
+        
+        .pause-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+        }
+        
+        .night .cloud {
+            background-color: rgba(100, 100, 150, 0.5);
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: white;
+            border-radius: 50%;
+            z-index: 0;
+            animation: twinkle 2s infinite alternate;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.2; }
+            100% { opacity: 1; }
+        }
+        
+        .how-to-play {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="bg-blue-200">
+    <div class="game-container" id="gameContainer">
+        <div class="score-display" id="scoreDisplay">0</div>
+        <div class="high-score-display" id="highScoreDisplay">High: 0</div>
+        
+        <div class="pause-btn" id="pauseBtn">II</div>
+        <div class="audio-btn" id="audioBtn">🔊</div>
+        
+        <div class="start-screen" id="startScreen">
+            <h1 class="text-white text-2xl md:text-3xl mb-6">SKYHOPPER</h1>
+            <div class="relative mb-8">
+                <div class="helicopter">
+                    <div class="helicopter-body"></div>
+                    <div class="helicopter-cockpit"></div>
+                    <div class="helicopter-rotor"></div>
+                    <div class="helicopter-tail"></div>
+                    <div class="helicopter-tail-rotor"></div>
+                </div>
+            </div>
+            <button id="startButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full text-lg transition duration-300 transform hover:scale-105 mb-4">
+                START GAME
+            </button>
+            <button id="howToPlayBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded text-sm">
+                HOW TO PLAY
+            </button>
+            <p class="text-white mt-6 text-xs">Tap or press UP to ascend</p>
+        </div>
+        
+        <div class="pause-screen" id="pauseScreen">
+            <h2 class="text-white text-2xl mb-4">PAUSED</h2>
+            <button id="resumeButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                RESUME
+            </button>
+        </div>
+        
+        <div class="how-to-play" id="howToPlay">
+            <h2 class="text-white text-xl mb-6">HOW TO PLAY</h2>
+            <div class="text-white text-left text-sm mb-6">
+                <p class="mb-3">- Tap the screen or press UP to make the helicopter ascend</p>
+                <p class="mb-3">- Navigate through the gaps in the obstacles</p>
+                <p class="mb-3">- Each successful pass earns you 1 point</p>
+                <p class="mb-3">- Try to collect gold coins for bonus points</p>
+                <p class="mb-3">- Avoid hitting obstacles or the ground</p>
+            </div>
+            <button id="backToMenuBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                BACK TO MENU
+            </button>
+        </div>
+        
+        <div class="game-over" id="gameOver">
+            <h2 class="text-xl mb-4">GAME OVER</h2>
+            <p class="mb-2">Score: <span id="finalScore">0</span></p>
+            <p class="mb-4">High Score: <span id="finalHighScore">0</span></p>
+            <button id="restartButton" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded mb-2">
+                PLAY AGAIN
+            </button>
+            <button id="menuButton" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+                MAIN MENU
+            </button>
+        </div>
+        
+        <div id="helicopter" class="helicopter hidden">
+            <div class="helicopter-body"></div>
+            <div class="helicopter-cockpit"></div>
+            <div class="helicopter-rotor"></div>
+            <div class="helicopter-tail"></div>
+            <div class="helicopter-tail-rotor"></div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-btn" id="flapBtn">↑</div>
+        </div>
+        
+        <div class="ground"></div>
+    </div>
+
+    <audio id="flapSound" src="https://assets.mixkit.co/sfx/preview/mixkit-chopping-wood-1773.mp3"></audio>
+    <audio id="scoreSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
+    <audio id="coinSound" src="https://assets.mixkit.co/sfx/preview/mixkit-coins-handling-1939.mp3"></audio>
+    <audio id="hitSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-explosion-2759.mp3"></audio>
+    <audio id="backgroundMusic" loop src="https://assets.mixkit.co/music/preview/mixkit-game-show-suspense-waiting-668.mp3"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Game variables
+            let gameStarted = false;
+            let gameOver = false;
+            let gamePaused = false;
+            let score = 0;
+            let coinsCollected = 0;
+            let highScore = localStorage.getItem('skyHopperHighScore') || 0;
+            let gravity = 0.3; // Reduced gravity for easier gameplay
+            let velocity = 0;
+            let position = 250;
+            let pipes = [];
+            let coins = [];
+            let clouds = [];
+            let stars = [];
+            let particles = [];
+            let pipeGap = 200; // Larger gap for easier gameplay
+            let pipeFrequency = 2000; // milliseconds (less frequent pipes)
+            let lastPipeTime = 0;
+            let gameSpeed = 2;
+            let animationId;
+            let dayNightCycle = 0;
+            let soundEnabled = true;
+            let musicEnabled = true;
+            
+            // DOM elements
+            const gameContainer = document.getElementById('gameContainer');
+            const helicopter = document.getElementById('helicopter');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const highScoreDisplay = document.getElementById('highScoreDisplay');
+            const startScreen = document.getElementById('startScreen');
+            const startButton = document.getElementById('startButton');
+            const howToPlayBtn = document.getElementById('howToPlayBtn');
+            const howToPlay = document.getElementById('howToPlay');
+            const backToMenuBtn = document.getElementById('backToMenuBtn');
+            const gameOverScreen = document.getElementById('gameOver');
+            const finalScore = document.getElementById('finalScore');
+            const finalHighScore = document.getElementById('finalHighScore');
+            const restartButton = document.getElementById('restartButton');
+            const menuButton = document.getElementById('menuButton');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const pauseScreen = document.getElementById('pauseScreen');
+            const resumeButton = document.getElementById('resumeButton');
+            const audioBtn = document.getElementById('audioBtn');
+            const flapBtn = document.getElementById('flapBtn');
+            
+            // Audio elements
+            const flapSound = document.getElementById('flapSound');
+            const scoreSound = document.getElementById('scoreSound');
+            const coinSound = document.getElementById('coinSound');
+            const hitSound = document.getElementById('hitSound');
+            const backgroundMusic = document.getElementById('backgroundMusic');
+            
+            // Game dimensions
+            const gameWidth = gameContainer.offsetWidth;
+            const gameHeight = gameContainer.offsetHeight;
+            
+            // Initialize game
+            function initGame() {
+                highScoreDisplay.textContent = `High: ${highScore}`;
+                createStars();
+                initClouds();
+                
+                // Set up audio button
+                audioBtn.textContent = musicEnabled ? '🔊' : '🔇';
+                
+                // Play background music if enabled
+                if (musicEnabled) {
+                    backgroundMusic.volume = 0.3;
+                    backgroundMusic.play().catch(e => console.log("Audio play prevented:", e));
+                }
+            }
+            
+            // Create stars for night mode
+            function createStars() {
+                // Clear existing stars
+                document.querySelectorAll('.star').forEach(star => star.remove());
+                stars = [];
+                
+                // Create new stars
+                for (let i = 0; i < 50; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    
+                    const x = Math.random() * gameWidth;
+                    const y = Math.random() * (gameHeight - 80);
+                    const size = Math.random() * 2 + 1;
+                    const opacity = Math.random();
+                    const duration = Math.random() * 3 + 1;
+                    
+                    star.style.width = `${size}px`;
+                    star.style.height = `${size}px`;
+                    star.style.left = `${x}px`;
+                    star.style.top = `${y}px`;
+                    star.style.opacity = opacity;
+                    star.style.animationDuration = `${duration}s`;
+                    
+                    gameContainer.appendChild(star);
+                    stars.push({
+                        element: star,
+                        x: x,
+                        y: y
+                    });
+                }
+            }
+            
+            // Initialize clouds
+            function initClouds() {
+                for (let i = 0; i < 5; i++) {
+                    createCloud();
+                }
+            }
+            
+            // Create a cloud
+            function createCloud() {
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                
+                const size = Math.random() * 50 + 50;
+                const x = Math.random() * gameWidth;
+                const y = Math.random() * (gameHeight - 200);
+                const opacity = Math.random() * 0.5 + 0.3;
+                
+                cloud.style.width = `${size}px`;
+                cloud.style.height = `${size * 0.6}px`;
+                cloud.style.left = `${x}px`;
+                cloud.style.top = `${y}px`;
+                cloud.style.opacity = opacity;
+                
+                gameContainer.appendChild(cloud);
+                clouds.push({
+                    element: cloud,
+                    x: x,
+                    speed: Math.random() * 0.5 + 0.5
+                });
+            }
+            
+            // Create a coin
+            function createCoin(x, y) {
+                const coin = document.createElement('div');
+                coin.className = 'coin';
+                coin.style.left = `${x}px`;
+                coin.style.top = `${y}px`;
+                
+                gameContainer.appendChild(coin);
+                coins.push({
+                    element: coin,
+                    x: x,
+                    y: y,
+                    collected: false
+                });
+            }
+            
+            // Create particles
+            function createParticles(x, y, color, count) {
+                for (let i = 0; i < count; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.backgroundColor = color;
+                    particle.style.left = `${x}px`;
+                    particle.style.top = `${y}px`;
+                    
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 3 + 1;
+                    const lifetime = Math.random() * 1000 + 500;
+                    
+                    gameContainer.appendChild(particle);
+                    
+                    particles.push({
+                        element: particle,
+                        x: x,
+                        y: y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        lifetime: lifetime,
+                        born: Date.now()
+                    });
+                }
+            }
+            
+            // Move clouds
+            function moveClouds() {
+                clouds.forEach(cloud => {
+                    cloud.x -= cloud.speed;
+                    if (cloud.x < -100) {
+                        cloud.x = gameWidth;
+                        const y = Math.random() * (gameHeight - 200);
+                        cloud.element.style.top = `${y}px`;
+                    }
+                    cloud.element.style.left = `${cloud.x}px`;
+                });
+            }
+            
+            // Move particles
+            function moveParticles() {
+                const now = Date.now();
+                particles.forEach((particle, index) => {
+                    if (now - particle.born > particle.lifetime) {
+                        gameContainer.removeChild(particle.element);
+                        particles.splice(index, 1);
+                    } else {
+                        particle.x += particle.vx;
+                        particle.y += particle.vy;
+                        particle.vy += 0.1; // gravity
+                        
+                        const opacity = 1 - ((now - particle.born) / particle.lifetime);
+                        particle.element.style.opacity = opacity;
+                        particle.element.style.left = `${particle.x}px`;
+                        particle.element.style.top = `${particle.y}px`;
+                    }
+                });
+            }
+            
+            // Create a pipe
+            function createPipe() {
+                const pipeHeight = Math.floor(Math.random() * (gameHeight - pipeGap - 180)) + 50;
+                const coinY = pipeHeight + Math.random() * (pipeGap - 40);
+                
+                // Top pipe
+                const topPipe = document.createElement('div');
+                topPipe.className = 'pipe pipe-top';
+                topPipe.style.height = `${pipeHeight}px`;
+                topPipe.style.left = `${gameWidth}px`;
+                topPipe.style.top = '0';
+                
+                const topCap = document.createElement('div');
+                topCap.className = 'pipe-cap';
+                topPipe.appendChild(topCap);
+                
+                // Bottom pipe
+                const bottomPipe = document.createElement('div');
+                bottomPipe.className = 'pipe pipe-bottom';
+                bottomPipe.style.height = `${gameHeight - pipeHeight - pipeGap - 80}px`;
+                bottomPipe.style.left = `${gameWidth}px`;
+                bottomPipe.style.bottom = '80px';
+                
+                const bottomCap = document.createElement('div');
+                bottomCap.className = 'pipe-cap';
+                bottomPipe.appendChild(bottomCap);
+                
+                gameContainer.appendChild(topPipe);
+                gameContainer.appendChild(bottomPipe);
+                
+                // Create coin between pipes (60% chance)
+                if (Math.random() < 0.6) {
+                    createCoin(gameWidth + 40, coinY);
+                }
+                
+                pipes.push({
+                    top: topPipe,
+                    bottom: bottomPipe,
+                    x: gameWidth,
+                    passed: false
+                });
+            }
+            
+            // Move pipes and coins
+            function movePipes() {
+                pipes.forEach((pipe, index) => {
+                    pipe.x -= gameSpeed;
+                    pipe.top.style.left = `${pipe.x}px`;
+                    pipe.bottom.style.left = `${pipe.x}px`;
+                    
+                    // Check if helicopter passed the pipe
+                    if (!pipe.passed && pipe.x < helicopter.offsetLeft - 80) {
+                        pipe.passed = true;
+                        score++;
+                        scoreDisplay.textContent = score;
+                        
+                        // Play score sound
+                        if (soundEnabled) {
+                            scoreSound.currentTime = 0;
+                            scoreSound.play().catch(e => console.log("Audio play prevented:", e));
+                        }
+                        
+                        // Create celebration particles
+                        createParticles(helicopter.offsetLeft, helicopter.offsetTop, '#ffffff', 10);
+                        
+                        // Increase difficulty slightly
+                        if (score % 10 === 0) {
+                            gameSpeed += 0.1;
+                            
+                            // Change day/night cycle every 15 points
+                            dayNightCycle = (dayNightCycle + 1) % 3;
+                            updateDayNight();
+                        }
+                    }
+                    
+                    // Check collision with pipes
+                    if (
+                        !gameOver &&
+                        helicopter.offsetLeft + helicopter.offsetWidth > pipe.x &&
+                        helicopter.offsetLeft < pipe.x + 80 &&
+                        (helicopter.offsetTop < pipe.top.offsetHeight || 
+                         helicopter.offsetTop + helicopter.offsetHeight > gameHeight - pipe.bottom.offsetHeight - 80)
+                    ) {
+                        endGame();
+                    }
+                    
+                    // Remove pipes that are off screen
+                    if (pipe.x < -80) {
+                        gameContainer.removeChild(pipe.top);
+                        gameContainer.removeChild(pipe.bottom);
+                        pipes.splice(index, 1);
+                    }
+                });
+                
+                // Move coins
+                coins.forEach((coin, index) => {
+                    if (!coin.collected) {
+                        coin.x -= gameSpeed;
+                        coin.element.style.left = `${coin.x}px`;
+                        
+                        // Check coin collection
+                        if (
+                            !gameOver &&
+                            helicopter.offsetLeft + helicopter.offsetWidth > coin.x &&
+                            helicopter.offsetLeft < coin.x + 20 &&
+                            helicopter.offsetTop + helicopter.offsetHeight > coin.y &&
+                            helicopter.offsetTop < coin.y + 20
+                        ) {
+                            coin.collected = true;
+                            coinsCollected++;
+                            gameContainer.removeChild(coin.element);
+                            
+                            // Play coin sound
+                            if (soundEnabled) {
+                                coinSound.currentTime = 0;
+                                coinSound.play().catch(e => console.log("Audio play prevented:", e));
+                            }
+                            
+                            // Create gold particles
+                            createParticles(coin.x + 10, coin.y + 10, 'gold', 15);
+                            
+                            // Bonus points
+                            score += 2;
+                            scoreDisplay.textContent = score;
+                        }
+                        
+                        // Remove coins that are off screen
+                        if (coin.x < -20) {
+                            gameContainer.removeChild(coin.element);
+                            coins.splice(index, 1);
+                        }
+                    }
+                });
+            }
+            
+            // Update day/night cycle
+            function updateDayNight() {
+                const body = document.body;
+                body.classList.remove('night');
+                
+                switch(dayNightCycle) {
+                    case 0: // Day
+                        body.style.backgroundColor = 'var(--sky-day)';
+                        break;
+                    case 1: // Dusk
+                        body.style.backgroundColor = 'var(--sky-dusk)';
+                        break;
+                    case 2: // Night
+                        body.style.backgroundColor = 'var(--sky-night)';
+                        body.classList.add('night');
+                        break;
+                }
+            }
+            
+            // Helicopter movement
+            function updateHelicopter() {
+                velocity += gravity;
+                position += velocity;
+                
+                // Apply terminal velocity
+                if (velocity > 8) velocity = 8;
+                
+                // Keep helicopter within bounds
+                if (position < 0) position = 0;
+                if (position > gameHeight - 80 - 30) {
+                    position = gameHeight - 80 - 30;
+                    if (!gameOver) endGame();
+                }
+                
+                helicopter.style.top = `${position}px`;
+            }
+            
+            // Ascend function
+            function ascend() {
+                if (gamePaused) return;
+                
+                if (!gameStarted) {
+                    startGame();
+                    return;
+                }
+                
+                if (!gameOver) {
+                    velocity = -6; // Reduced upward force for easier control
+                    
+                    // Play flap sound
+                    if (soundEnabled) {
+                        flapSound.currentTime = 0;
+                        flapSound.play().catch(e => console.log("Audio play prevented:", e));
+                    }
+                    
+                    // Add flap animation
+                    helicopter.classList.add('flap-animation');
+                    setTimeout(() => {
+                        helicopter.classList.remove('flap-animation');
+                    }, 300);
+                }
+            }
+            
+            // Start game
+            function startGame() {
+                if (gameStarted) return;
+                
+                gameStarted = true;
+                gameOver = false;
+                gamePaused = false;
+                score = 0;
+                coinsCollected = 0;
+                velocity = 0;
+                position = 250;
+                pipes = [];
+                coins = [];
+                gameSpeed = 2;
+                pipeGap = 200;
+                dayNightCycle = 0;
+                updateDayNight();
+                
+                scoreDisplay.textContent = '0';
+                startScreen.style.display = 'none';
+                howToPlay.style.display = 'none';
+                helicopter.classList.remove('hidden');
+                helicopter.style.top = `${position}px`;
+                helicopter.style.left = '80px';
+                
+                // Clear existing pipes and coins
+                document.querySelectorAll('.pipe, .coin').forEach(el => el.remove());
+                
+                lastPipeTime = Date.now();
+                gameLoop();
+            }
+            
+            // End game
+            function endGame() {
+                gameOver = true;
+                cancelAnimationFrame(animationId);
+                
+                // Play hit sound
+                if (soundEnabled) {
+                    hitSound.currentTime = 0;
+                    hitSound.play().catch(e => console.log("Audio play prevented:", e));
+                }
+                
+                // Create explosion particles
+                createParticles(
+                    helicopter.offsetLeft + helicopter.offsetWidth/2, 
+                    helicopter.offsetTop + helicopter.offsetHeight/2, 
+                    '#ff0000', 
+                    20
+                );
+                
+                // Update high score
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem('skyHopperHighScore', highScore);
+                }
+                
+                finalScore.textContent = score;
+                finalHighScore.textContent = highScore;
+                gameOverScreen.style.display = 'block';
+            }
+            
+            // Restart game
+            function restartGame() {
+                gameOverScreen.style.display = 'none';
+                gameStarted = false;
+                startScreen.style.display = 'flex';
+                helicopter.classList.add('hidden');
+                
+                // Clear existing pipes and coins
+                document.querySelectorAll('.pipe, .coin').forEach(el => el.remove());
+                
+                startGame();
+            }
+            
+            // Pause game
+            function togglePause() {
+                if (!gameStarted || gameOver) return;
+                
+                gamePaused = !gamePaused;
+                
+                if (gamePaused) {
+                    cancelAnimationFrame(animationId);
+                    pauseScreen.style.display = 'flex';
+                    
+                    // Pause music
+                    if (musicEnabled) {
+                        backgroundMusic.pause();
+                    }
+                } else {
+                    pauseScreen.style.display = 'none';
+                    gameLoop();
+                    
+                    // Resume music
+                    if (musicEnabled) {
+                        backgroundMusic.play().catch(e => console.log("Audio play prevented:", e));
+                    }
+                }
+            }
+            
+            // Toggle sound
+            function toggleSound() {
+                soundEnabled = !soundEnabled;
+                musicEnabled = !musicEnabled;
+                audioBtn.textContent = soundEnabled ? '🔊' : '🔇';
+                
+                if (soundEnabled && musicEnabled && !gamePaused) {
+                    backgroundMusic.play().catch(e => console.log("Audio play prevented:", e));
+                } else {
+                    backgroundMusic.pause();
+                }
+            }
+            
+            // Main game loop
+            function gameLoop() {
+                if (gamePaused || gameOver) return;
+                
+                updateHelicopter();
+                movePipes();
+                moveClouds();
+                moveParticles();
+                
+                // Add new pipes
+                const currentTime = Date.now();
+                if (currentTime - lastPipeTime > pipeFrequency) {
+                    createPipe();
+                    lastPipeTime = currentTime;
+                }
+                
+                // Occasionally add clouds
+                if (Math.random() < 0.005) {
+                    createCloud();
+                }
+                
+                animationId = requestAnimationFrame(gameLoop);
+            }
+            
+            // Event listeners
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    ascend();
+                }
+                
+                if (e.code === 'KeyP') {
+                    togglePause();
+                }
+            });
+            
+            document.addEventListener('click', ascend);
+            startButton.addEventListener('click', startGame);
+            restartButton.addEventListener('click', restartGame);
+            menuButton.addEventListener('click', () => {
+                gameOverScreen.style.display = 'none';
+                gameStarted = false;
+                startScreen.style.display = 'flex';
+                helicopter.classList.add('hidden');
+                
+                // Clear existing pipes and coins
+                document.querySelectorAll('.pipe, .coin').forEach(el => el.remove());
+            });
+            
+            pauseBtn.addEventListener('click', togglePause);
+            resumeButton.addEventListener('click', togglePause);
+            audioBtn.addEventListener('click', toggleSound);
+            flapBtn.addEventListener('click', ascend);
+            
+            howToPlayBtn.addEventListener('click', () => {
+                startScreen.style.display = 'none';
+                howToPlay.style.display = 'flex';
+            });
+            
+            backToMenuBtn.addEventListener('click', () => {
+                howToPlay.style.display = 'none';
+                startScreen.style.display = 'flex';
+            });
+            
+            // Handle visibility change (tab switching)
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && gameStarted && !gameOver && !gamePaused) {
+                    togglePause();
+                }
+            });
+            
+            // Initialize game
+            initGame();
+        });
+    </script>
+</body>
+</html>

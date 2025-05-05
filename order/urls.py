@@ -7,6 +7,7 @@ urlpatterns = [
     path('games/', views.games_hub, name='games_hub'),
     path('quiz/', views.quiz_view, name='quiz'),
     path('submit-score/', views.submit_score_view, name='submit_score'),
+    path('games/mobile/', views.mobile_view, name='mobile'),
     path('search-suggestions/', views.search_suggestions, name='search_suggestions'),
     path('discover/', views.discover, name='discover'),
     path('cart/', views.cart, name='cart'),

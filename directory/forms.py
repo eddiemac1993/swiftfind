@@ -13,6 +13,37 @@ from .models import Comment
 from django import forms
 from .models import BusinessPost
 from django.core.validators import FileExtensionValidator
+# forms.py
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from .models import BusinessMember, BusinessRole, BusinessDepartment
+
+class BusinessMemberForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+
+    class Meta:
+        model = BusinessMember
+        fields = ['user', 'role', 'business_username', 'password', 'employee_id', 'department', 'position']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['user'].queryset = User.objects.all()
+
+class BusinessRoleForm(forms.ModelForm):
+    class Meta:
+        model = BusinessRole
+        fields = ['name', 'description', 'permissions', 'is_default']
+
+class BusinessDepartmentForm(forms.ModelForm):
+    class Meta:
+        model = BusinessDepartment
+        fields = ['name', 'description', 'parent_department']
+
+    def __init__(self, *args, **kwargs):
+        business = kwargs.pop('business', None)
+        super().__init__(*args, **kwargs)
+        if business:
+            self.fields['parent_department'].queryset = BusinessDepartment.objects.filter(business=business)
 
 class BusinessPostForm(forms.ModelForm):
     image = forms.ImageField(

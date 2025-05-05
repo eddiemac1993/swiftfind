@@ -4,10 +4,18 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('register/', views.register, name='register'),
+    path('profile/', views.profile, name='profile'),
+
+    # Business-specific URLs
+    path('business/<slug:business_slug>/', views.business_dashboard, name='business_dashboard'),
+    path('business/<slug:business_slug>/login/', views.business_login, name='business_login'),
+    path('business/<slug:business_slug>/members/add/', views.add_business_member, name='add_business_member'),
+    path('business/<slug:business_slug>/roles/', views.manage_roles, name='manage_roles'),
+    path('business/<slug:business_slug>/departments/', views.manage_departments, name='manage_departments'),
+
     path('business/<int:pk>/post/add/', views.add_business_post, name='add-business-post'),
     path('business/post/<int:pk>/edit/', views.edit_business_post, name='edit-business-post'),
     path('business/post/<int:pk>/delete/', views.delete_business_post, name='delete-business-post'),
-    path('profile/', views.profile, name='profile'),
     path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
     path('', views.business_list, name='business-list'),
     path('newsfeed/', views.newsfeed_list, name='newsfeed-list'),

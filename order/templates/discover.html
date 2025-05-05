@@ -425,17 +425,26 @@
             }
         }
 
-        /* Filter controls - styled to match */
+        /* Responsive filter controls */
         .filter-controls {
-            display: flex;
-            gap: 10px;
             padding: 0 16px 16px;
-            flex-wrap: wrap;
+        }
+
+        .filter-controls form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .filter-controls form {
+                flex-direction: row;
+                align-items: center;
+            }
         }
 
         .filter-select {
-            flex: 1;
-            min-width: 120px;
+            width: 100%;
             padding: 10px 12px;
             border-radius: 12px;
             border: 1px solid var(--border-color);
@@ -448,10 +457,19 @@
             background-size: 16px;
         }
 
-        .dark-mode .filter-select {
-            background-color: var(--dark-surface);
-            border-color: rgba(255, 255, 255, 0.1);
-            color: var(--dark-text);
+        .filter-select[type="text"] {
+            background-image: none;
+            padding-right: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .filter-select {
+                min-width: 150px;
+            }
+
+            .filter-select[type="text"] {
+                min-width: 200px;
+            }
         }
 
         .filter-button {
@@ -464,17 +482,49 @@
             cursor: pointer;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
+            white-space: nowrap;
         }
 
-        .filter-button:hover {
-            background-color: var(--primary-dark);
+        @media (min-width: 768px) {
+            .filter-button {
+                padding: 10px 16px;
+            }
         }
+/* Black text for all inputs */
+.filter-select,
+.filter-select option {
+    color: #000000 !important; /* Force black text */
+}
 
-        .filter-button i {
-            font-size: 14px;
-        }
+/* Dark mode override to keep black text */
+.dark-mode .filter-select,
+.dark-mode .filter-select option {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
 
+/* Search input specific styles */
+.search-input {
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+/* Dropdown arrow color */
+.filter-select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000' stroke='%23000000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+/* Placeholder text color */
+.search-input::placeholder {
+    color: #666666 !important;
+    opacity: 1 !important;
+}
+
+.dark-mode .search-input::placeholder {
+    color: #666666 !important;
+}
         /* Bottom navigation - same as home.html */
         .bottom-nav {
             position: fixed;
@@ -848,32 +898,38 @@
                 </div>
             </div>
         </section>
-        <!-- Filter controls -->
+        <!-- Filter controls with black text -->
         <div class="filter-controls">
-            <form method="get" action="." class="w-full flex gap-2">
-                {% if query %}
-                <input type="hidden" name="q" value="{{ query }}">
-                {% endif %}
+            <form method="get" action="." class="w-full flex flex-col md:flex-row gap-2">
+                <!-- Search input with black text -->
+                <input type="text" name="q" placeholder="Search businesses..."
+                       value="{{ query|default:'' }}"
+                       class="filter-select search-input w-full md:flex-2">
 
-                <select name="category" class="filter-select">
-                    <option value="">All Categories</option>
-                    {% for category in categories %}
-                        <option value="{{ category.name }}" {% if selected_category == category.name %}selected{% endif %}>
-                            {{ category.name }}
-                        </option>
-                    {% endfor %}
-                </select>
+                <!-- Dropdowns with black text -->
+                <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                    <select name="category" class="filter-select category-select flex-1">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                            <option value="{{ category.name }}" {% if selected_category == category.name %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
 
-                <select name="sort_by" class="filter-select">
-                    <option value="">Sort By</option>
-                    <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Rating</option>
-                    <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name</option>
-                    <option value="reviews" {% if sort_by == 'reviews' %}selected{% endif %}>Most Reviewed</option>
-                    <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest</option>
-                </select>
+                    <select name="sort_by" class="filter-select sort-select flex-1">
+                        <option value="">Sort By</option>
+                        <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Rating</option>
+                        <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name</option>
+                        <option value="reviews" {% if sort_by == 'reviews' %}selected{% endif %}>Most Reviewed</option>
+                        <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest</option>
+                    </select>
+                </div>
 
-                <button type="submit" class="filter-button">
+                <!-- Filter button -->
+                <button type="submit" class="filter-button w-full md:w-auto">
                     <i class="fas fa-filter"></i>
+                    <span class="md:hidden">Apply Filters</span>
                 </button>
             </form>
         </div>
@@ -924,7 +980,6 @@
                             {% if business.is_admin_added %}
                             <div class="business-badge verified-badge">
                                 <i class="fas fa-circle-check"></i>
-                                <span>Verified</span>
                             </div>
                             {% endif %}
 
