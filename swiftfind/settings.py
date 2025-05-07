@@ -50,6 +50,9 @@ INSTALLED_APPS = [
     'ckeditor',
     'taxi',
     'tracking',
+    'import_export',
+    'django_admin_listfilter_dropdown',
+    'rangefilter',
 ]
 
 # settings.py

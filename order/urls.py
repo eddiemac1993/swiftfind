@@ -5,6 +5,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('', views.home, name='home'),
     path('games/', views.games_hub, name='games_hub'),
+    path('nsolo/', views.nsolo_game, name='nsolo'),
     path('quiz/', views.quiz_view, name='quiz'),
     path('submit-score/', views.submit_score_view, name='submit_score'),
     path('games/mobile/', views.mobile_view, name='mobile'),

@@ -531,7 +531,39 @@
             box-shadow: var(--dark-shadow);
             border-color: var(--dark-border-color);
         }
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
 
+.delete-btn:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.delete-btn:active {
+    transform: translateY(0);
+}
+
+.dark-mode .delete-btn {
+    background-color: rgba(231, 76, 60, 0.8);
+}
+
+.dark-mode .delete-btn:hover {
+    background-color: rgba(192, 57, 43, 0.9);
+}
         /* Action Buttons */
         .action-buttons {
             display: flex;
@@ -1276,7 +1308,72 @@
             color: white;
             border-color: var(--primary-color);
         }
+/* Full Image Modal Styles */
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    overflow: auto;
+    animation: fadeIn 0.3s;
+    touch-action: manipulation; /* Important for mobile touch events */
+}
 
+.modal-image-content {
+    margin: auto;
+    display: block;
+    width: auto;
+    max-width: 95%;
+    max-height: 80vh;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%); /* For older mobile browsers */
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 15px; /* Smaller right position for mobile */
+    color: #f1f1f1;
+    font-size: 30px; /* Smaller close button for mobile */
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+    z-index: 2;
+    padding: 5px; /* Easier to tap on mobile */
+}
+
+.modal-caption {
+    position: fixed; /* Changed from absolute to fixed */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: white;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    width: 100%;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+    .modal-image-content {
+        max-width: 100%;
+        max-height: 70vh;
+    }
+
+    .close-modal {
+        top: 10px;
+        right: 10px;
+        font-size: 25px;
+    }
+}
         /* Modal */
         .modal {
             display: none;
@@ -1779,19 +1876,19 @@
                 <h1 class="business-name">{{ business.name }}</h1>
                 <div class="business-meta">
                     <div class="business-rating">
-                        <span class="stars">
-                            {% for i in "12345" %}
-                                {% if i|add:0 <= business.average_rating %}
-                                    ★
-                                {% else %}
-                                    ☆
-                                {% endif %}
-                            {% endfor %}
-                        </span>
-                        <span>{{ business.average_rating|floatformat:1 }}</span>
-                    </div>
-                    <span class="business-review-count">{{ business.review_count }} reviews</span>
-                    <span class="business-category">
+    <span class="stars">
+        {% with ''|center:business_stats.average_rating as range %}
+            {% for _ in range %}★{% endfor %}
+        {% endwith %}
+        {% with ''|center:5 as range %}
+            {% for _ in range %}
+                {% if forloop.counter > business_stats.average_rating %}☆{% endif %}
+            {% endfor %}
+        {% endwith %}
+    </span>
+    <span>{{ business_stats.average_rating|floatformat:1 }}</span>
+</div>
+<span class="business-review-count">{{ business_stats.review_count }} reviews</span><span class="business-category">
                         <i class="fas fa-tag"></i>
                         {{ business.category.name }}
                     </span>
@@ -1878,6 +1975,11 @@
                     <i class="fas fa-phone-alt"></i>
                     Call Now
                 </button>
+<button class="action-button secondary-action" aria-label="Chat on WhatsApp" id="whatsapp-button"
+        onclick="window.open('https://wa.me/{{ business.phone_number|cut:"+"|cut:" " }}', '_blank')">
+    <i class="fab fa-whatsapp"></i>
+    WhatsApp
+</button>
                 <button class="action-button secondary-action" aria-label="Get directions to {{ business.name }}" id="directions-button">
                     <i class="fas fa-directions"></i>
                     Get Directions
@@ -1952,196 +2054,6 @@
             {% endif %}
         </div>
 
-        <!-- Map Integration -->
-        {% if business.latitude and business.longitude %}
-        <div class="map-container">
-            <h2 class="section-title">
-                <i class="fas fa-map-marked-alt"></i>
-                Location
-            </h2>
-            <div id="business-map"></div>
-        </div>
-        {% endif %}
-
-        <!-- Social Sharing -->
-        <div class="social-sharing">
-            <h2 class="section-title">
-                <i class="fas fa-share-alt"></i>
-                Share this business
-            </h2>
-            <div class="social-buttons">
-                <!-- Facebook Share Button -->
-                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}"
-                   target="_blank"
-                   class="social-button facebook"
-                   aria-label="Share on Facebook">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-
-                <!-- WhatsApp Share Button -->
-                <a href="https://wa.me/?text=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
-                   target="_blank"
-                   class="social-button whatsapp"
-                   aria-label="Share on WhatsApp">
-                    <i class="fab fa-whatsapp"></i>
-                </a>
-
-                <!-- Twitter Share Button -->
-                <a href="https://twitter.com/intent/tweet?text=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
-                   target="_blank"
-                   class="social-button twitter"
-                   aria-label="Share on Twitter">
-                    <i class="fab fa-twitter"></i>
-                </a>
-
-                <!-- SMS Share Button -->
-                <a href="sms:?body=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
-                   class="social-button sms"
-                   aria-label="Share via SMS">
-                    <i class="fas fa-comment-alt"></i>
-                </a>
-
-                <!-- Copy Link Button -->
-                <button class="social-button copy-link" id="copy-link-button" aria-label="Copy link">
-                    <i class="fas fa-link"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Reviews Section -->
-        <div class="reviews-section">
-            <h2 class="section-title">
-                <i class="fas fa-star"></i>
-                Reviews
-                <span class="business-review-count">({{ business.review_count }})</span>
-            </h2>
-
-            {% for review in reviews %}
-            <div class="review-card">
-                <div class="review-header">
-                    <div class="review-user">
-                        <div class="user-avatar">
-                            {{ review.user.username|first|upper }}
-                        </div>
-                        <div>
-                            <div class="user-name">
-                                {% if review.user %}
-                                    {{ review.user.username }}
-                                {% else %}
-                                    Anonymous
-                                {% endif %}
-                            </div>
-                            <div class="review-date">{{ review.created_at|date:"F j, Y" }}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="review-rating">
-                    {% for i in "12345" %}
-                        {% if i|add:0 <= review.rating %}
-                            ★
-                        {% else %}
-                            ☆
-                        {% endif %}
-                    {% endfor %}
-                </div>
-                <p class="review-content">{{ review.comment }}</p>
-            </div>
-            {% empty %}
-            <p>No reviews yet. Be the first to review!</p>
-            {% endfor %}
-
-            <!-- Pagination -->
-            {% if reviews.has_other_pages %}
-            <div class="pagination">
-                {% if reviews.has_previous %}
-                <a href="?page={{ reviews.previous_page_number }}" class="pagination-button">Previous</a>
-                {% endif %}
-
-                {% for num in reviews.paginator.page_range %}
-                    {% if reviews.number == num %}
-                    <span class="pagination-button active">{{ num }}</span>
-                    {% else %}
-                    <a href="?page={{ num }}" class="pagination-button">{{ num }}</a>
-                    {% endif %}
-                {% endfor %}
-
-                {% if reviews.has_next %}
-                <a href="?page={{ reviews.next_page_number }}" class="pagination-button">Next</a>
-                {% endif %}
-            </div>
-            {% endif %}
-        </div>
-
-        <!-- Review Form -->
-        {% if user.is_authenticated %}
-        <div class="review-form">
-            <h2 class="section-title">
-                <i class="fas fa-edit"></i>
-                Write a Review
-            </h2>
-
-            <form method="post" action="{% url 'business-detail' pk=business.pk %}">
-                {% csrf_token %}
-
-                <div class="form-group">
-                    <label class="form-label">Your Rating</label>
-                    <div class="rating-stars" id="rating-stars">
-                        <span class="star" data-value="1">☆</span>
-                        <span class="star" data-value="2">☆</span>
-                        <span class="star" data-value="3">☆</span>
-                        <span class="star" data-value="4">☆</span>
-                        <span class="star" data-value="5">☆</span>
-                    </div>
-                    <input type="hidden" name="rating" id="rating-input" value="">
-                </div>
-
-                <div class="form-group">
-                    <label for="comment" class="form-label">Your Review</label>
-                    <textarea name="comment" id="comment" class="form-control" rows="4" placeholder="Share your experience..." maxlength="500"></textarea>
-                    <div class="char-counter">500 characters remaining</div>
-                </div>
-
-                <button type="submit" class="submit-button">Submit Review</button>
-            </form>
-        </div>
-        {% else %}
-        <div class="reviews-section">
-            <p>Please <a href="{% url 'login' %}?next={{ request.path }}">log in</a> to leave a review.</p>
-        </div>
-        {% endif %}
-
-        <!-- Related Businesses -->
-        {% if related_businesses %}
-        <div class="related-businesses">
-            <h2 class="section-title">
-                <i class="fas fa-store"></i>
-                Similar Businesses
-            </h2>
-
-            {% for related_business in related_businesses %}
-            <a href="{% url 'business-detail' related_business.pk %}" class="related-business-card">
-                <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }}" class="related-business-image" loading="lazy">
-                <div class="related-business-info">
-                    <h3 class="related-business-name">{{ related_business.name }}</h3>
-                    <div class="related-business-rating">
-                        <span>
-                            {% for i in "12345" %}
-                                {% if i|add:0 <= related_business.average_rating %}
-                                    ★
-                                {% else %}
-                                    ☆
-                                {% endif %}
-                            {% endfor %}
-                        </span>
-                        <span>{{ related_business.average_rating|floatformat:1 }}</span>
-                    </div>
-                </div>
-                <i class="fas fa-chevron-right related-business-arrow"></i>
-            </a>
-            {% endfor %}
-        </div>
-        {% endif %}
-
         <!-- Products & Services Section -->
         <div class="business-posts-section">
             <h2 class="section-title">
@@ -2149,7 +2061,7 @@
                 Products & Services
             </h2>
 
-            {% if is_owner_or_admin %}
+{% if is_owner_or_admin %}
 <div class="products-services-section">
 
   <div class="add-post-form">
@@ -2325,6 +2237,83 @@
 </style>
 
 <script>
+// Full Image Modal Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the modal
+    const modal = document.getElementById("image-modal");
+    const modalImg = document.getElementById("modal-image");
+    const captionText = document.getElementById("modal-caption");
+
+    // Get all images that should open in modal
+    const images = document.querySelectorAll('.post-image, .business-hero-image, .thumbnail img, .main-image img');
+
+    // Function to open modal
+    function openModal(imgElement) {
+        modal.style.display = "block";
+        modalImg.src = imgElement.src || imgElement.dataset.src;
+        captionText.innerHTML = imgElement.alt || "Image";
+        document.body.style.overflow = "hidden"; // Prevent scrolling behind modal
+    }
+
+    // Function to close modal
+    function closeModal() {
+        modal.style.display = "none";
+        document.body.style.overflow = ""; // Re-enable scrolling
+    }
+
+    // Add click/touch event to each image
+    images.forEach(img => {
+        // Handle both click and touch events
+        img.addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal(this);
+        });
+
+        // For better touch support
+        img.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            openModal(this);
+        }, { passive: false });
+    });
+
+    // Close modal when clicking the X
+    document.querySelector('.close-modal').addEventListener('click', closeModal);
+    document.querySelector('.close-modal').addEventListener('touchend', closeModal);
+
+    // Close modal when clicking outside the image
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Also handle touch events outside
+    modal.addEventListener('touchend', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Close modal with ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "Escape" && modal.style.display === "block") {
+            closeModal();
+        }
+    });
+
+    // Prevent card click when clicking on image inside card
+    document.querySelectorAll('.post-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            // If the click was on the image, let the image click handler handle it
+            if (e.target.closest('.post-image-container') ||
+                e.target.classList.contains('post-image') ||
+                e.target.tagName === 'IMG') {
+                e.stopPropagation();
+                return;
+            }
+        });
+    });
+});
 function toggleForm() {
   const form = document.getElementById('postForm');
   const btn = document.querySelector('.toggle-form-btn');
@@ -2425,6 +2414,220 @@ document.getElementById('image').addEventListener('change', function(e) {
             </div>
             {% endif %}
         </div>
+
+        <!-- Social Sharing -->
+        <div class="social-sharing">
+            <h2 class="section-title">
+                <i class="fas fa-share-alt"></i>
+                Share this business
+            </h2>
+            <div class="social-buttons">
+                <!-- Facebook Share Button -->
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}"
+                   target="_blank"
+                   class="social-button facebook"
+                   aria-label="Share on Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+
+                <!-- WhatsApp Share Button -->
+                <a href="https://wa.me/?text=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
+                   target="_blank"
+                   class="social-button whatsapp"
+                   aria-label="Share on WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+
+                <!-- Twitter Share Button -->
+                <a href="https://twitter.com/intent/tweet?text=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
+                   target="_blank"
+                   class="social-button twitter"
+                   aria-label="Share on Twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+
+                <!-- SMS Share Button -->
+                <a href="sms:?body=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
+                   class="social-button sms"
+                   aria-label="Share via SMS">
+                    <i class="fas fa-comment-alt"></i>
+                </a>
+
+                <!-- Copy Link Button -->
+                <button class="social-button copy-link" id="copy-link-button" aria-label="Copy link">
+                    <i class="fas fa-link"></i>
+                </button>
+            </div>
+        </div>
+
+<!-- Reviews Section -->
+<div class="reviews-section">
+    <h2 class="section-title">
+        <i class="fas fa-star"></i>
+        Reviews
+        <span class="business-review-count">({{ business.review_count }})</span>
+    </h2>
+
+    {% for review in reviews %}
+    <div class="review-card">
+        <div class="review-header">
+            <div class="review-user">
+                <div class="user-avatar">
+                    {% if review.user %}
+                        {{ review.user.username|first|upper }}
+                    {% else %}
+                        A
+                    {% endif %}
+                </div>
+                <div>
+                    <div class="user-name">
+                        {% if review.user %}
+                            {{ review.user.username }}
+                        {% else %}
+                            Anonymous
+                        {% endif %}
+                    </div>
+                    <div class="review-date">{{ review.created_at|date:"F j, Y" }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="review-rating">
+            {% for i in "12345" %}
+                {% if i|add:0 <= review.rating %}
+                    ★
+                {% else %}
+                    ☆
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% if review.comment %}
+        <p class="review-content">{{ review.comment }}</p>
+        {% endif %}
+    </div>
+    {% empty %}
+    <p>No reviews yet. Be the first to review!</p>
+    {% endfor %}
+
+    <!-- Pagination -->
+    {% if reviews.has_other_pages %}
+    <div class="pagination">
+        {% if reviews.has_previous %}
+        <a href="?page={{ reviews.previous_page_number }}" class="pagination-button">Previous</a>
+        {% endif %}
+
+        {% for num in reviews.paginator.page_range %}
+            {% if reviews.number == num %}
+            <span class="pagination-button active">{{ num }}</span>
+            {% else %}
+            <a href="?page={{ num }}" class="pagination-button">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if reviews.has_next %}
+        <a href="?page={{ reviews.next_page_number }}" class="pagination-button">Next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Review Form -->
+<div class="review-form">
+    <h2 class="section-title">
+        <i class="fas fa-edit"></i>
+        Write a Review
+    </h2>
+
+    <form method="post" action="{% url 'business-detail' pk=business.pk %}">
+        {% csrf_token %}
+        <input type="hidden" name="submit_review" value="1">
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label class="form-label">Your Rating</label>
+            <div class="rating-stars" id="rating-stars">
+                <span class="star" data-value="1">☆</span>
+                <span class="star" data-value="2">☆</span>
+                <span class="star" data-value="3">☆</span>
+                <span class="star" data-value="4">☆</span>
+                <span class="star" data-value="5">☆</span>
+            </div>
+            <input type="hidden" name="rating" id="rating-input" required>
+        </div>
+
+        <div class="form-group">
+            <label for="comment" class="form-label">Your Review (optional)</label>
+            <textarea name="comment" id="comment" class="form-control" rows="4"
+                      placeholder="Share your experience..." maxlength="500"></textarea>
+        </div>
+
+        <button type="submit" class="submit-button">Submit Review</button>
+    </form>
+</div>
+<script>
+    // Rating Stars
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating-input');
+
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const value = parseInt(this.getAttribute('data-value'));
+            ratingInput.value = value;
+
+            // Update star display
+            stars.forEach((s, index) => {
+                if (index < value) {
+                    s.textContent = '★';
+                    s.classList.add('active');
+                } else {
+                    s.textContent = '☆';
+                    s.classList.remove('active');
+                }
+            });
+        });
+    });
+});
+</script>
+        <!-- Related Businesses -->
+        {% if related_businesses %}
+        <div class="related-businesses">
+            <h2 class="section-title">
+                <i class="fas fa-store"></i>
+                Similar Businesses
+            </h2>
+
+            {% for related_business in related_businesses %}
+            <a href="{% url 'business-detail' related_business.pk %}" class="related-business-card">
+                <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }}" class="related-business-image" loading="lazy">
+                <div class="related-business-info">
+                    <h3 class="related-business-name">{{ related_business.name }}</h3>
+                    <div class="related-business-rating">
+                        <span>
+                            {% for i in "12345" %}
+                                {% if i|add:0 <= related_business.average_rating %}
+                                    ★
+                                {% else %}
+                                    ☆
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        <span>{{ related_business.average_rating|floatformat:1 }}</span>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right related-business-arrow"></i>
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+
     </main>
 
     <!-- Bottom Navigation -->
@@ -2486,6 +2689,26 @@ document.getElementById('image').addEventListener('change', function(e) {
     </div>
 
     <script>
+    // Rating Stars
+const stars = document.querySelectorAll('.star');
+const ratingInput = document.getElementById('rating-input');
+
+stars.forEach(star => {
+    star.addEventListener('click', function() {
+        const value = parseInt(this.getAttribute('data-value'));
+        ratingInput.value = value;
+
+        stars.forEach((s, index) => {
+            if (index < value) {
+                s.textContent = '★';
+                s.classList.add('active');
+            } else {
+                s.textContent = '☆';
+                s.classList.remove('active');
+            }
+        });
+    });
+});
         // Theme Toggle
         document.getElementById('theme-toggle').addEventListener('click', function() {
             document.body.classList.toggle('dark-mode');
@@ -2756,5 +2979,11 @@ document.getElementById('image').addEventListener('change', function(e) {
             });
         }
     </script>
+<!-- Full Image Modal -->
+<div class="image-modal" id="image-modal">
+    <span class="close-modal">&times;</span>
+    <img class="modal-image-content" id="modal-image">
+    <div class="modal-caption" id="modal-caption"></div>
+</div>
 </body>
 </html>

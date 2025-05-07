@@ -104,7 +104,7 @@ class BusinessRole(models.Model):
         related_name="business_roles"
     )
     is_default = models.BooleanField(default=False, help_text="Is this a default role for new members?")
-    
+
     def __str__(self):
         return self.name
 
@@ -115,7 +115,7 @@ class BusinessDepartment(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     parent_department = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
-    
+
     def __str__(self):
         return self.name
 
@@ -126,7 +126,7 @@ class Business(models.Model):
     ]
 
     name = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True, blank=True)
+    slug = models.SlugField(unique=False, blank=True)
     logo = models.ImageField(
         upload_to='business_logos/',
         default='business_logos/default.jpg',
@@ -190,31 +190,31 @@ class BusinessMember(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='business_memberships')
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='members')
     role = models.ForeignKey(BusinessRole, on_delete=models.SET_NULL, null=True, blank=True)
-    
+
     # Business-specific credentials
     business_username = models.CharField(max_length=150, unique=True)
     business_password = models.CharField(max_length=128)
-    
+
     # Status fields
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(null=True, blank=True)
-    
+
     # Additional business-specific profile
     employee_id = models.CharField(max_length=50, blank=True, null=True)
     department = models.ForeignKey(BusinessDepartment, on_delete=models.SET_NULL, null=True, blank=True)
     position = models.CharField(max_length=100, blank=True, null=True)
-    
+
     class Meta:
         unique_together = ('user', 'business')
-    
+
     def __str__(self):
         return f"{self.user.username} at {self.business.name} as {self.role.name if self.role else 'No Role'}"
-    
+
     def set_password(self, raw_password):
         self.business_password = make_password(raw_password)
         self.save()
-    
+
     def check_password(self, raw_password):
         from django.contrib.auth.hashers import check_password
         return check_password(raw_password, self.business_password)
@@ -226,7 +226,7 @@ class BusinessPost(models.Model):
         ('announcement', 'Announcement'),
         ('offer', 'Special Offer'),
     ]
-    
+
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='posts')
     title = models.CharField(max_length=200)
     content = RichTextField()
@@ -236,10 +236,10 @@ class BusinessPost(models.Model):
     is_featured = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
         ordering = ['-is_featured', '-created_at']
-    
+
     def __str__(self):
         return f"{self.title} - {self.business.name}"
 
@@ -269,24 +269,21 @@ class Review(models.Model):
         unique_together = ('business', 'session_key')
 
     def save(self, *args, **kwargs):
+        # Generate slug if not exists
         if not self.slug:
-            super().save(*args, **kwargs)
-            self.slug = slugify(f"{self.business.name}-{self.id}")
-            super().save(*args, **kwargs)
-        else:
-            super().save(*args, **kwargs)
+            self.slug = slugify(f"{self.business.name}-{timezone.now().strftime('%Y%m%d%H%M%S')}")
 
+        # Set session key if user is anonymous
         if not self.user and not self.session_key:
             self.session_key = self._get_session_key()
-            super().save(*args, **kwargs)
+
+        super().save(*args, **kwargs)
 
     def _get_session_key(self):
-        if not self.session_key:
-            from django.contrib.sessions.backends.db import SessionStore
-            session = SessionStore()
-            session.create()
-            return session.session_key
-        return self.session_key
+        from django.contrib.sessions.backends.db import SessionStore
+        session = SessionStore()
+        session.create()
+        return session.session_key
 
     def __str__(self):
         return f"Review for {self.business.name}"
