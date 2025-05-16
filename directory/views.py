@@ -358,7 +358,7 @@ def business_detail(request, pk):
             return handle_post_delete(request, business, pk)
 
     reviews = paginate_queryset(request, reviews_qs, 'review_page', 50)
-    posts = paginate_queryset(request, posts_qs, 'post_page', 6)
+    posts = paginate_queryset(request, posts_qs, 'post_page', 16)
 
     review_form = ReviewForm()
     post_form = BusinessPostForm() if is_owner_or_admin else None
@@ -486,15 +486,18 @@ def register(request):
 
 @login_required
 def profile(request):
+    # Get or create user profile
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+
     # Get the user's primary business (first owned business)
     primary_business = request.user.owned_businesses.first()
 
-    # Get all businesses the user is a member of (including those they don't own)
+    # Get all businesses the user is a member of
     member_businesses = BusinessMember.objects.filter(user=request.user).select_related('business')
 
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=request.user)
-        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
         business_form = BusinessUpdateForm(request.POST, request.FILES, instance=primary_business) if primary_business else None
 
         if all(form.is_valid() for form in filter(None, [user_form, profile_form, business_form])):
@@ -512,14 +515,17 @@ def profile(request):
             messages.error(request, 'Please correct the errors below.')
     else:
         user_form = UserUpdateForm(instance=request.user)
-        profile_form = ProfileUpdateForm(instance=request.user.profile)
+        profile_form = ProfileUpdateForm(instance=profile)
         business_form = BusinessUpdateForm(instance=primary_business) if primary_business else None
 
     context = {
+        'user': request.user,  # Explicitly pass user
+        'profile': profile,    # Pass profile instance
         'user_form': user_form,
         'profile_form': profile_form,
         'business_form': business_form,
-        'business': primary_business,  # This is the key variable needed for your tabs
+        'business': primary_business,
+        'primary_business': primary_business,  # Add this for consistency
         'member_businesses': member_businesses,
     }
 

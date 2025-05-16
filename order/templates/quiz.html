@@ -119,19 +119,20 @@
         <span id="toast-message">Answer submitted successfully!</span>
     </div>
 
+
     <!-- Bottom navigation -->
     <nav class="bottom-nav">
-        <a href="{% url 'home' %}" class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
+        <a href="{% url 'games_hub' %}" class="nav-item active">
+            <i class="fas fa-gamepad"></i>
+            <span>Games</span>
         </a>
         <a href="{% url 'discover' %}" class="nav-item">
             <i class="fas fa-compass"></i>
             <span>Discover</span>
         </a>
-        <a href="{% url 'games_hub' %}" class="nav-item active">
-            <i class="fas fa-gamepad"></i>
-            <span>Games</span>
+        <a href="{% url 'about' %}" class="nav-item">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
         </a>
         {% if user.is_authenticated %}
             <a href="{% url 'profile' %}" class="nav-item" title="Profile">

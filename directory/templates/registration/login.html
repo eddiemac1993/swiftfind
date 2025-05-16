@@ -431,17 +431,6 @@
             <div class="divider">
                 <span>or continue with</span>
             </div>
-            <div class="social-login">
-                <button class="social-login-btn">
-                    <i class="fab fa-google"></i>
-                </button>
-                <button class="social-login-btn">
-                    <i class="fab fa-facebook-f"></i>
-                </button>
-                <button class="social-login-btn">
-                    <i class="fab fa-twitter"></i>
-                </button>
-            </div>
             <div class="signup-prompt">
                 Don't have an account? <a href="{% url 'register' %}">Sign up</a>
             </div>
@@ -450,22 +439,29 @@
 
     <!-- Bottom navigation -->
     <nav class="bottom-nav">
-        <a href="{% url 'home' %}" class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
+        <a href="{% url 'games_hub' %}" class="nav-item">
+            <i class="fas fa-gamepad"></i>
+            <span>Games</span>
         </a>
         <a href="{% url 'discover' %}" class="nav-item">
             <i class="fas fa-compass"></i>
             <span>Discover</span>
         </a>
-        <a href="{% url 'post_list' %}" class="nav-item">
-            <i class="fas fa-list"></i>
-            <span>Find</span>
+        <a href="{% url 'about' %}" class="nav-item">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
         </a>
-        <a href="{% url 'login' %}" class="nav-item active">
-            <i class="fas fa-sign-in-alt"></i>
-            <span>Login</span>
-        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item active" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
     </nav>
 
     <script>

@@ -1,4 +1,5 @@
 {% load static %}
+{% load whatsapp_filters %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -50,11 +51,17 @@
             line-height: 1.6;
         }
 
-        body.dark-mode {
-            background-color: var(--dark-bg);
-            color: var(--dark-text);
-        }
-
+        .dark-mode {
+  background-color: #121212;
+  color: #f5f5f5;
+}
+.dark-mode .card {
+  background-color: #1e1e1e;
+  border-color: #333;
+}
+.dark-mode .text-muted {
+  color: #aaa !important;
+}
         /* Accessibility */
         .skip-link {
             position: absolute;
@@ -73,8 +80,7 @@
         }
 
         *:focus {
-            outline: 2px solid var(--primary-color);
-            outline-offset: 2px;
+            outline: none;
         }
 
         /* Header */
@@ -142,7 +148,17 @@
         .dark-mode .user-actions i {
             color: var(--dark-text);
         }
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            }
 
+            .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            }
         .theme-btn {
             background: none;
             border: none;
@@ -180,13 +196,16 @@
 
         /* Business Hero Section */
         .business-hero {
+            height: 400px;
             position: relative;
-            height: 280px;
-            overflow: hidden;
-            margin: 0 16px 20px;
             border-radius: 16px;
-            box-shadow: var(--shadow-md);
-        }
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            }
+
+            .business-hero-overlay {
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+            }
 
         .dark-mode .business-hero {
             box-shadow: var(--dark-shadow-md);
@@ -317,7 +336,29 @@
             margin-bottom: 12px;
             box-shadow: var(--shadow);
         }
+        .loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
 
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@media (max-width: 768px) {
+  .business-hero {
+    height: 300px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .business-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
         .main-image img {
             width: 100%;
             height: 100%;
@@ -325,7 +366,63 @@
             loading: lazy;
             transition: transform 0.5s ease;
         }
+        :focus {
+  outline: 2px solid #07C160;
+  outline-offset: 2px;
+}
 
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.form-control {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px 16px;
+  transition: all 0.3s;
+}
+
+.form-control:focus {
+  border-color: #07C160;
+  box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.2);
+}
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.thumbnail-container {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 2px solid transparent;
+}
+
+.thumbnail:hover {
+  transform: scale(1.1);
+  border-color: #07C160;
+}
+.icon {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
         .main-image:hover img {
             transform: scale(1.03);
         }
@@ -573,25 +670,19 @@
         }
 
         .action-button {
-            flex: 1;
-            min-width: 120px;
-            padding: 14px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: all 0.3s ease;
-            font-size: 15px;
-        }
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
 
-        .action-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        }
+.action-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
 
         .action-button:active {
             transform: translateY(0);
@@ -847,9 +938,23 @@
         }
 
         .review-card {
-            padding: 16px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 16px;
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 20px;
+}
 
         .dark-mode .review-card {
             border-bottom-color: var(--dark-border-color);
@@ -870,19 +975,6 @@
             display: flex;
             align-items: center;
             gap: 12px;
-        }
-
-        .user-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background-color: var(--primary-light);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary-color);
-            font-weight: bold;
-            font-size: 18px;
         }
 
         .dark-mode .user-avatar {
@@ -1574,13 +1666,11 @@
         }
 
         .post-card {
-            background-color: var(--white);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            border: 1px solid var(--border-color);
-        }
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s;
+}
 
         .dark-mode .post-card {
             background-color: var(--dark-surface);
@@ -1595,17 +1685,16 @@
         }
 
         .post-image-container {
-            width: 100%;
-            height: 200px;
-            overflow: hidden;
-        }
+  height: 200px;
+  overflow: hidden;
+}
 
-        .post-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
+.post-image {
+  transition: transform 0.5s ease;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
 
         .post-card:hover .post-image {
             transform: scale(1.05);
@@ -1975,11 +2064,11 @@
                     <i class="fas fa-phone-alt"></i>
                     Call Now
                 </button>
-<button class="action-button secondary-action" aria-label="Chat on WhatsApp" id="whatsapp-button"
-        onclick="window.open('https://wa.me/{{ business.phone_number|cut:"+"|cut:" " }}', '_blank')">
-    <i class="fab fa-whatsapp"></i>
-    WhatsApp
-</button>
+                <button class="action-button secondary-action" aria-label="Chat on WhatsApp" id="whatsapp-button"
+                        onclick="window.open('https://wa.me/{{ business.phone_number|whatsapp_number }}', '_blank')">
+                    <i class="fab fa-whatsapp"></i>
+                    WhatsApp
+                </button>
                 <button class="action-button secondary-action" aria-label="Get directions to {{ business.name }}" id="directions-button">
                     <i class="fas fa-directions"></i>
                     Get Directions
@@ -2465,7 +2554,7 @@ document.getElementById('image').addEventListener('change', function(e) {
     <h2 class="section-title">
         <i class="fas fa-star"></i>
         Reviews
-        <span class="business-review-count">({{ business.review_count }})</span>
+        <span class="business-review-count"> - {{ business.review_count }}</span>
     </h2>
 
     {% for review in reviews %}
@@ -2957,7 +3046,15 @@ stars.forEach(star => {
             loadLeaflet();
         }
         {% endif %}
-
+// Add hover effects to interactive elements
+document.querySelectorAll('.interactive').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    el.style.transform = 'scale(1.02)';
+  });
+  el.addEventListener('mouseleave', () => {
+    el.style.transform = 'scale(1)';
+  });
+});
         // Lazy load images with Intersection Observer
         if ('IntersectionObserver' in window) {
             const lazyImages = [].slice.call(document.querySelectorAll('img[loading="lazy"]'));

@@ -18,7 +18,7 @@
     <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
     <style>
         :root {
-            --primary-color: #07C160; /* WeChat green */
+            --primary-color: #07C160;
             --primary-dark: #05a54e;
             --primary-light: #e6f7ef;
             --secondary-color: #F8F8F8;
@@ -40,13 +40,13 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         body {
             background-color: var(--secondary-color);
             color: var(--text-color);
-            padding-bottom: 72px; /* Space for bottom nav */
+            padding-bottom: 72px;
         }
 
         body.dark-mode {
@@ -62,8 +62,6 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom-left-radius: 16px;
-            border-bottom-right-radius: 16px;
         }
 
         .dark-mode .app-header {
@@ -103,15 +101,6 @@
             display: flex;
             align-items: center;
             gap: 15px;
-        }
-
-        .user-actions i {
-            font-size: 20px;
-            color: var(--text-color);
-        }
-
-        .dark-mode .user-actions i {
-            color: var(--dark-text);
         }
 
         .theme-btn {
@@ -194,6 +183,9 @@
             border-radius: 16px;
             box-shadow: var(--shadow);
             overflow: hidden;
+            position: sticky;
+            top: 100px;
+            height: fit-content;
         }
 
         .dark-mode .sidebar {
@@ -243,26 +235,6 @@
             transform: scale(1.1);
         }
 
-        .sidebar-user h2 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: var(--text-color);
-        }
-
-        .dark-mode .sidebar-user h2 {
-            color: var(--dark-text);
-        }
-
-        .sidebar-user p {
-            font-size: 14px;
-            color: var(--light-text);
-        }
-
-        .dark-mode .sidebar-user p {
-            color: var(--dark-light-text);
-        }
-
         .sidebar-menu {
             padding: 16px 0;
         }
@@ -288,18 +260,10 @@
             color: var(--light-text);
         }
 
-        .dark-mode .menu-item i {
-            color: var(--dark-light-text);
-        }
-
         .menu-item.active {
             background-color: rgba(7, 193, 96, 0.1);
             color: var(--primary-color);
             border-left-color: var(--primary-color);
-        }
-
-        .dark-mode .menu-item.active {
-            background-color: rgba(7, 193, 96, 0.2);
         }
 
         .menu-item.active i {
@@ -308,49 +272,6 @@
 
         .menu-item:hover:not(.active) {
             background-color: rgba(7, 193, 96, 0.05);
-        }
-
-        .dark-mode .menu-item:hover:not(.active) {
-            background-color: rgba(7, 193, 96, 0.1);
-        }
-
-        .completion-status {
-            padding: 16px 24px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .dark-mode .completion-status {
-            border-top-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .progress-label {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: var(--light-text);
-        }
-
-        .dark-mode .progress-label {
-            color: var(--dark-light-text);
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: var(--border-color);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .dark-mode .progress-bar {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: var(--primary-color);
-            transition: width 0.3s ease;
         }
 
         /* Main content */
@@ -369,62 +290,11 @@
         .content-header {
             padding: 20px 24px;
             border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .dark-mode .content-header {
-            border-bottom-color: rgba(255, 255, 255, 0.1);
         }
 
         .content-title {
             font-size: 20px;
             font-weight: 600;
-            color: var(--text-color);
-        }
-
-        .dark-mode .content-title {
-            color: var(--dark-text);
-        }
-
-        .tab-navigation {
-            display: flex;
-            border-bottom: 1px solid var(--border-color);
-            background-color: var(--secondary-color);
-        }
-
-        .dark-mode .tab-navigation {
-            background-color: var(--dark-bg);
-            border-bottom-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .tab {
-            padding: 16px 24px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-bottom: 2px solid transparent;
-            color: var(--light-text);
-        }
-
-        .dark-mode .tab {
-            color: var(--dark-light-text);
-        }
-
-        .tab.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
-
-        .tab:hover:not(.active) {
-            color: var(--text-color);
-            background-color: rgba(0, 0, 0, 0.02);
-        }
-
-        .dark-mode .tab:hover:not(.active) {
-            color: var(--dark-text);
-            background-color: rgba(255, 255, 255, 0.05);
         }
 
         /* Alert messages */
@@ -444,17 +314,67 @@
             color: var(--primary-dark);
         }
 
-        .dark-mode .alert-success {
-            background-color: rgba(7, 193, 96, 0.2);
-            color: var(--primary-color);
-        }
-
         .alert-error {
             background-color: rgba(220, 38, 38, 0.1);
             color: #dc2626;
         }
 
-        .dark-mode .alert-error {
+        /* File upload styling */
+        .file-input-container {
+            margin-top: 8px;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 10px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-preview {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .image-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
+
+        .file-info {
+            flex: 1;
+            padding: 8px 12px;
+            background-color: var(--primary-light);
+            border-radius: 8px;
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-info-pdf {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .dark-mode .file-info-pdf {
             background-color: rgba(220, 38, 38, 0.2);
         }
 
@@ -464,7 +384,7 @@
         }
 
         .form-section {
-            margin-bottom: 24px;
+            margin-bottom: 32px;
         }
 
         .section-title {
@@ -473,25 +393,21 @@
             margin-bottom: 20px;
             padding-bottom: 12px;
             border-bottom: 1px solid var(--border-color);
-            color: var(--text-color);
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        .dark-mode .section-title {
-            color: var(--dark-text);
-            border-bottom-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .section-title i {
-            color: var(--primary-color);
-        }
-
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .form-group {
@@ -499,22 +415,13 @@
         }
 
         .form-group label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            display: block;
             font-weight: 500;
             margin-bottom: 8px;
-            color: var(--text-color);
             font-size: 14px;
         }
 
-        .dark-mode .form-group label {
-            color: var(--dark-text);
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
+        .form-control {
             width: 100%;
             padding: 12px 16px;
             border: 1px solid var(--border-color);
@@ -525,22 +432,13 @@
             transition: all 0.3s ease;
         }
 
-        .dark-mode .form-group input,
-        .dark-mode .form-group select,
-        .dark-mode .form-group textarea {
+        .dark-mode .form-control {
             background-color: var(--dark-surface);
             border-color: rgba(255, 255, 255, 0.1);
             color: var(--dark-text);
         }
 
-        .form-group textarea {
-            min-height: 150px;
-            resize: vertical;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
+        .form-control:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.1);
@@ -550,13 +448,9 @@
             display: flex;
             gap: 16px;
             justify-content: flex-end;
-            margin-top: 24px;
+            margin-top: 32px;
             padding-top: 20px;
             border-top: 1px solid var(--border-color);
-        }
-
-        .dark-mode .form-actions {
-            border-top-color: rgba(255, 255, 255, 0.1);
         }
 
         .btn {
@@ -575,13 +469,10 @@
         .btn-primary {
             background: var(--primary-color);
             color: white;
-            box-shadow: 0 4px 10px rgba(7, 193, 96, 0.3);
         }
 
         .btn-primary:hover {
             background: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(7, 193, 96, 0.4);
         }
 
         .btn-secondary {
@@ -589,65 +480,8 @@
             color: var(--text-color);
         }
 
-        .dark-mode .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--dark-text);
-        }
-
         .btn-secondary:hover {
-            background: var(--light-text);
-            color: white;
-        }
-
-        .dark-mode .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        /* Dropdown menu */
-        .dropdown-menu {
-            position: absolute;
-            right: 0;
-            top: 100%;
-            margin-top: 8px;
-            width: 200px;
-            background-color: var(--white);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            z-index: 100;
-            overflow: hidden;
-            display: none;
-        }
-
-        .dark-mode .dropdown-menu {
-            background-color: var(--dark-surface);
-            box-shadow: var(--dark-shadow);
-        }
-
-        .dropdown-menu button {
-            width: 100%;
-            text-align: left;
-            padding: 12px 16px;
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .dark-mode .dropdown-menu button {
-            color: var(--dark-text);
-        }
-
-        .dropdown-menu button:hover {
-            background-color: var(--primary-light);
-            color: var(--primary-dark);
-        }
-
-        .dark-mode .dropdown-menu button:hover {
-            background-color: rgba(7, 193, 96, 0.2);
-            color: var(--primary-color);
+            background: #ddd;
         }
 
         /* Bottom navigation */
@@ -659,11 +493,9 @@
             display: flex;
             justify-content: space-around;
             background-color: var(--white);
-            padding: 12px 0 8px;
+            padding: 12px 0;
             box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
             z-index: 100;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
         }
 
         .dark-mode .bottom-nav {
@@ -679,115 +511,32 @@
             color: var(--light-text);
             font-size: 12px;
             font-weight: 500;
-            position: relative;
             padding: 6px 16px;
         }
 
         .nav-item i {
             font-size: 22px;
             margin-bottom: 6px;
-            transition: all 0.3s ease;
         }
 
         .nav-item.active {
             color: var(--primary-color);
         }
 
-        .nav-item.active i {
-            transform: translateY(-2px);
-        }
-/* File input styling */
-input[type="file"] {
-    padding: 8px;
-    border: 1px dashed var(--border-color);
-    border-radius: 8px;
-    background-color: var(--secondary-color);
-}
-
-.dark-mode input[type="file"] {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-}
-
-/* PDF preview styling */
-.pdf-preview {
-    margin-top: 10px;
-    padding: 10px;
-    border-radius: 8px;
-    background-color: rgba(7, 193, 96, 0.1);
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.dark-mode .pdf-preview {
-    background-color: rgba(7, 193, 96, 0.2);
-}
-
-.pdf-preview i {
-    color: #e74c3c; /* Red color for PDF icon */
-}
-
-.file-size {
-    font-size: 12px;
-    color: var(--light-text);
-    margin-top: 4px;
-}
-
-.dark-mode .file-size {
-    color: var(--dark-light-text);
-}
-        .cart-count {
-            position: absolute;
-            top: -2px;
-            right: 2px;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: bold;
-            border: 2px solid var(--white);
-        }
-
-        .dark-mode .cart-count {
-            border-color: var(--dark-surface);
-        }
-
         /* Responsive adjustments */
         @media (max-width: 768px) {
-            .profile-layout {
-                grid-template-columns: 1fr;
-            }
-
             .sidebar {
-                display: none;
+                position: static;
+                margin-bottom: 20px;
             }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
+            
             .form-actions {
                 flex-direction: column;
             }
-
+            
             .btn {
                 width: 100%;
                 justify-content: center;
-            }
-
-            .tab-navigation {
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-
-            .tab {
-                padding: 16px;
             }
         }
     </style>
@@ -807,9 +556,13 @@ input[type="file"] {
                 </button>
                 <div class="relative">
                     <button id="dropdownToggle" class="flex items-center gap-2 focus:outline-none">
-                        <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% elif user.businesses.first.logo %}{{ user.businesses.first.logo.url }}{% else %}{% static 'business_logos/default.jpg' %}{% endif %}"
-                             alt="Profile"
-                             class="w-8 h-8 rounded-full object-cover">
+                        {% if business.logo %}
+                            <img src="{{ business.logo.url }}" alt="Profile" class="w-8 h-8 rounded-full object-cover">
+                        {% else %}
+                            <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                <i class="fas fa-user text-gray-500"></i>
+                            </div>
+                        {% endif %}
                         <span class="font-medium">{{ user.username }}</span>
                         <i class="fas fa-caret-down"></i>
                     </button>
@@ -828,19 +581,27 @@ input[type="file"] {
 
     <div class="container">
         <h1 class="page-title">My Business Profile</h1>
-
+        
         <div class="profile-layout">
+            <!-- Sidebar -->
             <aside class="sidebar">
                 <div class="sidebar-user">
-                    <div class="sidebar-avatar" style="position: relative;">
-                        <img src="{% if user.profile.profile_picture %}{{ user.profile.profile_picture.url }}{% elif user.businesses.first.logo %}{{ user.businesses.first.logo.url }}{% else %}{% static 'business_logos/default.jpg' %}{% endif %}" alt="Profile Picture">
-                        <button class="upload-button" aria-label="Upload Profile Picture">
+                    <div class="relative">
+                        {% if business.logo %}
+                            <img src="{{ business.logo.url }}" alt="Business Logo" class="sidebar-avatar">
+                        {% else %}
+                            <div class="sidebar-avatar bg-gray-200 flex items-center justify-center">
+                                <i class="fas fa-building text-gray-500 text-3xl"></i>
+                            </div>
+                        {% endif %}
+                        <label for="logo-upload" class="upload-button" aria-label="Upload Logo">
                             <i class="fas fa-camera"></i>
-                        </button>
+                        </label>
                     </div>
-                    <h2>{{ user.username }}</h2>
+                    <h2>{{ business.name|default:user.username }}</h2>
                     <p>Business Owner</p>
                 </div>
+                
                 <div class="sidebar-menu">
                     <a href="#" class="menu-item active">
                         <i class="fas fa-user-circle"></i>
@@ -865,37 +626,11 @@ input[type="file"] {
                 </div>
             </aside>
 
+            <!-- Main Content -->
             <main class="main-content">
                 <div class="content-header">
                     <h2 class="content-title">Edit Business Information</h2>
                 </div>
-
-<div class="tab-navigation">
-    {% if business %}
-        <a href="{% url 'business_dashboard' business.slug %}" class="tab {% if request.path == '/business/dashboard/' %}active{% endif %}">
-            <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
-        </a>
-        <a href="{% url 'manage_roles' business.slug %}" class="tab {% if 'roles' in request.path %}active{% endif %}">
-            <i class="fas fa-user-tag mr-2"></i> Roles
-        </a>
-        <a href="{% url 'manage_departments' business.slug %}" class="tab {% if 'departments' in request.path %}active{% endif %}">
-            <i class="fas fa-sitemap mr-2"></i> Departments
-        </a>
-    {% else %}
-        <div class="tab active">
-            <i class="fas fa-info-circle mr-2"></i> Personal Profile
-        </div>
-        {% if member_businesses %}
-            <a href="{% url 'business_dashboard' member_businesses.first.business.slug %}" class="tab">
-                <i class="fas fa-store mr-2"></i> Switch to Business
-            </a>
-        {% else %}
-            <a href="{% url 'add-business' %}" class="tab">
-                <i class="fas fa-plus-circle mr-2"></i> Create Business
-            </a>
-        {% endif %}
-    {% endif %}
-</div>
 
                 {% if messages %}
                     {% for message in messages %}
@@ -909,122 +644,174 @@ input[type="file"] {
                 <form method="post" enctype="multipart/form-data" class="profile-form">
                     {% csrf_token %}
 
+                    <!-- Account Information Section -->
                     <div class="form-section">
                         <h3 class="section-title">
                             <i class="fas fa-user-circle"></i> Account Information
                         </h3>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="{{ user_form.username.id_for_label }}">
-                                    <i class="fas fa-user"></i> Username
-                                </label>
-                                {{ user_form.username }}
+                                <label for="{{ user_form.username.id_for_label }}">Username</label>
+                                <input type="text" 
+                                       id="{{ user_form.username.id_for_label }}" 
+                                       name="{{ user_form.username.name }}" 
+                                       value="{{ user_form.username.value }}" 
+                                       class="form-control">
                             </div>
                             <div class="form-group">
-                                <label for="{{ user_form.email.id_for_label }}">
-                                    <i class="fas fa-envelope"></i> Email
-                                </label>
-                                {{ user_form.email }}
+                                <label for="{{ user_form.email.id_for_label }}">Email</label>
+                                <input type="email" 
+                                       id="{{ user_form.email.id_for_label }}" 
+                                       name="{{ user_form.email.name }}" 
+                                       value="{{ user_form.email.value }}" 
+                                       class="form-control">
                             </div>
                         </div>
                     </div>
 
+                    <!-- Business Details Section -->
                     <div class="form-section">
                         <h3 class="section-title">
                             <i class="fas fa-building"></i> Business Details
                         </h3>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="{{ business_form.logo.id_for_label }}">
-                                    <i class="fas fa-image"></i> Business Logo
-                                </label>
-                                {{ business_form.logo }}
+                                <label>Business Logo</label>
+                                <div class="file-input-container">
+                                    <label for="logo-upload" class="file-input-label">
+                                        <i class="fas fa-upload mr-2"></i> Choose Logo
+                                    </label>
+                                    <input type="file" 
+                                           id="logo-upload" 
+                                           name="{{ business_form.logo.name }}" 
+                                           class="file-input" 
+                                           accept="image/jpeg, image/png, image/gif">
+                                    
+                                    <div class="file-preview">
+                                        {% if business_form.instance.logo %}
+                                            <img src="{{ business_form.instance.logo.url }}" alt="Current logo" class="image-preview">
+                                            <div class="file-info">
+                                                {{ business_form.instance.logo.name|truncatechars:30 }}
+                                            </div>
+                                        {% else %}
+                                            <div class="text-gray-500 text-sm">No logo uploaded</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label for="{{ business_form.name.id_for_label }}">
-                                    <i class="fas fa-building"></i> Business Name
-                                </label>
-                                {{ business_form.name }}
+                                <label for="{{ business_form.name.id_for_label }}">Business Name</label>
+                                <input type="text" 
+                                       id="{{ business_form.name.id_for_label }}" 
+                                       name="{{ business_form.name.name }}" 
+                                       value="{{ business_form.name.value|default:'' }}" 
+                                       class="form-control">
                             </div>
                             <div class="form-group">
-                                <label for="{{ business_form.category.id_for_label }}">
-                                    <i class="fas fa-tag"></i> Category
-                                </label>
-                                {{ business_form.category }}
+                                <label for="{{ business_form.category.id_for_label }}">Category</label>
+                                <select id="{{ business_form.category.id_for_label }}" 
+                                        name="{{ business_form.category.name }}" 
+                                        class="form-control">
+                                    {% for value, label in business_form.category.field.choices %}
+                                        <option value="{{ value }}" {% if business_form.category.value == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Contact Information Section -->
                     <div class="form-section">
                         <h3 class="section-title">
                             <i class="fas fa-address-card"></i> Contact Information
                         </h3>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="{{ business_form.email.id_for_label }}">
-                                    <i class="fas fa-at"></i> Business Email
-                                </label>
-                                {{ business_form.email }}
+                                <label for="{{ business_form.email.id_for_label }}">Business Email</label>
+                                <input type="email" 
+                                       id="{{ business_form.email.id_for_label }}" 
+                                       name="{{ business_form.email.name }}" 
+                                       value="{{ business_form.email.value|default:'' }}" 
+                                       class="form-control">
                             </div>
                             <div class="form-group">
-                                <label for="{{ business_form.phone_number.id_for_label }}">
-                                    <i class="fas fa-phone"></i> Business Phone
-                                </label>
-                                {{ business_form.phone_number }}
+                                <label for="{{ business_form.phone_number.id_for_label }}">Business Phone</label>
+                                <input type="tel" 
+                                       id="{{ business_form.phone_number.id_for_label }}" 
+                                       name="{{ business_form.phone_number.name }}" 
+                                       value="{{ business_form.phone_number.value|default:'' }}" 
+                                       class="form-control">
                             </div>
                             <div class="form-group">
-                                <label for="{{ business_form.city.id_for_label }}">
-                                    <i class="fas fa-city"></i> City
-                                </label>
-                                {{ business_form.city }}
+                                <label for="{{ business_form.city.id_for_label }}">City</label>
+                                <input type="text" 
+                                       id="{{ business_form.city.id_for_label }}" 
+                                       name="{{ business_form.city.name }}" 
+                                       value="{{ business_form.city.value|default:'' }}" 
+                                       class="form-control">
                             </div>
                         </div>
                     </div>
 
-                <div class="form-section">
-                    <h3 class="section-title">
-                        <i class="fas fa-align-left"></i> Business Description
-                    </h3>
-                    <div class="form-group">
-                        <label for="{{ business_form.description.id_for_label }}">
-                            <i class="fas fa-align-left"></i> Description
-                        </label>
-                        {{ business_form.description }}
+                    <!-- Business Description Section -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-align-left"></i> Business Description
+                        </h3>
+                        <div class="form-group">
+                            <label for="{{ business_form.description.id_for_label }}">Description</label>
+                            <textarea id="{{ business_form.description.id_for_label }}" 
+                                      name="{{ business_form.description.name }}" 
+                                      class="form-control" 
+                                      rows="5">{{ business_form.description.value|default:'' }}</textarea>
+                        </div>
                     </div>
-                </div>
-<div class="form-section">
-    <h3 class="section-title">
-        <i class="fas fa-file-pdf"></i> Company Profile Document
-    </h3>
-    <div class="form-grid">
-        <div class="form-group">
-            <label for="{{ business_form.company_profile.id_for_label }}">
-                <i class="fas fa-file-upload"></i> Upload PDF Profile
-                <small>(Max 5MB)</small>
-            </label>
-            {{ business_form.company_profile }}
-            {% if business_form.instance.company_profile %}
-                <div class="mt-2">
-                    <a href="{{ business_form.instance.company_profile.url }}"
-                       target="_blank"
-                       class="text-green-600 hover:underline flex items-center gap-2">
-                        <i class="fas fa-file-pdf"></i>
-                        View Current Profile (PDF)
-                    </a>
-                    <small class="text-gray-500 block mt-1">
-                        Last updated: {{ business_form.instance.updated_at|date:"M d, Y" }}
-                    </small>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-</div>
+
+                    <!-- Company Profile Section -->
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-file-pdf"></i> Company Profile Document
+                        </h3>
+                        <div class="form-group">
+                            <label>Upload PDF Profile (Max 5MB)</label>
+                            <div class="file-input-container">
+                                <label for="pdf-upload" class="file-input-label">
+                                    <i class="fas fa-file-upload mr-2"></i> Choose PDF
+                                </label>
+                                <input type="file" 
+                                       id="pdf-upload" 
+                                       name="{{ business_form.company_profile.name }}" 
+                                       class="file-input" 
+                                       accept=".pdf">
+                                
+                                {% if business_form.instance.company_profile %}
+                                    <div class="file-preview mt-3">
+                                        <i class="fas fa-file-pdf text-red-500 text-2xl"></i>
+                                        <div class="file-info file-info-pdf">
+                                            {{ business_form.instance.company_profile.name|truncatechars:40 }}
+                                        </div>
+                                    </div>
+                                    <a href="{{ business_form.instance.company_profile.url }}" 
+                                       target="_blank" 
+                                       class="text-primary-500 hover:underline mt-2 inline-block">
+                                        <i class="fas fa-eye mr-1"></i> View Current PDF
+                                    </a>
+                                {% else %}
+                                    <div class="text-gray-500 text-sm mt-2">No PDF uploaded</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
                     <div class="form-actions">
                         <button type="reset" class="btn btn-secondary">
-                            <i class="fas fa-undo"></i> Reset
+                            <i class="fas fa-undo mr-2"></i> Reset
                         </button>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Save Changes
+                            <i class="fas fa-save mr-2"></i> Save Changes
                         </button>
                     </div>
                 </form>
@@ -1034,67 +821,24 @@ input[type="file"] {
 
     <!-- Bottom navigation -->
     <nav class="bottom-nav">
-        <a href="{% url 'home' %}" class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
+        <a href="{% url 'games_hub' %}" class="nav-item">
+            <i class="fas fa-gamepad"></i>
+            <span>Games</span>
         </a>
         <a href="{% url 'discover' %}" class="nav-item">
             <i class="fas fa-compass"></i>
             <span>Discover</span>
         </a>
-        <a href="{% url 'games_hub' %}" class="nav-item">  <!-- Add this line -->
-            <i class="fas fa-gamepad"></i>               <!-- Game controller icon -->
-            <span>Games</span>
+        <a href="{% url 'about' %}" class="nav-item">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
         </a>
-        {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}" class="nav-item active" title="Profile">
-                <i class="fas fa-user"></i>
-                <span>Me</span>
-            </a>
-        {% else %}
-            <a href="{% url 'login' %}" class="nav-item" title="Login">
-                <i class="fas fa-sign-in-alt"></i>
-                <span>Login</span>
-            </a>
-        {% endif %}
+        <a href="{% url 'profile' %}" class="nav-item active">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
     </nav>
-    <script>
-// File size validation
-const fileInput = document.querySelector('input[type="file"]');
-if (fileInput) {
-    fileInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            // Check file type
-            if (!file.type.includes('pdf')) {
-                alert('Please upload a PDF file only.');
-                e.target.value = '';
-                return;
-            }
 
-            // Check file size (5MB limit)
-            const fileSizeMB = file.size / (1024 * 1024);
-            if (fileSizeMB > 5) {
-                alert('File size exceeds 5MB limit. Please choose a smaller file.');
-                e.target.value = '';
-                return;
-            }
-
-            // You could add a preview here if needed
-            console.log('Valid PDF file selected:', file.name);
-        }
-    });
-}
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            if(typeof CKEDITOR !== 'undefined') {
-                CKEDITOR.replace('{{ business_form.description.id_for_label }}');
-            } else {
-                console.error('CKEditor not loaded');
-            }
-        });
-    </script>
     <script>
         // Theme toggle
         document.getElementById('theme-toggle').addEventListener('click', function() {
@@ -1104,51 +848,100 @@ if (fileInput) {
         });
 
         // Dropdown menu toggle
-        document.addEventListener("DOMContentLoaded", function() {
-            const dropdownToggle = document.getElementById("dropdownToggle");
-            const dropdownMenu = document.getElementById("dropdownMenu");
-
-            dropdownToggle.addEventListener("click", function(e) {
-                e.stopPropagation();
-                dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
-            });
-
-            document.addEventListener("click", function() {
-                dropdownMenu.style.display = 'none';
-            });
+        document.getElementById('dropdownToggle').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('dropdownMenu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
         });
 
-        // Profile Picture Upload
-        const uploadButton = document.querySelector('.upload-button');
-        const profilePictureInput = document.querySelector('input[type="file"]');
-        const profilePictures = document.querySelectorAll('.sidebar-avatar img, .user-actions img');
-
-        uploadButton.addEventListener('click', () => {
-            profilePictureInput.click();
+        document.addEventListener('click', function() {
+            document.getElementById('dropdownMenu').style.display = 'none';
         });
 
-        profilePictureInput.addEventListener('change', (e) => {
+        // Logo upload preview
+        document.getElementById('logo-upload').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Please upload an image file (JPEG, PNG, GIF)');
+                    this.value = '';
+                    return;
+                }
+
+                // Validate file size (2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Image size exceeds 2MB limit');
+                    this.value = '';
+                    return;
+                }
+
+                // Preview image
                 const reader = new FileReader();
-                reader.onload = (e) => {
-                    profilePictures.forEach(pic => {
-                        pic.src = e.target.result;
-                    });
+                reader.onload = function(e) {
+                    const previewContainer = document.querySelector('.file-preview');
+                    previewContainer.innerHTML = `
+                        <img src="${e.target.result}" class="image-preview">
+                        <div class="file-info">${file.name}</div>
+                    `;
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        // Tabs functionality
-        const tabs = document.querySelectorAll('.tab');
+        // PDF upload preview
+        document.getElementById('pdf-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file type
+                if (!file.type.includes('pdf') && !file.name.toLowerCase().endsWith('.pdf')) {
+                    alert('Please upload a PDF file');
+                    this.value = '';
+                    return;
+                }
 
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-            });
+                // Validate file size (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size exceeds 5MB limit');
+                    this.value = '';
+                    return;
+                }
+
+                // Show file info
+                const previewContainer = document.querySelector('.file-preview');
+                if (!previewContainer) {
+                    const container = document.createElement('div');
+                    container.className = 'file-preview mt-3';
+                    container.innerHTML = `
+                        <i class="fas fa-file-pdf text-red-500 text-2xl"></i>
+                        <div class="file-info file-info-pdf">${file.name}</div>
+                    `;
+                    this.parentNode.appendChild(container);
+                } else {
+                    previewContainer.innerHTML = `
+                        <i class="fas fa-file-pdf text-red-500 text-2xl"></i>
+                        <div class="file-info file-info-pdf">${file.name}</div>
+                    `;
+                }
+            }
         });
+
+        // Initialize CKEditor
+        if (typeof CKEDITOR !== 'undefined') {
+            CKEDITOR.replace('{{ business_form.description.id_for_label }}', {
+                toolbar: [
+                    { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike'] },
+                    { name: 'paragraph', items: ['NumberedList', 'BulletedList', 'Blockquote'] },
+                    { name: 'links', items: ['Link', 'Unlink'] },
+                    { name: 'tools', items: ['Maximize'] },
+                    { name: 'styles', items: ['Format'] }
+                ],
+                removePlugins: 'elementspath',
+                resize_enabled: false,
+                height: 200
+            });
+        }
     </script>
 </body>
 </html>

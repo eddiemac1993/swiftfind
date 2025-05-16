@@ -4,217 +4,452 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#2563eb">
-    <meta name="description" content="About SwiftFind - Business Directory">
-    <title>About Us - SwiftFind</title>
-    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <meta name="theme-color" content="#07C160">
+    <title>About SwiftFind</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
-    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Reuse the same CSS variables and base styles from your business detail page */
         :root {
             --primary-color: #07C160;
             --primary-dark: #05a54e;
             --primary-light: #e6f7ef;
+            --primary-extra-light: #f5fdf9;
             --secondary-color: #F8F8F8;
-            --text-color: #333;
-            --light-text: #999;
-            --border-color: #EEE;
+            --text-color: #1a1a1a;
+            --light-text: #666;
+            --lighter-text: #999;
+            --border-color: #e0e0e0;
             --white: #FFFFFF;
             --black: #1A1A1A;
             --dark-bg: #121212;
             --dark-surface: #1E1E1E;
-            --dark-text: #E0E0E0;
-            --dark-light-text: #A0A0A0;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --dark-surface-light: #2a2a2a;
+            --dark-text: #f0f0f0;
+            --dark-light-text: #b0b0b0;
+            --dark-lighter-text: #808080;
+            --dark-border-color: #333;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.12);
+            --dark-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            --dark-shadow-md: 0 6px 16px rgba(0, 0, 0, 0.3);
         }
 
-
-        .dark-mode {
-            --background: #1e293b;
-            --card-bg: #334155;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --border-color: #475569;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
         }
 
         body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background-color: var(--background);
-            color: var(--text-primary);
-            transition: background-color 0.3s ease, color 0.3s ease;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
             padding-bottom: 80px;
+            line-height: 1.6;
         }
 
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        /* Header - same as business detail page */
         .app-header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 1rem;
+            background-color: var(--white);
+            padding: 16px;
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
         }
 
         .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 12px;
         }
 
         .location {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 14px;
+            background-color: var(--primary-light);
+            border-radius: 20px;
+            color: var(--primary-dark);
+            transition: all 0.2s ease;
         }
 
-        .user-actions {
+        .location:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .location {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        /* About page specific styles */
+        .about-hero {
+            position: relative;
+            height: 280px;
+            overflow: hidden;
+            margin: 0 16px 20px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            background-color: var(--primary-color);
             display: flex;
             align-items: center;
-            gap: 1rem;
-        }
-
-        .theme-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-
-        .dark-icon {
-            display: none;
-        }
-
-        .dark-mode .dark-icon {
-            display: inline;
-        }
-
-        .dark-mode .light-icon {
-            display: none;
-        }
-
-        .hero-section {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
-            color: white;
-            padding: 3rem 1rem;
+            justify-content: center;
             text-align: center;
-            margin-bottom: 1rem;
+            color: white;
+            padding: 20px;
         }
 
-        .hero-section h1 {
-            font-size: 2rem;
-            margin-bottom: 1rem;
+        .dark-mode .about-hero {
+            box-shadow: var(--dark-shadow-md);
         }
 
-        .hero-section p {
-            font-size: 1rem;
-            opacity: 0.9;
+        .about-hero-content {
+            max-width: 800px;
+            z-index: 1;
         }
 
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            margin: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        .about-hero h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        .card h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
+        .about-hero p {
+            font-size: 18px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .section-container {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .section-container {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dark-mode .section-title {
+            color: var(--dark-text);
+        }
+
+        .section-title i {
             color: var(--primary-color);
         }
 
-        .card ul {
-            list-style: none;
-            padding: 0;
+        .mission-statement {
+            font-size: 16px;
+            line-height: 1.7;
+            margin-bottom: 20px;
         }
 
-        .card ul li {
-            margin-bottom: 0.5rem;
-            padding-left: 1.5rem;
-            position: relative;
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 24px;
         }
 
-        .card ul li::before {
-            content: '✔';
-            position: absolute;
-            left: 0;
+        .feature-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px;
+            background-color: var(--primary-extra-light);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .dark-mode .feature-card {
+            background-color: var(--dark-surface-light);
+        }
+
+        .feature-icon {
+            font-size: 24px;
             color: var(--primary-color);
+            margin-top: 4px;
+            flex-shrink: 0;
         }
 
-        .partner-cta {
+        .feature-content h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .feature-content h3 {
+            color: var(--dark-text);
+        }
+
+        .feature-content p {
+            font-size: 15px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .feature-content p {
+            color: var(--dark-light-text);
+        }
+
+        .benefits-list {
+            margin-top: 16px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .benefit-icon {
+            color: var(--primary-color);
+            font-size: 18px;
+            margin-top: 4px;
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: var(--primary-light);
+            border-radius: 16px;
+            margin: 0 16px 20px;
+        }
+
+        .dark-mode .cta-section {
+            background-color: rgba(7, 193, 96, 0.2);
+        }
+
+        .cta-section h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .cta-section h2 {
+            color: var(--dark-text);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 14px 28px;
             background-color: var(--primary-color);
             color: white;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            text-align: center;
-            margin: 1rem;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
+            border-radius: 12px;
             font-weight: 600;
             text-decoration: none;
-            margin-top: 1rem;
+            transition: all 0.3s ease;
+            margin-top: 12px;
         }
 
-        .btn-primary {
-            background-color: white;
-            color: var(--primary-color);
+        .cta-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
 
+        /* Terms & Conditions styles */
+        .terms-section {
+            margin-top: 40px;
+        }
+
+        .terms-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .terms-content.show {
+            max-height: 2000px; /* Adjust based on content */
+        }
+
+        .terms-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dark-mode .terms-toggle {
+            border-bottom-color: var(--dark-border-color);
+        }
+
+        .terms-toggle h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .dark-mode .terms-toggle h3 {
+            color: var(--dark-text);
+        }
+
+        .terms-toggle i {
+            transition: transform 0.3s ease;
+        }
+
+        .terms-toggle.active i {
+            transform: rotate(180deg);
+        }
+
+        .terms-text {
+            padding: 20px 0;
+            line-height: 1.7;
+        }
+
+        .terms-text h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 20px 0 10px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .terms-text h4 {
+            color: var(--dark-text);
+        }
+
+        .terms-text p, .terms-text ul {
+            margin-bottom: 15px;
+            font-size: 15px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .terms-text p, .dark-mode .terms-text ul {
+            color: var(--dark-light-text);
+        }
+
+        .terms-text ul {
+            padding-left: 20px;
+        }
+
+        .terms-text li {
+            margin-bottom: 8px;
+        }
+
+        /* Bottom navigation - same as business detail page */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background-color: var(--card-bg);
             display: flex;
             justify-content: space-around;
-            padding: 0.75rem 0;
-            border-top: 1px solid var(--border-color);
+            background-color: var(--white);
+            padding: 12px 0 10px;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.1);
             z-index: 100;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
         }
 
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: var(--text-secondary);
             text-decoration: none;
-            font-size: 0.75rem;
+            color: var(--light-text);
+            font-size: 12px;
+            font-weight: 500;
+            position: relative;
+            padding: 6px 12px;
+            transition: all 0.3s ease;
+            flex: 1;
+            max-width: 25%;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+            transition: all 0.3s ease;
         }
 
         .nav-item.active {
             color: var(--primary-color);
         }
 
-        .nav-item i {
-            font-size: 1.25rem;
-            margin-bottom: 0.25rem;
+        .nav-item.active i {
+            transform: translateY(-2px);
         }
 
+        /* Responsive adjustments */
         @media (min-width: 768px) {
-            .hero-section {
-                padding: 4rem 1rem;
+            .about-hero {
+                height: 350px;
             }
-            
-            .hero-section h1 {
-                font-size: 2.5rem;
+
+            .about-hero h1 {
+                font-size: 42px;
             }
-            
-            .card {
-                margin: 1rem auto;
+
+            .about-hero p {
+                font-size: 20px;
+            }
+
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .section-container {
                 max-width: 800px;
+                margin: 0 auto 24px;
+            }
+
+            .cta-section {
+                max-width: 800px;
+                margin: 0 auto 24px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .features-grid {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
     </style>
@@ -223,10 +458,10 @@
     <!-- Header -->
     <header class="app-header">
         <div class="header-top">
-            <div class="location">
-                <i class="fas fa-info-circle"></i>
-                <span>About Us</span>
-            </div>
+            <a href="{% url 'discover' %}" class="location">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back</span>
+            </a>
             <div class="user-actions">
                 <button id="theme-toggle" class="theme-btn">
                     <i class="fas fa-moon light-icon"></i>
@@ -236,121 +471,285 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <h1>About SwiftFind</h1>
-        <p>Your trusted partner in connecting locals with businesses and services in their area.</p>
-    </section>
+    <!-- Main Content -->
+    <main class="app-main">
+        <!-- Hero Section -->
+        <section class="about-hero">
+            <div class="about-hero-content">
+                <h1>About SwiftFind</h1>
+                <p>Your trusted partner in connecting locals with businesses and services in their area.</p>
+            </div>
+        </section>
 
-    <!-- Mission Section -->
-    <div class="card">
-        <h2>Our Mission</h2>
-        <p>
-            At SwiftFind, we are dedicated to simplifying how people discover and interact with local businesses.
-            Our mission is to empower communities by providing a seamless platform where users can find, review,
-            and engage with businesses, while enabling businesses to showcase their offerings and connect with customers.
-        </p>
-        <p>
-            We believe in fostering strong local economies and creating meaningful connections between businesses
-            and their communities. SwiftFind is designed to make local discovery effortless, transparent, and rewarding.
-        </p>
-    </div>
+        <!-- Mission Section -->
+        <section class="section-container">
+            <h2 class="section-title">
+                <i class="fas fa-bullseye"></i>
+                Our Mission
+            </h2>
+            <p class="mission-statement">
+                At SwiftFind, we are dedicated to simplifying how people discover and interact with local businesses.
+                Our mission is to empower communities by providing a seamless platform where users can find, review,
+                and engage with businesses, while enabling businesses to showcase their offerings and connect with customers.
+            </p>
+            <p class="mission-statement">
+                We believe in fostering strong local economies and creating meaningful connections between businesses
+                and their communities. SwiftFind is designed to make local discovery effortless, transparent, and rewarding.
+            </p>
+        </section>
 
-    <!-- What We Offer Section -->
-    <div class="card">
-        <h2>What We Offer</h2>
-        <ul>
-            <li>
-                <strong>Local Business Discovery:</strong> Easily find businesses in your area with advanced search and
-                filtering options.
-            </li>
-            <li>
-                <strong>Business Listings:</strong> Businesses can create detailed profiles, showcasing their services,
-                contact information, operating hours, and more.
-            </li>
-            <li>
-                <strong>Offers and Listings:</strong> Post and discover job opportunities, services, rentals, and items
-                for sale.
-            </li>
-            <li>
-                <strong>Document Management:</strong> Generate professional quotations, invoices, receipts, and delivery
-                notes directly on the platform.
-            </li>
-            <li>
-                <strong>User Reviews and Ratings:</strong> Share your experiences and read reviews from other users to
-                make informed decisions.
-            </li>
-            <li>
-                <strong>Seamless Communication:</strong> Connect with businesses through our messaging system for inquiries,
-                negotiations, or support.
-            </li>
-        </ul>
-    </div>
+        <!-- What We Offer Section -->
+        <section class="section-container">
+            <h2 class="section-title">
+                <i class="fas fa-gift"></i>
+                What We Offer
+            </h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-search-location"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Local Business Discovery</h3>
+                        <p>Easily find businesses in your area with advanced search and filtering options.</p>
+                    </div>
+                </div>
 
-    <!-- Partner Section -->
-    <div class="card">
-        <h2>Why Partner With Us?</h2>
-        <ul>
-            <li>
-                <strong>Increased Visibility:</strong> Reach thousands of potential customers in your local area.
-            </li>
-            <li>
-                <strong>Verified Profiles:</strong> Build trust with customers through verified business profiles.
-            </li>
-            <li>
-                <strong>Exclusive Offers:</strong> Promote special deals and discounts to attract more customers.
-            </li>
-            <li>
-                <strong>Analytics Dashboard:</strong> Track your performance and customer engagement with our tools.
-            </li>
-        </ul>
-    </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Business Listings</h3>
+                        <p>Businesses can create detailed profiles showcasing services, contact information, and operating hours.</p>
+                    </div>
+                </div>
 
-    <!-- Partner CTA -->
-    <div class="partner-cta">
-        <h3>Ready to Join?</h3>
-        <p>Sign up today and start growing your business with SwiftFind.</p>
-        <a href="https://wa.me/+260772447190?text=Hi%2C%20I%27m%20interested%20in%20becoming%20a%20partner%20with%20SwiftFind%21" class="btn btn-primary" target="_blank">Become a Partner</a>
-    </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Offers & Listings</h3>
+                        <p>Post and discover job opportunities, services, rentals, and items for sale.</p>
+                    </div>
+                </div>
 
-    <!-- Bottom navigation -->
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Document Management</h3>
+                        <p>Generate professional quotations, invoices, receipts, and delivery notes.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>User Reviews</h3>
+                        <p>Share experiences and read reviews to make informed decisions.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Seamless Communication</h3>
+                        <p>Connect with businesses through our messaging system for inquiries and support.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Partner With Us Section -->
+        <section class="section-container">
+            <h2 class="section-title">
+                <i class="fas fa-handshake"></i>
+                Why Partner With Us?
+            </h2>
+            <div class="benefits-list">
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <h4>Increased Visibility</h4>
+                        <p>Reach thousands of potential customers in your local area.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <h4>Verified Profiles</h4>
+                        <p>Build trust with customers through verified business profiles.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div>
+                        <h4>Exclusive Offers</h4>
+                        <p>Promote special deals and discounts to attract more customers.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div>
+                        <h4>Analytics Dashboard</h4>
+                        <p>Track your performance and customer engagement with our tools.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <h2>Ready to Join?</h2>
+            <p>Sign up today and start growing your business with SwiftFind.</p>
+            <a href="https://wa.me/+260772447190?text=Hi%2C%20I%27m%20interested%20in%20becoming%20a%20partner%20with%20SwiftFind%21" class="cta-button" target="_blank">Become a Partner</a>
+        </section>
+
+        <!-- Terms & Conditions Section -->
+        <section class="section-container terms-section">
+            <div class="terms-toggle" onclick="toggleTerms()">
+                <h3>Terms & Conditions</h3>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="terms-content" id="terms-content">
+                <div class="terms-text">
+                    <h4>1. Acceptance of Terms</h4>
+                    <p>By accessing or using the SwiftFind platform, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you must not use our services.</p>
+
+                    <h4>2. User Responsibilities</h4>
+                    <p>As a user of SwiftFind, you agree to:</p>
+                    <ul>
+                        <li>Provide accurate and current information in your profile</li>
+                        <li>Use the platform only for lawful purposes</li>
+                        <li>Not engage in any fraudulent, deceptive, or harmful activities</li>
+                        <li>Respect the intellectual property rights of others</li>
+                        <li>Not attempt to disrupt or interfere with the platform's operation</li>
+                    </ul>
+
+                    <h4>3. Business Listings</h4>
+                    <p>Businesses listing on SwiftFind must:</p>
+                    <ul>
+                        <li>Provide truthful and accurate information about their services</li>
+                        <li>Honor any offers or promotions advertised on the platform</li>
+                        <li>Maintain the quality of service as represented in their profile</li>
+                        <li>Respond to customer inquiries in a timely manner</li>
+                    </ul>
+                    <p>SwiftFind reserves the right to remove or suspend any business listing that violates these terms.</p>
+
+                    <h4>4. Reviews and Ratings</h4>
+                    <p>User reviews must:</p>
+                    <ul>
+                        <li>Be based on genuine experiences with the business</li>
+                        <li>Not contain false, defamatory, or misleading statements</li>
+                        <li>Not include personal attacks or inappropriate content</li>
+                    </ul>
+                    <p>SwiftFind may remove reviews that violate these guidelines.</p>
+
+                    <h4>5. Privacy Policy</h4>
+                    <p>Your use of SwiftFind is also governed by our Privacy Policy, which explains how we collect, use, and protect your personal information.</p>
+
+                    <h4>6. Limitation of Liability</h4>
+                    <p>SwiftFind is not responsible for:</p>
+                    <ul>
+                        <li>The quality or safety of services provided by listed businesses</li>
+                        <li>Any transactions between users and businesses</li>
+                        <li>Any damages or losses resulting from the use of our platform</li>
+                    </ul>
+
+                    <h4>7. Changes to Terms</h4>
+                    <p>We may update these Terms and Conditions from time to time. Continued use of the platform after changes constitutes acceptance of the new terms.</p>
+
+                    <h4>8. Governing Law</h4>
+                    <p>These terms shall be governed by and construed in accordance with the laws of the jurisdiction where SwiftFind operates.</p>
+
+                    <p>Last updated: June 2023</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <a href="{% url 'business-list' %}" class="nav-item">
+        <a href="{% url 'home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
             <i class="fas fa-home"></i>
             <span>Home</span>
         </a>
-        <a href="{% url 'discover' %}" class="nav-item">
+        <a href="{% url 'discover' %}" class="nav-item {% if request.resolver_match.url_name == 'discover' %}active{% endif %}">
             <i class="fas fa-compass"></i>
             <span>Discover</span>
         </a>
-        <a href="{% url 'games_hub' %}" class="nav-item">
-            <i class="fas fa-gamepad"></i>
-            <span>Games</span>
-        </a>
-        <a href="{% url 'about' %}" class="nav-item active">
+        <a href="{% url 'about' %}" class="nav-item {% if request.resolver_match.url_name == 'about' %}active{% endif %}">
             <i class="fas fa-info-circle"></i>
             <span>About</span>
         </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+                {% if unread_notifications > 0 %}
+                <span class="notification-badge">{{ unread_notifications }}</span>
+                {% endif %}
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
     </nav>
 
     <script>
-        // Theme Toggle
-        document.getElementById('theme-toggle').addEventListener('click', () => {
+        // Theme Toggle - same as business detail page
+        document.getElementById('theme-toggle').addEventListener('click', function() {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
             document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
         });
 
-        // Service Worker Registration
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/static/js/serviceworker.js')
-                .then((registration) => {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                })
-                .catch((error) => {
-                    console.log('ServiceWorker registration failed: ', error);
-                });
+        // Terms & Conditions toggle
+        function toggleTerms() {
+            const termsContent = document.getElementById('terms-content');
+            const termsToggle = document.querySelector('.terms-toggle');
+
+            termsContent.classList.toggle('show');
+            termsToggle.classList.toggle('active');
         }
+
+        // Initialize terms section based on screen size
+        function initTerms() {
+            const termsContent = document.getElementById('terms-content');
+            if (window.innerWidth >= 768) {
+                termsContent.classList.add('show');
+                document.querySelector('.terms-toggle').classList.add('active');
+            } else {
+                termsContent.classList.remove('show');
+                document.querySelector('.terms-toggle').classList.remove('active');
+            }
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', initTerms);
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initTerms);
     </script>
 </body>
 </html>

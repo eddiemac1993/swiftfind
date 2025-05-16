@@ -3,14 +3,15 @@ from . import views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('home/', views.home, name='home'),
     path('games/', views.games_hub, name='games_hub'),
+    path('matchmemory/', views.match_memory_view, name='word_craze'),
     path('nsolo/', views.nsolo_game, name='nsolo'),
     path('quiz/', views.quiz_view, name='quiz'),
     path('submit-score/', views.submit_score_view, name='submit_score'),
     path('games/mobile/', views.mobile_view, name='mobile'),
     path('search-suggestions/', views.search_suggestions, name='search_suggestions'),
-    path('discover/', views.discover, name='discover'),
+    path('', views.discover, name='discover'),
     path('cart/', views.cart, name='cart'),
     path('add-to-cart/', views.add_to_cart, name='add_to_cart'),
     path('update-cart/', views.update_cart, name='update_cart'),

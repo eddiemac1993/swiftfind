@@ -753,11 +753,11 @@
             .article-title {
                 font-size: 20px;
             }
-            
+
             .partner-title {
                 font-size: 20px;
             }
-            
+
             .partner-text {
                 font-size: 14px;
             }
@@ -813,19 +813,19 @@
             <div class="share-section">
                 <h3 class="share-title">Share this article</h3>
                 <div class="share-buttons">
-                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}"
                        class="share-button facebook" target="_blank">
                         <i class="fab fa-facebook-f"></i> Facebook
                     </a>
-                    <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ newsfeed.title }}" 
+                    <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ newsfeed.title }}"
                        class="share-button twitter" target="_blank">
                         <i class="fab fa-twitter"></i> Twitter
                     </a>
-                    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}&title={{ newsfeed.title }}" 
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ request.build_absolute_uri }}&title={{ newsfeed.title }}"
                        class="share-button linkedin" target="_blank">
                         <i class="fab fa-linkedin-in"></i> LinkedIn
                     </a>
-                    <a href="https://api.whatsapp.com/send?text={{ newsfeed.title }} - {{ request.build_absolute_uri }}" 
+                    <a href="https://api.whatsapp.com/send?text={{ newsfeed.title }} - {{ request.build_absolute_uri }}"
                        class="share-button whatsapp" target="_blank">
                         <i class="fab fa-whatsapp"></i> WhatsApp
                     </a>
@@ -856,7 +856,7 @@
         <!-- Comment section -->
         <section class="comment-section fade-in" style="animation-delay: 0.3s;">
             <h2 class="section-title">Comments</h2>
-            
+
             <!-- Comment form -->
             <div class="comment-form">
                 <form method="post">
@@ -870,7 +870,7 @@
                     </button>
                 </form>
             </div>
-            
+
             <!-- Comment list -->
             <div class="comment-list">
                 {% for comment in comments %}
@@ -908,7 +908,7 @@
                     <i class="fas fa-arrow-left"></i> Previous
                 </span>
             {% endif %}
-            
+
             {% if next_newsfeed %}
                 <a href="{% url 'newsfeed_detail' next_newsfeed.pk %}" class="nav-button">
                     Next <i class="fas fa-arrow-right"></i>
@@ -955,24 +955,21 @@
         <button id="back-to-top" class="fixed-button" aria-label="Back to top">
             <i class="fas fa-arrow-up"></i>
         </button>
-        <a href="{% url 'home' %}" class="fixed-button" aria-label="Home">
-            <i class="fas fa-home"></i>
-        </a>
     </div>
 
     <!-- Bottom navigation -->
     <nav class="bottom-nav">
-        <a href="{% url 'home' %}" class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
+        <a href="{% url 'games_hub' %}" class="nav-item">
+            <i class="fas fa-gamepad"></i>
+            <span>Games</span>
         </a>
-        <a href="{% url 'discover' %}" class="nav-item">
+        <a href="{% url 'discover' %}" class="nav-item active">
             <i class="fas fa-compass"></i>
             <span>Discover</span>
         </a>
-        <a href="{% url 'add-business' %}" class="nav-item">
-            <i class="fas fa-plus"></i>
-            <span>Add Business</span>
+        <a href="{% url 'about' %}" class="nav-item">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
         </a>
         {% if user.is_authenticated %}
             <a href="{% url 'profile' %}" class="nav-item" title="Profile">
@@ -992,7 +989,7 @@
         // Dark mode toggling
         const themeToggle = document.getElementById('theme-toggle');
         const htmlElement = document.documentElement;
-        
+
         themeToggle.addEventListener('click', () => {
             htmlElement.classList.toggle('dark-mode');
             const isDark = htmlElement.classList.contains('dark-mode');
@@ -1001,7 +998,7 @@
 
         // Back to top button
         const backToTopButton = document.getElementById('back-to-top');
-        
+
         backToTopButton.addEventListener('click', () => {
             window.scrollTo({
                 top: 0,

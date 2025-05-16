@@ -16,6 +16,164 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            padding: 15px 0;
+            margin: 15px 0;
+        }
+
+        .action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 8px;
+            border-radius: 10px;
+            background: rgba(7, 193, 96, 0.1);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+        }
+
+        .action:hover {
+            background: rgba(7, 193, 96, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .action-icon {
+            position: relative;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: #07C160;
+        }
+
+        .lock-icon {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            color: #ff4757;
+            background: white;
+            border-radius: 50%;
+            padding: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .action-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* Guest Actions */
+        .guest-action {
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .guest-action:hover {
+            opacity: 1;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 10;
+        }
+
+        /* Login Modal */
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #777;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: #07C160;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #059b4c;
+        }
+
+        .btn-secondary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #2980b9;
+        }
+    </style>
 </head>
 <body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
     <!-- Install Button -->
@@ -89,39 +247,90 @@
         </section>
 
         <!-- Banner -->
-<!-- templates/hero_section.html -->
-<section class="banner bg-gradient-to-r from-[#7BB32E] to-[#1AAD19] text-white rounded-xl p-8 shadow-lg relative overflow-hidden">
-    <div class="absolute right-0 bottom-0 opacity-10">
-        <i class="fas {{ category_icon }} text-9xl"></i>
-    </div>
-    <div class="relative z-10 max-w-2xl">
-        <h1 class="text-3xl md:text-4xl font-bold mb-2">{{ category_title }}</h1>
-        <p class="text-green-100 mb-6">{{ category_description }}</p>
-
-    </div>
-</section>
-
-
-        <!-- Quick actions -->
-        <section class="quick-actions">
-            <a href="{% url 'create_paper' %}" class="action">
-                <i class="fas fa-file-alt"></i>
-                <span>Paper</span>
-            </a>
-            <a href="{% url 'post_list' %}" class="action">
-                <i class="fas fa-hands-helping"></i>
-                <span>Services</span>
-            </a>
-            <a href="{% url 'taxi_request' %}" class="action">
-                <i class="fas fa-taxi"></i>
-                <span>Taxi Hailing</span>
-            </a>
-            <a href="{% url 'order_tracking' %}" class="action">
-                <i class="fas fa-map-marker-alt"></i>
-                <span>Track Order</span>
-            </a>
+        <section class="banner bg-gradient-to-r from-[#7BB32E] to-[#1AAD19] text-white rounded-xl p-8 shadow-lg relative overflow-hidden">
+            <div class="absolute right-0 bottom-0 opacity-10">
+                <i class="fas {{ category_icon }} text-9xl"></i>
+            </div>
+            <div class="relative z-10 max-w-2xl">
+                <h1 class="text-3xl md:text-4xl font-bold mb-2">{{ category_title }}</h1>
+                <p class="text-green-100 mb-6">{{ category_description }}</p>
+            </div>
         </section>
 
+        <!-- Quick Actions Section -->
+        <section class="quick-actions">
+            {% if user.is_authenticated %}
+                <!-- Authenticated User Actions -->
+                <a href="{% url 'create_paper' %}" class="action tooltip" data-tooltip="Create documents">
+                    <div class="action-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <span class="action-label">Paper</span>
+                </a>
+                
+                <a href="{% url 'post_list' %}" class="action tooltip" data-tooltip="Browse services">
+                    <div class="action-icon">
+                        <i class="fas fa-hands-helping"></i>
+                    </div>
+                    <span class="action-label">Services</span>
+                </a>
+                
+                <a href="{% url 'taxi_request' %}" class="action tooltip" data-tooltip="Request a ride">
+                    <div class="action-icon">
+                        <i class="fas fa-taxi"></i>
+                    </div>
+                    <span class="action-label">Taxi</span>
+                </a>
+                
+                <a href="{% url 'order_tracking' %}" class="action tooltip" data-tooltip="Track your orders">
+                    <div class="action-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <span class="action-label">Track</span>
+                </a>
+            {% else %}
+                <!-- Guest User Actions with Login Prompt -->
+                <div class="action guest-action tooltip" data-tooltip="Login to access" onclick="showLoginModal('Paper feature')">
+                    <div class="action-icon">
+                        <i class="fas fa-file-alt"></i>
+                        <div class="lock-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+                    <span class="action-label">Paper</span>
+                </div>
+                
+                <div class="action guest-action tooltip" data-tooltip="Login to access" onclick="showLoginModal('Services feature')">
+                    <div class="action-icon">
+                        <i class="fas fa-hands-helping"></i>
+                        <div class="lock-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+                    <span class="action-label">Services</span>
+                </div>
+                
+                <div class="action guest-action tooltip" data-tooltip="Login to access" onclick="showLoginModal('Taxi feature')">
+                    <div class="action-icon">
+                        <i class="fas fa-taxi"></i>
+                        <div class="lock-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+                    <span class="action-label">Taxi</span>
+                </div>
+                
+                <div class="action guest-action tooltip" data-tooltip="Login to access" onclick="showLoginModal('Order Tracking')">
+                    <div class="action-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div class="lock-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                    </div>
+                    <span class="action-label">Track</span>
+                </div>
+            {% endif %}
+        </section>
 
         <!-- Products section -->
         <section class="products-section" id="search-results-section">
@@ -130,63 +339,62 @@
                 <a href="{% url 'home' %}" class="see-all">See All <i class="fas fa-chevron-right"></i></a>
             </div>
             <div class="products-grid">
-<!-- In your products-grid section -->
-{% for item in items %}
-<div class="product-card"
-     data-item-id="{{ item.id }}"
-     data-item-name="{{ item.name }}"
-     data-item-description="{{ item.description }}"
-     data-item-location="{{ item.location }}"
-     data-item-price="K{{ item.selling_price }}"
-     data-item-original-price="{% if item.original_price %}K{{ item.original_price }}{% endif %}"
-     data-item-category="{{ item.category.name }}"
-     data-item-source="{{ item.source }}"
-     data-item-image="{% if item.image %}{{ item.image.url }}{% endif %}"
-     onclick="openItemModal(this)">
+                {% for item in items %}
+                <div class="product-card"
+                     data-item-id="{{ item.id }}"
+                     data-item-name="{{ item.name }}"
+                     data-item-description="{{ item.description }}"
+                     data-item-location="{{ item.location }}"
+                     data-item-price="K{{ item.selling_price }}"
+                     data-item-original-price="{% if item.original_price %}K{{ item.original_price }}{% endif %}"
+                     data-item-category="{{ item.category.name }}"
+                     data-item-source="{{ item.source }}"
+                     data-item-image="{% if item.image %}{{ item.image.url }}{% endif %}"
+                     onclick="openItemModal(this)">
 
-    <!-- Source as a prominent badge at the top -->
-    <div class="product-source-badge">
-        <i class="fas fa-store mr-1"></i>
-        <span>{{ item.source }}</span>
-    </div>
+                    <!-- Source as a prominent badge at the top -->
+                    <div class="product-source-badge">
+                        <i class="fas fa-store mr-1"></i>
+                        <span>{{ item.source }}</span>
+                    </div>
 
-    <!-- Item Image -->
-    {% if item.image %}
-        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="product-image">
-    {% else %}
-        <div class="product-image bg-gray-200 flex items-center justify-center">
-            <i class="fas fa-image text-gray-400 text-4xl"></i>
-        </div>
-    {% endif %}
+                    <!-- Item Image -->
+                    {% if item.image %}
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="product-image">
+                    {% else %}
+                        <div class="product-image bg-gray-200 flex items-center justify-center">
+                            <i class="fas fa-image text-gray-400 text-4xl"></i>
+                        </div>
+                    {% endif %}
 
-    <div class="product-info">
-        <h4 class="product-title">{{ item.name }}</h4>
+                    <div class="product-info">
+                        <h4 class="product-title">{{ item.name }}</h4>
 
-        <!-- Price Information -->
-        <div class="price-container">
-            <span class="product-price">K{{ item.selling_price }}</span>
-            {% if item.original_price %}
-            <span class="product-original-price">K{{ item.original_price }}</span>
-            {% endif %}
-        </div>
+                        <!-- Price Information -->
+                        <div class="price-container">
+                            <span class="product-price">K{{ item.selling_price }}</span>
+                            {% if item.original_price %}
+                            <span class="product-original-price">K{{ item.original_price }}</span>
+                            {% endif %}
+                        </div>
 
-        <!-- Category -->
-        <div class="product-meta">
-            <div class="product-category">
-                <i class="fas fa-tag"></i>
-                <span>{{ item.category.name }}</span>
-            </div>
-        </div>
+                        <!-- Category -->
+                        <div class="product-meta">
+                            <div class="product-category">
+                                <i class="fas fa-tag"></i>
+                                <span>{{ item.category.name }}</span>
+                            </div>
+                        </div>
 
-        <!-- Add to Cart Button -->
-        <button class="w-full mt-3 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center"
-                onclick="event.stopPropagation(); addToCart('{{ item.id }}', '{{ item.name }}')">
-            <i class="fas fa-cart-plus mr-2"></i>
-            Add
-        </button>
-    </div>
-</div>
-{% endfor %}
+                        <!-- Add to Cart Button -->
+                        <button class="w-full mt-3 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center"
+                                onclick="event.stopPropagation(); addToCart('{{ item.id }}', '{{ item.name }}')">
+                            <i class="fas fa-cart-plus mr-2"></i>
+                            Add
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </section>
     </main>
@@ -278,6 +486,23 @@
         </div>
     </div>
 
+    <!-- Login Modal -->
+    <div id="login-modal" class="login-modal">
+        <div class="login-modal-content">
+            <span class="close-modal" onclick="closeLoginModal()">&times;</span>
+            <h3 id="modal-feature-name">Access Restricted</h3>
+            <p>You need to login to access this feature.</p>
+            <div class="modal-actions">
+                <a href="{% url 'login' %}?next={{ request.path }}" class="modal-btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="{% url 'register' %}" class="modal-btn btn-secondary">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </a>
+            </div>
+        </div>
+    </div>
+
 <script>
     // ======================
     // Global Variables
@@ -313,6 +538,34 @@
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
         document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+    });
+
+    // ======================
+    // Login Modal Functions
+    // ======================
+    function showLoginModal(featureName) {
+        const modal = document.getElementById('login-modal');
+        document.getElementById('modal-feature-name').textContent = `Access ${featureName}`;
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLoginModal() {
+        document.getElementById('login-modal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    window.addEventListener('click', (event) => {
+        const modal = document.getElementById('login-modal');
+        if (event.target === modal) {
+            closeLoginModal();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeLoginModal();
+        }
     });
 
     // ======================

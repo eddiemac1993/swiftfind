@@ -22,6 +22,9 @@ def games_hub(request):
     # Add any context data if needed
     return render(request, 'games_hub.html')
 
+def match_memory_view(request):
+    return render(request, 'matchmemory.html')
+
 def nsolo_game(request):
     return render(request, 'nsolo.html')
 
