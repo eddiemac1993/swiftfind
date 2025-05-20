@@ -27,7 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["swiftfindzm.com", "www.swiftfindzm.com", '*']
 
-
+import nltk
+nltk.download('punkt', quiet=True)
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,14 +41,12 @@ INSTALLED_APPS = [
     'directory',
     'taggit',
     'imagekit',
-    'rest_framework',
     'paper',
     'django.contrib.humanize',
-    'channels',
     'pos',
     'posts',
     'order',
-    'ckeditor',
+    'django_ckeditor_5',
     'taxi',
     'tracking',
     'import_export',

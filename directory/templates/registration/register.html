@@ -42,6 +42,10 @@
             transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             background-color: var(--secondary-color);
             color: var(--text-color);
@@ -159,7 +163,7 @@
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .form-group label {
@@ -180,7 +184,7 @@
             border: 1px solid var(--border-color);
             background-color: var(--white);
             font-size: 16px;
-            transition: all 0.3s ease;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         .dark-mode .form-control {
@@ -192,11 +196,30 @@
         .form-control:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px var(--primary-light);
+            box-shadow: 0 0 0 2px rgba(7, 193, 96, 0.2);
         }
 
         .dark-mode .form-control:focus {
-            box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.2);
+            box-shadow: 0 0 0 2px rgba(7, 193, 96, 0.3);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--light-text);
+        }
+
+        .dark-mode .toggle-password {
+            color: var(--dark-light-text);
         }
 
         .register-btn {
@@ -209,9 +232,11 @@
             font-weight: 600;
             font-size: 16px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             box-shadow: 0 4px 10px rgba(7, 193, 96, 0.3);
             margin-top: 8px;
+            position: relative;
+            overflow: hidden;
         }
 
         .register-btn:hover {
@@ -220,13 +245,53 @@
             box-shadow: 0 6px 15px rgba(7, 193, 96, 0.4);
         }
 
+        .register-btn:active {
+            transform: translateY(0);
+        }
+
+        .register-btn::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        .register-btn:focus:not(:active)::after {
+            animation: ripple 0.6s ease-out;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
+        }
+
         /* Error Handling */
         .errorlist {
             list-style: none;
             color: #dc2626;
             font-size: 12px;
-            margin-top: 6px;
-            padding: 0;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background-color: rgba(220, 38, 38, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid #dc2626;
+        }
+
+        .dark-mode .errorlist {
+            background-color: rgba(220, 38, 38, 0.2);
         }
 
         .login-prompt {
@@ -246,6 +311,36 @@
             font-weight: 600;
         }
 
+        /* Help Text */
+        .helptext {
+            display: block;
+            font-size: 13px;
+            color: var(--light-text);
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        .dark-mode .helptext {
+            color: var(--dark-light-text);
+        }
+
+        .helptext ul {
+            margin-top: 6px;
+            padding-left: 18px;
+        }
+
+        .helptext li {
+            margin-bottom: 4px;
+            position: relative;
+        }
+
+        .helptext li:before {
+            content: "•";
+            color: var(--primary-color);
+            position: absolute;
+            left: -14px;
+        }
+
         /* Bottom navigation */
         .bottom-nav {
             position: fixed;
@@ -255,7 +350,7 @@
             display: flex;
             justify-content: space-around;
             background-color: var(--white);
-            padding: 12px 0 8px;
+            padding: 12px 0;
             box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
             z-index: 100;
             border-top-left-radius: 20px;
@@ -273,10 +368,10 @@
             align-items: center;
             text-decoration: none;
             color: var(--light-text);
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
             position: relative;
-            padding: 6px 16px;
+            padding: 6px 12px;
         }
 
         .dark-mode .nav-item {
@@ -284,7 +379,7 @@
         }
 
         .nav-item i {
-            font-size: 22px;
+            font-size: 20px;
             margin-bottom: 6px;
             transition: all 0.3s ease;
         }
@@ -297,25 +392,85 @@
             transform: translateY(-2px);
         }
 
-        /* Help Text */
-        .helptext {
-            display: block;
-            font-size: 12px;
+        /* Placeholder styling */
+        ::placeholder {
             color: var(--light-text);
-            margin-top: 6px;
+            opacity: 1;
         }
 
-        .dark-mode .helptext {
+        .dark-mode ::placeholder {
             color: var(--dark-light-text);
         }
 
-        .helptext ul {
-            margin-top: 4px;
-            padding-left: 20px;
+        :-ms-input-placeholder {
+            color: var(--light-text);
         }
 
-        .helptext li {
-            margin-bottom: 2px;
+        .dark-mode :-ms-input-placeholder {
+            color: var(--dark-light-text);
+        }
+
+        ::-ms-input-placeholder {
+            color: var(--light-text);
+        }
+
+        .dark-mode ::-ms-input-placeholder {
+            color: var(--dark-light-text);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .register-container {
+                padding: 16px;
+                margin: 0 auto;
+            }
+            
+            .register-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .register-header h2 {
+                font-size: 20px;
+            }
+            
+            .register-header p {
+                font-size: 13px;
+            }
+            
+            .form-control {
+                padding: 12px 14px;
+                font-size: 15px;
+            }
+            
+            .register-btn {
+                padding: 14px;
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .nav-item {
+                padding: 6px 8px;
+                font-size: 10px;
+            }
+            
+            .nav-item i {
+                font-size: 18px;
+            }
+        }
+
+        /* Prevent zooming on mobile input focus */
+        @media (max-width: 480px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+        }
+
+        /* Loading spinner */
+        .fa-spinner {
+            margin-right: 8px;
         }
     </style>
     <script>
@@ -340,7 +495,7 @@
         <div class="register-card">
             <div class="register-header">
                 <h2>Create Account</h2>
-                <p>Join us to start shopping</p>
+                <p>Join us to start your Business</p>
             </div>
             <form method="post" action="{% url 'register' %}">
                 {% csrf_token %}
@@ -376,8 +531,13 @@
 
                 <div class="form-group">
                     <label for="password1">Password</label>
-                    <input type="password" id="password1" name="password1" class="form-control" required
-                           minlength="8">
+                    <div class="password-wrapper">
+                        <input type="password" id="password1" name="password1" class="form-control" required
+                               minlength="8">
+                        <button type="button" class="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                     {% if form.password1.errors %}
                         <div class="errorlist">{{ form.password1.errors }}</div>
                     {% endif %}
@@ -393,8 +553,13 @@
 
                 <div class="form-group">
                     <label for="password2">Password Confirmation</label>
-                    <input type="password" id="password2" name="password2" class="form-control" required
-                           minlength="8">
+                    <div class="password-wrapper">
+                        <input type="password" id="password2" name="password2" class="form-control" required
+                               minlength="8">
+                        <button type="button" class="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
                     {% if form.password2.errors %}
                         <div class="errorlist">{{ form.password2.errors }}</div>
                     {% endif %}
@@ -516,6 +681,32 @@
         const form = document.querySelector('form');
         if (form && window.location.protocol === 'http:' && window.location.hostname !== 'localhost') {
             form.action = form.action.replace('http://', 'https://');
+        }
+
+        // Password visibility toggle
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const input = this.parentElement.querySelector('input');
+                const icon = this.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            });
+        });
+
+        // Add form submission loading state
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const submitButton = this.querySelector('button[type="submit"]');
+                if (submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                }
+            });
         }
     </script>
 </body>

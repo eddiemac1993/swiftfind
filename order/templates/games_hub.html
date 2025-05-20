@@ -103,13 +103,21 @@
                     <h3 class="text-xl font-semibold mb-2">Quiz Challenge</h3>
                     <p class="text-gray-600 dark:text-gray-400">Test your knowledge</p>
                 </a>
+                <a href="{% url 'task_list' %}" class="game-card text-center">
+    <div class="game-icon">
+        <i class="fas fa-tasks"></i>
+    </div>
+    <h3 class="text-xl font-semibold mb-2">To-Do List</h3>
+    <p class="text-gray-600 dark:text-gray-400">Keep track of your tasks</p>
+</a>
+
                 <!-- Game: Skyhopper -->
                 <a href="mobile" class="game-card text-center">
-                    <div class="game-icon">
-                        <i class="fas fa-rocket"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Skyhopper</h3>
-                    <p class="text-gray-600 dark:text-gray-400">Jump through the skies</p>
+                      <div class="game-icon">
+        <i class="fas fa-pen-square"></i> <!-- You can use a different icon if you like -->
+    </div>
+    <h3 class="text-xl font-semibold mb-2">Wordle</h3>
+    <p class="text-gray-600 dark:text-gray-400">Guess the word in 6 tries</p>
                 </a>
 
 <a href="{% url 'nsolo' %}" class="game-card text-center">

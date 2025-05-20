@@ -1,1029 +1,1165 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyHopper</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wordle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-        
+      :root {
+        --correct-color: #6aaa64;
+        --present-color: #c9b458;
+        --absent-color: #787c7e;
+        --key-color: #d3d6da;
+        --key-text-color: #1a1a1a;
+        --tile-border: #d3d6da;
+        --background: #f0f2f5;
+        --text-color: #1a1a1a;
+        --tile-size: 62px;
+        --key-height: 58px;
+        --key-width: 40px;
+        --transition-speed: 0.15s;
+        --header-height: 60px;
+      }
+
+      @media (prefers-color-scheme: dark) {
         :root {
-            --sky-day: #70c5ce;
-            --sky-dusk: #ff9966;
-            --sky-night: #0a1128;
-            --ground: #deb887;
-            --ground-border: #8b4513;
+          --correct-color: #538d4e;
+          --present-color: #b59f3b;
+          --absent-color: #3a3a3c;
+          --key-color: #818384;
+          --key-text-color: #ffffff;
+          --tile-border: #3a3a3c;
+          --background: #121213;
+          --text-color: #ffffff;
         }
-        
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: 'Press Start 2P', cursive;
-            background-color: var(--sky-day);
-            transition: background-color 1s;
-            touch-action: manipulation;
+      }
+
+      body {
+        font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        background-color: var(--background);
+        color: var(--text-color);
+        user-select: none;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
+        height: var(--header-height);
+        border-bottom: 1px solid var(--tile-border);
+      }
+
+      .header-button {
+        background: none;
+        border: none;
+        color: var(--text-color);
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+      }
+
+      .header-button:hover {
+        background-color: rgba(0,0,0,0.1);
+      }
+
+      h1 {
+        color: var(--text-color);
+        font-size: 2rem;
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: 0.2rem;
+      }
+
+      #game-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex: 1;
+        padding: 10px;
+        box-sizing: border-box;
+        max-height: calc(100vh - var(--header-height));
+        overflow-y: auto;
+      }
+
+      #game-board {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0 auto 10px;
+        max-width: 330px;
+      }
+
+      .row {
+        display: flex;
+        margin-bottom: 5px;
+      }
+
+      .tile {
+        width: var(--tile-size);
+        height: var(--tile-size);
+        border: 2px solid var(--tile-border);
+        margin: 0 2px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 2rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        background-color: var(--background);
+        color: var(--text-color);
+        transition: transform 0.1s, background-color 0.3s;
+      }
+
+      .tile.filled {
+        animation: pop 0.1s ease;
+      }
+
+      @keyframes pop {
+        0% {
+          transform: scale(1);
         }
-        
-        .game-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            max-width: 500px;
-            margin: 0 auto;
+        50% {
+          transform: scale(1.1);
         }
-        
-        .helicopter {
-            position: absolute;
-            width: 60px;
-            height: 30px;
-            z-index: 10;
-            transition: transform 0.1s;
+        100% {
+          transform: scale(1);
         }
-        
-        .helicopter-body {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-color: #555;
-            border-radius: 10px 20px 20px 10px;
+      }
+
+      .tile.correct {
+        background-color: var(--correct-color);
+        color: white;
+        border-color: var(--correct-color);
+      }
+
+      .tile.present {
+        background-color: var(--present-color);
+        color: white;
+        border-color: var(--present-color);
+      }
+
+      .tile.absent {
+        background-color: var(--absent-color);
+        color: white;
+        border-color: var(--absent-color);
+      }
+
+      .tile.flip {
+        animation: flip 0.5s ease forwards;
+      }
+
+      @keyframes flip {
+        0% {
+          transform: rotateX(0);
         }
-        
-        .helicopter-cockpit {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background-color: #9cf;
-            border-radius: 50%;
-            top: -5px;
-            left: 5px;
-            border: 2px solid #333;
+        45% {
+          transform: rotateX(90deg);
         }
-        
-        .helicopter-tail {
-            position: absolute;
-            width: 40px;
-            height: 5px;
-            background-color: #777;
-            left: 50px;
-            top: 12px;
+        55% {
+          transform: rotateX(90deg);
         }
-        
-        .helicopter-rotor {
-            position: absolute;
-            width: 70px;
-            height: 5px;
-            background-color: #333;
-            top: -10px;
-            left: -5px;
-            transform-origin: center center;
-            animation: rotorSpin 0.1s linear infinite;
+        100% {
+          transform: rotateX(0);
         }
-        
-        .helicopter-tail-rotor {
-            position: absolute;
-            width: 15px;
-            height: 3px;
-            background-color: #333;
-            left: 85px;
-            top: 13px;
-            transform-origin: left center;
-            animation: tailRotorSpin 0.05s linear infinite;
+      }
+
+      #input-container {
+        margin: 15px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        max-width: 330px;
+      }
+
+      #guess-input {
+        padding: 10px;
+        font-size: 1rem;
+        margin-right: 10px;
+        text-transform: uppercase;
+        width: 65%;
+        border: 2px solid var(--tile-border);
+        border-radius: 4px;
+        background-color: var(--background);
+        color: var(--text-color);
+        text-align: center;
+      }
+
+      #submit-button {
+        padding: 10px;
+        font-size: 1rem;
+        background-color: var(--correct-color);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.2s;
+        width: 35%;
+      }
+
+      #submit-button:hover {
+        background-color: #447c41;
+      }
+
+      #submit-button:disabled {
+        background-color: #cccccc;
+        cursor: not-allowed;
+      }
+
+      #message {
+        margin-top: 10px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        height: 25px;
+        color: var(--text-color);
+      }
+
+      #keyboard {
+        width: 100%;
+        max-width: 500px;
+        padding: 0 5px;
+        margin: 10px auto 0;
+      }
+
+      .keyboard-row {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 6px;
+        width: 100%;
+      }
+
+      .key {
+        background-color: var(--key-color);
+        color: var(--key-text-color);
+        border: none;
+        border-radius: 4px;
+        margin: 0 2px;
+        padding: 0;
+        height: var(--key-height);
+        cursor: pointer;
+        min-width: var(--key-width);
+        font-weight: bold;
+        text-transform: uppercase;
+        transition: all var(--transition-speed);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+        font-size: 0.9rem;
+      }
+
+      .key:hover {
+        opacity: 0.9;
+      }
+
+      .key.wide {
+        flex: 1.5;
+        font-size: 0.8rem;
+      }
+
+      .key.correct {
+        background-color: var(--correct-color);
+        color: white;
+      }
+
+      .key.present {
+        background-color: var(--present-color);
+        color: white;
+      }
+
+      .key.absent {
+        background-color: var(--absent-color);
+        color: white;
+      }
+
+      .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+        flex-wrap: wrap;
+      }
+
+      .action-button {
+        padding: 10px 20px;
+        background-color: var(--correct-color);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1rem;
+        transition: background-color 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .action-button:hover {
+        background-color: #447c41;
+      }
+
+      .action-button.secondary {
+        background-color: var(--key-color);
+        color: var(--key-text-color);
+      }
+
+      .action-button.secondary:hover {
+        background-color: #b8b8b8;
+      }
+
+      #stats {
+        margin-top: 15px;
+        font-size: 0.9rem;
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+        max-width: 400px;
+        flex-wrap: wrap;
+      }
+
+      #stats div {
+        margin: 5px 10px;
+      }
+
+      .shake {
+        animation: shake 0.5s;
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
         }
-        
-        @keyframes rotorSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        10%,
+        30%,
+        50%,
+        70%,
+        90% {
+          transform: translateX(-5px);
         }
-        
-        @keyframes tailRotorSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        20%,
+        40%,
+        60%,
+        80% {
+          transform: translateX(5px);
         }
-        
-        .pipe {
-            position: absolute;
-            width: 80px;
-            background-color: #5cb85c;
-            border: 3px solid #4cae4c;
-            box-sizing: border-box;
-            z-index: 2;
+      }
+
+      .bounce {
+        animation: bounce 0.5s;
+      }
+
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: translateY(0);
         }
-        
-        .pipe-top {
-            border-bottom: none;
-            border-radius: 10px 10px 0 0;
-            background-image: linear-gradient(to bottom, #5cb85c, #4cae4c);
+        50% {
+          transform: translateY(-10px);
         }
-        
-        .pipe-bottom {
-            border-top: none;
-            border-radius: 0 0 10px 10px;
-            background-image: linear-gradient(to top, #5cb85c, #4cae4c);
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 100;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-content {
+        background-color: var(--background);
+        padding: 20px;
+        border-radius: 8px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .modal-title {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        color: var(--text-color);
+      }
+
+      .share-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin: 20px 0;
+      }
+
+      .share-btn {
+        padding: 10px;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .share-btn:hover {
+        transform: scale(1.05);
+      }
+
+      .share-btn i {
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+      }
+
+      .share-whatsapp {
+        background-color: #25D366;
+        color: white;
+      }
+
+      .share-result {
+        background-color: var(--background);
+        border: 1px solid var(--tile-border);
+        color: var(--text-color);
+        white-space: pre;
+        font-family: monospace;
+        padding: 15px;
+        margin: 20px 0;
+        text-align: center;
+        line-height: 1.5;
+        overflow-x: auto;
+      }
+        .hint-letter {
+            color: var(--present-color);
+            font-weight: bold;
+            text-decoration: underline;
         }
-        
-        .pipe-cap {
-            position: absolute;
-            width: 86px;
-            height: 15px;
-            background-color: #4cae4c;
-            z-index: 3;
+      /* Responsive styles for different screen sizes */
+      /* Large phones and small tablets */
+      @media (max-width: 600px) {
+        :root {
+          --tile-size: 55px;
+          --key-height: 45px;
+          --key-width: 30px;
+          --header-height: 50px;
         }
-        
-        .pipe-top .pipe-cap {
-            bottom: -15px;
-            border-radius: 0 0 8px 8px;
+
+        h1 {
+          font-size: 1.8rem;
         }
-        
-        .pipe-bottom .pipe-cap {
-            top: -15px;
-            border-radius: 8px 8px 0 0;
+
+        .tile {
+          font-size: 1.8rem;
         }
-        
-        .ground {
-            position: absolute;
-            width: 100%;
-            height: 80px;
-            background-color: var(--ground);
-            border-top: 3px solid var(--ground-border);
-            bottom: 0;
-            z-index: 5;
+
+        #keyboard {
+          margin-top: 5px;
         }
-        
-        .cloud {
-            position: absolute;
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
-            z-index: 1;
-            filter: blur(2px);
+
+        .key {
+          margin: 0 1px;
+          font-size: 0.85rem;
         }
-        
-        .game-over {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            display: none;
-            z-index: 100;
-            width: 80%;
-            max-width: 400px;
+
+        #stats {
+          font-size: 0.85rem;
         }
-        
-        .score-display {
-            position: absolute;
-            top: 20px;
-            width: 100%;
-            text-align: center;
-            font-size: 20px;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            z-index: 50;
+      }
+
+      /* Medium sized phones */
+      @media (max-width: 480px) {
+        :root {
+          --tile-size: 48px;
+          --key-height: 40px;
+          --key-width: 28px;
         }
-        
-        .start-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
+
+        .header {
+          padding: 10px 5px;
         }
-        
-        .coin {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background-color: gold;
-            border-radius: 50%;
-            z-index: 4;
-            box-shadow: 0 0 5px yellow;
-            animation: spin 2s linear infinite;
+
+        h1 {
+          font-size: 1.5rem;
         }
-        
-        @keyframes spin {
-            0% { transform: rotateY(0); }
-            100% { transform: rotateY(360deg); }
+
+        .tile {
+          font-size: 1.6rem;
         }
-        
-        .flap-animation {
-            animation: flap 0.3s ease-out;
+
+        #input-container {
+          margin: 10px 0;
         }
-        
-        @keyframes flap {
-            0% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-5px) rotate(-5deg); }
-            100% { transform: translateY(0) rotate(0deg); }
+
+        #guess-input {
+          padding: 8px;
+          font-size: 0.9rem;
         }
-        
-        .particle {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            background-color: white;
-            border-radius: 50%;
-            z-index: 20;
-            pointer-events: none;
+
+        #submit-button {
+          padding: 8px;
+          font-size: 0.9rem;
         }
-        
-        .controls {
-            position: absolute;
-            bottom: 100px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            z-index: 10;
+
+        .key {
+          font-size: 0.8rem;
         }
-        
-        .control-btn {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            user-select: none;
-            touch-action: manipulation;
+
+        .key.wide {
+          font-size: 0.7rem;
         }
-        
-        .pause-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            z-index: 60;
-            cursor: pointer;
+
+        .action-button {
+          padding: 8px 15px;
+          font-size: 0.9rem;
         }
-        
-        .audio-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 40px;
-            height: 40px;
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            z-index: 60;
-            cursor: pointer;
+      }
+
+      /* Small phones */
+      @media (max-width: 375px) {
+        :root {
+          --tile-size: 42px;
+          --key-height: 35px;
+          --key-width: 25px;
         }
-        
-        .pause-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 90;
+
+        h1 {
+          font-size: 1.3rem;
         }
-        
-        .night .cloud {
-            background-color: rgba(100, 100, 150, 0.5);
+
+        .tile {
+          font-size: 1.4rem;
         }
-        
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background-color: white;
-            border-radius: 50%;
-            z-index: 0;
-            animation: twinkle 2s infinite alternate;
+
+        #message {
+          font-size: 1rem;
+          height: 20px;
         }
-        
-        @keyframes twinkle {
-            0% { opacity: 0.2; }
-            100% { opacity: 1; }
+
+        .key {
+          margin: 0 1px;
+          font-size: 0.7rem;
         }
-        
-        .how-to-play {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            padding: 20px;
-            box-sizing: border-box;
-            text-align: center;
+
+        .key.wide {
+          font-size: 0.6rem;
         }
+
+        .action-button {
+          font-size: 0.9rem;
+          padding: 8px 12px;
+        }
+
+        #stats {
+          font-size: 0.8rem;
+          flex-direction: row;
+        }
+      }
+
+      /* Extra small phones */
+      @media (max-width: 320px) {
+        :root {
+          --tile-size: 38px;
+          --key-height: 32px;
+        }
+
+        h1 {
+          font-size: 1.2rem;
+        }
+
+        .tile {
+          font-size: 1.2rem;
+        }
+
+        #input-container {
+          flex-direction: column;
+        }
+
+        #guess-input {
+          width: 100%;
+          margin-right: 0;
+          margin-bottom: 5px;
+        }
+
+        #submit-button {
+          width: 100%;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+          width: 100%;
+        }
+
+        .action-button {
+          width: 100%;
+        }
+      }
     </style>
-</head>
-<body class="bg-blue-200">
-    <div class="game-container" id="gameContainer">
-        <div class="score-display" id="scoreDisplay">0</div>
-        <div class="high-score-display" id="highScoreDisplay">High: 0</div>
-        
-        <div class="pause-btn" id="pauseBtn">II</div>
-        <div class="audio-btn" id="audioBtn">🔊</div>
-        
-        <div class="start-screen" id="startScreen">
-            <h1 class="text-white text-2xl md:text-3xl mb-6">SKYHOPPER</h1>
-            <div class="relative mb-8">
-                <div class="helicopter">
-                    <div class="helicopter-body"></div>
-                    <div class="helicopter-cockpit"></div>
-                    <div class="helicopter-rotor"></div>
-                    <div class="helicopter-tail"></div>
-                    <div class="helicopter-tail-rotor"></div>
-                </div>
-            </div>
-            <button id="startButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full text-lg transition duration-300 transform hover:scale-105 mb-4">
-                START GAME
-            </button>
-            <button id="howToPlayBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded text-sm">
-                HOW TO PLAY
-            </button>
-            <p class="text-white mt-6 text-xs">Tap or press UP to ascend</p>
-        </div>
-        
-        <div class="pause-screen" id="pauseScreen">
-            <h2 class="text-white text-2xl mb-4">PAUSED</h2>
-            <button id="resumeButton" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
-                RESUME
-            </button>
-        </div>
-        
-        <div class="how-to-play" id="howToPlay">
-            <h2 class="text-white text-xl mb-6">HOW TO PLAY</h2>
-            <div class="text-white text-left text-sm mb-6">
-                <p class="mb-3">- Tap the screen or press UP to make the helicopter ascend</p>
-                <p class="mb-3">- Navigate through the gaps in the obstacles</p>
-                <p class="mb-3">- Each successful pass earns you 1 point</p>
-                <p class="mb-3">- Try to collect gold coins for bonus points</p>
-                <p class="mb-3">- Avoid hitting obstacles or the ground</p>
-            </div>
-            <button id="backToMenuBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
-                BACK TO MENU
-            </button>
-        </div>
-        
-        <div class="game-over" id="gameOver">
-            <h2 class="text-xl mb-4">GAME OVER</h2>
-            <p class="mb-2">Score: <span id="finalScore">0</span></p>
-            <p class="mb-4">High Score: <span id="finalHighScore">0</span></p>
-            <button id="restartButton" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded mb-2">
-                PLAY AGAIN
-            </button>
-            <button id="menuButton" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
-                MAIN MENU
-            </button>
-        </div>
-        
-        <div id="helicopter" class="helicopter hidden">
-            <div class="helicopter-body"></div>
-            <div class="helicopter-cockpit"></div>
-            <div class="helicopter-rotor"></div>
-            <div class="helicopter-tail"></div>
-            <div class="helicopter-tail-rotor"></div>
-        </div>
-        
-        <div class="controls">
-            <div class="control-btn" id="flapBtn">↑</div>
-        </div>
-        
-        <div class="ground"></div>
+  </head>
+  <body>
+    <div class="header">
+      <button class="header-button" id="back-button">
+        <i class="fas fa-arrow-left"></i>
+      </button>
+      <h1>WORDLE</h1>
+      <div style="width: 48px;"></div> <!-- Spacer for alignment -->
+    </div>
+    <button class="action-button secondary" id="hint-button">
+        <i class="fas fa-lightbulb"></i> HINT
+    </button>
+    <div id="game-container">
+      <div id="game-board"></div>
+      <div id="message"></div>
+      <div id="input-container">
+        <input
+          type="text"
+          id="guess-input"
+          maxlength="5"
+          placeholder="Enter 5-letter word"
+          autocomplete="off"
+          autocapitalize="characters"
+        />
+        <button id="submit-button">GUESS</button>
+      </div>
+      <div id="keyboard"></div>
+      <div id="stats"></div>
+      <div class="action-buttons">
+        <button class="action-button" id="restart-button">
+          <i class="fas fa-redo"></i> PLAY AGAIN
+        </button>
+        <button class="action-button secondary" id="share-button" style="display: none;">
+          <i class="fas fa-share-alt"></i> SHARE
+        </button>
+      </div>
     </div>
 
-    <audio id="flapSound" src="https://assets.mixkit.co/sfx/preview/mixkit-chopping-wood-1773.mp3"></audio>
-    <audio id="scoreSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
-    <audio id="coinSound" src="https://assets.mixkit.co/sfx/preview/mixkit-coins-handling-1939.mp3"></audio>
-    <audio id="hitSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-explosion-2759.mp3"></audio>
-    <audio id="backgroundMusic" loop src="https://assets.mixkit.co/music/preview/mixkit-game-show-suspense-waiting-668.mp3"></audio>
+    <!-- Share Modal -->
+    <div class="modal" id="share-modal">
+      <div class="modal-content">
+        <div class="modal-title">Share Your Score</div>
+        <div id="share-result" class="share-result"></div>
+        <div class="share-grid">
+          <div class="share-btn share-whatsapp" id="whatsapp-share">
+            <i class="fab fa-whatsapp"></i>
+            <span>WhatsApp</span>
+          </div>
+          <!-- More share options can be added here -->
+        </div>
+        <button class="action-button" id="close-share-modal">
+          <i class="fas fa-times"></i> CLOSE
+        </button>
+      </div>
+    </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Game variables
-            let gameStarted = false;
-            let gameOver = false;
-            let gamePaused = false;
-            let score = 0;
-            let coinsCollected = 0;
-            let highScore = localStorage.getItem('skyHopperHighScore') || 0;
-            let gravity = 0.3; // Reduced gravity for easier gameplay
-            let velocity = 0;
-            let position = 250;
-            let pipes = [];
-            let coins = [];
-            let clouds = [];
-            let stars = [];
-            let particles = [];
-            let pipeGap = 200; // Larger gap for easier gameplay
-            let pipeFrequency = 2000; // milliseconds (less frequent pipes)
-            let lastPipeTime = 0;
-            let gameSpeed = 2;
-            let animationId;
-            let dayNightCycle = 0;
-            let soundEnabled = true;
-            let musicEnabled = true;
-            
-            // DOM elements
-            const gameContainer = document.getElementById('gameContainer');
-            const helicopter = document.getElementById('helicopter');
-            const scoreDisplay = document.getElementById('scoreDisplay');
-            const highScoreDisplay = document.getElementById('highScoreDisplay');
-            const startScreen = document.getElementById('startScreen');
-            const startButton = document.getElementById('startButton');
-            const howToPlayBtn = document.getElementById('howToPlayBtn');
-            const howToPlay = document.getElementById('howToPlay');
-            const backToMenuBtn = document.getElementById('backToMenuBtn');
-            const gameOverScreen = document.getElementById('gameOver');
-            const finalScore = document.getElementById('finalScore');
-            const finalHighScore = document.getElementById('finalHighScore');
-            const restartButton = document.getElementById('restartButton');
-            const menuButton = document.getElementById('menuButton');
-            const pauseBtn = document.getElementById('pauseBtn');
-            const pauseScreen = document.getElementById('pauseScreen');
-            const resumeButton = document.getElementById('resumeButton');
-            const audioBtn = document.getElementById('audioBtn');
-            const flapBtn = document.getElementById('flapBtn');
-            
-            // Audio elements
-            const flapSound = document.getElementById('flapSound');
-            const scoreSound = document.getElementById('scoreSound');
-            const coinSound = document.getElementById('coinSound');
-            const hitSound = document.getElementById('hitSound');
-            const backgroundMusic = document.getElementById('backgroundMusic');
-            
-            // Game dimensions
-            const gameWidth = gameContainer.offsetWidth;
-            const gameHeight = gameContainer.offsetHeight;
-            
-            // Initialize game
-            function initGame() {
-                highScoreDisplay.textContent = `High: ${highScore}`;
-                createStars();
-                initClouds();
-                
-                // Set up audio button
-                audioBtn.textContent = musicEnabled ? '🔊' : '🔇';
-                
-                // Play background music if enabled
-                if (musicEnabled) {
-                    backgroundMusic.volume = 0.3;
-                    backgroundMusic.play().catch(e => console.log("Audio play prevented:", e));
-                }
-            }
-            
-            // Create stars for night mode
-            function createStars() {
-                // Clear existing stars
-                document.querySelectorAll('.star').forEach(star => star.remove());
-                stars = [];
-                
-                // Create new stars
-                for (let i = 0; i < 50; i++) {
-                    const star = document.createElement('div');
-                    star.className = 'star';
-                    
-                    const x = Math.random() * gameWidth;
-                    const y = Math.random() * (gameHeight - 80);
-                    const size = Math.random() * 2 + 1;
-                    const opacity = Math.random();
-                    const duration = Math.random() * 3 + 1;
-                    
-                    star.style.width = `${size}px`;
-                    star.style.height = `${size}px`;
-                    star.style.left = `${x}px`;
-                    star.style.top = `${y}px`;
-                    star.style.opacity = opacity;
-                    star.style.animationDuration = `${duration}s`;
-                    
-                    gameContainer.appendChild(star);
-                    stars.push({
-                        element: star,
-                        x: x,
-                        y: y
-                    });
-                }
-            }
-            
-            // Initialize clouds
-            function initClouds() {
-                for (let i = 0; i < 5; i++) {
-                    createCloud();
-                }
-            }
-            
-            // Create a cloud
-            function createCloud() {
-                const cloud = document.createElement('div');
-                cloud.className = 'cloud';
-                
-                const size = Math.random() * 50 + 50;
-                const x = Math.random() * gameWidth;
-                const y = Math.random() * (gameHeight - 200);
-                const opacity = Math.random() * 0.5 + 0.3;
-                
-                cloud.style.width = `${size}px`;
-                cloud.style.height = `${size * 0.6}px`;
-                cloud.style.left = `${x}px`;
-                cloud.style.top = `${y}px`;
-                cloud.style.opacity = opacity;
-                
-                gameContainer.appendChild(cloud);
-                clouds.push({
-                    element: cloud,
-                    x: x,
-                    speed: Math.random() * 0.5 + 0.5
-                });
-            }
-            
-            // Create a coin
-            function createCoin(x, y) {
-                const coin = document.createElement('div');
-                coin.className = 'coin';
-                coin.style.left = `${x}px`;
-                coin.style.top = `${y}px`;
-                
-                gameContainer.appendChild(coin);
-                coins.push({
-                    element: coin,
-                    x: x,
-                    y: y,
-                    collected: false
-                });
-            }
-            
-            // Create particles
-            function createParticles(x, y, color, count) {
-                for (let i = 0; i < count; i++) {
-                    const particle = document.createElement('div');
-                    particle.className = 'particle';
-                    particle.style.backgroundColor = color;
-                    particle.style.left = `${x}px`;
-                    particle.style.top = `${y}px`;
-                    
-                    const angle = Math.random() * Math.PI * 2;
-                    const speed = Math.random() * 3 + 1;
-                    const lifetime = Math.random() * 1000 + 500;
-                    
-                    gameContainer.appendChild(particle);
-                    
-                    particles.push({
-                        element: particle,
-                        x: x,
-                        y: y,
-                        vx: Math.cos(angle) * speed,
-                        vy: Math.sin(angle) * speed,
-                        lifetime: lifetime,
-                        born: Date.now()
-                    });
-                }
-            }
-            
-            // Move clouds
-            function moveClouds() {
-                clouds.forEach(cloud => {
-                    cloud.x -= cloud.speed;
-                    if (cloud.x < -100) {
-                        cloud.x = gameWidth;
-                        const y = Math.random() * (gameHeight - 200);
-                        cloud.element.style.top = `${y}px`;
-                    }
-                    cloud.element.style.left = `${cloud.x}px`;
-                });
-            }
-            
-            // Move particles
-            function moveParticles() {
-                const now = Date.now();
-                particles.forEach((particle, index) => {
-                    if (now - particle.born > particle.lifetime) {
-                        gameContainer.removeChild(particle.element);
-                        particles.splice(index, 1);
-                    } else {
-                        particle.x += particle.vx;
-                        particle.y += particle.vy;
-                        particle.vy += 0.1; // gravity
-                        
-                        const opacity = 1 - ((now - particle.born) / particle.lifetime);
-                        particle.element.style.opacity = opacity;
-                        particle.element.style.left = `${particle.x}px`;
-                        particle.element.style.top = `${particle.y}px`;
-                    }
-                });
-            }
-            
-            // Create a pipe
-            function createPipe() {
-                const pipeHeight = Math.floor(Math.random() * (gameHeight - pipeGap - 180)) + 50;
-                const coinY = pipeHeight + Math.random() * (pipeGap - 40);
-                
-                // Top pipe
-                const topPipe = document.createElement('div');
-                topPipe.className = 'pipe pipe-top';
-                topPipe.style.height = `${pipeHeight}px`;
-                topPipe.style.left = `${gameWidth}px`;
-                topPipe.style.top = '0';
-                
-                const topCap = document.createElement('div');
-                topCap.className = 'pipe-cap';
-                topPipe.appendChild(topCap);
-                
-                // Bottom pipe
-                const bottomPipe = document.createElement('div');
-                bottomPipe.className = 'pipe pipe-bottom';
-                bottomPipe.style.height = `${gameHeight - pipeHeight - pipeGap - 80}px`;
-                bottomPipe.style.left = `${gameWidth}px`;
-                bottomPipe.style.bottom = '80px';
-                
-                const bottomCap = document.createElement('div');
-                bottomCap.className = 'pipe-cap';
-                bottomPipe.appendChild(bottomCap);
-                
-                gameContainer.appendChild(topPipe);
-                gameContainer.appendChild(bottomPipe);
-                
-                // Create coin between pipes (60% chance)
-                if (Math.random() < 0.6) {
-                    createCoin(gameWidth + 40, coinY);
-                }
-                
-                pipes.push({
-                    top: topPipe,
-                    bottom: bottomPipe,
-                    x: gameWidth,
-                    passed: false
-                });
-            }
-            
-            // Move pipes and coins
-            function movePipes() {
-                pipes.forEach((pipe, index) => {
-                    pipe.x -= gameSpeed;
-                    pipe.top.style.left = `${pipe.x}px`;
-                    pipe.bottom.style.left = `${pipe.x}px`;
-                    
-                    // Check if helicopter passed the pipe
-                    if (!pipe.passed && pipe.x < helicopter.offsetLeft - 80) {
-                        pipe.passed = true;
-                        score++;
-                        scoreDisplay.textContent = score;
-                        
-                        // Play score sound
-                        if (soundEnabled) {
-                            scoreSound.currentTime = 0;
-                            scoreSound.play().catch(e => console.log("Audio play prevented:", e));
-                        }
-                        
-                        // Create celebration particles
-                        createParticles(helicopter.offsetLeft, helicopter.offsetTop, '#ffffff', 10);
-                        
-                        // Increase difficulty slightly
-                        if (score % 10 === 0) {
-                            gameSpeed += 0.1;
-                            
-                            // Change day/night cycle every 15 points
-                            dayNightCycle = (dayNightCycle + 1) % 3;
-                            updateDayNight();
-                        }
-                    }
-                    
-                    // Check collision with pipes
-                    if (
-                        !gameOver &&
-                        helicopter.offsetLeft + helicopter.offsetWidth > pipe.x &&
-                        helicopter.offsetLeft < pipe.x + 80 &&
-                        (helicopter.offsetTop < pipe.top.offsetHeight || 
-                         helicopter.offsetTop + helicopter.offsetHeight > gameHeight - pipe.bottom.offsetHeight - 80)
-                    ) {
-                        endGame();
-                    }
-                    
-                    // Remove pipes that are off screen
-                    if (pipe.x < -80) {
-                        gameContainer.removeChild(pipe.top);
-                        gameContainer.removeChild(pipe.bottom);
-                        pipes.splice(index, 1);
-                    }
-                });
-                
-                // Move coins
-                coins.forEach((coin, index) => {
-                    if (!coin.collected) {
-                        coin.x -= gameSpeed;
-                        coin.element.style.left = `${coin.x}px`;
-                        
-                        // Check coin collection
-                        if (
-                            !gameOver &&
-                            helicopter.offsetLeft + helicopter.offsetWidth > coin.x &&
-                            helicopter.offsetLeft < coin.x + 20 &&
-                            helicopter.offsetTop + helicopter.offsetHeight > coin.y &&
-                            helicopter.offsetTop < coin.y + 20
-                        ) {
-                            coin.collected = true;
-                            coinsCollected++;
-                            gameContainer.removeChild(coin.element);
-                            
-                            // Play coin sound
-                            if (soundEnabled) {
-                                coinSound.currentTime = 0;
-                                coinSound.play().catch(e => console.log("Audio play prevented:", e));
-                            }
-                            
-                            // Create gold particles
-                            createParticles(coin.x + 10, coin.y + 10, 'gold', 15);
-                            
-                            // Bonus points
-                            score += 2;
-                            scoreDisplay.textContent = score;
-                        }
-                        
-                        // Remove coins that are off screen
-                        if (coin.x < -20) {
-                            gameContainer.removeChild(coin.element);
-                            coins.splice(index, 1);
-                        }
-                    }
-                });
-            }
-            
-            // Update day/night cycle
-            function updateDayNight() {
-                const body = document.body;
-                body.classList.remove('night');
-                
-                switch(dayNightCycle) {
-                    case 0: // Day
-                        body.style.backgroundColor = 'var(--sky-day)';
-                        break;
-                    case 1: // Dusk
-                        body.style.backgroundColor = 'var(--sky-dusk)';
-                        break;
-                    case 2: // Night
-                        body.style.backgroundColor = 'var(--sky-night)';
-                        body.classList.add('night');
-                        break;
-                }
-            }
-            
-            // Helicopter movement
-            function updateHelicopter() {
-                velocity += gravity;
-                position += velocity;
-                
-                // Apply terminal velocity
-                if (velocity > 8) velocity = 8;
-                
-                // Keep helicopter within bounds
-                if (position < 0) position = 0;
-                if (position > gameHeight - 80 - 30) {
-                    position = gameHeight - 80 - 30;
-                    if (!gameOver) endGame();
-                }
-                
-                helicopter.style.top = `${position}px`;
-            }
-            
-            // Ascend function
-            function ascend() {
-                if (gamePaused) return;
-                
-                if (!gameStarted) {
-                    startGame();
-                    return;
-                }
-                
-                if (!gameOver) {
-                    velocity = -6; // Reduced upward force for easier control
-                    
-                    // Play flap sound
-                    if (soundEnabled) {
-                        flapSound.currentTime = 0;
-                        flapSound.play().catch(e => console.log("Audio play prevented:", e));
-                    }
-                    
-                    // Add flap animation
-                    helicopter.classList.add('flap-animation');
-                    setTimeout(() => {
-                        helicopter.classList.remove('flap-animation');
-                    }, 300);
-                }
-            }
-            
-            // Start game
-            function startGame() {
-                if (gameStarted) return;
-                
-                gameStarted = true;
-                gameOver = false;
-                gamePaused = false;
-                score = 0;
-                coinsCollected = 0;
-                velocity = 0;
-                position = 250;
-                pipes = [];
-                coins = [];
-                gameSpeed = 2;
-                pipeGap = 200;
-                dayNightCycle = 0;
-                updateDayNight();
-                
-                scoreDisplay.textContent = '0';
-                startScreen.style.display = 'none';
-                howToPlay.style.display = 'none';
-                helicopter.classList.remove('hidden');
-                helicopter.style.top = `${position}px`;
-                helicopter.style.left = '80px';
-                
-                // Clear existing pipes and coins
-                document.querySelectorAll('.pipe, .coin').forEach(el => el.remove());
-                
-                lastPipeTime = Date.now();
-                gameLoop();
-            }
-            
-            // End game
-            function endGame() {
-                gameOver = true;
-                cancelAnimationFrame(animationId);
-                
-                // Play hit sound
-                if (soundEnabled) {
-                    hitSound.currentTime = 0;
-                    hitSound.play().catch(e => console.log("Audio play prevented:", e));
-                }
-                
-                // Create explosion particles
-                createParticles(
-                    helicopter.offsetLeft + helicopter.offsetWidth/2, 
-                    helicopter.offsetTop + helicopter.offsetHeight/2, 
-                    '#ff0000', 
-                    20
-                );
-                
-                // Update high score
-                if (score > highScore) {
-                    highScore = score;
-                    localStorage.setItem('skyHopperHighScore', highScore);
-                }
-                
-                finalScore.textContent = score;
-                finalHighScore.textContent = highScore;
-                gameOverScreen.style.display = 'block';
-            }
-            
-            // Restart game
-            function restartGame() {
-                gameOverScreen.style.display = 'none';
-                gameStarted = false;
-                startScreen.style.display = 'flex';
-                helicopter.classList.add('hidden');
-                
-                // Clear existing pipes and coins
-                document.querySelectorAll('.pipe, .coin').forEach(el => el.remove());
-                
-                startGame();
-            }
-            
-            // Pause game
-            function togglePause() {
-                if (!gameStarted || gameOver) return;
-                
-                gamePaused = !gamePaused;
-                
-                if (gamePaused) {
-                    cancelAnimationFrame(animationId);
-                    pauseScreen.style.display = 'flex';
-                    
-                    // Pause music
-                    if (musicEnabled) {
-                        backgroundMusic.pause();
-                    }
-                } else {
-                    pauseScreen.style.display = 'none';
-                    gameLoop();
-                    
-                    // Resume music
-                    if (musicEnabled) {
-                        backgroundMusic.play().catch(e => console.log("Audio play prevented:", e));
-                    }
-                }
-            }
-            
-            // Toggle sound
-            function toggleSound() {
-                soundEnabled = !soundEnabled;
-                musicEnabled = !musicEnabled;
-                audioBtn.textContent = soundEnabled ? '🔊' : '🔇';
-                
-                if (soundEnabled && musicEnabled && !gamePaused) {
-                    backgroundMusic.play().catch(e => console.log("Audio play prevented:", e));
-                } else {
-                    backgroundMusic.pause();
-                }
-            }
-            
-            // Main game loop
-            function gameLoop() {
-                if (gamePaused || gameOver) return;
-                
-                updateHelicopter();
-                movePipes();
-                moveClouds();
-                moveParticles();
-                
-                // Add new pipes
-                const currentTime = Date.now();
-                if (currentTime - lastPipeTime > pipeFrequency) {
-                    createPipe();
-                    lastPipeTime = currentTime;
-                }
-                
-                // Occasionally add clouds
-                if (Math.random() < 0.005) {
-                    createCloud();
-                }
-                
-                animationId = requestAnimationFrame(gameLoop);
-            }
-            
-            // Event listeners
-            document.addEventListener('keydown', (e) => {
-                if (e.code === 'Space' || e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    ascend();
-                }
-                
-                if (e.code === 'KeyP') {
-                    togglePause();
-                }
-            });
-            
-            document.addEventListener('click', ascend);
-            startButton.addEventListener('click', startGame);
-            restartButton.addEventListener('click', restartGame);
-            menuButton.addEventListener('click', () => {
-                gameOverScreen.style.display = 'none';
-                gameStarted = false;
-                startScreen.style.display = 'flex';
-                helicopter.classList.add('hidden');
-                
-                // Clear existing pipes and coins
-                document.querySelectorAll('.pipe, .coin').forEach(el => el.remove());
-            });
-            
-            pauseBtn.addEventListener('click', togglePause);
-            resumeButton.addEventListener('click', togglePause);
-            audioBtn.addEventListener('click', toggleSound);
-            flapBtn.addEventListener('click', ascend);
-            
-            howToPlayBtn.addEventListener('click', () => {
-                startScreen.style.display = 'none';
-                howToPlay.style.display = 'flex';
-            });
-            
-            backToMenuBtn.addEventListener('click', () => {
-                howToPlay.style.display = 'none';
-                startScreen.style.display = 'flex';
-            });
-            
-            // Handle visibility change (tab switching)
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden && gameStarted && !gameOver && !gamePaused) {
-                    togglePause();
-                }
-            });
-            
-            // Initialize game
-            initGame();
+      // Game configuration
+      const WORD_LENGTH = 5;
+      const MAX_GUESSES = 6;
+      let WORD_LIST = []; // Will be populated after loading the JSON file
+
+      // Game state
+      let targetWord = "";
+      let currentRow = 0;
+      let currentTile = 0;
+      let gameOver = false;
+      let gameBoard = [];
+      let stats = {
+        gamesPlayed: 0,
+        gamesWon: 0,
+        currentStreak: 0,
+        maxStreak: 0,
+      };
+      let guesses = [];
+
+      // DOM elements
+      const boardElement = document.getElementById("game-board");
+      const guessInput = document.getElementById("guess-input");
+      const submitButton = document.getElementById("submit-button");
+      const messageElement = document.getElementById("message");
+      const keyboardElement = document.getElementById("keyboard");
+      const restartButton = document.getElementById("restart-button");
+      const shareButton = document.getElementById("share-button");
+      const statsElement = document.getElementById("stats");
+      const backButton = document.getElementById("back-button");
+      const shareModal = document.getElementById("share-modal");
+      const shareResultElement = document.getElementById("share-result");
+      const whatsappShareButton = document.getElementById("whatsapp-share");
+      const closeShareModalButton = document.getElementById("close-share-modal");
+
+      // Load the word list and initialize the game
+      fetch("{% static 'order/words.json' %}")
+        .then(response => response.json())
+        .then(data => {
+          WORD_LIST = data.words;
+          // Load stats from localStorage
+          if (localStorage.getItem("wordleStats")) {
+            stats = JSON.parse(localStorage.getItem("wordleStats"));
+          }
+          initGame();
+        })
+        .catch(error => {
+          console.error('Error loading word list:', error);
+          // Fallback word list in case of error
+          WORD_LIST = ["APPLE", "GRAPE", "LEMON", "MANGO", "PEACH", "STRAW", "BERRY", "MELON", "CHERR", "OLIVE"];
+          initGame();
         });
+
+      // Initialize the game
+      function initGame() {
+        // Clear any existing game
+        boardElement.innerHTML = "";
+        keyboardElement.innerHTML = "";
+        messageElement.textContent = "";
+        guessInput.value = "";
+        guessInput.disabled = false;
+        submitButton.disabled = false;
+        restartButton.style.display = "flex";
+        shareButton.style.display = "none";
+        updateStats();
+
+        // Reset game state
+        currentRow = 0;
+        currentTile = 0;
+        gameOver = false;
+        gameBoard = [];
+        guesses = [];
+
+        // Choose a random target word
+        targetWord = WORD_LIST[Math.floor(Math.random() * WORD_LIST.length)];
+        console.log("Target word:", targetWord); // For debugging
+
+        // Create the game board
+        for (let i = 0; i < MAX_GUESSES; i++) {
+          const row = document.createElement("div");
+          row.className = "row";
+
+          const rowTiles = [];
+          for (let j = 0; j < WORD_LENGTH; j++) {
+            const tile = document.createElement("div");
+            tile.className = "tile";
+            row.appendChild(tile);
+            rowTiles.push(tile);
+          }
+
+          boardElement.appendChild(row);
+          gameBoard.push(rowTiles);
+        }
+
+        // Create the keyboard
+        createKeyboard();
+
+        // Focus on the input
+        guessInput.focus();
+      }
+
+      // Update stats display
+      function updateStats() {
+        statsElement.innerHTML = `
+          <div>Games: ${stats.gamesPlayed}</div>
+          <div>Win %: ${
+            stats.gamesPlayed > 0
+              ? Math.round((stats.gamesWon / stats.gamesPlayed) * 100)
+              : 0
+          }</div>
+          <div>Streak: ${stats.currentStreak}</div>
+          <div>Max: ${stats.maxStreak}</div>
+        `;
+      }
+
+      // Save stats to localStorage
+      function saveStats() {
+        localStorage.setItem("wordleStats", JSON.stringify(stats));
+      }
+
+      // Create the onscreen keyboard
+      function createKeyboard() {
+        const keys = [
+          ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+          ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
+          ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "⌫"],
+        ];
+
+        keys.forEach((row) => {
+          const keyboardRow = document.createElement("div");
+          keyboardRow.className = "keyboard-row";
+
+          row.forEach((key) => {
+            const keyButton = document.createElement("button");
+            keyButton.className = "key";
+            keyButton.textContent = key;
+
+            if (key === "ENTER" || key === "⌫") {
+              keyButton.classList.add("wide");
+            }
+
+            keyButton.addEventListener("click", () => {
+              if (gameOver) return;
+
+              if (key === "⌫") {
+                if (currentTile > 0) {
+                  currentTile--;
+                  gameBoard[currentRow][currentTile].textContent = "";
+                  gameBoard[currentRow][currentTile].classList.remove("filled");
+                }
+              } else if (key === "ENTER") {
+                submitGuess();
+              } else {
+                if (currentTile < WORD_LENGTH) {
+                  gameBoard[currentRow][currentTile].textContent = key;
+                  gameBoard[currentRow][currentTile].classList.add("filled");
+                  currentTile++;
+                }
+              }
+
+              // Focus mobile keyboard away after key press
+              if (window.innerWidth <= 768) {
+                document.activeElement.blur();
+              }
+            });
+
+            keyboardRow.appendChild(keyButton);
+          });
+
+          keyboardElement.appendChild(keyboardRow);
+        });
+      }
+
+      // Submit a guess
+      function submitGuess() {
+        const guess = Array.from(gameBoard[currentRow])
+          .map((tile) => tile.textContent)
+          .join("");
+
+        // Validate the guess
+        if (guess.length !== WORD_LENGTH) {
+          showMessage("Not enough letters");
+          shakeRow(currentRow);
+          return;
+        }
+
+        if (!WORD_LIST.includes(guess)) {
+          showMessage("Not in word list");
+          shakeRow(currentRow);
+          return;
+        }
+
+        // Clear the message
+        clearMessage();
+
+        // Add to guesses
+        guesses.push(guess);
+
+        // Update the game board with animation
+        updateBoardWithAnimation(guess);
+
+        // Check if the game is over
+        if (guess === targetWord) {
+          stats.gamesPlayed++;
+          stats.gamesWon++;
+          stats.currentStreak++;
+          if (stats.currentStreak > stats.maxStreak) {
+            stats.maxStreak = stats.currentStreak;
+          }
+          saveStats();
+          setTimeout(() => endGame(true), WORD_LENGTH * 150 + 300);
+        } else if (currentRow >= MAX_GUESSES - 1) {
+          stats.gamesPlayed++;
+          stats.currentStreak = 0;
+          saveStats();
+          setTimeout(() => endGame(false), WORD_LENGTH * 150 + 300);
+        } else {
+          currentRow++;
+          currentTile = 0;
+        }
+
+        // Clear input field
+        guessInput.value = "";
+      }
+
+      // Update the game board with animation
+      function updateBoardWithAnimation(guess) {
+        const row = gameBoard[currentRow];
+        const letterStates = calculateLetterStates(guess);
+
+        // Update the tiles with flip animation
+        for (let i = 0; i < WORD_LENGTH; i++) {
+          const tile = row[i];
+          const letter = guess[i];
+
+          setTimeout(() => {
+            tile.classList.add("flip");
+
+            setTimeout(() => {
+              // Apply the appropriate style
+              if (letterStates[i] === "correct") {
+                tile.classList.add("correct");
+                updateKeyboardKey(letter, "correct");
+              } else if (letterStates[i] === "present") {
+                tile.classList.add("present");
+                updateKeyboardKey(letter, "present");
+              } else {
+                tile.classList.add("absent");
+                updateKeyboardKey(letter, "absent");
+              }
+            }, 250); // Halfway through flip animation
+          }, i * 150); // Stagger the animations
+        }
+      }
+
+      // Calculate the state of each letter in the guess (correct, present, or absent)
+      function calculateLetterStates(guess) {
+        const states = Array(WORD_LENGTH).fill("absent");
+        const targetLetterCounts = {};
+
+        // Count the occurrences of each letter in the target word
+        for (let i = 0; i < WORD_LENGTH; i++) {
+          const letter = targetWord[i];
+          targetLetterCounts[letter] = (targetLetterCounts[letter] || 0) + 1;
+        }
+
+        // First pass: mark correct positions
+        for (let i = 0; i < WORD_LENGTH; i++) {
+          if (guess[i] === targetWord[i]) {
+            states[i] = "correct";
+            targetLetterCounts[guess[i]]--;
+          }
+        }
+
+        // Second pass: mark present letters
+        for (let i = 0; i < WORD_LENGTH; i++) {
+          if (states[i] !== "correct" && targetLetterCounts[guess[i]] > 0) {
+            states[i] = "present";
+            targetLetterCounts[guess[i]]--;
+          }
+        }
+
+        return states;
+      }
+
+      // Update the onscreen keyboard key color
+      function updateKeyboardKey(letter, state) {
+        const keyButtons = document.querySelectorAll(".key");
+        keyButtons.forEach((button) => {
+          if (button.textContent === letter) {
+            // Only update if the current state is better than the existing state
+            if (
+              state === "correct" ||
+              (state === "present" && !button.classList.contains("correct")) ||
+              (state === "absent" &&
+                !button.classList.contains("correct") &&
+                !button.classList.contains("present"))
+            ) {
+              button.classList.remove("correct", "present", "absent");
+              button.classList.add(state);
+            }
+          }
+        });
+      }
+
+      // End the game
+      function endGame(isWin) {
+        gameOver = true;
+        restartButton.style.display = "flex";
+        shareButton.style.display = "flex";
+
+        if (isWin) {
+          showMessage("Congratulations!", true);
+          // Bounce animation for winning row
+          for (let i = 0; i < WORD_LENGTH; i++) {
+            setTimeout(() => {
+              gameBoard[currentRow][i].classList.add("bounce");
+            }, i * 100);
+          }
+        } else {
+          showMessage(`The word was ${targetWord}`);
+        }
+      }
+
+      // Show message with optional success styling
+      function showMessage(message, isSuccess = false) {
+        messageElement.textContent = message;
+        messageElement.style.color = isSuccess
+          ? "var(--correct-color)"
+          : "inherit";
+      }
+
+      // Clear message
+      function clearMessage() {
+        messageElement.textContent = "";
+        messageElement.style.color = "inherit";
+      }
+
+      // Shake row animation for invalid input
+      function shakeRow(rowIndex) {
+        const row = document.querySelectorAll(".row")[rowIndex];
+        row.classList.add("shake");
+        setTimeout(() => {
+          row.classList.remove("shake");
+        }, 500);
+      }
+
+      // Generate shareable result
+      function generateShareResult(isWin) {
+        let result = `Wordle ${guesses.length}/${MAX_GUESSES}\n\n`;
+        
+        for (let i = 0; i < guesses.length; i++) {
+          const guess = guesses[i];
+          const states = calculateLetterStates(guess);
+          
+          for (let j = 0; j < WORD_LENGTH; j++) {
+            if (states[j] === "correct") {
+              result += "🟩";
+            } else if (states[j] === "present") {
+              result += "🟨";
+            } else {
+              result += "⬛";
+            }
+          }
+          result += "\n";
+        }
+        
+        return result;
+      }
+
+      // Open share modal
+      function openShareModal() {
+        const isWin = guesses.includes(targetWord);
+        const shareResult = generateShareResult(isWin);
+        shareResultElement.textContent = shareResult;
+        shareModal.style.display = "flex";
+      }
+
+      // Close share modal
+      function closeShareModal() {
+        shareModal.style.display = "none";
+      }
+
+    // Share to WhatsApp
+    function shareToWhatsApp() {
+        const isWin = guesses.includes(targetWord);
+        const shareResult = generateShareResult(isWin);
+        const text = encodeURIComponent(`${shareResult}\n\nPlay Wordle here: ${window.location.href}`);
+        const url = `https://wa.me/?text=${text}`;
+        window.open(url, "_blank");
+    }
+// Show a hint (reveal one correct letter)
+function showHint() {
+    if (gameOver || currentRow >= MAX_GUESSES) return;
+    
+    // Find letters that haven't been revealed yet
+    const unrevealedIndices = [];
+    for (let i = 0; i < WORD_LENGTH; i++) {
+        let isRevealed = false;
+        for (let row = 0; row < currentRow; row++) {
+            if (gameBoard[row][i].textContent === targetWord[i] && 
+                gameBoard[row][i].classList.contains("correct")) {
+                isRevealed = true;
+                break;
+            }
+        }
+        if (!isRevealed) unrevealedIndices.push(i);
+    }
+    
+    if (unrevealedIndices.length === 0) {
+        showMessage("All letters already revealed!");
+        return;
+    }
+    
+    // Pick a random unrevealed letter
+    const randomIndex = unrevealedIndices[Math.floor(Math.random() * unrevealedIndices.length)];
+    const hintLetter = targetWord[randomIndex];
+    
+    // Highlight the letter in the keyboard
+    const keyButtons = document.querySelectorAll(".key");
+    keyButtons.forEach(button => {
+        if (button.textContent === hintLetter) {
+            button.classList.add("hint-letter");
+            setTimeout(() => {
+                button.classList.remove("hint-letter");
+            }, 2000);
+        }
+    });
+    
+    showMessage(`One of the letters is: ${hintLetter}`, true);
+}
+
+// Add event listener for hint button
+document.getElementById("hint-button").addEventListener("click", showHint);
+
+      // Go back to previous page
+      function goBack() {
+        window.history.back();
+      }
+
+      // Event listeners
+      submitButton.addEventListener("click", submitGuess);
+      restartButton.addEventListener("click", initGame);
+      shareButton.addEventListener("click", openShareModal);
+      backButton.addEventListener("click", goBack);
+      closeShareModalButton.addEventListener("click", closeShareModal);
+      whatsappShareButton.addEventListener("click", shareToWhatsApp);
+
+      // Close modal when clicking outside
+      shareModal.addEventListener("click", function(e) {
+        if (e.target === shareModal) {
+          closeShareModal();
+        }
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (gameOver) return;
+
+        if (event.key === "Enter") {
+          submitGuess();
+        } else if (event.key === "Backspace") {
+          if (currentTile > 0) {
+            currentTile--;
+            gameBoard[currentRow][currentTile].textContent = "";
+            gameBoard[currentRow][currentTile].classList.remove("filled");
+          }
+        } else if (/^[a-zA-Z]$/.test(event.key)) {
+          if (currentTile < WORD_LENGTH) {
+            gameBoard[currentRow][currentTile].textContent =
+              event.key.toUpperCase();
+            gameBoard[currentRow][currentTile].classList.add("filled");
+            currentTile++;
+          }
+        }
+      });
+
+      // Updates the input field based on the game board
+      guessInput.addEventListener("input", function() {
+        const value = this.value.toUpperCase().slice(0, WORD_LENGTH);
+        this.value = value;
+
+        // Update game board tiles
+        for (let i = 0; i < WORD_LENGTH; i++) {
+          if (i < value.length) {
+            gameBoard[currentRow][i].textContent = value[i];
+            gameBoard[currentRow][i].classList.add("filled");
+          } else {
+            gameBoard[currentRow][i].textContent = "";
+            gameBoard[currentRow][i].classList.remove("filled");
+          }
+        }
+
+        currentTile = value.length;
+      });
     </script>
-</body>
+  </body>
 </html>

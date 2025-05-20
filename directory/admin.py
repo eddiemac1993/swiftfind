@@ -124,7 +124,6 @@ class NewsFeedAdmin(ImportExportModelAdmin):
     list_display = ('title', 'category', 'created_at', 'updated_at', 'comment_count')
     list_filter = ('category', ('created_at', DateRangeFilter))
     search_fields = ('title', 'content')
-    prepopulated_fields = {'slug': ('title',)}
     inlines = [CommentInline]
     date_hierarchy = 'created_at'
     readonly_fields = ('created_at', 'updated_at')
@@ -239,7 +238,7 @@ class BusinessDepartmentAdmin(admin.ModelAdmin):
 @admin.register(Business)
 class BusinessAdmin(ImportExportModelAdmin):
     resource_class = BusinessResource
-    list_display = ('name', 'owner', 'category', 'city', 'status', 'average_rating', 
+    list_display = ('name', 'owner', 'category', 'city', 'status', 'average_rating',
                    'review_count', 'member_count', 'image_count', 'post_image_count', 'is_admin_added', 'logo_preview')
     list_filter = (
         'status',
@@ -253,7 +252,7 @@ class BusinessAdmin(ImportExportModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     inlines = [BusinessPostInline, BusinessImageInline, BusinessMemberInline, ReviewInline]
     readonly_fields = ('average_rating', 'created_at', 'updated_at', 'logo_preview')
-    filter_horizontal = ('tags', 'default_roles', 'departments')
+    filter_horizontal = ('default_roles', 'departments')
     date_hierarchy = 'created_at'
     raw_id_fields = ('owner',)
     fieldsets = (

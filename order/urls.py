@@ -4,6 +4,12 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('home/', views.home, name='home'),
+    path('todos/', views.task_list, name='task_list'),
+    path('create/', views.task_create, name='task_create'),
+    path('<int:pk>/', views.task_detail, name='task_detail'),
+    path('<int:pk>/update/', views.task_update, name='task_update'),
+    path('<int:pk>/delete/', views.task_delete, name='task_delete'),
+    path('<int:pk>/toggle-complete/', views.task_toggle_complete, name='task_toggle_complete'),
     path('games/', views.games_hub, name='games_hub'),
     path('matchmemory/', views.match_memory_view, name='word_craze'),
     path('nsolo/', views.nsolo_game, name='nsolo'),

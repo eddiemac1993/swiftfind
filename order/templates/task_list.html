@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}My Tasks{% endblock %}
+{% block header_title %}My Tasks{% endblock %}
+
+{% block content %}
+    <!-- Banner -->
+    <section class="banner">
+        <div class="banner-content">
+            <h3>Stay Productive</h3>
+            <p>Complete your tasks and achieve your goals</p>
+        </div>
+    </section>
+
+    <!-- Task input -->
+    <div class="task-input-container">
+        <a href="{% url 'task_create' %}" class="add-task-btn" style="display: block; text-align: center; text-decoration: none;">
+            <i class="fas fa-plus"></i>
+            <span>Add Task</span>
+        </a>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="filter-tabs">
+        <a href="?filter=all" class="filter-tab {% if filter == 'all' %}active{% endif %}">All</a>
+        <a href="?filter=active" class="filter-tab {% if filter == 'active' %}active{% endif %}">Active</a>
+        <a href="?filter=completed" class="filter-tab {% if filter == 'completed' %}active{% endif %}">Completed</a>
+    </div>
+
+    <!-- Task list -->
+    <div class="task-list">
+        <div class="task-section-header">
+            <h3>Your Tasks</h3>
+            <span class="task-count">{{ tasks.count }}</span>
+        </div>
+
+        <!-- Task items -->
+        {% for task in tasks %}
+        <div class="task-item" data-id="{{ task.id }}">
+            <input type="checkbox" class="task-checkbox" {% if task.completed %}checked{% endif %}
+                   onclick="window.location.href='{% url 'task_toggle_complete' task.pk %}'">
+            <div class="task-content">
+                <a href="{% url 'task_detail' task.pk %}" class="task-title {% if task.completed %}task-completed{% endif %}" style="text-decoration: none; color: inherit;">
+                    {{ task.title }}
+                </a>
+                <div class="task-details">
+                    <span class="task-priority priority-{{ task.priority }}">{{ task.get_priority_display }}</span>
+                    {% if task.due_date %}
+                    <span><i class="far fa-clock"></i> {{ task.due_date|date:"M d, Y" }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="task-actions">
+                <a href="{% url 'task_update' task.pk %}" class="task-action-btn"><i class="far fa-edit"></i></a>
+                <a href="{% url 'task_delete' task.pk %}" class="task-action-btn"><i class="far fa-trash-alt"></i></a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <i class="far fa-check-circle"></i>
+            <h3>No tasks here</h3>
+            <p>Add a new task to get started</p>
+        </div>
+        {% endfor %}
+    </div>
+{% endblock %}
