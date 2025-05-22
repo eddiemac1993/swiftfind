@@ -17,7 +17,6 @@
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Use the same styles as your main template or customize as needed */
         :root {
             --primary-color: #07C160;
             --primary-dark: #05a54e;
@@ -32,8 +31,10 @@
             --dark-surface: #1E1E1E;
             --dark-text: #E0E0E0;
             --dark-light-text: #A0A0A0;
-            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            --app-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --app-shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.15);
         }
 
         body {
@@ -41,6 +42,7 @@
             color: var(--text-color);
             padding-bottom: 72px;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.5;
         }
 
         body.dark-mode {
@@ -48,34 +50,178 @@
             color: var(--dark-text);
         }
 
-        .game-card {
+        .app-header {
             background-color: var(--white);
-            border-radius: 12px;
-            padding: 16px;
             box-shadow: var(--shadow);
-            transition: transform 0.3s ease;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
-        .dark-mode .game-card {
+        .dark-mode .app-header {
             background-color: var(--dark-surface);
             box-shadow: var(--dark-shadow);
         }
 
-        .game-card:hover {
-            transform: translateY(-5px);
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .game-icon {
-            font-size: 2.5rem;
+        .location {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .location i {
             color: var(--primary-color);
-            margin-bottom: 12px;
         }
 
-        /* Add other styles from your main template as needed */
+        .theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            padding: 0.5rem;
+        }
+
+        .dark-mode .theme-btn {
+            color: var(--dark-text);
+        }
+
+        .dark-icon {
+            display: none;
+        }
+
+        .light-icon {
+            display: inline-block;
+        }
+
+        .dark-mode .dark-icon {
+            display: inline-block;
+        }
+
+        .dark-mode .light-icon {
+            display: none;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .app-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+
+        .app-icon {
+            width: 100%;
+            aspect-ratio: 1/1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--white);
+            border-radius: 18px;
+            box-shadow: var(--app-shadow);
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: var(--text-color);
+            padding: 0.5rem;
+        }
+
+        .dark-mode .app-icon {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+        }
+
+        .app-icon:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--app-shadow-hover);
+        }
+
+        .app-icon i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .app-name {
+            font-size: 0.8rem;
+            text-align: center;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1.5rem 1rem 0.5rem;
+            color: var(--text-color);
+        }
+
+        .dark-mode .section-title {
+            color: var(--dark-text);
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--white);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.75rem 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--light-text);
+            font-size: 0.75rem;
+            gap: 0.25rem;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item i {
+            font-size: 1.25rem;
+        }
+
+        .dark-mode .nav-item {
+            color: var(--dark-light-text);
+        }
+
+        .dark-mode .nav-item.active {
+            color: var(--primary-color);
+        }
     </style>
 </head>
 <body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
-    <!-- Header (same as your main template) -->
     <header class="app-header">
         <div class="header-top">
             <div class="location">
@@ -91,57 +237,41 @@
         </div>
     </header>
 
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold mb-8 text-center">Games Hub</h1>
+    <main>
+        <h2 class="section-title">All Games</h2>
+        <div class="app-grid">
+            <!-- Quiz Challenge -->
+            <a href="{% url 'quiz' %}" class="app-icon">
+                <i class="fas fa-question-circle"></i>
+                <span class="app-name">Quiz</span>
+            </a>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Game 1 -->
-                <a href="{% url 'quiz' %}" class="game-card text-center">
-                    <div class="game-icon">
-                        <i class="fas fa-question-circle"></i>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2">Quiz Challenge</h3>
-                    <p class="text-gray-600 dark:text-gray-400">Test your knowledge</p>
-                </a>
-                <a href="{% url 'task_list' %}" class="game-card text-center">
-    <div class="game-icon">
-        <i class="fas fa-tasks"></i>
-    </div>
-    <h3 class="text-xl font-semibold mb-2">To-Do List</h3>
-    <p class="text-gray-600 dark:text-gray-400">Keep track of your tasks</p>
-</a>
+            <!-- To-Do List -->
+            <a href="{% url 'task_list' %}" class="app-icon">
+                <i class="fas fa-tasks"></i>
+                <span class="app-name">To-Do</span>
+            </a>
 
-                <!-- Game: Skyhopper -->
-                <a href="mobile" class="game-card text-center">
-                      <div class="game-icon">
-        <i class="fas fa-pen-square"></i> <!-- You can use a different icon if you like -->
-    </div>
-    <h3 class="text-xl font-semibold mb-2">Wordle</h3>
-    <p class="text-gray-600 dark:text-gray-400">Guess the word in 6 tries</p>
-                </a>
+            <!-- Wordle -->
+            <a href="mobile" class="app-icon">
+                <i class="fas fa-pen-square"></i>
+                <span class="app-name">Wordle</span>
+            </a>
 
-<a href="{% url 'nsolo' %}" class="game-card text-center">
-    <div class="game-icon">
-        <i class="fas fa-seedling"></i> <!-- You can change this icon if you prefer -->
-    </div>
-    <h3 class="text-xl font-semibold mb-2">Nsolo</h3>
-    <p class="text-gray-600 dark:text-gray-400">Traditional African seed-sowing game</p>
-</a>
-<!-- Game: Word Craze -->
-<a href="{% url 'word_craze' %}" class="game-card text-center">
-    <div class="game-icon">
-        <i class="fas fa-font"></i> <!-- Change to another icon if preferred -->
-    </div>
-    <h3 class="text-xl font-semibold mb-2">Word Craze</h3>
-    <p class="text-gray-600 dark:text-gray-400">Challenge your vocabulary</p>
-</a>
+            <!-- Nsolo -->
+            <a href="{% url 'nsolo' %}" class="app-icon">
+                <i class="fas fa-seedling"></i>
+                <span class="app-name">Nsolo</span>
+            </a>
 
-
-            <!-- Add more games as needed -->
+            <!-- Word Craze -->
+            <a href="{% url 'word_craze' %}" class="app-icon">
+                <i class="fas fa-font"></i>
+                <span class="app-name">Word Craze</span>
+            </a>
         </div>
-    </div>
+    </main>
 
-    <!-- Bottom navigation (same as your main template) -->
     <nav class="bottom-nav">
         <a href="{% url 'games_hub' %}" class="nav-item active">
             <i class="fas fa-gamepad"></i>
@@ -169,26 +299,19 @@
     </nav>
 
     <script>
-        // Theme toggle (same as your main template)
+        // Theme toggle
         document.getElementById('theme-toggle').addEventListener('click', function() {
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
             document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
         });
 
-        // Dropdown menu toggle (same as your main template)
+        // Set initial theme based on cookie
         document.addEventListener("DOMContentLoaded", function() {
-            const dropdownToggle = document.getElementById("dropdownToggle");
-            const dropdownMenu = document.getElementById("dropdownMenu");
-
-            dropdownToggle.addEventListener("click", function(e) {
-                e.stopPropagation();
-                dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
-            });
-
-            document.addEventListener("click", function() {
-                dropdownMenu.style.display = 'none';
-            });
+            const darkModeCookie = document.cookie.split('; ').find(row => row.startsWith('darkMode='));
+            if (darkModeCookie && darkModeCookie.split('=')[1] === 'true') {
+                document.body.classList.add('dark-mode');
+            }
         });
     </script>
 </body>

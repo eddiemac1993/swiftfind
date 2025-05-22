@@ -1064,6 +1064,35 @@
         <!-- ... (keep pagination and rest of the content) ... -->
     </section>
     </main>
+<!-- home.html -->
+
+<!-- Add this near the end of your base.html or home.html -->
+<a href="{% url 'chat' %}" class="chat-button">
+  <i class="fas fa-robot"></i> <span>Ai</span>
+</a>
+
+<style>
+.chat-button {
+  position: fixed;
+  bottom: 150px;
+  right: 20px;
+  color: white;
+  padding: 15px;
+  border: 2px solid white; /* Added white border */
+  border-radius: 50%;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  text-decoration: none;
+  font-size: 12px;
+}
+</style>
+
 
     <!-- Bottom navigation -->
     <nav class="bottom-nav">

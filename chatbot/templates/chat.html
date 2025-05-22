@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07C160">
+    <title>Business Directory Chatbot</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #07C160;
+            --primary-dark: #05a54e;
+            --primary-light: #e6f7ef;
+            --secondary-color: #F8F8F8;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #EEE;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        /* Header */
+        .chat-header {
+            background-color: var(--white);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dark-mode .chat-header {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+            border-bottom-color: rgba(255,255,255,0.1);
+        }
+
+        .chat-header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .dark-mode .chat-header h1 {
+            color: var(--primary-color);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-color);
+            font-size: 18px;
+        }
+
+        .dark-mode .theme-btn {
+            color: var(--dark-text);
+        }
+
+        /* Chat container */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            height: calc(100vh - 120px);
+            background-color: var(--white);
+        }
+
+        .dark-mode .chat-container {
+            background-color: var(--dark-surface);
+        }
+
+        /* Chat box */
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .dark-mode #chat-box {
+            background-color: var(--dark-bg);
+        }
+
+        /* Messages */
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            background-color: var(--primary-color);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .dark-mode .bot-message {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+        }
+
+        .business-info {
+            margin-top: 8px;
+            font-size: 14px;
+            color: var(--light-text);
+            border-top: 1px dashed var(--border-color);
+            padding-top: 8px;
+        }
+
+        .dark-mode .business-info {
+            color: var(--dark-light-text);
+            border-top-color: rgba(255,255,255,0.1);
+        }
+
+        .matching-posts {
+            margin-top: 8px;
+            font-size: 14px;
+            color: var(--light-text);
+            padding-left: 10px;
+            border-left: 2px solid var(--primary-color);
+        }
+
+        .dark-mode .matching-posts {
+            color: var(--dark-light-text);
+        }
+
+        .post {
+            margin-top: 4px;
+            padding-left: 8px;
+        }
+
+        .typing-indicator {
+            color: var(--light-text);
+            font-style: italic;
+            padding: 12px 16px;
+            align-self: flex-start;
+        }
+
+        .dark-mode .typing-indicator {
+            color: var(--dark-light-text);
+        }
+
+        /* Input area */
+        .input-area {
+            display: flex;
+            padding: 12px 16px;
+            background-color: var(--white);
+            border-top: 1px solid var(--border-color);
+            position: sticky;
+            bottom: 0;
+        }
+
+        .dark-mode .input-area {
+            background-color: var(--dark-surface);
+            border-top-color: rgba(255,255,255,0.1);
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            outline: none;
+            font-size: 15px;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        .dark-mode #userInput {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        #sendButton {
+            margin-left: 12px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        #sendButton:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Timestamp */
+        .message-time {
+            font-size: 11px;
+            color: var(--text-color); /* Black in light mode */
+            margin-top: 4px;
+            text-align: right;
+        }
+        
+        .dark-mode .message-time {
+            color: var(--white); /* White in dark mode */
+        }
+
+        /* Suggestions */
+        .suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0 16px 12px;
+        }
+
+        .suggestion-chip {
+            padding: 8px 12px;
+            background-color: var(--secondary-color);
+            border-radius: 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dark-mode .suggestion-chip {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+        }
+
+        .suggestion-chip:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .dark-mode .suggestion-chip:hover {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chat-container {
+                height: calc(100vh - 60px);
+            }
+
+            .message {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% csrf_token %}
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1><i class="fas fa-robot"></i> Business Assistant</h1>
+            <div class="header-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="chat-box"></div>
+
+        <div class="suggestions" id="suggestions-container">
+            <div class="suggestion-chip" onclick="sendSuggestion('Find restaurants near me')">Find restaurants</div>
+            <div class="suggestion-chip" onclick="sendSuggestion('Posts about plumbing services')">Find posts</div>
+            <div class="suggestion-chip" onclick="sendSuggestion('Businesses in Lusaka')">Businesses by city</div>
+            <div class="suggestion-chip" onclick="sendSuggestion('List categories')">Categories</div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Ask about local businesses..." autocomplete="off">
+            <button id="sendButton" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Theme toggle
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+        });
+
+        // Check for dark mode preference
+        if (document.cookie.includes('darkMode=true')) {
+            document.body.classList.add('dark-mode');
+            document.querySelector('.light-icon').style.display = 'none';
+            document.querySelector('.dark-icon').style.display = 'inline';
+        } else {
+            document.querySelector('.light-icon').style.display = 'inline';
+            document.querySelector('.dark-icon').style.display = 'none';
+        }
+
+        // Get CSRF token
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]').value;
+        }
+
+        // Add message to chat box
+        function addMessage(text, sender, isHTML = false) {
+            const chatBox = document.getElementById('chat-box');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.classList.add(sender + '-message');
+
+            if (isHTML) {
+                messageDiv.innerHTML = text;
+            } else {
+                messageDiv.textContent = text;
+            }
+
+            // Add timestamp
+            const timeDiv = document.createElement('div');
+            timeDiv.classList.add('message-time');
+            const now = new Date();
+            timeDiv.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            messageDiv.appendChild(timeDiv);
+
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Show typing indicator
+        function showTypingIndicator() {
+            const chatBox = document.getElementById('chat-box');
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typing-indicator';
+            typingDiv.classList.add('typing-indicator');
+            typingDiv.textContent = 'Assistant is typing...';
+            chatBox.appendChild(typingDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Hide typing indicator
+        function hideTypingIndicator() {
+            const typingDiv = document.getElementById('typing-indicator');
+            if (typingDiv) {
+                typingDiv.remove();
+            }
+        }
+
+        // Handle sending messages
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Hide suggestions after first message
+            document.getElementById('suggestions-container').style.display = 'none';
+
+            showTypingIndicator();
+
+            try {
+                const response = await fetch('/bot/chat/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken(),
+                    },
+                    body: JSON.stringify({message: message})
+                });
+
+                hideTypingIndicator();
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (data.response) {
+                    addMessage(data.response, 'bot', data.is_html || false);
+                } else {
+                    addMessage("I'm sorry, I didn't understand that. Can you rephrase?", 'bot');
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                console.error('Error:', error);
+                addMessage("Sorry, I'm having trouble connecting to the server. Please try again later.", 'bot');
+            }
+        }
+
+        // Send suggestion
+        function sendSuggestion(text) {
+            document.getElementById('userInput').value = text;
+            sendMessage();
+        }
+
+        // Allow sending with Enter key
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Update the initial greeting in the window.onload function:
+        window.onload = function() {
+            addMessage("Hello! I'm your Business Directory Assistant. How can I help you today?", 'bot');
+            addMessage("I can help you:<br>- Find businesses by name, category, or location<br>- Search business posts and announcements<br>- Get contact information<br>- Browse business categories<br>- Learn how to add your business<br>- List all businesses in the directory", 'bot', true);
+        };
+    </script>
+</body>
+</html>

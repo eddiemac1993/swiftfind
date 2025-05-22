@@ -11,6 +11,8 @@ from imagekit.processors import ResizeToFill
 from django.utils import timezone
 from ckeditor.fields import RichTextField
 from django.contrib.auth.hashers import make_password
+from django.db.models import Q
+
 
 class NewsFeed(models.Model):
     CATEGORY_CHOICES = [
@@ -182,6 +184,21 @@ class Business(models.Model):
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def search(cls, query=None, city=None, category=None):
+        queryset = cls.objects.filter(status='active')
+        if query:
+            queryset = queryset.filter(
+                Q(name__icontains=query) |
+                Q(description__icontains=query) |
+                Q(tags__name__in=[query])
+            ).distinct()
+        if city:
+            queryset = queryset.filter(city__iexact=city)
+        if category:
+            queryset = queryset.filter(category__name__iexact=category)
+        return queryset
 
 class BusinessMember(models.Model):
     """
