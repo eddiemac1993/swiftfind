@@ -1,10 +1,11 @@
 import spacy
 import logging
+from django.utils import timezone
+import re
 
 logger = logging.getLogger(__name__)
 
 try:
-    # Load the small English model
     nlp = spacy.load("en_core_web_sm")
 except OSError:
     import subprocess
@@ -15,81 +16,79 @@ def extract_intent_and_entities(message):
     message_lower = message.lower().strip()
     doc = nlp(message_lower)
 
-    # If message is short (1-3 words), assume it's a business name search
-    if len(message.split()) <= 3:
-        logger.info(f"Treating short message as business name search: {message}")
-        return "find", {"business_names": [message], "cities": [], "categories": []}
-
-    intents = {
-        "find": ["find", "show", "search", "look for", "where can i find", "need", "looking for", "list", "get"],
-        "contact": ["phone", "contact", "call", "number", "how to reach", "what's the number for", "where is"],
-        "add_business": ["add", "submit", "register", "new business"],
-        "categories": ["category", "categories", "types", "business types", "what kinds"],
-        "greeting": ["hello", "hi", "hey", "greetings"],
-        "thanks": ["thank", "thanks", "appreciate"],
-        "help": ["help", "what can you do", "support"],
-        "list_all": ["all businesses", "list all businesses", "show all businesses"],
-        "find_posts": ["posts about", "announcements for", "offers for", "services for", "products for"]
-    }
-
-    # Detect intent
-    detected_intent = None
-    for intent, keywords in intents.items():
-        if any(keyword in message_lower for keyword in keywords):
-            detected_intent = intent
-            break
-
-    # Handle post-specific searches
-    if not detected_intent:
-        for post_type in ["posts", "announcements", "offers", "services", "products"]:
-            if post_type in message_lower:
-                detected_intent = "find_posts"
-                break
-
-    # Extract entities with improved logic
     entities = {
         "cities": [],
         "business_names": [],
         "categories": []
     }
-    
-    # Common business categories to look for
+
+    # Short message handling
+    if len(message.split()) <= 3:
+        logger.info(f"Treating short message as business name search: {message}")
+        entities["business_names"] = [message]
+        return "find", entities
+
+    # Enhanced intent detection
+    intents = {
+        "find": ["find", "show", "search", "look for", "where can i find", 
+                "need", "looking for", "list", "get", "businesses"],
+        "contact": ["phone", "contact", "call", "number", "how to reach", 
+                   "what's the number for", "reach"],
+        "location": ["where is", "location of", "address of", "located", 
+                    "address for", "find address"],
+        "add_business": ["add", "submit", "register", "new business", 
+                         "how to add", "business registration", "join directory"],
+        "categories": ["category", "categories", "types", "business types", 
+                      "what kinds", "list categories"],
+        "greeting": ["hello", "hi", "hey", "greetings", "good morning", 
+                    "good afternoon", "good evening"],
+        "thanks": ["thank", "thanks", "appreciate", "thank you", 
+                  "thanks a lot", "many thanks"],
+        "help": ["help", "what can you do", "support", "assistance", 
+                "how to use", "guide me"],
+        "list_all": ["all businesses", "list all businesses", 
+                    "show all businesses", "complete list"],
+        "find_posts": ["posts about", "announcements for", "offers for", 
+                      "services for", "products for", "looking for posts"]
+    }
+
+    # Intent detection with priority
+    detected_intent = None
+    for intent, keywords in intents.items():
+        if any(re.search(rf'\b{re.escape(keyword)}\b', message_lower) for keyword in keywords):
+            detected_intent = intent
+            break
+
+    # Special handling for location queries
+    if not detected_intent and ("where is" in message_lower or "location of" in message_lower):
+        detected_intent = "location"
+        parts = re.split(r'where is|location of', message_lower, flags=re.IGNORECASE)
+        if len(parts) > 1:
+            business_name = parts[1].strip()
+            entities["business_names"].append(business_name)
+
+    # Enhanced entity extraction
     common_categories = [
-        "restaurant", "cafe", "school", "hotel", "shop", 
-        "store", "hospital", "clinic", "bank", "supermarket",
-        "salon", "pharmacy", "lawyer", "doctor", "contractor",
-        "plumber", "electrician", "gym", "spa", "car repair",
-        "printing", "fashion", "construction", "consultancy",
-        "education", "training", "real estate", "transportation",
-        "logistics", "manufacturing", "security"
+        "restaurant", "cafe", "school", "hotel", "shop", "store", 
+        "hospital", "clinic", "bank", "supermarket", "salon", "pharmacy",
+        "lawyer", "doctor", "contractor", "plumber", "electrician", "gym",
+        "spa", "car repair", "printing", "fashion", "construction",
+        "consultancy", "education", "training", "real estate", "transportation",
+        "logistics", "manufacturing", "security", "tourism", "mobile money",
+        "supplies", "electronics", "furniture", "food", "beverage"
     ]
-    
-    # Extract cities and business names
+
+    # Extract entities from message
     for ent in doc.ents:
-        if ent.label_ == "GPE":  # Geographical locations
+        if ent.label_ == "GPE":
             entities["cities"].append(ent.text)
-        elif ent.label_ in ("ORG", "PRODUCT", "FAC"):  # Organizations/business names/facilities
+        elif ent.label_ in ("ORG", "PRODUCT", "FAC"):
             entities["business_names"].append(ent.text)
     
-    # Extract categories from message
+    # Extract categories with word boundaries
     for token in doc:
         if token.text.lower() in common_categories and token.text.lower() not in entities["categories"]:
             entities["categories"].append(token.text.lower())
-    
-    # If no explicit category but intent is find, look for implied categories
-    if (detected_intent == "find" or detected_intent == "find_posts") and not entities["categories"]:
-        for cat in common_categories:
-            if cat in message_lower and cat not in entities["categories"]:
-                entities["categories"].append(cat)
-                break
-    
-    # Handle "where is" questions
-    if "where is" in message_lower and not detected_intent:
-        detected_intent = "contact"
-        if not entities["business_names"]:
-            # Try to extract business name from the rest of the message
-            remaining_text = message_lower.split("where is")[1].strip()
-            entities["business_names"].append(remaining_text)
     
     # Handle "businesses in [city]" pattern
     if "businesses in" in message_lower and not detected_intent:
@@ -99,12 +98,26 @@ def extract_intent_and_entities(message):
             city_part = parts[1].strip()
             entities["cities"].append(city_part)
     
-    # Remove duplicates
+    # Handle "posts about [topic]" pattern
+    if "posts about" in message_lower and not detected_intent:
+        detected_intent = "find_posts"
+        parts = message_lower.split("posts about")
+        if len(parts) > 1:
+            topic = parts[1].strip()
+            if topic in common_categories:
+                entities["categories"].append(topic)
+            else:
+                entities["business_names"].append(topic)
+
+    # Remove duplicates and empty values
     for key in entities:
-        entities[key] = list(set(entities[key]))
+        entities[key] = list(set([e for e in entities[key] if e.strip()]))
     
-    # If no intent detected but we have entities, assume it's a find intent
-    if not detected_intent and (entities["business_names"] or entities["cities"] or entities["categories"]):
-        detected_intent = "find"
+    # Final intent determination
+    if not detected_intent:
+        if entities["business_names"] or entities["cities"] or entities["categories"]:
+            detected_intent = "find"
+        else:
+            detected_intent = "help"
     
     return detected_intent, entities

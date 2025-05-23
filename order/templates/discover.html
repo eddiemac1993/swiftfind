@@ -1066,9 +1066,8 @@
     </main>
 <!-- home.html -->
 
-<!-- Add this near the end of your base.html or home.html -->
 <a href="{% url 'chat' %}" class="chat-button">
-  <i class="fas fa-robot"></i> <span>Ai</span>
+  <span class="star">✨</span> <span>Ai</span>
 </a>
 
 <style>
@@ -1078,10 +1077,10 @@
   right: 20px;
   color: white;
   padding: 15px;
-  border: 2px solid white; /* Added white border */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Softer white border */
   border-radius: 50%;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   display: flex;
   align-items: center;
@@ -1090,8 +1089,18 @@
   height: 60px;
   text-decoration: none;
   font-size: 12px;
+  background: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+  backdrop-filter: blur(10px); /* Glass blur effect */
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.chat-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
 }
 </style>
+
 
 
     <!-- Bottom navigation -->
