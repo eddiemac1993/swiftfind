@@ -250,10 +250,6 @@ from django.db.models import Exists, OuterRef
 from django.db.models import Q
 from django.http import JsonResponse
 import re
-from nltk.stem import PorterStemmer
-import nltk
-nltk.download('punkt')
-import re
 
 def home(request):
     categories = ItemCategory.objects.annotate(

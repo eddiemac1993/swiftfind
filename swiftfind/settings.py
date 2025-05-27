@@ -22,13 +22,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-=udh)je!ql09a_n0_g353ixb6qc=g+8y#$kgysq&yo7zj#bvxn"
 
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Access the API key
+GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ["swiftfindzm.com", "www.swiftfindzm.com", '*']
 
-import nltk
-nltk.download('punkt', quiet=True)
 # Application definition
 
 INSTALLED_APPS = [
@@ -48,7 +55,6 @@ INSTALLED_APPS = [
     'pos',
     'posts',
     'order',
-    'django_ckeditor_5',
     'taxi',
     'tracking',
     'import_export',
