@@ -286,7 +286,32 @@
         .table tbody tr:last-child td {
             border-bottom: none;
         }
+/* Toast/Message animations */
+.alert {
+    transition: all 0.3s ease;
+    animation: slideIn 0.3s forwards;
+    margin-bottom: 10px;
+}
 
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.fade {
+    transition: opacity 0.15s linear;
+}
+
+.btn-close {
+    padding: 0.5rem 0.5rem;
+    background-size: 0.75em;
+}
         /* Alerts */
         .alert {
             padding: 12px 16px;
@@ -491,13 +516,17 @@
         </header>
 
         <main class="main-content">
+            <!-- Replace the existing messages block in base.html with this -->
             {% if messages %}
+            <div id="message-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000; max-width: 400px;">
                 {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">
-                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
-                        {{ message }}
-                    </div>
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
                 {% endfor %}
+            </div>
             {% endif %}
 
             {% block content %}{% endblock %}

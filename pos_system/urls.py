@@ -32,4 +32,5 @@ urlpatterns = [
     path('ajax/process-sale/', views.process_sale, name='process_sale'),
     path('ajax/get-cart/', views.get_cart, name='get_cart'),
     path('ajax/update-cart-item/', views.update_cart_item, name='update_cart_item'),
+    path('sale/<int:sale_id>/', views.sale_detail, name='sale_detail'),
 ]

@@ -344,7 +344,7 @@
             grid-template-columns: 1fr;
             height: auto;
         }
-        
+
         .cart-section {
             border-left: none;
             border-top: 1px solid #e9ecef;
@@ -390,12 +390,12 @@
                     <button class="category-btn" data-category="{{ category.id }}">{{ category.name }}</button>
                     {% endfor %}
                 </div>
-                
+
                 <!-- Product Grid -->
                 <div class="products-grid" id="products-grid">
                     {% for product in initial_products %}
                     <div class="product-card" data-product-id="{{ product.id }}">
-                        <div class="product-image" 
+                        <div class="product-image"
                              style="background-image: url('{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-product.png' %}{% endif %}')">
                             <span class="product-category">{{ product.category.name|default:"Uncategorized" }}</span>
                         </div>
@@ -417,7 +417,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="cart-section">
         <div class="card">
             <div class="card-header bg-success text-white">
@@ -430,9 +430,9 @@
                         <p>Your cart is empty</p>
                     </div>
                 </div>
-                
+
                 <div class="cart-total" id="cart-total">Total: ZMW 0.00</div>
-                
+
                 <div class="form-group">
                     <label for="payment-method">Payment Method</label>
                     <select id="payment-method" class="form-control">
@@ -442,13 +442,13 @@
                         <option value="bank_transfer">Bank Transfer</option>
                     </select>
                 </div>
-                
+
                 <button id="complete-sale" class="checkout-btn" disabled>
                     <i class="fas fa-check-circle"></i> Complete Sale
                 </button>
             </div>
         </div>
-        
+
         <div class="receipt" id="receipt">
             <div class="receipt-header">
                 <h3>{{ business.name }}</h3>
@@ -482,6 +482,10 @@
 {% block extra_js %}
 <script>
 $(document).ready(function() {
+    // Auto-close Django messages after 5 seconds
+    setTimeout(() => {
+        $('.alert').alert('close');
+    }, 5000);
     // Define all URLs using Django's URL template tags
     const urls = {
         searchProducts: "{% url 'pos_system:search_products' %}",
@@ -489,117 +493,131 @@ $(document).ready(function() {
         removeFromCart: "{% url 'pos_system:remove_from_cart' %}",
         updateCartItem: "{% url 'pos_system:update_cart_item' %}",
         processSale: "{% url 'pos_system:process_sale' %}",
+        getCart: "{% url 'pos_system:get_cart' %}",
         csrfToken: "{{ csrf_token }}"
     };
 
-    // Initialize date and time for receipt
-    function updateDateTime() {
-        const now = new Date();
-        const options = { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric', 
-            hour: '2-digit', 
-            minute: '2-digit' 
-        };
-        $('#receipt-date').text(now.toLocaleDateString('en-US', options));
-    }
-    updateDateTime();
-
-    // Category filter functionality
-    $('.category-btn').click(function() {
-        $('.category-btn').removeClass('active');
-        $(this).addClass('active');
-        
-        const categoryId = $(this).data('category');
-        const searchQuery = $('#product-search').val();
-        
-        filterProducts(searchQuery, categoryId);
-    });
-
-    // Product search functionality
-    $('#product-search').on('input', function() {
-        const searchQuery = $(this).val();
-        const categoryId = $('.category-btn.active').data('category');
-        
-        filterProducts(searchQuery, categoryId);
-    });
-
-    // Filter products function
-    function filterProducts(searchQuery, categoryId) {
-        $.get(urls.searchProducts, {
-            q: searchQuery,
-            category: categoryId
-        }, function(data) {
-            if (data.success) {
-                $('#products-grid').empty();
-                
-                if (data.products.length > 0) {
-                    data.products.forEach(function(product) {
-                        const productCard = `
-                            <div class="product-card" data-product-id="${product.id}">
-                                <div class="product-image" style="background-image: url('${product.image_url}')">
-                                    <span class="product-category">${product.category}</span>
-                                </div>
-                                <div class="product-details">
-                                    <div class="product-name">${product.name}</div>
-                                    <div class="product-price">$${product.price}</div>
-                                    <div class="product-stock ${product.stock_class}">
-                                        <i class="fas fa-${product.stock_quantity > 10 ? 'check-circle' : product.stock_quantity > 5 ? 'exclamation-circle' : 'times-circle'}"></i>
-                                        ${product.stock_quantity} in stock
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        $('#products-grid').append(productCard);
-                    });
-                } else {
-                    $('#products-grid').html('<div class="col-12 text-center text-muted">No products found</div>');
-                }
-            }
-        }).fail(function(xhr) {
-            console.error('Error searching products:', xhr.responseText);
-        });
-    }
-
-    // Add to cart when product card is clicked
-    $(document).on('click', '.product-card', function() {
-        const productId = $(this).data('product-id');
-        
+    // Initialize cart on page load
+    function initializeCart() {
         $.ajax({
-            url: urls.addToCart,
-            method: 'POST',
-            data: {
-                product_id: productId,
-                quantity: 1,
-                csrfmiddlewaretoken: urls.csrfToken
-            },
+            url: urls.getCart,
+            method: 'GET',
             success: function(data) {
                 if (data.success) {
                     updateCartUI(data);
-                    showToast('Product added to cart', 'success');
+                }
+            }
+        });
+    }
+
+    // Call initializeCart when page loads
+    initializeCart();
+
+    // Product card click handler
+    $(document).on('click', '.product-card', function() {
+        const productId = $(this).data('product-id');
+        addToCart(productId);
+    });
+
+    // Update your addToCart function
+    function addToCart(productId, quantity = 1) {
+        $.ajax({
+            url: urls.addToCart,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                product_id: productId,
+                quantity: quantity
+            }),
+            headers: {
+                'X-CSRFToken': urls.csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(data) {
+                if (data.success) {
+                    // First, check if the cart is currently showing the empty state
+                    if ($('#cart-items .empty-cart').length > 0) {
+                        $('#cart-items').empty(); // Remove the empty cart message
+                    }
+
+                    // Check if this product is already in the cart UI
+                    const existingItem = $(`.cart-item[data-product-id="${productId}"]`);
+
+                    if (existingItem.length > 0) {
+                        // Update the existing item's quantity
+                        const quantitySpan = existingItem.find('span');
+                        const currentQty = parseInt(quantitySpan.text());
+                        quantitySpan.text(currentQty + quantity);
+
+                        // Update the price display
+                        const priceDisplay = existingItem.find('.cart-item-price');
+                        const price = parseFloat(priceDisplay.text().replace('ZMW ', '').split(' × ')[0]);
+                        priceDisplay.text(`ZMW ${price} × ${currentQty + quantity}`);
+                    } else {
+                        // Add new item to cart UI
+                        const productCard = $(`.product-card[data-product-id="${productId}"]`);
+                        const productName = productCard.find('.product-name').text();
+                        const productPrice = productCard.find('.product-price').text().replace('ZMW ', '');
+
+                        const newItem = `
+                            <div class="cart-item" data-product-id="${productId}">
+                                <div class="cart-item-info">
+                                    <div class="cart-item-name">${productName}</div>
+                                    <div class="cart-item-price">ZMW ${productPrice} × ${quantity}</div>
+                                </div>
+                                <div class="quantity-controls">
+                                    <button class="qty-btn decrease-qty">-</button>
+                                    <span>${quantity}</span>
+                                    <button class="qty-btn increase-qty">+</button>
+                                </div>
+                            </div>
+                        `;
+                        $('#cart-items').append(newItem);
+                    }
+
+                    // Update the total (you might want to get this from the server response)
+                    const currentTotalText = $('#cart-total').text();
+                    let currentTotal = 0;
+                    if (currentTotalText !== 'Total: ZMW 0.00') {
+                        currentTotal = parseFloat(currentTotalText.replace('Total: ZMW ', ''));
+                    }
+                    const itemPrice = parseFloat($(`.product-card[data-product-id="${productId}"] .product-price`).text().replace('ZMW ', ''));
+                    const newTotal = currentTotal + (itemPrice * quantity);
+                    $('#cart-total').text(`Total: ZMW ${newTotal.toFixed(2)}`);
+
+                    // Enable checkout button if it's disabled
+                    $('#complete-sale').prop('disabled', false);
+
+                    showToast(data.message, 'success');
                 } else {
-                    showToast(data.message || 'Error adding to cart', 'danger');
+                    showToast(data.message, 'danger');
                 }
             },
             error: function(xhr) {
-                showToast('Error adding to cart: ' + (xhr.responseJSON?.message || 'Unknown error'), 'danger');
+                const errorMsg = xhr.responseJSON?.message || 'Failed to add to cart';
+                showToast(errorMsg, 'danger');
             }
         });
-    });
+    }
 
-    // Update cart UI
-    function updateCartUI(data) {
-        if (data.cart_items) {
-            $('#cart-items').empty();
-            
-            if (data.cart_items.length > 0) {
-                data.cart_items.forEach(function(item) {
+    // Update cart UI - handles both full refreshes and partial updates
+    function updateCartUI(data, isFullRefresh = true) {
+        const cartItemsContainer = $('#cart-items');
+        const cartTotalContainer = $('#cart-total');
+        const checkoutBtn = $('#complete-sale');
+
+        if (isFullRefresh) {
+            // Clear existing items for full refresh
+            cartItemsContainer.empty();
+
+            if (data.cart && Object.keys(data.cart).length > 0) {
+                // Add each item to the cart UI
+                for (const [productId, item] of Object.entries(data.cart)) {
                     const cartItem = `
-                        <div class="cart-item" data-product-id="${item.product_id}">
+                        <div class="cart-item" data-product-id="${productId}">
                             <div class="cart-item-info">
                                 <div class="cart-item-name">${item.name}</div>
-                                <div class="cart-item-price">$${item.unit_price} × ${item.quantity}</div>
+                                <div class="cart-item-price">ZMW ${item.price} × ${item.quantity}</div>
                             </div>
                             <div class="quantity-controls">
                                 <button class="qty-btn decrease-qty">-</button>
@@ -608,25 +626,43 @@ $(document).ready(function() {
                             </div>
                         </div>
                     `;
-                    $('#cart-items').append(cartItem);
-                });
+                    cartItemsContainer.append(cartItem);
+                }
+
+                // Update total
+                const total = data.cart_total ? data.cart_total : calculateCartTotal(data.cart);
+                cartTotalContainer.text(`Total: ZMW ${parseFloat(total).toFixed(2)}`);
+
+                // Enable checkout button
+                checkoutBtn.prop('disabled', false);
             } else {
-                $('#cart-items').html(`
+                // Show empty cart message
+                cartItemsContainer.html(`
                     <div class="empty-cart">
                         <i class="fas fa-shopping-basket"></i>
                         <p>Your cart is empty</p>
                     </div>
                 `);
+
+                // Reset total and disable checkout
+                cartTotalContainer.text('Total: ZMW 0.00');
+                checkoutBtn.prop('disabled', true);
             }
+        } else {
+            // For partial updates, we assume the data contains just the updated item
+            // This would be used when you want to update just one item in the cart
+            // without refreshing the entire cart
+            // (Implementation would depend on your specific needs)
         }
-        
-        if (data.cart_subtotal !== undefined) {
-            $('#cart-total').text('Total: $' + parseFloat(data.cart_subtotal).toFixed(2));
+    }
+
+    // Helper function to calculate cart total
+    function calculateCartTotal(cart) {
+        let total = 0;
+        for (const item of Object.values(cart)) {
+            total += parseFloat(item.price) * item.quantity;
         }
-        
-        if (data.cart_total !== undefined) {
-            $('#complete-sale').prop('disabled', data.cart_total <= 0);
-        }
+        return total.toFixed(2);
     }
 
     // Quantity controls
@@ -634,14 +670,37 @@ $(document).ready(function() {
         const item = $(this).closest('.cart-item');
         const productId = item.data('product-id');
         const isIncrease = $(this).hasClass('increase-qty');
-        
+
+        // Get current quantity
+        const quantitySpan = item.find('span');
+        let currentQty = parseInt(quantitySpan.text());
+
+        // Calculate new quantity
+        const newQty = isIncrease ? currentQty + 1 : currentQty - 1;
+
+        if (newQty < 1) {
+            // If quantity would be 0, remove the item instead
+            removeFromCart(productId);
+            return;
+        }
+
+        // Update cart via AJAX
+        updateCartItem(productId, newQty);
+    });
+
+    // Update cart item quantity
+    function updateCartItem(productId, quantity) {
         $.ajax({
             url: urls.updateCartItem,
             method: 'POST',
-            data: {
+            contentType: 'application/json',
+            data: JSON.stringify({
                 product_id: productId,
-                quantity: isIncrease ? 1 : -1,
-                csrfmiddlewaretoken: urls.csrfToken
+                quantity: quantity
+            }),
+            headers: {
+                'X-CSRFToken': urls.csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
             },
             success: function(data) {
                 if (data.success) {
@@ -654,29 +713,59 @@ $(document).ready(function() {
                 showToast('Error updating quantity: ' + (xhr.responseJSON?.message || 'Unknown error'), 'danger');
             }
         });
-    });
+    }
+
+    // Remove from cart
+    function removeFromCart(productId) {
+        $.ajax({
+            url: urls.removeFromCart,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                product_id: productId
+            }),
+            headers: {
+                'X-CSRFToken': urls.csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(data) {
+                if (data.success) {
+                    updateCartUI(data);
+                    showToast('Item removed from cart', 'success');
+                } else {
+                    showToast(data.message || 'Error removing item', 'danger');
+                }
+            },
+            error: function(xhr) {
+                showToast('Error removing item: ' + (xhr.responseJSON?.message || 'Unknown error'), 'danger');
+            }
+        });
+    }
 
     // Complete sale
     $('#complete-sale').click(function() {
         const paymentMethod = $('#payment-method').val();
-        
+
         $.ajax({
             url: urls.processSale,
             method: 'POST',
-            data: {
-                payment_method: paymentMethod,
-                csrfmiddlewaretoken: urls.csrfToken
+            contentType: 'application/json',
+            data: JSON.stringify({
+                payment_method: paymentMethod
+            }),
+            headers: {
+                'X-CSRFToken': urls.csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
             },
             success: function(data) {
                 if (data.success) {
                     // Generate receipt
-                    generateReceipt(data.sale_id);
+                    generateReceipt(data.transaction_id, data.sale_id);
                     showToast('Sale completed successfully!', 'success');
-                    
-                    // Clear cart
+
+                    // Clear cart UI
                     updateCartUI({
-                        cart_items: [],
-                        cart_subtotal: 0,
+                        cart: {},
                         cart_total: 0
                     });
                 } else {
@@ -690,51 +779,184 @@ $(document).ready(function() {
     });
 
     // Generate receipt
-    function generateReceipt(saleId) {
-        // In a real implementation, you would fetch the receipt data from the server
-        // For now, we'll simulate it with the current cart data
-        
-        const now = new Date();
-        const receiptDate = now.toLocaleString('en-US');
-        const receiptNumber = now.getTime().toString().slice(-6);
-        
-        $('#receipt-date').text(receiptDate);
-        $('#receipt-number').text(receiptNumber);
-        
-        // Show the receipt
-        $('#receipt').show();
+    // Generate receipt with improved error handling
+    function generateReceipt(transactionId, saleId) {
+        $.ajax({
+            url: "{% url 'pos_system:sale_detail' 0 %}".replace('0', saleId),
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(data) {
+                if (data.success) {
+                    try {
+                        const now = new Date();
+                        const receiptDate = now.toLocaleString('en-US');
+
+                        $('#receipt-number').text(data.sale.transaction_id);
+                        $('#receipt-date').text(data.sale.created_at);
+
+                        // Clear existing items
+                        $('#receipt-items').empty();
+
+                        // Add items to receipt
+                        $('#receipt-items').append(`
+                            <div class="receipt-item">
+                                <div><strong>Item</strong></div>
+                                <div><strong>Total</strong></div>
+                            </div>
+                            <div class="receipt-divider"></div>
+                        `);
+
+                        data.items.forEach(item => {
+                            $('#receipt-items').append(`
+                                <div class="receipt-item">
+                                    <div>${item.product.name} x ${item.quantity}</div>
+                                    <div>ZMW ${item.total_price}</div>
+                                </div>
+                            `);
+                        });
+
+                        // Update totals
+                        $('#receipt-total').html(`
+                            <div class="receipt-item">
+                                <div>Subtotal:</div>
+                                <div>ZMW ${data.sale.subtotal}</div>
+                            </div>
+                            <div class="receipt-item">
+                                <div>Tax:</div>
+                                <div>ZMW ${data.sale.tax}</div>
+                            </div>
+                            <div class="receipt-item">
+                                <div>Discount:</div>
+                                <div>ZMW ${data.sale.discount}</div>
+                            </div>
+                            <div class="receipt-item">
+                                <div><strong>Total:</strong></div>
+                                <div><strong>ZMW ${data.sale.total}</strong></div>
+                            </div>
+                        `);
+
+                        // Show the receipt
+                        $('#receipt').show();
+                    } catch (e) {
+                        console.error('Error rendering receipt:', e);
+                        showToast('Error rendering receipt details. Please try again.', 'danger');
+                        // Show a simplified receipt with just the transaction ID
+                        $('#receipt-items').html(`
+                            <div class="receipt-item">
+                                <div>Transaction completed successfully</div>
+                            </div>
+                            <div class="receipt-divider"></div>
+                            <div class="receipt-item">
+                                <div>Reference:</div>
+                                <div>${transactionId}</div>
+                            </div>
+                        `);
+                        $('#receipt').show();
+                    }
+                } else {
+                    showToast(data.message || 'Error generating receipt', 'danger');
+                    // Show a simplified receipt with just the transaction ID
+                    $('#receipt-items').html(`
+                        <div class="receipt-item">
+                            <div>Transaction completed successfully</div>
+                        </div>
+                        <div class="receipt-divider"></div>
+                        <div class="receipt-item">
+                            <div>Reference:</div>
+                            <div>${transactionId}</div>
+                        </div>
+                    `);
+                    $('#receipt').show();
+                }
+            },
+            error: function(xhr) {
+                console.error('Receipt generation error:', xhr);
+                let errorMsg = 'Error generating receipt details';
+
+                if (xhr.responseJSON) {
+                    if (xhr.responseJSON.error_type === 'business_error') {
+                        errorMsg = xhr.responseJSON.message;
+                    } else if (xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+                }
+
+                showToast(errorMsg, 'danger');
+
+                // Show a minimal receipt with just the transaction ID
+                $('#receipt-items').html(`
+                    <div class="receipt-item">
+                        <div>Transaction completed successfully</div>
+                    </div>
+                    <div class="receipt-divider"></div>
+                    <div class="receipt-item">
+                        <div>Reference:</div>
+                        <div>${transactionId}</div>
+                    </div>
+                `);
+                $('#receipt').show();
+            }
+        });
     }
 
     // Print receipt
-    $('#print-receipt-btn').click(function() {
-        const printContent = $('#receipt').html();
-        const originalContent = $('body').html();
-        
-        $('body').html(printContent);
-        window.print();
-        $('body').html(originalContent);
+    $('#print-receipt-btn').click(function(e) {
+        e.preventDefault();
+
+        // First make sure the receipt is visible
+        $('#receipt').show();
+
+        // Create print content
+
     });
 
     // Toast notification
-    function showToast(message, type) {
+    function showToast(message, type = 'info') {
+        // Map Django message tags to Bootstrap alert classes
+        const typeMap = {
+            'success': 'success',
+            'error': 'danger',
+            'warning': 'warning',
+            'info': 'info',
+            'debug': 'secondary',
+            'danger': 'danger' // Added for consistency with your existing code
+        };
+
+        const alertClass = typeMap[type] || 'info';
+        const iconMap = {
+            'success': 'check-circle',
+            'danger': 'exclamation-circle',
+            'warning': 'exclamation-triangle',
+            'info': 'info-circle',
+            'error': 'exclamation-circle'
+        };
+        const icon = iconMap[alertClass] || 'info-circle';
+
+        // Create toast element
         const toast = $(`
-            <div class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        ${message}
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
+            <div class="alert alert-${alertClass} alert-dismissible fade show" role="alert"
+                 style="position: fixed; top: 20px; right: 20px; z-index: 1100; min-width: 250px;">
+                <i class="fas fa-${icon} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         `);
-        
-        $('#toast-container').append(toast);
-        $('.toast').toast({delay: 3000}).toast('show');
-        
-        // Remove toast after it's hidden
-        $('.toast').on('hidden.bs.toast', function() {
-            $(this).remove();
-        });
+
+        // Add to container (create if doesn't exist)
+        let container = $('#message-container');
+        if (container.length === 0) {
+            container = $('<div id="message-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000; max-width: 400px;"></div>');
+            $('body').append(container);
+        }
+
+        container.append(toast);
+
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            toast.alert('close');
+        }, 5000);
     }
 });
 </script>

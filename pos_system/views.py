@@ -215,37 +215,44 @@ def search_products(request):
 def add_to_cart(request):
     """AJAX view to add product to cart"""
     if request.method != 'POST':
-        return HttpResponseBadRequest("Invalid request method")
+        return JsonResponse({'success': False, 'message': 'Invalid request method'}, status=405)
 
     try:
-        data = json.loads(request.body)
+        # Parse JSON data
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Invalid JSON data'}, status=400)
+
         product_id = data.get('product_id')
         quantity = int(data.get('quantity', 1))
 
+        if not product_id:
+            return JsonResponse({'success': False, 'message': 'Product ID is required'}, status=400)
+
         if quantity <= 0:
-            return JsonResponse({
-                'success': False,
-                'message': 'Quantity must be positive'
-            })
+            return JsonResponse({'success': False, 'message': 'Quantity must be positive'}, status=400)
 
         business, error = get_user_business(request)
         if error:
-            return JsonResponse({
-                'success': False,
-                'message': error
-            })
+            return JsonResponse({'success': False, 'message': error}, status=403)
 
-        product = get_object_or_404(Product, id=product_id, business=business)
+        try:
+            product = Product.objects.get(id=product_id, business=business)
+        except Product.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Product not found'}, status=404)
 
         if product.stock_quantity < quantity:
             return JsonResponse({
                 'success': False,
-                'message': 'Insufficient stock'
-            })
+                'message': f'Only {product.stock_quantity} available in stock'
+            }, status=400)
 
+        # Get or initialize cart
         cart = request.session.get('cart', {})
         product_key = str(product_id)
 
+        # Update cart
         if product_key in cart:
             cart[product_key]['quantity'] += quantity
         else:
@@ -255,26 +262,92 @@ def add_to_cart(request):
                 'quantity': quantity
             }
 
+        # Save to session
         request.session['cart'] = cart
         request.session.modified = True
+
+        # Return updated cart info
+        cart_item_count = sum(item['quantity'] for item in cart.values())
+        cart_total = sum(Decimal(item['price']) * item['quantity'] for item in cart.values())
 
         return JsonResponse({
             'success': True,
             'message': f'{product.name} added to cart',
-            'cart_item_count': sum(item['quantity'] for item in cart.values())
+            'cart_item_count': cart_item_count,
+            'cart_total': str(cart_total),
+            'cart': cart
         })
 
-    except ValueError:
-        return JsonResponse({
-            'success': False,
-            'message': 'Invalid quantity'
-        })
     except Exception as e:
         return JsonResponse({
             'success': False,
-            'message': str(e)
-        })
+            'message': f'An error occurred: {str(e)}'
+        }, status=500)
 
+@login_required
+def sale_detail(request, sale_id):
+    """View sale details with improved error handling"""
+    business, error = get_user_business(request)
+    if error:
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': False,
+                'message': error,
+                'error_type': 'business_error'
+            }, status=403)
+        messages.error(request, error)
+        return redirect('pos_system:dashboard')
+
+    try:
+        sale = get_object_or_404(Sale, id=sale_id, business=business)
+        items = sale.pos_system_items.select_related('product')
+
+        items_data = [{
+            'product': {
+                'name': item.product.name,
+                'id': item.product.id,
+            },
+            'quantity': item.quantity,
+            'unit_price': str(item.unit_price),
+            'total_price': str(item.total_price)
+        } for item in items]
+
+        response_data = {
+            'success': True,
+            'sale': {
+                'id': sale.id,
+                'transaction_id': sale.transaction_id,
+                'subtotal': str(sale.subtotal),
+                'tax': str(sale.tax),
+                'discount': str(sale.discount),
+                'total': str(sale.total),
+                'created_at': sale.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            },
+            'items': items_data
+        }
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse(response_data)
+
+        # Regular HTML response
+        context = {
+            'business': business,
+            'sale': sale,
+            'items': items,
+        }
+        return render(request, 'pos_system/sale_detail.html', context)
+
+    except Exception as e:
+        error_message = f"Error loading sale details: {str(e)}"
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': False,
+                'message': error_message,
+                'error_type': 'processing_error'
+            }, status=500)
+
+        messages.error(request, error_message)
+        return redirect('pos_system:sales_report')
 
 @login_required
 def remove_from_cart(request):
@@ -1020,190 +1093,6 @@ def sales_report(request):
         return redirect('pos_system:dashboard')
 
 
-@login_required
-def sale_detail(request, sale_id):
-    """View sale details"""
-    business, error = get_user_business(request)
-    if error:
-        messages.error(request, error)
-        return redirect('pos_system:dashboard')
-
-    sale = get_object_or_404(Sale, id=sale_id, business=business)
-    items = sale.pos_system_items.select_related('product')
-
-    context = {
-        'business': business,
-        'sale': sale,
-        'items': items,
-    }
-
-    return render(request, 'pos_system/sale_detail.html', context)
-
-
-# AJAX Views
-@login_required
-def add_to_cart(request):
-    """AJAX view to add product to cart"""
-    if request.method != 'POST':
-        return HttpResponseBadRequest("Invalid request method")
-
-    try:
-        data = json.loads(request.body)
-        product_id = data.get('product_id')
-        quantity = int(data.get('quantity', 1))
-
-        if quantity <= 0:
-            return JsonResponse({
-                'success': False,
-                'message': 'Quantity must be positive'
-            })
-
-        business, error = get_user_business(request)
-        if error:
-            return JsonResponse({
-                'success': False,
-                'message': error
-            })
-
-        product = get_object_or_404(Product, id=product_id, business=business)
-
-        if product.stock_quantity < quantity:
-            return JsonResponse({
-                'success': False,
-                'message': 'Insufficient stock'
-            })
-
-        cart = request.session.get('cart', {})
-        product_key = str(product_id)
-
-        if product_key in cart:
-            cart[product_key]['quantity'] += quantity
-        else:
-            cart[product_key] = {
-                'name': product.name,
-                'price': str(product.price),
-                'quantity': quantity
-            }
-
-        request.session['cart'] = cart
-        request.session.modified = True
-
-        return JsonResponse({
-            'success': True,
-            'message': f'{product.name} added to cart',
-            'cart_item_count': sum(item['quantity'] for item in cart.values())
-        })
-
-    except ValueError:
-        return JsonResponse({
-            'success': False,
-            'message': 'Invalid quantity'
-        })
-    except Exception as e:
-        return JsonResponse({
-            'success': False,
-            'message': str(e)
-        })
-
-
-@login_required
-def remove_from_cart(request):
-    """AJAX view to remove product from cart"""
-    if request.method != 'POST':
-        return HttpResponseBadRequest("Invalid request method")
-
-    try:
-        data = json.loads(request.body)
-        product_id = str(data.get('product_id'))
-
-        cart = request.session.get('cart', {})
-
-        if product_id in cart:
-            del cart[product_id]
-            request.session['cart'] = cart
-            request.session.modified = True
-
-            return JsonResponse({
-                'success': True,
-                'message': 'Item removed from cart',
-                'cart_item_count': sum(item['quantity'] for item in cart.values())
-            })
-        else:
-            return JsonResponse({
-                'success': False,
-                'message': 'Item not found in cart'
-            })
-
-    except Exception as e:
-        return JsonResponse({
-            'success': False,
-            'message': str(e)
-        })
-
-
-@login_required
-def update_cart_item(request):
-    """AJAX view to update cart item quantity"""
-    if request.method != 'POST':
-        return HttpResponseBadRequest("Invalid request method")
-
-    try:
-        data = json.loads(request.body)
-        product_id = str(data.get('product_id'))
-        quantity = int(data.get('quantity', 0))
-
-        if quantity < 0:
-            return JsonResponse({
-                'success': False,
-                'message': 'Quantity cannot be negative'
-            })
-
-        business, error = get_user_business(request)
-        if error:
-            return JsonResponse({
-                'success': False,
-                'message': error
-            })
-
-        cart = request.session.get('cart', {})
-
-        if product_id not in cart:
-            return JsonResponse({
-                'success': False,
-                'message': 'Product not in cart'
-            })
-
-        product = get_object_or_404(Product, id=product_id, business=business)
-
-        if quantity == 0:
-            del cart[product_id]
-        else:
-            if product.stock_quantity < quantity:
-                return JsonResponse({
-                    'success': False,
-                    'message': 'Insufficient stock'
-                })
-            cart[product_id]['quantity'] = quantity
-
-        request.session['cart'] = cart
-        request.session.modified = True
-
-        return JsonResponse({
-            'success': True,
-            'cart_item_count': sum(item['quantity'] for item in cart.values())
-        })
-
-    except ValueError:
-        return JsonResponse({
-            'success': False,
-            'message': 'Invalid quantity'
-        })
-    except Exception as e:
-        return JsonResponse({
-            'success': False,
-            'message': str(e)
-        })
-
 
 @login_required
 def clear_cart(request):
@@ -1219,27 +1108,6 @@ def clear_cart(request):
         return JsonResponse({
             'success': True,
             'message': 'Cart cleared'
-        })
-
-    except Exception as e:
-        return JsonResponse({
-            'success': False,
-            'message': str(e)
-        })
-
-
-@login_required
-def get_cart(request):
-    """AJAX view to get current cart"""
-    try:
-        cart = request.session.get('cart', {})
-        total = sum(Decimal(item['price']) * item['quantity'] for item in cart.values())
-
-        return JsonResponse({
-            'success': True,
-            'cart': cart,
-            'total': str(total),
-            'item_count': sum(item['quantity'] for item in cart.values())
         })
 
     except Exception as e:
