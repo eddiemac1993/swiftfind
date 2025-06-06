@@ -280,16 +280,32 @@ def delete_business_post(request, pk):
         'business': business
     })
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.db import transaction
 from django.db.models import Avg
+from django.contrib import messages
+from pos_system.models import Product, ProductCategory
+from .models import Business, Review, BusinessPost, BusinessMember
+from .forms import ReviewForm, BusinessPostForm
 
 def business_detail(request, pk):
     business = get_object_or_404(Business, pk=pk)
     related_businesses = Business.objects.filter(category=business.category).exclude(pk=pk)[:5]
 
-    # Show only approved reviews (changed from 'pending' to 'approved')
+    # Show only approved reviews
     reviews_qs = Review.objects.filter(business=business, status='approved').select_related('user')
-
     posts_qs = BusinessPost.objects.filter(business=business).order_by('-is_featured', '-created_at')
+
+    # Add products query for the store section
+    products_qs = Product.objects.filter(
+        business=business,
+        is_active=True,
+        stock_quantity__gt=0
+    ).select_related('category')
+
+    product_categories = ProductCategory.objects.filter(
+        product__in=products_qs
+    ).distinct()
 
     review_count = reviews_qs.count()
     average_rating = reviews_qs.aggregate(Avg('rating'))['rating__avg'] or 0
@@ -359,6 +375,7 @@ def business_detail(request, pk):
 
     reviews = paginate_queryset(request, reviews_qs, 'review_page', 50)
     posts = paginate_queryset(request, posts_qs, 'post_page', 16)
+    products = paginate_queryset(request, products_qs, 'product_page', 12)
 
     review_form = ReviewForm()
     post_form = BusinessPostForm() if is_owner_or_admin else None
@@ -368,14 +385,19 @@ def business_detail(request, pk):
         'related_businesses': related_businesses,
         'reviews': reviews,
         'posts': posts,
+        'products': products,
+        'product_categories': product_categories,
         'review_form': review_form,
         'post_form': post_form,
         'is_owner_or_admin': is_owner_or_admin,
         'is_member': is_member,
         'business_stats': business_stats,
+        'is_store_section': request.path.endswith('/store/'),  # Flag to identify store section
     }
-    return render(request, 'directory/business_detail.html', context)
 
+    # Use different templates for store vs detail view if you prefer
+    template_name = 'pos_system/public_store.html' if request.path.endswith('/store/') else 'directory/business_detail.html'
+    return render(request, template_name, context)
 
 def handle_post_edit(request, business, pk):
     post_id = request.POST.get('post_id')

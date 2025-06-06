@@ -9,6 +9,7 @@ urlpatterns = [
     path('directory/', include('directory.urls')),
     path('paper/', include('paper.urls')),
     path('pos/', include('pos.urls')),
+    path('pos1/', include('pos_system.urls')),
     path('posts/', include('posts.urls')),
     path('', include('order.urls')),
     path('bot/', include('chatbot.urls')),

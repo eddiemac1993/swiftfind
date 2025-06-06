@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ business.name }} - Edit Category{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1 class="page-title">
+        <i class="fas fa-edit"></i> Edit Category
+    </h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="name">Category Name</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ category.name }}" required>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Update
+            </button>
+            <a href="{% url 'category_list' business.id %}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    @media (max-width: 480px) {
+        .form-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}

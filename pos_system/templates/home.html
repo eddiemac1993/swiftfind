@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS -System </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #e74c3c;
+            --primary-dark: #c0392b;
+            --secondary: #2c3e50;
+            --accent: #f39c12;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --gray: #95a5a6;
+            --light-gray: #bdc3c7;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            min-height: 100vh;
+            padding: 10px;
+            color: var(--dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--dark) 100%);
+            color: var(--white);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo::before {
+            content: "🥩";
+            margin-right: 10px;
+            font-size: 28px;
+        }
+
+        .business-info {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        .nav-btn i {
+            font-size: 16px;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            height: calc(100vh - 80px);
+        }
+
+        .left-panel {
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .right-panel {
+            background: #f8f9fa;
+            border-left: 1px solid #e9ecef;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: var(--secondary);
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            border: 1px solid #eee;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+
+        .product-image {
+            height: 120px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .product-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+        }
+
+        .product-details {
+            padding: 12px;
+        }
+
+        .product-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--dark);
+            font-size: 15px;
+        }
+
+        .product-price {
+            color: var(--primary);
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .product-price::before {
+            content: 'ZMW ';
+        }
+
+        .product-stock {
+            color: var(--success);
+            font-size: 11px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .product-stock.warning {
+            color: var(--warning);
+        }
+
+        .product-stock.danger {
+            color: var(--danger);
+        }
+
+        .product-category {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .cart-section {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-title {
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cart-items {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item-info {
+            flex-grow: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .cart-item-price {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .cart-item-price::before {
+            content: 'ZMW ';
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qty-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .qty-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .cart-total {
+            background: var(--secondary);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 12px 0;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--success) 0%, #2ecc71 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+        }
+
+        .checkout-btn:disabled {
+            background: var(--light-gray);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .empty-cart {
+            text-align: center;
+            color: var(--gray);
+            padding: 30px 0;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-cart i {
+            font-size: 40px;
+            margin-bottom: 10px;
+            color: var(--light-gray);
+        }
+
+        .inventory-table {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            margin-bottom: 15px;
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        .table th {
+            background: var(--primary);
+            color: var(--white);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .product-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .product-cell-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .admin-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .admin-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        .admin-card h3 {
+            margin-bottom: 15px;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #219a52;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #1a252f;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-number::before {
+            content: 'ZMW ';
+            font-size: 16px;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 12px;
+        }
+
+        .category-filter {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            background: #eee;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .category-btn:hover, .category-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Receipt Styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .receipt, .receipt * {
+                visibility: visible;
+            }
+            .receipt {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                max-width: 100%;
+                box-shadow: none;
+                border: none;
+                margin: 0;
+                padding: 10px;
+                font-size: 14px;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        .receipt {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            font-family: 'Courier New', monospace;
+            margin-top: 15px;
+            display: none;
+            width: 280px;
+        }
+
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #000;
+            padding-bottom: 10px;
+        }
+
+        .receipt-header h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .receipt-header p {
+            margin: 3px 0;
+            font-size: 12px;
+        }
+
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .receipt-total {
+            font-weight: bold;
+            border-top: 1px dashed #000;
+            padding-top: 10px;
+            margin-top: 10px;
+            text-align: right;
+        }
+
+        .receipt-footer {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .receipt-divider {
+            border-top: 1px dashed #000;
+            margin: 8px 0;
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+            
+            .right-panel {
+                border-left: none;
+                border-top: 1px solid #e9ecef;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+                padding-bottom: 20px;
+            }
+
+            .business-info {
+                position: static;
+                transform: none;
+                margin-top: 10px;
+            }
+
+            .nav-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .products-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-controls {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">Raised Right Butchery</div>
+            <div class="business-info">
+                <div>Lusaka, Zambia | +260 97 123 4567</div>
+                <div id="current-date-time">Monday, 27 May 2024 10:30 AM</div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="showSection('pos')">
+                    <i class="fas fa-cash-register"></i> POS
+                </button>
+                <button class="nav-btn" onclick="showSection('inventory')">
+                    <i class="fas fa-boxes"></i> Inventory
+                </button>
+                <button class="nav-btn" onclick="showSection('admin')">
+                    <i class="fas fa-cog"></i> Admin
+                </button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="left-panel">
+                <!-- POS Section -->
+                <div id="pos-section" class="section active">
+                    <h2 class="section-title">
+                        <i class="fas fa-cash-register"></i> Point of Sale
+                    </h2>
+                    
+                    <div class="category-filter">
+                        <button class="category-btn active" onclick="filterProducts('all')">All</button>
+                        <button class="category-btn" onclick="filterProducts('beef')">Beef</button>
+                        <button class="category-btn" onclick="filterProducts('pork')">Pork</button>
+                        <button class="category-btn" onclick="filterProducts('chicken')">Chicken</button>
+                        <button class="category-btn" onclick="filterProducts('lamb')">Lamb</button>
+                        <button class="category-btn" onclick="filterProducts('seafood')">Seafood</button>
+                        <button class="category-btn" onclick="filterProducts('processed')">Processed</button>
+                    </div>
+                    
+                    <div class="products-grid" id="products-grid">
+                        <!-- Products will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Inventory Section -->
+                <div id="inventory-section" class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-boxes"></i> Inventory Management
+                    </h2>
+                    <div class="inventory-table">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Category</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-tbody">
+                                <!-- Inventory will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Admin Section -->
+                <div id="admin-section" class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-cog"></i> Admin Dashboard
+                    </h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="total-sales">0</div>
+                            <div class="stat-label">Today's Sales</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="total-transactions">0</div>
+                            <div class="stat-label">Transactions</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="low-stock-count">0</div>
+                            <div class="stat-label">Low Stock Items</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="total-products">0</div>
+                            <div class="stat-label">Total Products</div>
+                        </div>
+                    </div>
+
+                    <div class="admin-controls">
+                        <div class="admin-card">
+                            <h3><i class="fas fa-plus-circle"></i> Add New Product</h3>
+                            <form id="add-product-form">
+                                <div class="form-group">
+                                    <label>Product Name</label>
+                                    <input type="text" class="form-control" id="product-name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Price (ZMW)</label>
+                                    <input type="number" class="form-control" id="product-price" step="0.01" min="0" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Stock Quantity</label>
+                                    <input type="number" class="form-control" id="product-stock" min="0" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Category</label>
+                                    <select class="form-control" id="product-category" required>
+                                        <option value="beef">Beef</option>
+                                        <option value="pork">Pork</option>
+                                        <option value="chicken">Chicken</option>
+                                        <option value="lamb">Lamb</option>
+                                        <option value="seafood">Seafood</option>
+                                        <option value="processed">Processed</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Image URL</label>
+                                    <input type="text" class="form-control" id="product-image" placeholder="https://example.com/image.jpg">
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Add Product
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="admin-card">
+                            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                            <button class="btn btn-success" onclick="exportData()" style="margin-bottom: 8px; width: 100%;">
+                                <i class="fas fa-file-export"></i> Export Data
+                            </button>
+                            <button class="btn btn-primary" onclick="generateReport()" style="margin-bottom: 8px; width: 100%;">
+                                <i class="fas fa-chart-bar"></i> Generate Report
+                            </button>
+                            <button class="btn btn-danger" onclick="clearSalesData()" style="margin-bottom: 8px; width: 100%;">
+                                <i class="fas fa-trash-alt"></i> Clear Today's Sales
+                            </button>
+                            <button class="btn btn-secondary" onclick="printReceipt()" style="width: 100%;">
+                                <i class="fas fa-print"></i> Print Last Receipt
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="cart-section">
+                    <h3 class="cart-title">
+                        <i class="fas fa-shopping-cart"></i> Current Sale
+                    </h3>
+                    <div class="cart-items" id="cart-items">
+                        <div class="empty-cart">
+                            <i class="fas fa-shopping-basket"></i>
+                            <p>Your cart is empty</p>
+                        </div>
+                    </div>
+                    <div class="cart-total" id="cart-total">Total: ZMW 0.00</div>
+                    <button class="checkout-btn" onclick="checkout()" id="checkout-btn" disabled>
+                        <i class="fas fa-check"></i> Complete Sale
+                    </button>
+                </div>
+                
+                <div class="receipt" id="receipt">
+                    <div class="receipt-header">
+                        <h3>Raised Right Butchery</h3>
+                        <p>Lusaka, Zambia</p>
+                        <p>+260 97 123 4567</p>
+                        <p id="receipt-date">27/05/2024 10:30 AM</p>
+                        <p>Receipt #<span id="receipt-number">001</span></p>
+                        <div class="receipt-divider"></div>
+                    </div>
+                    <div id="receipt-items">
+                        <!-- Receipt items will be added here -->
+                    </div>
+                    <div class="receipt-divider"></div>
+                    <div class="receipt-total" id="receipt-total">
+                        Total: ZMW 0.00
+                    </div>
+                    <div class="receipt-footer">
+                        <p>Thank you for your business!</p>
+                        <p>VAT No: 1234567890</p>
+                    </div>
+                    <div class="no-print" style="text-align: center; margin-top: 10px;">
+                        <button class="btn btn-primary" onclick="printReceipt()">
+                            <i class="fas fa-print"></i> Print Receipt
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample product data with images
+        let products = [
+            { id: 1, name: "Ribeye Steak", price: 150.00, stock: 15, category: "beef", image: "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cmliZXllJTIwc3RlYWt8ZW58MHx8MHx8fDA%3D" },
+            { id: 2, name: "Ground Beef (1kg)", price: 85.00, stock: 25, category: "beef", image: "https://images.unsplash.com/photo-1603369361199-5a3bca6e0e78?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Z3JvdW5kJTIwYmVlZnxlbnwwfHwwfHx8MA%3D%3D" },
+            { id: 3, name: "Pork Chops", price: 75.00, stock: 20, category: "pork", image: "https://images.unsplash.com/photo-1625943555419-56a2cb596640?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8cG9yayUyMGNob3BzfGVufDB8fDB8fHww" },
+            { id: 4, name: "Chicken Breast (1kg)", price: 65.00, stock: 30, category: "chicken", image: "https://images.unsplash.com/photo-1603369361199-5a3bca6e0e78?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y2hpY2tlbiUyMGJyZWFzdHxlbnwwfHwwfHx8MA%3D%3D" },
+            { id: 5, name: "Bream Fish", price: 45.00, stock: 12, category: "seafood", image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZmlzaHxlbnwwfHwwfHx8MA%3D%3D" },
+            { id: 6, name: "Lamb Chops", price: 120.00, stock: 8, category: "lamb", image: "https://images.unsplash.com/photo-1625943555419-56a2cb596640?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bGFtYiUyMGNoaWNrc3xlbnwwfHwwfHx8MA%3D%3D" },
+            { id: 7, name: "Bacon (500g)", price: 55.00, stock: 18, category: "processed", image: "https://images.unsplash.com/photo-1603369361199-5a3bca6e0e78?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YmFjb258ZW58MHx8MHx8fDA%3D" },
+            { id: 8, name: "T-Bone Steak", price: 180.00, stock: 10, category: "beef", image: "https://images.unsplash.com/photo-1603369361199-5a3bca6e0e78?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dCUyMGJvbmUlMjBzdGVha3xlbnwwfHwwfHx8MA%3D%3D" },
+            { id: 9, name: "Chicken Wings (1kg)", price: 60.00, stock: 22, category: "chicken", image: "https://images.unsplash.com/photo-1603369361199-5a3bca6e0e78?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y2hpY2tlbiUyMHdpbmdzfGVufDB8fDB8fHww" },
+            { id: 10, name: "Pork Sausages (1kg)", price: 70.00, stock: 15, category: "processed", image: "https://images.unsplash.com/photo-1603369361199-5a3bca6e0e78?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8c2F1c2FnZXN8ZW58MHx8MHx8fDA%3D" }
+        ];
+
+        let cart = [];
+        let salesData = { total: 0, transactions: 0 };
+        let currentFilter = 'all';
+        let lastReceipt = null;
+        let receiptCounter = 1;
+
+        // Initialize the application
+        function init() {
+            renderProducts();
+            renderInventory();
+            updateStats();
+            updateCart();
+            updateDateTime();
+            setInterval(updateDateTime, 60000); // Update time every minute
+        }
+
+        // Update current date and time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            document.getElementById('current-date-time').textContent = now.toLocaleDateString('en-ZM', options);
+        }
+
+        // Show different sections
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(section + '-section').classList.add('active');
+            event.target.classList.add('active');
+            
+            // Hide receipt when switching sections
+            document.getElementById('receipt').style.display = 'none';
+        }
+
+        // Filter products by category
+        function filterProducts(category) {
+            currentFilter = category;
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderProducts();
+        }
+
+        // Render products in POS
+        function renderProducts() {
+            const grid = document.getElementById('products-grid');
+            const filteredProducts = currentFilter === 'all' 
+                ? products 
+                : products.filter(p => p.category === currentFilter);
+            
+            grid.innerHTML = filteredProducts.map(product => `
+                <div class="product-card" onclick="addToCart(${product.id})">
+                    <div class="product-image" style="background-image: url('${product.image || 'https://via.placeholder.com/180x120?text=No+Image'}')">
+                        <span class="product-category">${product.category}</span>
+                    </div>
+                    <div class="product-details">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">${product.price.toFixed(2)}</div>
+                        <div class="product-stock ${getStockStatusClass(product.stock)}">
+                            <i class="fas fa-${getStockIcon(product.stock)}"></i>
+                            ${product.stock} in stock
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Get stock status class for styling
+        function getStockStatusClass(stock) {
+            if (stock > 10) return '';
+            if (stock > 5) return 'warning';
+            return 'danger';
+        }
+
+        // Get appropriate stock icon
+        function getStockIcon(stock) {
+            if (stock > 10) return 'check-circle';
+            if (stock > 5) return 'exclamation-circle';
+            return 'times-circle';
+        }
+
+        // Render inventory table
+        function renderInventory() {
+            const tbody = document.getElementById('inventory-tbody');
+            tbody.innerHTML = products.map(product => `
+                <tr>
+                    <td>
+                        <div class="product-cell">
+                            <div class="product-cell-img" style="background-image: url('${product.image || 'https://via.placeholder.com/40?text=No+Image'}')"></div>
+                            ${product.name}
+                        </div>
+                    </td>
+                    <td>ZMW ${product.price.toFixed(2)}</td>
+                    <td class="${getStockStatusClass(product.stock)}">${product.stock}</td>
+                    <td>${capitalizeFirstLetter(product.category)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="editProduct(${product.id})">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id})">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Capitalize first letter of a string
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        // Add product to cart
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            
+            if (!product || product.stock <= 0) {
+                alert('This product is out of stock!');
+                return;
+            }
+            
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    quantity: 1
+                });
+            }
+            
+            updateCart();
+        }
+
+        // Update cart display
+        function updateCart() {
+            const cartItems = document.getElementById('cart-items');
+            const checkoutBtn = document.getElementById('checkout-btn');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-basket"></i>
+                        <p>Your cart is empty</p>
+                    </div>
+                `;
+                checkoutBtn.disabled = true;
+            } else {
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">${item.price.toFixed(2)} × ${item.quantity}</div>
+                        </div>
+                        <div class="quantity-controls">
+                            <button class="qty-btn" onclick="adjustQuantity(${item.id}, -1)">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="qty-btn" onclick="adjustQuantity(${item.id}, 1)">+</button>
+                        </div>
+                    </div>
+                `).join('');
+                checkoutBtn.disabled = false;
+            }
+            
+            updateTotal();
+        }
+
+        // Adjust item quantity in cart
+        function adjustQuantity(productId, change) {
+            const item = cart.find(item => item.id === productId);
+            
+            if (item) {
+                item.quantity += change;
+                
+                if (item.quantity <= 0) {
+                    cart = cart.filter(item => item.id !== productId);
+                }
+                
+                updateCart();
+            }
+        }
+
+        // Update cart total
+        function updateTotal() {
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('cart-total').textContent = `Total: ZMW ${total.toFixed(2)}`;
+        }
+
+        // Process checkout
+        function checkout() {
+            if (cart.length === 0) return;
+            
+            // Update product stock
+            cart.forEach(cartItem => {
+                const product = products.find(p => p.id === cartItem.id);
+                if (product) {
+                    product.stock -= cartItem.quantity;
+                }
+            });
+            
+            // Update sales data
+            const saleTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            salesData.total += saleTotal;
+            salesData.transactions += 1;
+            
+            // Generate receipt
+            generateReceipt();
+            
+            // Reset cart
+            cart = [];
+            updateCart();
+            
+            // Update displays
+            renderProducts();
+            renderInventory();
+            updateStats();
+        }
+
+        // Generate receipt
+        function generateReceipt() {
+            const now = new Date();
+            const receiptDate = now.toLocaleString('en-ZM');
+            const receiptItems = document.getElementById('receipt-items');
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            document.getElementById('receipt-date').textContent = receiptDate;
+            document.getElementById('receipt-number').textContent = receiptCounter.toString().padStart(3, '0');
+            
+            receiptItems.innerHTML = cart.map(item => `
+                <div class="receipt-item">
+                    <span>${item.name} × ${item.quantity}</span>
+                    <span>ZMW ${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('receipt-total').textContent = `Total: ZMW ${total.toFixed(2)}`;
+            
+            // Store receipt data
+            lastReceipt = {
+                date: receiptDate,
+                items: [...cart],
+                total: total,
+                receiptNumber: receiptCounter
+            };
+            
+            receiptCounter++;
+            
+            // Show receipt
+            document.getElementById('receipt').style.display = 'block';
+        }
+
+        // Print receipt
+        function printReceipt() {
+            if (!lastReceipt) {
+                alert('No receipt to print!');
+                return;
+            }
+            
+            // Regenerate receipt in case it was cleared
+            generateReceipt();
+            window.print();
+        }
+
+        // Update admin stats
+        function updateStats() {
+            document.getElementById('total-sales').textContent = salesData.total.toFixed(2);
+            document.getElementById('total-transactions').textContent = salesData.transactions;
+            
+            const lowStockCount = products.filter(p => p.stock <= 5).length;
+            document.getElementById('low-stock-count').textContent = lowStockCount;
+            document.getElementById('total-products').textContent = products.length;
+        }
+
+        // Add new product
+        document.getElementById('add-product-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newProduct = {
+                id: products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1,
+                name: document.getElementById('product-name').value,
+                price: parseFloat(document.getElementById('product-price').value),
+                stock: parseInt(document.getElementById('product-stock').value),
+                category: document.getElementById('product-category').value,
+                image: document.getElementById('product-image').value || undefined
+            };
+            
+            products.push(newProduct);
+            this.reset();
+            
+            renderProducts();
+            renderInventory();
+            updateStats();
+            
+            alert('Product added successfully!');
+        });
+
+        // Edit product
+        function editProduct(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const newName = prompt('Enter new product name:', product.name);
+            if (newName === null) return;
+            
+            const newPrice = parseFloat(prompt('Enter new price:', product.price));
+            if (isNaN(newPrice)) return;
+            
+            const newStock = parseInt(prompt('Enter new stock quantity:', product.stock));
+            if (isNaN(newStock)) return;
+            
+            const newCategory = prompt('Enter new category (beef, pork, chicken, lamb, seafood, processed):', product.category);
+            if (!newCategory) return;
+            
+            product.name = newName;
+            product.price = newPrice;
+            product.stock = newStock;
+            product.category = newCategory;
+            
+            renderProducts();
+            renderInventory();
+            updateStats();
+        }
+
+        // Delete product
+        function deleteProduct(productId) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+            
+            products = products.filter(p => p.id !== productId);
+            renderProducts();
+            renderInventory();
+            updateStats();
+        }
+
+        // Export data (simplified)
+        function exportData() {
+            const data = {
+                products: products,
+                salesData: salesData
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `raised-right-butchery-data-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+        }
+
+        // Generate report (simplified)
+        function generateReport() {
+            alert('Report generation would be implemented here with more detailed sales analysis.');
+        }
+
+        // Clear sales data
+        function clearSalesData() {
+            if (!confirm('Are you sure you want to clear today\'s sales data? This cannot be undone.')) return;
+            
+            salesData = { total: 0, transactions: 0 };
+            updateStats();
+            alert('Today\'s sales data has been cleared.');
+        }
+
+        // Initialize the app when the page loads
+        window.onload = init;
+    </script>
+</body>
+</html>

@@ -2721,9 +2721,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <a href="{% url 'home' %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+        <a href="{% url 'business-store' pk=business.pk %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
             <i class="fas fa-home"></i>
-            <span>Home</span>
+            <span>Store</span>
         </a>
         <a href="{% url 'discover' %}" class="nav-item {% if request.resolver_match.url_name == 'discover' %}active{% endif %}">
             <i class="fas fa-compass"></i>

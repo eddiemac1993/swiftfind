@@ -1,0 +1,107 @@
+{% extends 'pos_system/base.html' %}
+
+{% block content %}
+<div class="left-panel">
+    <h2 class="section-title">
+        <i class="fas fa-chart-line"></i> Sales Report
+    </h2>
+    
+    <div class="report-controls mb-3">
+        <div class="row">
+            <div class="col-md-3">
+                <select class="form-control" id="date-filter">
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                    <option value="year">This Year</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+            </div>
+            <div class="col-md-3" id="start-date-container" style="display: none;">
+                <input type="date" class="form-control" id="start-date">
+            </div>
+            <div class="col-md-3" id="end-date-container" style="display: none;">
+                <input type="date" class="form-control" id="end-date">
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-primary w-100" onclick="loadSalesData()">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-success w-100" onclick="exportReport()">
+                    <i class="fas fa-file-export"></i> Export PDF
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="stats-grid mb-4">
+        <div class="stat-card">
+            <div class="stat-number" id="total-sales">0</div>
+            <div class="stat-label">Total Sales</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="total-transactions">0</div>
+            <div class="stat-label">Transactions</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="avg-sale">0</div>
+            <div class="stat-label">Average Sale</div>
+        </div>
+    </div>
+    
+    <div class="chart-container mb-4">
+        <canvas id="salesChart"></canvas>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Top Selling Products</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Sales</th>
+                            </tr>
+                        </thead>
+                        <tbody id="top-products">
+                            <!-- Top products will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Transactions</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Transaction ID</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-transactions">
+                            <!-- Recent transactions will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // JavaScript for sales report will be in pos.js
+</script>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'pos_system/base.html' %}
+
+{% block title %}Categories{% endblock %}
+
+{% block content %}
+<div class="section-title">
+    <i class="fas fa-tags"></i>
+    Product Categories
+</div>
+
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <span>
+            <i class="fas fa-list"></i>
+            All Categories
+        </span>
+        <a href="{% url 'pos_system:add_category' %}" class="btn btn-success btn-sm">
+            <i class="fas fa-plus"></i>
+            Add Category
+        </a>
+    </div>
+    <div class="card-body">
+        {% if categories %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Category Name</th>
+                            <th>Products</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in categories %}
+                        <tr>
+                            <td>{{ category.name }}</td>
+                            <td>{{ category.product_set.count }}</td>
+                            <td>
+                                <div style="display: flex; gap: 5px;">
+                                    <a href="{% url 'pos_system:edit_category' category.id %}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                        Edit
+                                    </a>
+                                    <a href="{% url 'pos_system:confirm_delete_category' category.id %}" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i>
+                                        Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 40px; color: var(--gray);">
+                <i class="fas fa-tags" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+                <p>No categories found</p>
+                <a href="{% url 'pos_system:add_category' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    Add Your First Category
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-info-circle"></i>
+        About Categories
+    </div>
+    <div class="card-body">
+        <p>Categories help you organize your products and make them easier to find in your POS system.</p>
+        <ul style="padding-left: 20px; margin-top: 10px;">
+            <li>Create broad categories that can group multiple products</li>
+            <li>Edit or delete categories as your product range changes</li>
+            <li>Categories with products cannot be deleted until all products are moved</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

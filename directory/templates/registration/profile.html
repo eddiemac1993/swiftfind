@@ -528,11 +528,11 @@
                 position: static;
                 margin-bottom: 20px;
             }
-            
+
             .form-actions {
                 flex-direction: column;
             }
-            
+
             .btn {
                 width: 100%;
                 justify-content: center;
@@ -580,7 +580,7 @@
 
     <div class="container">
         <h1 class="page-title">My Business Profile</h1>
-        
+
         <div class="profile-layout">
             <!-- Sidebar -->
             <aside class="sidebar">
@@ -600,27 +600,20 @@
                     <h2>{{ business.name|default:user.username }}</h2>
                     <p>Business Owner</p>
                 </div>
-                
+
                 <div class="sidebar-menu">
                     <a href="#" class="menu-item active">
                         <i class="fas fa-user-circle"></i>
                         <span>Business Profile</span>
                     </a>
-                    <a href="#" class="menu-item">
-                        <i class="fas fa-store"></i>
-                        <span>Products & Services</span>
+                    <a href="{% url 'pos_system:dashboard' %}" class="menu-item">
+                        <i class="fas fa-cash-register"></i>
+                        <span>POS system</span>
                     </a>
-                    <a href="#" class="menu-item">
-                        <i class="fas fa-cog"></i>
-                        <span>Account Settings</span>
-                    </a>
-                    <a href="#" class="menu-item">
-                        <i class="fas fa-chart-line"></i>
-                        <span>Analytics</span>
-                    </a>
-                    <a href="#" class="menu-item">
-                        <i class="fas fa-bell"></i>
-                        <span>Notifications</span>
+
+                    <a href="{% url 'create_paper' %}" class="menu-item">
+                        <i class="fas fa-file-invoice"></i>
+                        <span>Create Quotations</span>
                     </a>
                 </div>
             </aside>
@@ -651,18 +644,18 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="{{ user_form.username.id_for_label }}">Username</label>
-                                <input type="text" 
-                                       id="{{ user_form.username.id_for_label }}" 
-                                       name="{{ user_form.username.name }}" 
-                                       value="{{ user_form.username.value }}" 
+                                <input type="text"
+                                       id="{{ user_form.username.id_for_label }}"
+                                       name="{{ user_form.username.name }}"
+                                       value="{{ user_form.username.value }}"
                                        class="form-control">
                             </div>
                             <div class="form-group">
                                 <label for="{{ user_form.email.id_for_label }}">Email</label>
-                                <input type="email" 
-                                       id="{{ user_form.email.id_for_label }}" 
-                                       name="{{ user_form.email.name }}" 
-                                       value="{{ user_form.email.value }}" 
+                                <input type="email"
+                                       id="{{ user_form.email.id_for_label }}"
+                                       name="{{ user_form.email.name }}"
+                                       value="{{ user_form.email.value }}"
                                        class="form-control">
                             </div>
                         </div>
@@ -680,12 +673,12 @@
                                     <label for="logo-upload" class="file-input-label">
                                         <i class="fas fa-upload mr-2"></i> Choose Logo
                                     </label>
-                                    <input type="file" 
-                                           id="logo-upload" 
-                                           name="{{ business_form.logo.name }}" 
-                                           class="file-input" 
+                                    <input type="file"
+                                           id="logo-upload"
+                                           name="{{ business_form.logo.name }}"
+                                           class="file-input"
                                            accept="image/jpeg, image/png, image/gif">
-                                    
+
                                     <div class="file-preview">
                                         {% if business_form.instance.logo %}
                                             <img src="{{ business_form.instance.logo.url }}" alt="Current logo" class="image-preview">
@@ -700,16 +693,16 @@
                             </div>
                             <div class="form-group">
                                 <label for="{{ business_form.name.id_for_label }}">Business Name</label>
-                                <input type="text" 
-                                       id="{{ business_form.name.id_for_label }}" 
-                                       name="{{ business_form.name.name }}" 
-                                       value="{{ business_form.name.value|default:'' }}" 
+                                <input type="text"
+                                       id="{{ business_form.name.id_for_label }}"
+                                       name="{{ business_form.name.name }}"
+                                       value="{{ business_form.name.value|default:'' }}"
                                        class="form-control">
                             </div>
                             <div class="form-group">
                                 <label for="{{ business_form.category.id_for_label }}">Category</label>
-                                <select id="{{ business_form.category.id_for_label }}" 
-                                        name="{{ business_form.category.name }}" 
+                                <select id="{{ business_form.category.id_for_label }}"
+                                        name="{{ business_form.category.name }}"
                                         class="form-control">
                                     {% for value, label in business_form.category.field.choices %}
                                         <option value="{{ value }}" {% if business_form.category.value == value %}selected{% endif %}>
@@ -729,26 +722,26 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="{{ business_form.email.id_for_label }}">Business Email</label>
-                                <input type="email" 
-                                       id="{{ business_form.email.id_for_label }}" 
-                                       name="{{ business_form.email.name }}" 
-                                       value="{{ business_form.email.value|default:'' }}" 
+                                <input type="email"
+                                       id="{{ business_form.email.id_for_label }}"
+                                       name="{{ business_form.email.name }}"
+                                       value="{{ business_form.email.value|default:'' }}"
                                        class="form-control">
                             </div>
                             <div class="form-group">
                                 <label for="{{ business_form.phone_number.id_for_label }}">Business Phone</label>
-                                <input type="tel" 
-                                       id="{{ business_form.phone_number.id_for_label }}" 
-                                       name="{{ business_form.phone_number.name }}" 
-                                       value="{{ business_form.phone_number.value|default:'' }}" 
+                                <input type="tel"
+                                       id="{{ business_form.phone_number.id_for_label }}"
+                                       name="{{ business_form.phone_number.name }}"
+                                       value="{{ business_form.phone_number.value|default:'' }}"
                                        class="form-control">
                             </div>
                             <div class="form-group">
                                 <label for="{{ business_form.city.id_for_label }}">City</label>
-                                <input type="text" 
-                                       id="{{ business_form.city.id_for_label }}" 
-                                       name="{{ business_form.city.name }}" 
-                                       value="{{ business_form.city.value|default:'' }}" 
+                                <input type="text"
+                                       id="{{ business_form.city.id_for_label }}"
+                                       name="{{ business_form.city.name }}"
+                                       value="{{ business_form.city.value|default:'' }}"
                                        class="form-control">
                             </div>
                         </div>
@@ -761,9 +754,9 @@
                         </h3>
                         <div class="form-group">
                             <label for="{{ business_form.description.id_for_label }}">Description</label>
-                            <textarea id="{{ business_form.description.id_for_label }}" 
-                                      name="{{ business_form.description.name }}" 
-                                      class="form-control" 
+                            <textarea id="{{ business_form.description.id_for_label }}"
+                                      name="{{ business_form.description.name }}"
+                                      class="form-control"
                                       rows="5">{{ business_form.description.value|default:'' }}</textarea>
                         </div>
                     </div>
@@ -779,12 +772,12 @@
                                 <label for="pdf-upload" class="file-input-label">
                                     <i class="fas fa-file-upload mr-2"></i> Choose PDF
                                 </label>
-                                <input type="file" 
-                                       id="pdf-upload" 
-                                       name="{{ business_form.company_profile.name }}" 
-                                       class="file-input" 
+                                <input type="file"
+                                       id="pdf-upload"
+                                       name="{{ business_form.company_profile.name }}"
+                                       class="file-input"
                                        accept=".pdf">
-                                
+
                                 {% if business_form.instance.company_profile %}
                                     <div class="file-preview mt-3">
                                         <i class="fas fa-file-pdf text-red-500 text-2xl"></i>
@@ -792,8 +785,8 @@
                                             {{ business_form.instance.company_profile.name|truncatechars:40 }}
                                         </div>
                                     </div>
-                                    <a href="{{ business_form.instance.company_profile.url }}" 
-                                       target="_blank" 
+                                    <a href="{{ business_form.instance.company_profile.url }}"
+                                       target="_blank"
                                        class="text-primary-500 hover:underline mt-2 inline-block">
                                         <i class="fas fa-eye mr-1"></i> View Current PDF
                                     </a>

@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'analytics',
     'pos',
+    'pos_system',
     'posts',
     'order',
     'taxi',

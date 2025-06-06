@@ -228,6 +228,8 @@ def discover(request):
     # Fetch all categories for the sidebar/filter
     categories = Category.objects.all()
 
+    first_business = businesses.first() if businesses.exists() else None
+
     return render(request, 'discover.html', {
         'page_obj': page_obj,
         'categories': categories,
@@ -237,6 +239,7 @@ def discover(request):
         'sort_by': sort_by,
         'businesses_count_on_page': businesses_count_on_page,
         'businesses_count': businesses_count,
+        'business': first_business,
     })
 
 def get_cart(request):

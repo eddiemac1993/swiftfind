@@ -6,6 +6,10 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('profile/', views.profile, name='profile'),
 
+
+    path('business/<int:pk>/', views.business_detail, name='business-detail'),
+    path('business/<int:pk>/store/', views.business_detail, name='business-store'),
+
     # Business-specific URLs
     path('business/<slug:business_slug>/', views.business_dashboard, name='business_dashboard'),
     path('business/<slug:business_slug>/login/', views.business_login, name='business_login'),
