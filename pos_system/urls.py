@@ -12,7 +12,10 @@ urlpatterns = [
     path('inventory/', views.inventory_view, name='inventory'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('reports/', views.reports_view, name='reports'),
-    path('sales-report/', views.sales_report, name='sales_report'),
+    path('reports/sales/', views.sales_report, name='sales_report'),
+    path('reports/product-performance/', views.product_performance_report, name='product_performance_report'),
+    path('reports/sale/<int:sale_id>/', views.sale_detail, name='sale_detail'),
+    path('reports/print-receipt/<int:sale_id>/', views.print_receipt, name='print_receipt'),
 
     # Product management
     path('add-product/', views.add_product, name='add_product'),

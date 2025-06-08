@@ -176,7 +176,7 @@ def search_products(request):
     if error:
         return JsonResponse({'success': False, 'message': error})
 
-    search_query = request.GET.get('q', '')
+    search_query = request.GET.get('q', '').strip()
     category_id = request.GET.get('category', 'all')
 
     products = Product.objects.filter(
@@ -186,12 +186,17 @@ def search_products(request):
     ).select_related('category')
 
     if search_query:
-        products = products.filter(Q(name__icontains=search_query) |
-                                 Q(description__icontains=search_query) |
-                                 Q(barcode__icontains=search_query))
+        products = products.filter(
+            Q(name__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(barcode__icontains=search_query)
+        )
 
     if category_id != 'all':
-        products = products.filter(category_id=category_id)
+        try:
+            products = products.filter(category_id=int(category_id))
+        except ValueError:
+            pass
 
     products_data = []
     for product in products:
@@ -202,14 +207,13 @@ def search_products(request):
             'image_url': product.image.url if product.image else '/static/images/default-product.png',
             'category': product.category.name if product.category else 'Uncategorized',
             'stock_quantity': product.stock_quantity,
-            'stock_class': product.get_stock_status_class
+            'stock_class': product.get_stock_status_class()
         })
 
     return JsonResponse({
         'success': True,
         'products': products_data
     })
-
 
 @login_required
 def add_to_cart(request):
@@ -554,47 +558,6 @@ def delete_product(request, product_id):
 
     return render(request, 'pos_system/confirm_delete_product.html', {
         'product': product
-    })
-
-@login_required
-def search_products(request):
-    """AJAX view for product search"""
-    business, error = get_user_business(request)
-    if error:
-        return JsonResponse({'success': False, 'message': error})
-
-    search_query = request.GET.get('q', '')
-    category_id = request.GET.get('category', 'all')
-
-    products = Product.objects.filter(
-        business=business,
-        is_active=True,
-        stock_quantity__gt=0
-    ).select_related('category')
-
-    if search_query:
-        products = products.filter(Q(name__icontains=search_query) |
-                                 Q(description__icontains=search_query) |
-                                 Q(barcode__icontains=search_query))
-
-    if category_id != 'all':
-        products = products.filter(category_id=category_id)
-
-    products_data = []
-    for product in products:
-        products_data.append({
-            'id': product.id,
-            'name': product.name,
-            'price': str(product.price),
-            'image_url': product.image.url if product.image else '/static/images/default-product.png',
-            'category': product.category.name if product.category else 'Uncategorized',
-            'stock_quantity': product.stock_quantity,
-            'stock_class': product.get_stock_status_class()
-        })
-
-    return JsonResponse({
-        'success': True,
-        'products': products_data
     })
 
 @login_required

@@ -369,19 +369,6 @@
 <div class="pos-container">
     <div class="products-section">
         <div class="card">
-            <div class="card-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h4>Products</h4>
-                    <div class="input-group" style="max-width: 300px;">
-                        <input type="text" id="product-search" class="form-control" placeholder="Search products...">
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-light" type="button" id="search-btn">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="card-body">
                 <!-- Category Filter -->
                 <div class="category-filter">
@@ -902,62 +889,179 @@ $(document).ready(function() {
     }
 
     // Print receipt
-    $('#print-receipt-btn').click(function(e) {
-        e.preventDefault();
+$('#print-receipt-btn').click(function(e) {
+    e.preventDefault();
 
-        // First make sure the receipt is visible
-        $('#receipt').show();
+    // Get the receipt element
+    const receipt = document.getElementById('receipt');
 
-        // Create print content
+    // Create a new window
+    const printWindow = window.open('', '_blank');
 
-    });
+    // Write the receipt content with enhanced styling
+    printWindow.document.write('<html><head><title>Receipt</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write(`
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap');
 
-    // Toast notification
-    function showToast(message, type = 'info') {
-        // Map Django message tags to Bootstrap alert classes
-        const typeMap = {
-            'success': 'success',
-            'error': 'danger',
-            'warning': 'warning',
-            'info': 'info',
-            'debug': 'secondary',
-            'danger': 'danger' // Added for consistency with your existing code
-        };
-
-        const alertClass = typeMap[type] || 'info';
-        const iconMap = {
-            'success': 'check-circle',
-            'danger': 'exclamation-circle',
-            'warning': 'exclamation-triangle',
-            'info': 'info-circle',
-            'error': 'exclamation-circle'
-        };
-        const icon = iconMap[alertClass] || 'info-circle';
-
-        // Create toast element
-        const toast = $(`
-            <div class="alert alert-${alertClass} alert-dismissible fade show" role="alert"
-                 style="position: fixed; top: 20px; right: 20px; z-index: 1100; min-width: 250px;">
-                <i class="fas fa-${icon} me-2"></i>
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        `);
-
-        // Add to container (create if doesn't exist)
-        let container = $('#message-container');
-        if (container.length === 0) {
-            container = $('<div id="message-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000; max-width: 400px;"></div>');
-            $('body').append(container);
+        body {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            color: #333;
+            background-color: #fff;
+            margin: 0;
+            padding: 10px;
         }
 
-        container.append(toast);
+        .receipt {
+            width: 80mm;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
 
-        // Auto-remove after 5 seconds
-        setTimeout(() => {
-            toast.alert('close');
-        }, 5000);
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed #e0e0e0;
+        }
+
+        .receipt-header h1 {
+            font-size: 18px;
+            margin: 0;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .receipt-header p {
+            margin: 5px 0 0;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .receipt-body {
+            margin: 15px 0;
+        }
+
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dotted #eee;
+        }
+
+        .receipt-item:last-child {
+            border-bottom: none;
+        }
+
+        .receipt-item-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .receipt-item-price {
+            font-weight: 500;
+        }
+
+        .receipt-total {
+            font-weight: bold;
+            border-top: 2px dashed #2c3e50;
+            margin-top: 15px;
+            padding-top: 10px;
+            text-align: right;
+            font-size: 16px;
+        }
+
+        .receipt-footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px dashed #e0e0e0;
+            font-size: 11px;
+            color: #95a5a6;
+        }
+
+        .thank-you {
+            text-align: center;
+            margin-top: 15px;
+            font-style: italic;
+            color: #3498db;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+            }
+            .receipt {
+                box-shadow: none;
+            }
+        }
+    `);
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(receipt.innerHTML);
+    printWindow.document.write('</body></html>');
+
+    printWindow.document.close();
+
+    // Wait for content to load before printing
+    printWindow.onload = function() {
+        setTimeout(function() {
+            printWindow.print();
+        }, 200);
+    };
+});
+
+    // Toast notification
+function showToast(message, type = 'info') {
+    const typeMap = {
+        'success': 'success',
+        'error': 'danger',
+        'warning': 'warning',
+        'info': 'info',
+        'danger': 'danger'
+    };
+    const alertClass = typeMap[type] || 'info';
+
+    const iconMap = {
+        'success': 'check-circle',
+        'danger': 'exclamation-circle',
+        'warning': 'exclamation-triangle',
+        'info': 'info-circle'
+    };
+    const icon = iconMap[alertClass] || 'info-circle';
+
+    const toast = $(`
+        <div class="alert alert-${alertClass} alert-dismissible fade show" role="alert">
+            <i class="fas fa-${icon} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `);
+
+    let container = $('#message-container');
+    if (container.length === 0) {
+        container = $('<div id="message-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000; max-width: 400px;"></div>');
+        $('body').append(container);
     }
+
+    container.append(toast);
+
+    // Initialize Bootstrap's dismiss functionality
+    var closeButton = toast.find('.btn-close');
+    closeButton.on('click', function() {
+        toast.alert('close');
+    });
+
+    setTimeout(() => {
+        toast.alert('close');
+    }, 5000);
+}
 });
 </script>
 {% endblock %}
