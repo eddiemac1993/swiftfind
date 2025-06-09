@@ -23,7 +23,7 @@ from .models import (
 class BusinessResource(resources.ModelResource):
     class Meta:
         model = Business
-        fields = ('id', 'name', 'owner__username', 'category__name', 'address', 
+        fields = ('id', 'name', 'owner__username', 'category__name', 'address',
                 'phone_number', 'email', 'status', 'is_admin_added', 'city')
         export_order = fields
 
@@ -175,11 +175,11 @@ class CommentAdmin(admin.ModelAdmin):
 
 @admin.register(Advertisement)
 class AdvertisementAdmin(admin.ModelAdmin):
-    list_display = ('title', 'slot', 'is_active', 'start_time', 'end_time', 'is_running', 'days_remaining')
+    list_display = ('title', 'slot', 'is_active', 'start_time', 'end_time', 'is_running_display', 'days_remaining_display')
     list_filter = ('is_active', 'slot', ('start_time', DateTimeRangeFilter), ('end_time', DateTimeRangeFilter))
     search_fields = ('title', 'small_text')
-    list_editable = ('is_active', 'slot')
-    readonly_fields = ('is_running',)
+    list_editable = ('is_active',)
+    readonly_fields = ('is_running_display', 'days_remaining_display')
     fieldsets = (
         (None, {
             'fields': ('title', 'small_text', 'slot', 'is_active')
@@ -188,16 +188,27 @@ class AdvertisementAdmin(admin.ModelAdmin):
             'fields': ('image', 'link')
         }),
         ('Timing', {
-            'fields': ('start_time', 'end_time', 'is_running')
+            'fields': ('start_time', 'end_time', 'is_running_display', 'days_remaining_display')
         }),
     )
 
-    def days_remaining(self, obj):
-        if obj.end_time:
-            delta = obj.end_time - timezone.now()
-            return delta.days
-        return None
-    days_remaining.short_description = 'Days Left'
+    def is_running_display(self, obj):
+        return obj.is_running()
+    is_running_display.boolean = True
+    is_running_display.short_description = 'Currently Running'
+
+    def days_remaining_display(self, obj):
+        days = obj.days_remaining()
+        if days is None:
+            return "No end date"
+        return f"{days} days"
+    days_remaining_display.short_description = 'Days Remaining'
+
+    def get_readonly_fields(self, request, obj=None):
+        # Make slot non-editable when editing existing object
+        if obj:
+            return self.readonly_fields + ('slot',)
+        return self.readonly_fields
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -239,7 +250,7 @@ class BusinessDepartmentAdmin(admin.ModelAdmin):
 @admin.register(Business)
 class BusinessAdmin(ImportExportModelAdmin):
     resource_class = BusinessResource
-    list_display = ('name', 'owner', 'category', 'city', 'status', 'verified_badge', 
+    list_display = ('name', 'owner', 'category', 'city', 'status', 'verified_badge',
                    'average_rating', 'review_count', 'member_count', 'created_at')
     list_filter = (
         'status',
@@ -258,11 +269,11 @@ class BusinessAdmin(ImportExportModelAdmin):
     raw_id_fields = ('owner',)
     list_editable = ('status',)
     actions = [
-        'verify_7_days', 'verify_30_days', 'verify_90_days', 
+        'verify_7_days', 'verify_30_days', 'verify_90_days',
         'verify_180_days', 'verify_indefinitely', 'mark_as_unverified',
         'mark_as_active', 'mark_as_inactive', 'export_as_csv'
     ]
-    
+
     fieldsets = (
         (None, {
             'fields': ('name', 'slug', 'owner', 'category', 'status')

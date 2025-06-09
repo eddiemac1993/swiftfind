@@ -70,7 +70,18 @@ class Advertisement(models.Model):
 
     def is_running(self):
         now = timezone.now()
+        # Handle None values safely
+        if not hasattr(self, 'start_time') or not hasattr(self, 'end_time'):
+            return False
+        if self.start_time is None or self.end_time is None:
+            return False
         return self.start_time <= now <= self.end_time and self.is_active
+
+    def days_remaining(self):
+        if self.end_time is None:
+            return None
+        delta = self.end_time - timezone.now()
+        return max(delta.days, 0)  # Returns 0 if already expired
 
     class Meta:
         ordering = ['slot']
