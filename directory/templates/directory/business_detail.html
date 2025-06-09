@@ -82,7 +82,48 @@
         *:focus {
             outline: none;
         }
+/* Fixed Store Link */
+.fixed-store-link {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 999;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
 
+.dark-mode .fixed-store-link {
+    background-color: var(--primary-dark);
+}
+
+.fixed-store-link:hover {
+    transform: translateY(-5px) scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.fixed-store-link:active {
+    transform: translateY(0) scale(0.95);
+}
+
+@media (max-width: 768px) {
+    .fixed-store-link {
+        bottom: 70px;
+        right: 15px;
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+}
         /* Header */
         .app-header {
             background-color: var(--white);
@@ -2718,37 +2759,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     </main>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <a href="{% url 'business-store' pk=business.pk %}" class="nav-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
-            <i class="fas fa-home"></i>
-            <span>Store</span>
-        </a>
-        <a href="{% url 'discover' %}" class="nav-item {% if request.resolver_match.url_name == 'discover' %}active{% endif %}">
-            <i class="fas fa-compass"></i>
-            <span>Discover</span>
-        </a>
-        <a href="{% url 'about' %}" class="nav-item {% if request.resolver_match.url_name == 'add-business' %}active{% endif %}">
-            <i class="fas fa-info-circle"></i>
-            <span>About</span>
-        </a>
-        {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}" class="nav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" title="Profile">
-                <i class="fas fa-user"></i>
-                <span>Me</span>
-                {% if unread_notifications > 0 %}
-                <span class="notification-badge">{{ unread_notifications }}</span>
-                {% endif %}
-            </a>
-        {% else %}
-            <a href="{% url 'login' %}" class="nav-item" title="Login">
-                <i class="fas fa-sign-in-alt"></i>
-                <span>Login</span>
-            </a>
-        {% endif %}
-    </nav>
-
+<!-- Fixed Store Link -->
+{% if business.show_store_link %}
+<a href="{% url 'business-store' pk=business.pk %}" class="fixed-store-link" title="Visit Store">
+    <i class="fas fa-store"></i>
+</a>
+{% endif %}
     <!-- Document Upload Modal -->
     <div class="modal" id="document-modal">
         <div class="modal-content">
@@ -3054,6 +3070,14 @@ document.querySelectorAll('.interactive').forEach(el => {
   el.addEventListener('mouseleave', () => {
     el.style.transform = 'scale(1)';
   });
+});
+document.getElementById('{{ business_form.show_store_link.id_for_label }}').addEventListener('change', function() {
+    const toggleText = this.nextElementSibling.querySelector('span');
+    if (this.checked) {
+        toggleText.textContent = 'Link is visible';
+    } else {
+        toggleText.textContent = 'Link is hidden';
+    }
 });
         // Lazy load images with Intersection Observer
         if ('IntersectionObserver' in window) {

@@ -508,14 +508,8 @@ def register(request):
 
 @login_required
 def profile(request):
-    # Get or create user profile
     profile, created = UserProfile.objects.get_or_create(user=request.user)
-
-    # Get the user's primary business (first owned business)
     primary_business = request.user.owned_businesses.first()
-
-    # Get all businesses the user is a member of
-    member_businesses = BusinessMember.objects.filter(user=request.user).select_related('business')
 
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=request.user)
@@ -528,29 +522,29 @@ def profile(request):
                     user_form.save()
                     profile_form.save()
                     if business_form:
-                        business_form.save()
+                        # Explicitly get the cleaned data for show_store_link
+                        business = business_form.save(commit=False)
+                        business.show_store_link = business_form.cleaned_data.get('show_store_link', False)
+                        business.save()
+                        business_form.save_m2m()
+
                 messages.success(request, 'Profile updated successfully!')
                 return redirect('profile')
             except Exception as e:
                 messages.error(request, f'An error occurred: {str(e)}')
-        else:
-            messages.error(request, 'Please correct the errors below.')
     else:
         user_form = UserUpdateForm(instance=request.user)
         profile_form = ProfileUpdateForm(instance=profile)
         business_form = BusinessUpdateForm(instance=primary_business) if primary_business else None
 
     context = {
-        'user': request.user,  # Explicitly pass user
-        'profile': profile,    # Pass profile instance
+        'user': request.user,
+        'profile': profile,
         'user_form': user_form,
         'profile_form': profile_form,
         'business_form': business_form,
         'business': primary_business,
-        'primary_business': primary_business,  # Add this for consistency
-        'member_businesses': member_businesses,
     }
-
     return render(request, 'registration/profile.html', context)
 
 def chat_room_list(request):

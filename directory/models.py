@@ -140,7 +140,13 @@ class Business(models.Model):
     description = RichTextField(blank=True, null=True)
     address = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=15)
-    is_admin_added = models.BooleanField(default=False)
+    is_admin_added = models.BooleanField(default=False, verbose_name="Verified Status")
+    verified_until = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Verification End Date",
+        help_text="Date until which this business remains verified"
+    )
     email = models.EmailField(blank=True, null=True)
     website = models.URLField(blank=True, null=True)
     city = models.CharField(max_length=100, blank=True, null=True)
@@ -157,6 +163,28 @@ class Business(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     default_roles = models.ManyToManyField(BusinessRole, blank=True, related_name='default_businesses')
     departments = models.ManyToManyField(BusinessDepartment, blank=True, related_name='businesses')
+    show_store_link = models.BooleanField(
+        default=True,
+        verbose_name="Show Store Link",
+        help_text="Toggle to show/hide the store link in navigation"
+    )
+
+    @property
+    def is_verified(self):
+        """Check if business is currently verified (both flag is true and date is in future)"""
+        if not self.is_admin_added:
+            return False
+        if self.verified_until:
+            return timezone.now() <= self.verified_until
+        return True
+
+    @property
+    def verification_days_left(self):
+        """Return number of days left for verification or None if not verified"""
+        if self.is_verified and self.verified_until:
+            delta = self.verified_until - timezone.now()
+            return delta.days
+        return None
 
     def clean(self):
         super().clean()

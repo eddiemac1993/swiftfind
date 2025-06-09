@@ -115,9 +115,15 @@ class ProfileUpdateForm(forms.ModelForm):
 from django import forms
 from ckeditor.widgets import CKEditorWidget
 from django.core.validators import FileExtensionValidator
-
 class BusinessUpdateForm(forms.ModelForm):
     description = forms.CharField(widget=CKEditorWidget(), required=False)
+    show_store_link = forms.BooleanField(
+        required=False,  # Important for boolean fields
+        widget=forms.CheckboxInput(attrs={
+            'class': 'toggle-checkbox',
+        }),
+        label="Show Store Link in Navigation"
+    )
 
     class Meta:
         model = Business
@@ -128,29 +134,27 @@ class BusinessUpdateForm(forms.ModelForm):
             'city',
             'phone_number',
             'category',
+            'show_store_link',
             'description',
-            'company_profile'  # Add this field
+            'company_profile'
         ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Customize the company_profile field
-        self.fields['company_profile'].widget.attrs.update({
-            'accept': '.pdf',  # Only show PDF files in file selector
-        })
-        self.fields['company_profile'].required = False
-        self.fields['company_profile'].help_text = "Upload a PDF file (max 5MB)"
-        self.fields['company_profile'].validators = [
-            FileExtensionValidator(allowed_extensions=['pdf'])
-        ]
+        # Initialize the boolean field with the current value
+        if self.instance:
+            self.fields['show_store_link'].initial = self.instance.show_store_link
 
-    def clean_company_profile(self):
-        company_profile = self.cleaned_data.get('company_profile')
-        if company_profile:
-            # Check file size (5MB limit)
-            if company_profile.size > 5 * 1024 * 1024:
-                raise forms.ValidationError("File size must be under 5MB.")
-        return company_profile
+    def save(self, commit=True):
+        business = super().save(commit=False)
+        # Explicitly set the show_store_link value
+        business.show_store_link = self.cleaned_data.get('show_store_link', False)
+
+        if commit:
+            business.save()
+            self.save_m2m()  # For any many-to-many fields
+
+        return business
 
 from django.core.exceptions import ValidationError
 from urllib.parse import urlparse
@@ -228,7 +232,7 @@ class BusinessForm(forms.ModelForm):
 
     class Meta:
         model = Business
-        fields = ['logo', 'name', 'address', 'email', 'city', 'phone_number', 'category', 'description']
+        fields = ['logo', 'name', 'address', 'email', 'city', 'phone_number', 'category', 'description', 'show_store_link']
 
 
 

@@ -23,7 +23,8 @@ from .models import (
 class BusinessResource(resources.ModelResource):
     class Meta:
         model = Business
-        fields = ('id', 'name', 'owner__username', 'category__name', 'address', 'phone_number', 'email', 'status')
+        fields = ('id', 'name', 'owner__username', 'category__name', 'address', 
+                'phone_number', 'email', 'status', 'is_admin_added', 'city')
         export_order = fields
 
 class ReviewResource(resources.ModelResource):
@@ -238,8 +239,8 @@ class BusinessDepartmentAdmin(admin.ModelAdmin):
 @admin.register(Business)
 class BusinessAdmin(ImportExportModelAdmin):
     resource_class = BusinessResource
-    list_display = ('name', 'owner', 'category', 'city', 'status', 'average_rating',
-                   'review_count', 'member_count', 'image_count', 'post_image_count', 'is_admin_added', 'logo_preview')
+    list_display = ('name', 'owner', 'category', 'city', 'status', 'verified_badge', 
+                   'average_rating', 'review_count', 'member_count', 'created_at')
     list_filter = (
         'status',
         'is_admin_added',
@@ -251,13 +252,24 @@ class BusinessAdmin(ImportExportModelAdmin):
     search_fields = ('name', 'description', 'address', 'phone_number', 'email')
     prepopulated_fields = {'slug': ('name',)}
     inlines = [BusinessPostInline, BusinessImageInline, BusinessMemberInline, ReviewInline]
-    readonly_fields = ('average_rating', 'created_at', 'updated_at', 'logo_preview')
+    readonly_fields = ('average_rating', 'created_at', 'updated_at', 'logo_preview', 'verification_status')
     filter_horizontal = ('default_roles', 'departments')
     date_hierarchy = 'created_at'
     raw_id_fields = ('owner',)
+    list_editable = ('status',)
+    actions = [
+        'verify_7_days', 'verify_30_days', 'verify_90_days', 
+        'verify_180_days', 'verify_indefinitely', 'mark_as_unverified',
+        'mark_as_active', 'mark_as_inactive', 'export_as_csv'
+    ]
+    
     fieldsets = (
         (None, {
             'fields': ('name', 'slug', 'owner', 'category', 'status')
+        }),
+        ('Verification', {
+            'fields': ('is_admin_added', 'verified_until', 'verification_status'),
+            'classes': ('wide',)
         }),
         ('Details', {
             'fields': ('description', 'tags', 'address', 'phone_number', 'email', 'website', 'city')
@@ -266,24 +278,53 @@ class BusinessAdmin(ImportExportModelAdmin):
             'fields': ('logo', 'logo_preview', 'company_profile')
         }),
         ('Organization', {
-            'fields': ('default_roles', 'departments')
+            'fields': ('default_roles', 'departments', 'show_store_link')
         }),
         ('Metadata', {
-            'fields': ('is_admin_added', 'created_at', 'updated_at', 'average_rating'),
+            'fields': ('created_at', 'updated_at', 'average_rating'),
             'classes': ('collapse',)
         }),
     )
-    actions = ['mark_as_active', 'mark_as_inactive', 'export_as_csv']
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         qs = qs.annotate(
             _review_count=Count('reviews'),
             _member_count=Count('members'),
-            _image_count=Count('images'),
-            _post_image_count=Count('posts__image', distinct=True)
         )
         return qs
+
+    def verified_badge(self, obj):
+        if obj.is_verified:
+            days_left = obj.verification_days_left
+            if days_left is not None:
+                return format_html(
+                    '<span style="color: green; font-weight: bold;">'
+                    '<i class="fas fa-check-circle"></i> Verified ({} days left)'
+                    '</span>',
+                    days_left
+                )
+            return format_html(
+                '<span style="color: green; font-weight: bold;">'
+                '<i class="fas fa-check-circle"></i> Verified'
+                '</span>'
+            )
+        return format_html(
+            '<span style="color: #999;"><i class="fas fa-times-circle"></i> Unverified</span>'
+        )
+    verified_badge.short_description = 'Verification'
+    verified_badge.admin_order_field = 'is_admin_added'
+
+    def verification_status(self, obj):
+        if obj.is_verified:
+            if obj.verified_until:
+                return format_html(
+                    '<span style="color: green; font-weight: bold;">Verified until {}</span>',
+                    obj.verified_until.strftime('%Y-%m-%d %H:%M')
+                )
+            return format_html('<span style="color: green; font-weight: bold;">Verified indefinitely</span>')
+        return format_html('<span style="color: #999;">Not verified</span>')
+    verification_status.short_description = 'Current Verification Status'
 
     def logo_preview(self, obj):
         if obj.logo:
@@ -301,17 +342,39 @@ class BusinessAdmin(ImportExportModelAdmin):
     member_count.admin_order_field = '_member_count'
     member_count.short_description = 'Members'
 
-    def image_count(self, obj):
-        url = reverse('admin:directory_businessimage_changelist') + f'?business__id__exact={obj.id}'
-        return format_html('<a href="{}">{}</a>', url, obj._image_count)
-    image_count.admin_order_field = '_image_count'
-    image_count.short_description = 'Images'
+    def verify_7_days(self, request, queryset):
+        verified_until = timezone.now() + timezone.timedelta(days=7)
+        updated = queryset.update(is_admin_added=True, verified_until=verified_until)
+        self.message_user(request, f"{updated} businesses were verified for 7 days.")
+    verify_7_days.short_description = "Verify for 7 days"
 
-    def post_image_count(self, obj):
-        url = reverse('admin:directory_businesspost_changelist') + f'?business__id__exact={obj.id}&image__isnull=False'
-        return format_html('<a href="{}">{}</a>', url, obj._post_image_count)
-    post_image_count.admin_order_field = '_post_image_count'
-    post_image_count.short_description = 'Post Images'
+    def verify_30_days(self, request, queryset):
+        verified_until = timezone.now() + timezone.timedelta(days=30)
+        updated = queryset.update(is_admin_added=True, verified_until=verified_until)
+        self.message_user(request, f"{updated} businesses were verified for 30 days.")
+    verify_30_days.short_description = "Verify for 30 days"
+
+    def verify_90_days(self, request, queryset):
+        verified_until = timezone.now() + timezone.timedelta(days=90)
+        updated = queryset.update(is_admin_added=True, verified_until=verified_until)
+        self.message_user(request, f"{updated} businesses were verified for 90 days.")
+    verify_90_days.short_description = "Verify for 90 days"
+
+    def verify_180_days(self, request, queryset):
+        verified_until = timezone.now() + timezone.timedelta(days=180)
+        updated = queryset.update(is_admin_added=True, verified_until=verified_until)
+        self.message_user(request, f"{updated} businesses were verified for 180 days.")
+    verify_180_days.short_description = "Verify for 180 days"
+
+    def verify_indefinitely(self, request, queryset):
+        updated = queryset.update(is_admin_added=True, verified_until=None)
+        self.message_user(request, f"{updated} businesses were verified indefinitely.")
+    verify_indefinitely.short_description = "Verify indefinitely"
+
+    def mark_as_unverified(self, request, queryset):
+        updated = queryset.update(is_admin_added=False, verified_until=None)
+        self.message_user(request, f"{updated} businesses were marked as unverified.")
+    mark_as_unverified.short_description = "Remove verification"
 
     def mark_as_active(self, request, queryset):
         updated = queryset.update(status='active')

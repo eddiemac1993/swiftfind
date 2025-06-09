@@ -234,6 +234,113 @@
             background: var(--primary-dark);
             transform: scale(1.1);
         }
+/* Hide default checkbox */
+/* Enhanced styles for the Store Link Visibility section */
+.form-section {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .form-section {
+    background-color: var(--dark-surface);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.section-title {
+    color: var(--primary-color);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dark-mode .section-title {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.section-title i {
+    font-size: 16px;
+    width: 24px;
+    text-align: center;
+}
+
+/* Enhanced toggle switch styles */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.toggle-label {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+    background-color: #ccc;
+    border-radius: 34px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+
+.toggle-label:after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 24px;
+    height: 24px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-checkbox:checked + .toggle-label {
+    background-color: var(--primary-color);
+}
+
+.toggle-checkbox:checked + .toggle-label:after {
+    transform: translateX(24px);
+}
+
+.toggle-checkbox:focus + .toggle-label {
+    box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.3);
+}
+
+.toggle-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+
+.dark-mode .toggle-text {
+    color: var(--dark-text);
+}
+
+/* Form group specific styles */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+.dark-mode .form-group label {
+    color: var(--dark-text);
+}
 
         .sidebar-menu {
             padding: 16px 0;
@@ -538,6 +645,75 @@
                 justify-content: center;
             }
         }
+/* Subscription promo styles */
+.subscription-promo {
+    background-color: rgba(220, 53, 69, 0.1);
+    border-radius: 12px;
+    margin: 8px;
+    padding: 12px;
+    color: #dc3545;
+    border-left: 3px solid #dc3545;
+}
+
+.promo-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.promo-header i {
+    font-size: 18px;
+}
+
+.promo-details p {
+    font-size: 13px;
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.whatsapp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #07C160;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.whatsapp-btn:hover {
+    background-color: #05a54e;
+}
+
+.whatsapp-btn i {
+    margin-right: 6px;
+    font-size: 16px;
+}
+
+.verified-badge {
+    color: var(--primary-color);
+    font-weight: 500;
+    background-color: rgba(7, 193, 96, 0.1);
+    border-radius: 8px;
+    margin: 8px;
+    padding: 12px;
+    border-left: 3px solid var(--primary-color);
+}
+
+.dark-mode .subscription-promo {
+    background-color: rgba(220, 53, 69, 0.2);
+    color: #ff6b6b;
+}
+
+.dark-mode .verified-badge {
+    background-color: rgba(7, 193, 96, 0.2);
+}
     </style>
 </head>
 <body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
@@ -601,21 +777,45 @@
                     <p>Business Owner</p>
                 </div>
 
-                <div class="sidebar-menu">
-                    <a href="#" class="menu-item active">
-                        <i class="fas fa-user-circle"></i>
-                        <span>Business Profile</span>
-                    </a>
-                    <a href="{% url 'pos_system:dashboard' %}" class="menu-item">
-                        <i class="fas fa-cash-register"></i>
-                        <span>POS system</span>
-                    </a>
+<div class="sidebar-menu">
+    {% if business.is_verified %}
+        <a href="#" class="menu-item active">
+            <i class="fas fa-user-circle"></i>
+            <span>Business Profile</span>
+        </a>
+        <a href="{% url 'pos_system:dashboard' %}" class="menu-item">
+            <i class="fas fa-cash-register"></i>
+            <span>POS system</span>
+        </a>
+        <a href="{% url 'create_paper' %}" class="menu-item">
+            <i class="fas fa-file-invoice"></i>
+            <span>Create Quotations</span>
+        </a>
+        <div class="menu-item verified-badge">
+            <i class="fas fa-check-circle"></i>
+            <span>Verified ({{ business.verification_days_left }} days left)</span>
+        </div>
+    {% else %}
+        <a href="#" class="menu-item active">
+            <i class="fas fa-user-circle"></i>
+            <span>Business Profile</span>
+        </a>
+        <div class="subscription-promo">
+            <div class="promo-header">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>Subscribe to unlock features</span>
+            </div>
+            <div class="promo-details">
+                <p>K1 per day - WhatsApp us to verify your account</p>
+                <a href="https://wa.me/260772447190?text=I%20want%20my%20account%20verified%20for%20{{ business.name }}"
+                   class="whatsapp-btn">
+                    <i class="fab fa-whatsapp"></i> Contact Us
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
 
-                    <a href="{% url 'create_paper' %}" class="menu-item">
-                        <i class="fas fa-file-invoice"></i>
-                        <span>Create Quotations</span>
-                    </a>
-                </div>
             </aside>
 
             <!-- Main Content -->
@@ -712,8 +912,25 @@
                                 </select>
                             </div>
                         </div>
-                    </div>
 
+                    </div>
+                        <!-- Store Link Visibility Section -->
+<div class="form-section">
+    <h3 class="section-title">
+        <i class="fas fa-store"></i> Store Link Visibility
+    </h3>
+    <div class="form-group">
+        <label for="{{ business_form.show_store_link.id_for_label }}">Show Store Link in Navigation</label>
+        <div class="toggle-container">
+            {{ business_form.show_store_link }}
+            <label for="{{ business_form.show_store_link.id_for_label }}" class="toggle-label">
+                <span class="toggle-text">
+                    {% if business_form.show_store_link.value %}Link is visible{% else %}Link is hidden{% endif %}
+                </span>
+            </label>
+        </div>
+    </div>
+</div>
                     <!-- Contact Information Section -->
                     <div class="form-section">
                         <h3 class="section-title">
@@ -832,6 +1049,42 @@
     </nav>
 
     <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleSwitch = document.getElementById('{{ business_form.show_store_link.id_for_label }}');
+    const toggleLabel = document.querySelector(`label[for="{{ business_form.show_store_link.id_for_label }}"]`);
+
+    if (toggleSwitch) {
+        // Initialize toggle text
+        updateToggleText(toggleSwitch);
+
+        // Add change event listener to the actual checkbox
+        toggleSwitch.addEventListener('change', function() {
+            updateToggleText(this);
+        });
+
+        function updateToggleText(toggle) {
+            const toggleText = toggle.nextElementSibling.querySelector('.toggle-text');
+            if (toggle.checked) {
+                toggleText.textContent = 'Link is visible';
+            } else {
+                toggleText.textContent = 'Link is hidden';
+            }
+        }
+    }
+
+    // Make sure the form submits when the toggle changes
+    const toggleCheckbox = document.querySelector('.toggle-checkbox');
+    if (toggleCheckbox) {
+        toggleCheckbox.addEventListener('change', function() {
+            // You can either submit the form automatically or wait for the user to click save
+            // For automatic submission:
+            // this.form.submit();
+
+            // Or just ensure the value is included in the form submission
+            // No additional action needed as the checkbox value will be included
+        });
+    }
+});
         // Theme toggle
         document.getElementById('theme-toggle').addEventListener('click', function() {
             document.body.classList.toggle('dark-mode');
