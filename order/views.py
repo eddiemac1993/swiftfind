@@ -149,6 +149,25 @@ def discover(request):
             search_query.count += 1
             search_query.save()
 
+    # Get a random product from verified/admin-added businesses
+    random_product = None
+    verified_businesses = Business.objects.filter(
+        Q(is_admin_added=True) | Q(verified_until__gte=timezone.now()),
+        status='active'
+    )
+
+    if verified_businesses.exists():
+        # Get active products from verified businesses that have images
+        from pos_system.models import Product  # Import your Product model
+        products_from_verified = Product.objects.filter(
+            business__in=verified_businesses,
+            image__isnull=False,
+            is_active=True,
+            stock_quantity__gt=0  # Only show products with stock
+        )
+        if products_from_verified.exists():
+            random_product = random.choice(products_from_verified)
+
     # Annotate businesses with ratings and review counts
     businesses = Business.objects.annotate(
         average_rating=Avg('reviews__rating'),
@@ -170,6 +189,9 @@ def discover(request):
 
     if category:
         businesses = businesses.filter(category__name__icontains=category)
+
+    # Initialize businesses_count
+    businesses_count = businesses.count()
 
     # Apply sorting
     if sort_by == 'rating':
@@ -202,7 +224,10 @@ def discover(request):
     interval = 5  # Show an ad after every 5 businesses
     newsfeed_interval = 2  # Show a newsfeed after every 2 businesses
 
-    for i, business in enumerate(businesses, start=1):
+    # Handle case where businesses is a list or queryset
+    business_iterable = businesses if isinstance(businesses, list) else list(businesses)
+
+    for i, business in enumerate(business_iterable, start=1):
         combined_list.append(('business', business))  # Add business to the list
 
         # Add a newsfeed after every `newsfeed_interval` businesses
@@ -222,13 +247,12 @@ def discover(request):
     page_obj = paginator.get_page(page_number)
 
     # Count businesses on the current page
-    businesses_count = businesses.count()
     businesses_count_on_page = len([item for item in page_obj.object_list if item[0] == 'business'])
 
     # Fetch all categories for the sidebar/filter
     categories = Category.objects.all()
 
-    first_business = businesses.first() if businesses.exists() else None
+    first_business = business_iterable[0] if business_iterable else None
 
     return render(request, 'discover.html', {
         'page_obj': page_obj,
@@ -240,6 +264,7 @@ def discover(request):
         'businesses_count_on_page': businesses_count_on_page,
         'businesses_count': businesses_count,
         'business': first_business,
+        'random_product': random_product,
     })
 
 def get_cart(request):
