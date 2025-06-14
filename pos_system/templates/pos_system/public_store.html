@@ -14,7 +14,7 @@
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
     :root {
         --primary-color: #FF6B00;
@@ -56,7 +56,22 @@
         line-height: 1.6;
         transition: var(--transition);
     }
+/* Add to your existing CSS */
+.product-card.share-mode {
+    transform: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    border: 1px solid #eee;
+}
 
+.product-card.share-mode .product-image {
+    height: 200px;
+}
+
+.product-card.share-mode .product-info {
+    padding: 15px;
+    background: white;
+}
     /* Header */
     .store-header {
         background: white;
@@ -124,7 +139,37 @@
         overflow: hidden;
         transition: var(--transition);
     }
+/* Add to your existing CSS */
+.share-card-container {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
 
+.share-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.share-image {
+    height: 200px;
+    overflow: hidden;
+}
+
+.share-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.quick-view-btn.secondary {
+    background: white;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.quick-view-btn.secondary:hover {
+    background: rgba(255, 107, 0, 0.1);
+}
     .search-bar:focus-within {
         box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.2);
     }
@@ -1202,7 +1247,7 @@
         .quick-view-body {
             grid-template-columns: 1fr;
         }
-        
+
         .quick-view-image {
             max-width: 300px;
             margin: 0 auto;
@@ -1364,6 +1409,14 @@
                                 <span>Add to Cart</span>
                             </button>
                         </div>
+                            <div class="product-actions">
+        <div class="product-action-btn product-favorite" data-product-id="{{ product.id }}">
+            <i class="far fa-heart"></i>
+        </div>
+        <div class="product-action-btn product-share" data-product-id="{{ product.id }}">
+            <i class="fas fa-share-alt"></i>
+        </div>
+    </div>
                     </div>
                     {% empty %}
                     <div class="no-products">
@@ -1420,7 +1473,7 @@
                             <i class="fas fa-cart-plus"></i>
                             Cart
                         </button>
-                        <button class="quick-view-btn secondary product-action-btn product-share" data-product-id="{{ product.id }}" >
+                        <button class="quick-view-btn secondary" id="quick-view-share">
                             <i class="fas fa-share-alt"></i>
                             Share
                         </button>
@@ -1507,386 +1560,510 @@
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-    $(document).ready(function() {
-        // Theme toggle functionality
-        const currentTheme = localStorage.getItem('theme') || 
-                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Constants and configuration
+    const config = {
+        businessPhone: "{{ business.phone_number }}",
+        businessName: "{{ business.name }}",
+        currency: "ZMW",
+        currencySymbol: "ZMW ",
+        defaultTheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    };
 
-        if (currentTheme === 'dark') {
+    // State management
+    const state = {
+        cart: JSON.parse(localStorage.getItem('cart')) || {},
+        currentTheme: localStorage.getItem('theme') || config.defaultTheme,
+        shareCache: {}
+    };
+
+    // Initialize theme
+    function initTheme() {
+        if (state.currentTheme === 'dark') {
             $('body').attr('data-theme', 'dark');
             $('#theme-toggle i').removeClass('fa-moon').addClass('fa-sun');
+        } else {
+            $('body').removeAttr('data-theme');
+            $('#theme-toggle i').removeClass('fa-sun').addClass('fa-moon');
+        }
+    }
+
+    // Theme toggle handler
+    $('#theme-toggle').click(function() {
+        const $body = $('body');
+        const isDark = $body.attr('data-theme') === 'dark';
+
+        if (isDark) {
+            $body.removeAttr('data-theme');
+            $('#theme-toggle i').removeClass('fa-sun').addClass('fa-moon');
+            state.currentTheme = 'light';
+        } else {
+            $body.attr('data-theme', 'dark');
+            $('#theme-toggle i').removeClass('fa-moon').addClass('fa-sun');
+            state.currentTheme = 'dark';
         }
 
-        $('#theme-toggle').click(function() {
-            const $body = $('body');
-            const isDark = $body.attr('data-theme') === 'dark';
+        localStorage.setItem('theme', state.currentTheme);
+    });
 
-            if (isDark) {
-                $body.removeAttr('data-theme');
-                $('#theme-toggle i').removeClass('fa-sun').addClass('fa-moon');
-                localStorage.setItem('theme', 'light');
-            } else {
-                $body.attr('data-theme', 'dark');
-                $('#theme-toggle i').removeClass('fa-moon').addClass('fa-sun');
-                localStorage.setItem('theme', 'dark');
-            }
-        });
+    // Cart management
+    function saveCart() {
+        localStorage.setItem('cart', JSON.stringify(state.cart));
+    }
 
-        // Initialize cart
-        let cart = {};
-        const businessPhone = "{{ business.phone_number }}";
+    function updateCartBadge() {
+        const itemCount = Object.values(state.cart).reduce((sum, item) => sum + item.quantity, 0);
+        itemCount > 0 ? $('#cart-badge').text(itemCount).show() : $('#cart-badge').hide();
+    }
 
-        // Toggle cart sidebar
-        $('#cart-icon').click(function() {
-            $('#cart-sidebar').addClass('open');
-            $('#cart-overlay').addClass('open');
-        });
+    function updateCartUI() {
+        const $cartItems = $('#cart-items');
+        let total = 0;
 
-        $('#close-cart, #cart-overlay').click(function() {
-            $('#cart-sidebar').removeClass('open');
-            $('#cart-overlay').removeClass('open');
-        });
+        $cartItems.empty();
 
-        // Quick view functionality
-        $('.product-card').click(function(e) {
-            // Don't open quick view if clicking on action buttons
-            if ($(e.target).closest('.product-action-btn').length) {
-                return;
-            }
-            
-            const productId = $(this).data('product-id');
-            const productName = $(this).find('.product-name').text();
-            const productPrice = $(this).find('.product-price').text();
-            const productImage = $(this).find('.product-image img').attr('src');
-            const productDescription = $(this).data('description') || 'No description available';
-
-            $('#quick-view-img').attr('src', productImage);
-            $('#quick-view-title').text(productName);
-            $('#quick-view-price').text(productPrice);
-            $('#quick-view-description').text(productDescription);
-            $('#quick-view-add-to-cart').data('product-id', productId);
-
-            $('#quick-view').addClass('active');
-        });
-
-        $('#close-quick-view, #quick-view').click(function(e) {
-            if (e.target === this || $(e.target).hasClass('close-quick-view')) {
-                $('#quick-view').removeClass('active');
-            }
-        });
-
-        // Prevent quick view content from closing when clicking inside
-        $('.quick-view-content').click(function(e) {
-            e.stopPropagation();
-        });
-
-        // Add to cart from quick view
-        $('#quick-view-add-to-cart').click(function() {
-            const productId = $(this).data('product-id');
-            addToCart(productId);
-            $('#quick-view').removeClass('active');
-        });
-
-        // Add to cart functionality
-        function addToCart(productId) {
-            const productCard = $(`.product-card[data-product-id="${productId}"]`);
-            const productName = productCard.find('.product-name').text();
-            const productPrice = parseFloat(productCard.find('.product-price').text().replace('ZMW ', ''));
-            const productBusiness = productCard.find('.product-business').text();
-            const productImage = productCard.find('.product-image img').attr('src');
-
-            // Add to cart object
-            if (cart[productId]) {
-                cart[productId].quantity += 1;
-            } else {
-                cart[productId] = {
-                    name: productName,
-                    price: productPrice,
-                    quantity: 1,
-                    business: productBusiness || '{{ business.name }}',
-                    image: productImage
-                };
-            }
-
-            updateCartUI();
-            showToast(`${productName} added to cart`, 'success');
-
-            // Open cart if it's the first item
-            if (Object.keys(cart).length === 1) {
-                $('#cart-sidebar').addClass('open');
-                $('#cart-overlay').addClass('open');
-            }
-        }
-
-        $('.add-to-cart-btn').click(function() {
-            const productId = $(this).data('product-id');
-            addToCart(productId);
-        });
-
-        // Update cart UI
-        function updateCartUI() {
-            const cartItemsContainer = $('#cart-items');
-            const cartBadge = $('#cart-badge');
-            let total = 0;
-
-            // Clear existing items
-            cartItemsContainer.empty();
-
-            if (Object.keys(cart).length === 0) {
-                cartItemsContainer.html(`
-                    <div class="empty-cart">
-                        <i class="fas fa-shopping-cart"></i>
-                        <p>Your cart is empty</p>
-                    </div>
-                `);
-                cartBadge.hide();
-            } else {
-                // Add each cart item
-                for (const [productId, item] of Object.entries(cart)) {
-                    const itemTotal = item.price * item.quantity;
-                    total += itemTotal;
-
-                    cartItemsContainer.append(`
-                        <div class="cart-item" data-product-id="${productId}">
-                            <img src="${item.image}" alt="${item.name}" class="cart-item-image">
-                            <div class="cart-item-info">
-                                <div class="cart-item-name">${item.name}</div>
-                                ${item.business ? `<div class="cart-item-business">${item.business}</div>` : ''}
-                                <div class="cart-item-price">ZMW ${item.price.toFixed(2)}</div>
-                                <div class="quantity-controls">
-                                    <button class="decrease-qty">-</button>
-                                    <span>${item.quantity}</span>
-                                    <button class="increase-qty">+</button>
-                                    <button class="remove-item">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `);
-                }
-
-                // Update badge
-                const itemCount = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
-                cartBadge.text(itemCount).show();
-            }
-
-            // Update total
-            $('#cart-total').text(`Total: ZMW ${total.toFixed(2)}`);
-        }
-
-        // Handle quantity changes and removal
-        $(document).on('click', '.decrease-qty', function() {
-            const productId = $(this).closest('.cart-item').data('product-id');
-            if (cart[productId].quantity > 1) {
-                cart[productId].quantity -= 1;
-                updateCartUI();
-            }
-        });
-
-        $(document).on('click', '.increase-qty', function() {
-            const productId = $(this).closest('.cart-item').data('product-id');
-            cart[productId].quantity += 1;
-            updateCartUI();
-        });
-
-        $(document).on('click', '.remove-item', function() {
-            const productId = $(this).closest('.cart-item').data('product-id');
-            const productName = cart[productId].name;
-            delete cart[productId];
-            updateCartUI();
-            showToast(`${productName} removed from cart`, 'danger');
-        });
-
-        // Checkout via WhatsApp
-        $('#checkout-btn').click(function() {
-            const customerName = $('#customer-name').val().trim();
-            const customerPhone = $('#customer-phone').val().trim();
-            const customerNotes = $('#customer-notes').val().trim();
-
-            // Basic validation
-            if (!customerName) {
-                showToast('Please enter your name', 'danger');
-                return;
-            }
-
-            if (!customerPhone) {
-                showToast('Please enter your phone number', 'danger');
-                return;
-            }
-
-            if (Object.keys(cart).length === 0) {
-                showToast('Your cart is empty', 'danger');
-                return;
-            }
-
-            // Prepare order message
-            let message = `Hello,\n\n`;
-            message += `I would like to place an order:\n\n`;
-            message += `*Customer Name:* ${customerName}\n`;
-            message += `*Phone:* ${customerPhone}\n\n`;
-
-            if (customerNotes) {
-                message += `*Delivery/Notes:* ${customerNotes}\n\n`;
-            }
-
-            message += `*Order Details:*\n`;
-
-            let total = 0;
-            for (const [productId, item] of Object.entries(cart)) {
+        if (Object.keys(state.cart).length === 0) {
+            $cartItems.html(`
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <p>Your cart is empty</p>
+                </div>
+            `);
+        } else {
+            for (const [productId, item] of Object.entries(state.cart)) {
                 const itemTotal = item.price * item.quantity;
                 total += itemTotal;
-                message += `- ${item.name} (${item.business}) - ZMW ${item.price.toFixed(2)} × ${item.quantity} = ZMW ${itemTotal.toFixed(2)}\n`;
+
+                $cartItems.append(`
+                    <div class="cart-item" data-product-id="${productId}">
+                        <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            ${item.business ? `<div class="cart-item-business">${item.business}</div>` : ''}
+                            <div class="cart-item-price">${config.currencySymbol}${item.price.toFixed(2)}</div>
+                            <div class="quantity-controls">
+                                <button class="decrease-qty">-</button>
+                                <span>${item.quantity}</span>
+                                <button class="increase-qty">+</button>
+                                <button class="remove-item">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            }
+        }
+
+        $('#cart-total').text(`Total: ${config.currencySymbol}${total.toFixed(2)}`);
+        updateCartBadge();
+        saveCart();
+    }
+
+    function addToCart(productId) {
+        const $productCard = $(`.product-card[data-product-id="${productId}"]`);
+        const productName = $productCard.find('.product-name').text();
+        const productPrice = parseFloat($productCard.find('.product-price').text().replace(config.currencySymbol, ''));
+        const productBusiness = $productCard.find('.product-business').text();
+        const productImage = $productCard.find('.product-image img').attr('src');
+
+        if (state.cart[productId]) {
+            state.cart[productId].quantity += 1;
+        } else {
+            state.cart[productId] = {
+                name: productName,
+                price: productPrice,
+                quantity: 1,
+                business: productBusiness || config.businessName,
+                image: productImage
+            };
+        }
+
+        updateCartUI();
+        showToast(`${productName} added to cart`, 'success');
+
+        if (Object.keys(state.cart).length === 1) {
+            openCart();
+        }
+    }
+
+    // Cart event handlers
+    $('#cart-icon').click(openCart);
+    $('#close-cart, #cart-overlay').click(closeCart);
+
+    function openCart() {
+        $('#cart-sidebar').addClass('open');
+        $('#cart-overlay').addClass('open');
+    }
+
+    function closeCart() {
+        $('#cart-sidebar').removeClass('open');
+        $('#cart-overlay').removeClass('open');
+    }
+
+    $(document).on('click', '.decrease-qty', function() {
+        const productId = $(this).closest('.cart-item').data('product-id');
+        if (state.cart[productId].quantity > 1) {
+            state.cart[productId].quantity -= 1;
+            updateCartUI();
+        }
+    });
+
+    $(document).on('click', '.increase-qty', function() {
+        const productId = $(this).closest('.cart-item').data('product-id');
+        state.cart[productId].quantity += 1;
+        updateCartUI();
+    });
+
+    $(document).on('click', '.remove-item', function() {
+        const productId = $(this).closest('.cart-item').data('product-id');
+        const productName = state.cart[productId].name;
+        delete state.cart[productId];
+        updateCartUI();
+        showToast(`${productName} removed from cart`, 'danger');
+    });
+
+    // Quick View functionality
+    $('.product-card').click(function(e) {
+        if ($(e.target).closest('.product-action-btn').length) return;
+
+        const $card = $(this);
+        const productId = $card.data('product-id');
+
+        $('#quick-view-img').attr('src', $card.find('.product-image img').attr('src'));
+        $('#quick-view-title').text($card.find('.product-name').text());
+        $('#quick-view-price').text($card.find('.product-price').text());
+        $('#quick-view-description').text($card.data('description') || 'No description available');
+        $('#quick-view-add-to-cart').data('product-id', productId);
+        $('#quick-view-share').data('product-id', productId);
+
+        $('#quick-view').addClass('active');
+    });
+
+    $('#close-quick-view, #quick-view').click(function(e) {
+        if (e.target === this || $(e.target).hasClass('close-quick-view')) {
+            $('#quick-view').removeClass('active');
+        }
+    });
+
+    $('.quick-view-content').click(function(e) {
+        e.stopPropagation();
+    });
+
+    $('#quick-view-add-to-cart').click(function() {
+        const productId = $(this).data('product-id');
+        addToCart(productId);
+        $('#quick-view').removeClass('active');
+    });
+
+    // Sharing functionality
+    function generateShareCard(productData) {
+        return new Promise((resolve, reject) => {
+            const cacheKey = `${productData.id}_${productData.image}`;
+
+            if (state.shareCache[cacheKey]) {
+                resolve(state.shareCache[cacheKey]);
+                return;
             }
 
-            message += `\n*Total:* ZMW ${total.toFixed(2)}\n\n`;
-            message += `Please confirm my order. Thank you!`;
+            const $tempContainer = $('<div>').css({
+                position: 'fixed',
+                left: '-9999px',
+                top: 0,
+                width: '300px',
+                padding: '15px',
+                background: 'white',
+                borderRadius: '12px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                fontFamily: 'Inter, sans-serif'
+            }).appendTo('body');
 
-            // Encode message for WhatsApp URL
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/${businessPhone}?text=${encodedMessage}`;
+$tempContainer.html(`
+    <div class="product-card" style="position:relative; border:1px solid #ddd; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1); max-width:300px; margin:auto;">
+        <div class="product-image" style="position:relative; text-align:center;">
+            <img src="${productData.image}"
+                 style="width:100%; height:auto; max-height:270px; object-fit:contain;">
+            <div class="price-tag" style="
+                position:absolute;
+                top:10px;
+                right:10px;
+                background:#FF6B00;
+                color:#fff;
+                padding:5px 10px;
+                border-radius:20px;
+                font-weight:bold;
+                font-size:14px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            ">
+                ${productData.price}
+            </div>
+        </div>
+        <div class="product-details" style="padding:12px;">
+            <h3 style="margin:10px 0 5px; font-size:16px; color:#333; background:transparent;">${productData.name}</h3>
+            <div style="font-size:12px; color:#666; margin-bottom:15px; background:transparent;">Available at ${productData.business}</div>
+            <div style="background:#f5f5f5; padding:8px; border-radius:4px; word-break:break-all;">
+                <a href="${productData.url}" style="color:#0066cc; text-decoration:none; font-size:12px;">${productData.url}</a>
+            </div>
+        </div>
+    </div>
+`);
 
-            // Open WhatsApp in new tab
-            window.open(whatsappUrl, '_blank');
+
+
+            html2canvas($tempContainer[0], {
+                backgroundColor: null,
+                scale: 2,
+                logging: false,
+                useCORS: true
+            }).then(canvas => {
+                $tempContainer.remove();
+                const imageData = canvas.toDataURL('image/png');
+                state.shareCache[cacheKey] = { imageData, text: productData.shareText };
+                resolve({ imageData, text: productData.shareText });
+            }).catch(err => {
+                $tempContainer.remove();
+                reject(err);
+            });
         });
+    }
 
-        // Category filter
-        $('.filter-option[data-category]').click(function() {
-            $('.filter-option[data-category]').removeClass('active');
-            $(this).addClass('active');
+    function handleShare(productData) {
+        const $btn = $(`[data-product-id="${productData.id}"] .product-share, #quick-view-share`);
+        $btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
 
-            const categoryId = $(this).data('category');
-            filterProducts(categoryId);
+        generateShareCard(productData).then(({ imageData, text }) => {
+            if (navigator.share) {
+                // Convert data URL to blob for Web Share API
+                fetch(imageData)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        navigator.share({
+                            title: productData.name,
+                            text: text,
+                            files: [new File([blob], `${productData.name}.png`, { type: 'image/png' })]
+                        }).catch(() => fallbackShare(imageData, text, productData));
+                    });
+            } else {
+                fallbackShare(imageData, text, productData);
+            }
+        }).catch(err => {
+            console.error('Sharing error:', err);
+            showToast('Failed to share product', 'danger');
+        }).finally(() => {
+            $btn.html('<i class="fas fa-share-alt"></i> Share').prop('disabled', false);
         });
+    }
 
-        function filterProducts(categoryId) {
-            $('.product-card').each(function() {
-                const productCategory = $(this).data('category-id');
-                const allCategories = categoryId === 'all';
-                const matchesCategory = allCategories ||
-                    (productCategory && productCategory.toString() === categoryId.toString());
+    function fallbackShare(imageData, text, productData) {
+        // Mobile fallback - open in new tab with image and link
+        if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+            const newWindow = window.open();
+            newWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>${productData.name}</title>
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <style>
+                        body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+                        img { max-width: 100%; border-radius: 8px; margin-bottom: 15px; }
+                        .product-name { font-size: 18px; margin: 10px 0; }
+                        .product-price { font-size: 20px; font-weight: bold; color: #FF6B00; margin: 10px 0; }
+                        .product-link { display: block; margin: 20px 0; padding: 10px; background: #f5f5f5; border-radius: 4px; word-break: break-all; }
+                    </style>
+                </head>
+                <body>
+                    <img src="${imageData}" alt="${productData.name}">
+                    <div class="product-name">${productData.name}</div>
+                    <div class="product-price">${productData.price}</div>
+                    <div>Available at ${productData.business}</div>
+                    <div class="product-link">
+                        <a href="${productData.url}">${productData.url}</a>
+                    </div>
+                    <p>Long press the image to save or share</p>
+                </body>
+                </html>
+            `);
+        } else {
+            // Desktop fallback - download image and copy text
+            const link = document.createElement('a');
+            link.download = `${productData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
+            link.href = imageData;
+            link.click();
 
-                $(this).toggle(allCategories || matchesCategory);
+            navigator.clipboard.writeText(`${text}\n${productData.url}`).then(() => {
+                showToast('Product image downloaded and link copied to clipboard!', 'success');
             });
         }
+    }
 
-        // Business filter (only for all products view)
-        {% if all_businesses %}
-        $('.filter-option[data-business]').click(function() {
-            $('.filter-option[data-business]').removeClass('active');
-            $(this).addClass('active');
+    // Share button handlers
+    $('.product-share').click(function(e) {
+        e.stopPropagation();
+        const $card = $(this).closest('.product-card');
+        const productData = {
+            id: $card.data('product-id'),
+            name: $card.find('.product-name').text(),
+            price: $card.find('.product-price').text(),
+            image: $card.find('.product-image img').attr('src'),
+            business: $card.find('.product-business').text() || config.businessName,
+            url: `${window.location.href.split('?')[0]}?highlight=${$card.data('product-id')}`,
+            shareText: `Check out ${$card.find('.product-name').text()} for ${$card.find('.product-price').text()} at ${config.businessName}`
+        };
+        handleShare(productData);
+    });
 
-            const businessId = $(this).data('business');
-            filterByBusiness(businessId);
-        });
+    $('#quick-view-share').click(function(e) {
+        e.stopPropagation();
+        const productData = {
+            id: $(this).data('product-id'),
+            name: $('#quick-view-title').text(),
+            price: $('#quick-view-price').text(),
+            image: $('#quick-view-img').attr('src'),
+            business: config.businessName,
+            url: `${window.location.href.split('?')[0]}?highlight=${$(this).data('product-id')}`,
+            shareText: `Check out ${$('#quick-view-title').text()} for ${$('#quick-view-price').text()} at ${config.businessName}`
+        };
+        handleShare(productData);
+    });
 
-        function filterByBusiness(businessId) {
-            $('.product-card').each(function() {
-                const productBusiness = $(this).data('business-id');
-                const allBusinesses = businessId === 'all';
-                const matchesBusiness = allBusinesses ||
-                    (productBusiness && productBusiness.toString() === businessId.toString());
+    // Checkout via WhatsApp
+    $('#checkout-btn').click(function() {
+        const customerName = $('#customer-name').val().trim();
+        const customerPhone = $('#customer-phone').val().trim();
+        const customerNotes = $('#customer-notes').val().trim();
 
-                $(this).toggle(allBusinesses || matchesBusiness);
-            });
+        if (!customerName) {
+            showToast('Please enter your name', 'danger');
+            return;
         }
-        {% endif %}
 
-        // Search functionality
-        $('.search-input').on('input', function() {
-            const searchTerm = $(this).val().toLowerCase();
+        if (!customerPhone) {
+            showToast('Please enter your phone number', 'danger');
+            return;
+        }
+
+        if (Object.keys(state.cart).length === 0) {
+            showToast('Your cart is empty', 'danger');
+            return;
+        }
+
+        let message = `Hello,\n\nI would like to place an order:\n\n`;
+        message += `*Customer Name:* ${customerName}\n`;
+        message += `*Phone:* ${customerPhone}\n\n`;
+
+        if (customerNotes) {
+            message += `*Delivery/Notes:* ${customerNotes}\n\n`;
+        }
+
+        message += `*Order Details:*\n`;
+        let total = 0;
+
+        for (const [productId, item] of Object.entries(state.cart)) {
+            const itemTotal = item.price * item.quantity;
+            total += itemTotal;
+            message += `- ${item.name} (${item.business}) - ${config.currencySymbol}${item.price.toFixed(2)} × ${item.quantity} = ${config.currencySymbol}${itemTotal.toFixed(2)}\n`;
+        }
+
+        message += `\n*Total:* ${config.currencySymbol}${total.toFixed(2)}\n\n`;
+        message += `Please confirm my order. Thank you!`;
+
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = `https://wa.me/${config.businessPhone}?text=${encodedMessage}`;
+        window.open(whatsappUrl, '_blank');
+    });
+
+    // Filtering functionality
+    $('.filter-option[data-category]').click(function() {
+        $('.filter-option[data-category]').removeClass('active');
+        $(this).addClass('active');
+        filterProducts($(this).data('category'));
+    });
+
+    function filterProducts(categoryId) {
+        $('.product-card').each(function() {
+            const productCategory = $(this).data('category-id');
+            const showAll = categoryId === 'all';
+            const matchesCategory = showAll || (productCategory && productCategory.toString() === categoryId.toString());
+            $(this).toggle(showAll || matchesCategory);
+        });
+    }
+
+    {% if all_businesses %}
+    $('.filter-option[data-business]').click(function() {
+        $('.filter-option[data-business]').removeClass('active');
+        $(this).addClass('active');
+        filterByBusiness($(this).data('business'));
+    });
+
+    function filterByBusiness(businessId) {
+        $('.product-card').each(function() {
+            const productBusiness = $(this).data('business-id');
+            const showAll = businessId === 'all';
+            const matchesBusiness = showAll || (productBusiness && productBusiness.toString() === businessId.toString());
+            $(this).toggle(showAll || matchesBusiness);
+        });
+    }
+    {% endif %}
+
+    // Search functionality with debounce
+    let searchTimeout;
+    $('.search-input').on('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            const searchTerm = $(this).val().toLowerCase().trim();
 
             if (searchTerm.length > 0) {
                 $('.product-card').each(function() {
                     const productName = $(this).find('.product-name').text().toLowerCase();
-                    const matchesSearch = productName.includes(searchTerm);
-                    $(this).toggle(matchesSearch);
+                    $(this).toggle(productName.includes(searchTerm));
                 });
             } else {
                 $('.product-card').show();
             }
-        });
-
-        // Favorite functionality
-        $('.product-favorite').click(function(e) {
-            e.stopPropagation();
-            $(this).find('i').toggleClass('far fas');
-            $(this).toggleClass('active');
-
-            const productId = $(this).data('product-id');
-            const productCard = $(this).closest('.product-card');
-            const productName = productCard.find('.product-name').text();
-
-            if ($(this).hasClass('active')) {
-                showToast(`${productName} added to favorites`, 'success');
-            } else {
-                showToast(`${productName} removed from favorites`, 'danger');
-            }
-        });
-
-        // Share functionality
-        $('.product-share').click(function(e) {
-            e.stopPropagation();
-            const productId = $(this).data('product-id');
-            const productCard = $(this).closest('.product-card');
-            const productName = productCard.find('.product-name').text();
-            const productPrice = productCard.find('.product-price').text();
-            const productImage = productCard.find('.product-image img').attr('src');
-
-            // Create a share URL
-            const shareUrl = window.location.href.split('?')[0] + `?highlight=${productId}`;
-
-            // Try Web Share API first
-            if (navigator.share) {
-                navigator.share({
-                    title: productName,
-                    text: `Check out ${productName} for ${productPrice} at {{ business.name }}`,
-                    url: shareUrl,
-                }).catch(err => {
-                    console.log('Error sharing:', err);
-                    fallbackShare(shareUrl, productName);
-                });
-            } else {
-                fallbackShare(shareUrl, productName);
-            }
-        });
-
-        function fallbackShare(url, productName) {
-            // Fallback for browsers that don't support Web Share API
-            const $temp = $('<input>');
-            $('body').append($temp);
-            $temp.val(url).select();
-            document.execCommand('copy');
-            $temp.remove();
-            
-            showToast(`Link for ${productName} copied to clipboard`, 'info');
-        }
-
-        // Toast notification
-        function showToast(message, type) {
-            const toast = $(`
-                <div class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2"></i>
-                            ${message}
-                        </div>
-                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-                    </div>
-                </div>
-            `);
-
-            $('#toast-container').append(toast);
-            const bsToast = new bootstrap.Toast(toast[0]);
-            bsToast.show();
-
-            // Remove toast after it's hidden
-            toast.on('hidden.bs.toast', function() {
-                $(this).remove();
-            });
-        }
+        }, 300);
     });
-    </script>
+
+    // Favorite functionality
+    $('.product-favorite').click(function(e) {
+        e.stopPropagation();
+        $(this).find('i').toggleClass('far fas');
+        $(this).toggleClass('active');
+
+        const productName = $(this).closest('.product-card').find('.product-name').text();
+        const action = $(this).hasClass('active') ? 'added to' : 'removed from';
+        showToast(`${productName} ${action} favorites`, $(this).hasClass('active') ? 'success' : 'danger');
+    });
+
+    // Toast notifications
+    function showToast(message, type) {
+        const toast = $(`
+            <div class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        `);
+
+        $('#toast-container').append(toast);
+        const bsToast = new bootstrap.Toast(toast[0]);
+        bsToast.show();
+
+        toast.on('hidden.bs.toast', function() {
+            $(this).remove();
+        });
+    }
+
+    // Initialize the application
+    initTheme();
+    updateCartUI();
+});
+</script>
 </body>
 </html>
