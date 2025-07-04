@@ -113,90 +113,65 @@ class ProfileUpdateForm(forms.ModelForm):
         fields = ['profile_picture', 'phone_number', 'address', 'bio']
 
 from django import forms
-from ckeditor.widgets import CKEditorWidget
+from django_ckeditor_5.widgets import CKEditor5Widget
 from django.core.validators import FileExtensionValidator
+
+class BusinessForm(forms.ModelForm):
+    class Meta:
+        model = Business
+        fields = ['logo', 'name', 'category', 'email', 'phone_number', 'city', 'address', 'description']
+        widgets = {
+            'description': CKEditor5Widget(
+                attrs={'class': 'django_ckeditor_5'},
+                config_name='default'
+            ),
+            'address': forms.TextInput(attrs={'placeholder': 'Street, Building, etc.'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['description'].required = False
+        self.fields['address'].required = True
+
+
 class BusinessUpdateForm(forms.ModelForm):
-    description = forms.CharField(widget=CKEditorWidget(), required=False)
     show_store_link = forms.BooleanField(
-        required=False,  # Important for boolean fields
-        widget=forms.CheckboxInput(attrs={
-            'class': 'toggle-checkbox',
-        }),
+        required=False,
+        widget=forms.CheckboxInput(attrs={'class': 'toggle-checkbox'}),
         label="Show Store Link in Navigation"
     )
 
     class Meta:
         model = Business
-        fields = [
-            'logo',
-            'name',
-            'email',
-            'city',
-            'phone_number',
-            'category',
-            'show_store_link',
-            'description',
-            'company_profile'
-        ]
+        fields = ['logo', 'name', 'email', 'city', 'phone_number', 'category',
+                 'show_store_link', 'description', 'company_profile']
+        widgets = {
+            'description': CKEditor5Widget(
+                attrs={'class': 'django_ckeditor_5'},
+                config_name='default'
+            ),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Initialize the boolean field with the current value
         if self.instance:
             self.fields['show_store_link'].initial = self.instance.show_store_link
 
     def save(self, commit=True):
         business = super().save(commit=False)
-        # Explicitly set the show_store_link value
         business.show_store_link = self.cleaned_data.get('show_store_link', False)
-
         if commit:
             business.save()
-            self.save_m2m()  # For any many-to-many fields
-
+            self.save_m2m()
         return business
 
 from django.core.exceptions import ValidationError
 from urllib.parse import urlparse
 
 class UserRegistrationForm(UserCreationForm):
-    business_name = forms.CharField(max_length=200, required=True)
-    business_address = forms.CharField(max_length=255, required=True)
-    business_phone_number = forms.CharField(max_length=15, required=True)
-    business_email = forms.EmailField(required=True)
-    business_website = forms.URLField(required=False)
-    business_city = forms.CharField(max_length=100, required=True)
-
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2', 'business_name', 'business_address', 'business_phone_number', 'business_email', 'business_website', 'business_city']
-
-    def clean_business_website(self):
-        website = self.cleaned_data.get('business_website')
-
-        # If there's a website URL entered, make sure it includes http:// or https://
-        if website:
-            parsed_url = urlparse(website)
-            if not parsed_url.scheme:
-                # If there's no scheme, add "https://"
-                website = 'https://' + website
-        return website
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        if commit:
-            user.save()
-            business = Business.objects.create(
-                name=self.cleaned_data['business_name'],
-                address=self.cleaned_data['business_address'],
-                phone_number=self.cleaned_data['business_phone_number'],
-                email=self.cleaned_data['business_email'],
-                website=self.cleaned_data.get('business_website', ''),
-                city=self.cleaned_data['business_city'],
-                owner=user
-            )
-            UserProfile.objects.get_or_create(user=user, defaults={'business': business})
-        return user
+        fields = ['username', 'email', 'password1', 'password2']
 
 
 class ReviewForm(forms.ModelForm):
@@ -222,18 +197,6 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ['profile_picture', 'phone_number', 'address', 'bio']
-
-from django import forms
-from .models import Business
-from .widgets import CKEditorCDNWidget
-
-class BusinessForm(forms.ModelForm):
-    description = forms.CharField(widget=CKEditorCDNWidget(), required=False)
-
-    class Meta:
-        model = Business
-        fields = ['logo', 'name', 'address', 'email', 'city', 'phone_number', 'category', 'description', 'show_store_link']
-
 
 
 from django import forms

@@ -5,7 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ business.name }} - Store</title>
-
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -104,25 +108,55 @@
         gap: 24px;
     }
 
-    .logo-section {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0; /* Allows text truncation */
+    flex-shrink: 1; /* Allows the section to shrink */
+}
 
-    .store-logo {
-        width: 48px;
-        height: 48px;
-        border-radius: 8px;
-        object-fit: cover;
-        border: 2px solid var(--border-color);
-    }
+.store-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 2px solid var(--border-color);
+    flex-shrink: 0; /* Prevents logo from shrinking */
+}
 
+.logo-text {
+    font-weight: 700;
+    color: var(--primary-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px; /* Adjust based on your layout */
+    transition: font-size 0.3s ease;
+    font-size: clamp(14px, 2.5vw, 16px); /* Responsive font sizing */
+}
+
+/* For smaller screens */
+@media (max-width: 768px) {
     .logo-text {
-        font-size: 16px;
-        font-weight: 700;
-        color: var(--primary-color);
+        max-width: 150px;
+        font-size: clamp(12px, 3vw, 14px);
     }
+}
+
+@media (max-width: 576px) {
+    .logo-text {
+        max-width: 120px; /* Slightly wider than before */
+        font-size: 12px; /* Fixed small size for very small screens */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .logo-section {
+        gap: 6px; /* Reduced gap for tighter spacing */
+    }
+}
 
     .search-section {
         flex: 1;
@@ -1265,30 +1299,30 @@
         </div>
     <header class="store-header">
 
-        <div class="header-container">
-            <div class="header-main">
-                <div class="logo-section">
-                    <img src="{{ business.logo.url }}" alt="{{ business.name }}" class="store-logo">
-                    <div class="logo-text">{{ business.name }}</div>
-                </div>
+<div class="header-container">
+    <div class="header-main">
+        <div class="logo-section">
+            <img src="{{ business.logo.url }}" alt="{{ business.name }}" class="store-logo">
+            <div class="logo-text" title="{{ business.name }}">{{ business.name }}</div>
+        </div>
 
-                <div class="search-section">
-                    <div class="search-bar">
-                        <input type="text" class="search-input" placeholder="Search products...">
-                        <button class="search-button">
-                            <i class="fas fa-search"></i>
-                            <span>Search</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="header-actions">
-                    <button class="theme-toggle" id="theme-toggle">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                </div>
+        <div class="search-section">
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Search products...">
+                <button class="search-button">
+                    <i class="fas fa-search"></i>
+                    <span>Search</span>
+                </button>
             </div>
         </div>
+
+        <div class="header-actions">
+            <button class="theme-toggle" id="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </div>
+</div>
     </header>
 
     <!-- Breadcrumb -->
@@ -1376,7 +1410,12 @@
             <div class="products-container">
                 <div class="products-grid" id="products-grid">
                     {% for product in products %}
-                    <div class="product-card" data-product-id="{{ product.id }}" data-business-id="{{ product.business.id }}" data-category-id="{% if product.category %}{{ product.category.id }}{% endif %}" data-description="{{ product.description|truncatechars:200 }}">
+                    <div class="product-card"
+     data-product-id="{{ product.id }}"
+     data-business-id="{{ product.business.id }}"
+     data-category-id="{% if product.category %}{{ product.category.id }}{% endif %}"
+     data-location="{{ product.location|default_if_none:'' }}"
+     data-description="{{ product.description|truncatechars:200 }}">
                         <div class="product-image">
                             <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-product.png' %}{% endif %}" alt="{{ product.name }}">
                             {% if product.category %}
@@ -1443,12 +1482,6 @@
                                 <i class="fas fa-map-marker-alt"></i>
                                 <span>{{ business.address }}</span>
                             </div>
-                            {% if business.email %}
-                            <div class="store-meta-item">
-                                <i class="fas fa-envelope"></i>
-                                <span>{{ business.email }}</span>
-                            </div>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -1758,177 +1791,384 @@ $(document).ready(function() {
         $('#quick-view').removeClass('active');
     });
 
-    // Sharing functionality
-    function generateShareCard(productData) {
-        return new Promise((resolve, reject) => {
-            const cacheKey = `${productData.id}_${productData.image}`;
+function generateShareCard(productData) {
+    console.log('Generating share card with data:', productData); // Debug log
+    return new Promise((resolve, reject) => {
+        const cacheKey = `${productData.id}_${productData.image}`;
 
-            if (state.shareCache[cacheKey]) {
-                resolve(state.shareCache[cacheKey]);
-                return;
-            }
-
-            const $tempContainer = $('<div>').css({
-                position: 'fixed',
-                left: '-9999px',
-                top: 0,
-                width: '300px',
-                padding: '15px',
-                background: 'white',
-                borderRadius: '12px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                fontFamily: 'Inter, sans-serif'
-            }).appendTo('body');
-
-$tempContainer.html(`
-    <div class="product-card" style="position:relative; border:1px solid #ddd; border-radius:8px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.1); max-width:300px; margin:auto;">
-        <div class="product-image" style="position:relative; text-align:center;">
-            <img src="${productData.image}"
-                 style="width:100%; height:auto; max-height:270px; object-fit:contain;">
-            <div class="price-tag" style="
-                position:absolute;
-                top:10px;
-                right:10px;
-                background:#FF6B00;
-                color:#fff;
-                padding:5px 10px;
-                border-radius:20px;
-                font-weight:bold;
-                font-size:14px;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            ">
-                ${productData.price}
-            </div>
-        </div>
-        <div class="product-details" style="padding:12px;">
-            <h3 style="margin:10px 0 5px; font-size:16px; color:#333; background:transparent;">${productData.name}</h3>
-            <div style="font-size:12px; color:#666; margin-bottom:15px; background:transparent;">Available at ${productData.business}</div>
-            <div style="background:#f5f5f5; padding:8px; border-radius:4px; word-break:break-all;">
-                <a href="${productData.url}" style="color:#0066cc; text-decoration:none; font-size:12px;">${productData.url}</a>
-            </div>
-        </div>
-    </div>
-`);
-
-
-
-            html2canvas($tempContainer[0], {
-                backgroundColor: null,
-                scale: 2,
-                logging: false,
-                useCORS: true
-            }).then(canvas => {
-                $tempContainer.remove();
-                const imageData = canvas.toDataURL('image/png');
-                state.shareCache[cacheKey] = { imageData, text: productData.shareText };
-                resolve({ imageData, text: productData.shareText });
-            }).catch(err => {
-                $tempContainer.remove();
-                reject(err);
-            });
-        });
-    }
-
-    function handleShare(productData) {
-        const $btn = $(`[data-product-id="${productData.id}"] .product-share, #quick-view-share`);
-        $btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
-
-        generateShareCard(productData).then(({ imageData, text }) => {
-            if (navigator.share) {
-                // Convert data URL to blob for Web Share API
-                fetch(imageData)
-                    .then(res => res.blob())
-                    .then(blob => {
-                        navigator.share({
-                            title: productData.name,
-                            text: text,
-                            files: [new File([blob], `${productData.name}.png`, { type: 'image/png' })]
-                        }).catch(() => fallbackShare(imageData, text, productData));
-                    });
-            } else {
-                fallbackShare(imageData, text, productData);
-            }
-        }).catch(err => {
-            console.error('Sharing error:', err);
-            showToast('Failed to share product', 'danger');
-        }).finally(() => {
-            $btn.html('<i class="fas fa-share-alt"></i> Share').prop('disabled', false);
-        });
-    }
-
-    function fallbackShare(imageData, text, productData) {
-        // Mobile fallback - open in new tab with image and link
-        if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
-            const newWindow = window.open();
-            newWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>${productData.name}</title>
-                    <meta name="viewport" content="width=device-width, initial-scale=1">
-                    <style>
-                        body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
-                        img { max-width: 100%; border-radius: 8px; margin-bottom: 15px; }
-                        .product-name { font-size: 18px; margin: 10px 0; }
-                        .product-price { font-size: 20px; font-weight: bold; color: #FF6B00; margin: 10px 0; }
-                        .product-link { display: block; margin: 20px 0; padding: 10px; background: #f5f5f5; border-radius: 4px; word-break: break-all; }
-                    </style>
-                </head>
-                <body>
-                    <img src="${imageData}" alt="${productData.name}">
-                    <div class="product-name">${productData.name}</div>
-                    <div class="product-price">${productData.price}</div>
-                    <div>Available at ${productData.business}</div>
-                    <div class="product-link">
-                        <a href="${productData.url}">${productData.url}</a>
-                    </div>
-                    <p>Long press the image to save or share</p>
-                </body>
-                </html>
-            `);
-        } else {
-            // Desktop fallback - download image and copy text
-            const link = document.createElement('a');
-            link.download = `${productData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
-            link.href = imageData;
-            link.click();
-
-            navigator.clipboard.writeText(`${text}\n${productData.url}`).then(() => {
-                showToast('Product image downloaded and link copied to clipboard!', 'success');
-            });
+        if (state.shareCache[cacheKey]) {
+            resolve(state.shareCache[cacheKey]);
+            return;
         }
+
+        // Generate QR code URL
+        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(productData.url)}&margin=10&format=png`;
+
+        const $tempContainer = $('<div>').css({
+            position: 'fixed',
+            left: '-9999px',
+            top: 0,
+            width: '300px',
+            padding: '15px',
+            background: 'white',
+            borderRadius: '12px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            fontFamily: 'Inter, sans-serif'
+        }).appendTo('body');
+
+        // Debug: Check if location exists
+        console.log('Product location:', productData.location);
+
+        $tempContainer.html(`
+        <div class="share-card" style="
+            position: relative;
+            width: 270px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: white;
+            transition: all 0.3s ease;
+        ">
+            <!-- Product Image -->
+            <div class="share-image" style="
+                position: relative;
+                height:auto;
+                background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                overflow: hidden;
+            ">
+                <img src="${productData.image}"
+                     style="
+                        max-width: 100%;
+                        max-height: 100%;
+                        object-fit: contain;
+                     ">
+
+                <!-- Price Tag -->
+                <div style="
+                    position: absolute;
+                    top: 12px;
+                    right: 12px;
+                    background: #FF6B00;
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 20px;
+                    font-weight: 700;
+                    font-size: 16px;
+                    box-shadow: 0 4px 12px rgba(255,107,0,0.3);
+                ">
+                    ${productData.price}
+                </div>
+            </div>
+
+            <!-- Product Info -->
+            <div style="padding: 16px; background: white;">
+                <h3 style="
+                    margin: 0 0 8px 0;
+                    font-size: 16px;
+                    font-weight: 700;
+                    color: #2D3748;
+                    line-height: 1.3;
+                ">
+                    ${productData.name}
+                </h3>
+
+                <!-- Business and Location Info -->
+                <div style="
+                    display: flex;
+                    gap: 8px;
+                    margin-bottom: 12px;
+                    flex-wrap: wrap;
+                ">
+                    ${productData.business ? `
+                    <div style="
+                        display: flex;
+                        align-items: center;
+                        background: #F8FAFC;
+                        padding: 4px 8px;
+                        border-radius: 4px;
+                        font-size: 11px;
+                        color: #4A5568;
+                    ">
+                        <svg style="width: 12px; height: 12px; margin-right: 4px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        ${productData.business}
+                    </div>
+                    ` : ''}
+
+                    ${productData.location && productData.location.trim() !== '' ? `
+                    <div style="
+                        display: flex;
+                        align-items: center;
+                        background: #F8FAFC;
+                        padding: 4px 8px;
+                        border-radius: 4px;
+                        font-size: 11px;
+                        color: #4A5568;
+                    ">
+                        <svg style="width: 12px; height: 12px; margin-right: 4px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        ${productData.location}
+                    </div>
+                    ` : ''}
+                </div>
+
+                <!-- QR Code Section -->
+                <div style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin: 12px 0;
+                    padding: 12px;
+                    background: #F8FAFC;
+                    border-radius: 8px;
+                ">
+                    <div style="flex: 1;">
+                        <div style="font-size: 12px; color: #718096; margin-bottom: 4px;">
+                            Scan to view product
+                        </div>
+                        <div style="font-size: 11px; color: #A0AEC0; word-break: break-all;">
+                            ${productData.url.substring(0, 30)}...
+                        </div>
+                    </div>
+                    <img src="${qrCodeUrl}"
+                         alt="QR Code"
+                         style="width: 60px; height: 60px; margin-left: 10px;">
+                </div>
+
+                <!-- Footer Branding -->
+                <div style="
+                    margin-top: 12px;
+                    padding-top: 12px;
+                    border-top: 1px dashed #E2E8F0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                ">
+                    <div style="
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                    ">
+                        <div style="
+                            width: 20px;
+                            height: 20px;
+                            background: #FF6B00;
+                            border-radius: 4px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-size: 10px;
+                            font-weight: bold;
+                        ">
+                            SF
+                        </div>
+                        <span style="font-size: 11px; font-weight: 600; color: #4A5568;">
+                            SwiftFind
+                        </span>
+                    </div>
+
+                    <div style="font-size: 10px; color: #A0AEC0;">
+                        Powered by SwiftFind
+                    </div>
+                </div>
+            </div>
+        </div>
+        `);
+
+        html2canvas($tempContainer[0], {
+            backgroundColor: null,
+            scale: 2,
+            logging: false,
+            useCORS: true,
+            allowTaint: true
+        }).then(canvas => {
+            $tempContainer.remove();
+            const imageData = canvas.toDataURL('image/png');
+            state.shareCache[cacheKey] = { imageData, text: productData.shareText };
+            resolve({ imageData, text: productData.shareText });
+        }).catch(err => {
+            $tempContainer.remove();
+            reject(err);
+        });
+    });
+}
+
+function handleShare(productData) {
+    const $btn = $(`[data-product-id="${productData.id}"] .product-share, #quick-view-share`);
+    $btn.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
+
+    // Get the product card element to extract location
+    const $card = $(`.product-card[data-product-id="${productData.id}"]`);
+
+    // Create the full product data object including location
+    const fullProductData = {
+        ...productData,
+        location: $card.data('location') || '', // Add location if available
+        shareText: `Check out ${$card.find('.product-name').text()} for ${$card.find('.product-price').text()} at ${config.businessName}`
+    };
+
+    generateShareCard(fullProductData).then(({ imageData, text }) => {
+        if (navigator.share) {
+            fetch(imageData)
+                .then(res => res.blob())
+                .then(blob => {
+                    navigator.share({
+                        title: fullProductData.name,
+                        text: text,
+                        files: [new File([blob], `${fullProductData.name}.png`, { type: 'image/png' })]
+                    }).catch(() => fallbackShare(imageData, text, fullProductData));
+                });
+        } else {
+            fallbackShare(imageData, text, fullProductData);
+        }
+    }).catch(err => {
+        console.error('Sharing error:', err);
+        showToast('Failed to share product', 'danger');
+    }).finally(() => {
+        $btn.html('<i class="fas fa-share-alt"></i> Share').prop('disabled', false);
+    });
+}
+
+function fallbackShare(imageData, text, productData) {
+    const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>${productData.name}</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <style>
+                body {
+                    margin: 0;
+                    padding: 20px;
+                    font-family: 'Inter', Arial, sans-serif;
+                    background: #f8fafc;
+                }
+                .share-container {
+                    max-width: 100%;
+                    width: 350px;
+                    margin: 0 auto;
+                    background: white;
+                    border-radius: 16px;
+                    overflow: hidden;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                }
+                .product-image {
+                    width: 100%;
+                    height: auto;
+                    display: block;
+                }
+                .product-info {
+                    padding: 20px;
+                }
+                .product-title {
+                    font-size: 18px;
+                    font-weight: 700;
+                    margin: 0 0 10px 0;
+                    color: #2d3748;
+                }
+                .product-price {
+                    font-size: 20px;
+                    font-weight: 700;
+                    color: #FF6B00;
+                    margin: 10px 0;
+                }
+                .action-button {
+                    display: block;
+                    background: #FF6B00;
+                    color: white;
+                    text-align: center;
+                    padding: 12px;
+                    border-radius: 8px;
+                    text-decoration: none;
+                    font-weight: 600;
+                    margin: 20px 0;
+                    transition: all 0.2s ease;
+                }
+                .action-button:hover {
+                    background: #E55A00;
+                    transform: translateY(-2px);
+                }
+            </style>
+        </head>
+        <body>
+            <div class="share-container">
+                <img src="${imageData}" class="product-image" alt="${productData.name}">
+                <div class="product-info">
+                    <h1 class="product-title">${productData.name}</h1>
+                    <div class="product-price">${productData.price}</div>
+                    <p>Available at ${productData.business}</p>
+                    <a href="${productData.url}" class="action-button">
+                        View Product on SwiftFind
+                    </a>
+                </div>
+            </div>
+            <p style="text-align:center; color:#718096; margin-top:20px;">
+                Shared via SwiftFind Marketplace
+            </p>
+        </body>
+        </html>
+    `;
+
+    // For mobile - open as new window with HTML content
+    if (/Android|iPhone|iPad/i.test(navigator.userAgent)) {
+        const newWindow = window.open();
+        newWindow.document.write(htmlContent);
     }
+    // For desktop - download image AND copy link
+    else {
+        const link = document.createElement('a');
+        link.download = `${productData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.png`;
+        link.href = imageData;
+        link.click();
 
-    // Share button handlers
-    $('.product-share').click(function(e) {
-        e.stopPropagation();
-        const $card = $(this).closest('.product-card');
-        const productData = {
-            id: $card.data('product-id'),
-            name: $card.find('.product-name').text(),
-            price: $card.find('.product-price').text(),
-            image: $card.find('.product-image img').attr('src'),
-            business: $card.find('.product-business').text() || config.businessName,
-            url: `${window.location.href.split('?')[0]}?highlight=${$card.data('product-id')}`,
-            shareText: `Check out ${$card.find('.product-name').text()} for ${$card.find('.product-price').text()} at ${config.businessName}`
-        };
-        handleShare(productData);
-    });
+        navigator.clipboard.writeText(`${text}\n${productData.url}`).then(() => {
+            showToast('Product image downloaded and link copied to clipboard!', 'success');
+        });
+    }
+}
 
-    $('#quick-view-share').click(function(e) {
-        e.stopPropagation();
-        const productData = {
-            id: $(this).data('product-id'),
-            name: $('#quick-view-title').text(),
-            price: $('#quick-view-price').text(),
-            image: $('#quick-view-img').attr('src'),
-            business: config.businessName,
-            url: `${window.location.href.split('?')[0]}?highlight=${$(this).data('product-id')}`,
-            shareText: `Check out ${$('#quick-view-title').text()} for ${$('#quick-view-price').text()} at ${config.businessName}`
-        };
-        handleShare(productData);
-    });
+// Share button handlers
+$('.product-share').click(function(e) {
+    e.stopPropagation();
+    const $card = $(this).closest('.product-card');
+    const productData = {
+        id: $card.data('product-id'),
+        name: $card.find('.product-name').text(),
+        price: $card.find('.product-price').text(),
+        image: $card.find('.product-image img').attr('src'),
+        business: $card.find('.product-business').text() || config.businessName,
+        url: `${window.location.href.split('?')[0]}?highlight=${$card.data('product-id')}`,
+        shareText: `Check out ${$card.find('.product-name').text()} for ${$card.find('.product-price').text()} at ${config.businessName}`,
+        location: $card.data('location') // This should now properly get the location
+    };
+    console.log('Sharing product:', productData); // Debug log
+    handleShare(productData);
+});
 
+$('#quick-view-share').click(function(e) {
+    e.stopPropagation();
+    const $card = $(`.product-card[data-product-id="${$(this).data('product-id')}"]`);
+    const productData = {
+        id: $(this).data('product-id'),
+        name: $('#quick-view-title').text(),
+        price: $('#quick-view-price').text(),
+        image: $('#quick-view-img').attr('src'),
+        business: config.businessName,
+        url: `${window.location.href.split('?')[0]}?highlight=${$(this).data('product-id')}`,
+        shareText: `Check out ${$('#quick-view-title').text()} for ${$('#quick-view-price').text()} at ${config.businessName}`,
+        location: $card.data('location') // This should now properly get the location
+    };
+    console.log('Sharing product (quick view):', productData); // Debug log
+    handleShare(productData);
+});
     // Checkout via WhatsApp
     $('#checkout-btn').click(function() {
         const customerName = $('#customer-name').val().trim();

@@ -419,22 +419,42 @@ def handle_post_delete(request, business, pk):
     messages.success(request, 'Post deleted successfully!')
     return redirect('business-detail', pk=pk)
 
+from .models import Category  # Import your Category model
+
+@login_required
 def add_business(request):
+    categories = Category.objects.all()
+
     if request.method == 'POST':
         form = BusinessForm(request.POST, request.FILES)
         if form.is_valid():
-            business = form.save(commit=False)
-            if request.user.is_authenticated:
-                business.owner = request.user
-                if request.user.is_staff or request.user.is_superuser:
-                    business.is_admin_added = True
-            else:
-                business.owner = None
-            business.save()
-            return redirect('business-detail', pk=business.pk)
+            try:
+                with transaction.atomic():
+                    business = form.save(commit=False)
+                    business.owner = request.user
+
+                    # Set default values for required fields not in form
+                    if not business.description:
+                        business.description = "No description provided"
+                    business.show_store_link = True
+
+                    business.save()
+                    form.save_m2m()  # For any many-to-many fields
+
+                    messages.success(request, 'Business created successfully!')
+                    return redirect('profile')
+            except Exception as e:
+                messages.error(request, f'Error creating business: {str(e)}')
+        else:
+            # Form is invalid - show errors
+            messages.error(request, 'Please correct the errors below.')
     else:
         form = BusinessForm()
-    return render(request, 'directory/add_business.html', {'form': form})
+
+    return render(request, 'directory/add_business.html', {
+        'form': form,
+        'categories': categories
+    })
 
 def upload_business_image(request, business_id):
     business = get_object_or_404(Business, id=business_id)
@@ -508,13 +528,15 @@ def register(request):
 
 @login_required
 def profile(request):
-    profile, created = UserProfile.objects.get_or_create(user=request.user)
-    primary_business = request.user.owned_businesses.first()
+    profile = request.user.profile
+    business = Business.objects.filter(owner=request.user).first()  # Get user's business if exists
 
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=request.user)
         profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
-        business_form = BusinessUpdateForm(request.POST, request.FILES, instance=primary_business) if primary_business else None
+
+        # Only include business form if business exists
+        business_form = BusinessUpdateForm(request.POST, request.FILES, instance=business) if business else None
 
         if all(form.is_valid() for form in filter(None, [user_form, profile_form, business_form])):
             try:
@@ -522,7 +544,6 @@ def profile(request):
                     user_form.save()
                     profile_form.save()
                     if business_form:
-                        # Explicitly get the cleaned data for show_store_link
                         business = business_form.save(commit=False)
                         business.show_store_link = business_form.cleaned_data.get('show_store_link', False)
                         business.save()
@@ -535,7 +556,7 @@ def profile(request):
     else:
         user_form = UserUpdateForm(instance=request.user)
         profile_form = ProfileUpdateForm(instance=profile)
-        business_form = BusinessUpdateForm(instance=primary_business) if primary_business else None
+        business_form = BusinessUpdateForm(instance=business) if business else None
 
     context = {
         'user': request.user,
@@ -543,7 +564,8 @@ def profile(request):
         'user_form': user_form,
         'profile_form': profile_form,
         'business_form': business_form,
-        'business': primary_business,
+        'business': business,  # Pass business to template
+        'has_business': business is not None  # Add flag for business existence
     }
     return render(request, 'registration/profile.html', context)
 
@@ -776,5 +798,14 @@ def privacy(request):
 def terms(request):
     return render(request, 'terms.html')
 
+from django.shortcuts import render
+from django.views.decorators.http import require_GET
+from django.utils.cache import patch_cache_control
+
+@require_GET
 def offline(request):
-    return render(request, 'offline.html')
+    """Enhanced offline view with proper caching headers"""
+    response = render(request, 'offline.html')
+    # Ensure the offline page itself isn't cached by browsers
+    patch_cache_control(response, no_cache=True, no_store=True, must_revalidate=True)
+    return response

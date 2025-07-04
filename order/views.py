@@ -92,29 +92,47 @@ def mobile_view(request):
     return render(request, 'skyhopper.html')
 
 def quiz_view(request):
-    question = random.choice(QuizQuestion.objects.all())  # Random question
+    # Get or initialize score from session
     score = request.session.get('score', 0)
-    top_scores = QuizScore.objects.all().order_by('-score')[:5]# Retrieve session score, default is 0
+    top_scores = QuizScore.objects.all().order_by('-score')[:5]
+
+    # Handle case when there are no questions
+    questions = QuizQuestion.objects.all()
+    if not questions.exists():
+        return render(request, 'quiz.html', {
+            'error_message': 'No questions available at the moment.',
+            'top_scores': top_scores,
+            'score': score
+        })
+
+    # Select a random question
+    question = random.choice(questions)
 
     if request.method == 'POST':
         selected_answer = request.POST.get('answer')
         correct_answer = request.POST.get('correct_answer')
 
-        # Update score based on the answer
-        if selected_answer == correct_answer:
-            score += 0.5  # Add 10 points for correct answer
-        else:
-            score -= 0.3  # Subtract 5 points for incorrect answer
+        # Validate answers exist before processing
+        if selected_answer is not None and correct_answer is not None:
+            # Update score based on the answer
+            if selected_answer == correct_answer:
+                score += 0.5  # Add 0.5 points for correct answer
+            else:
+                score = max(0, score - 0.3)  # Subtract 0.3 but don't go below 0
 
-        request.session['score'] = score  # Save score in session
+            request.session['score'] = score  # Save updated score in session
 
-        # Check if the user clicked the "Submit Score" button
-        if 'submit_score' in request.POST:
-            return redirect('submit_score')  # Redirect to submit_score page
+            # Check if the user clicked the "Submit Score" button
+            if 'submit_score' in request.POST:
+                return redirect('submit_score')  # Redirect to submit_score page
 
         return redirect('quiz')  # Continue quiz after answering the question
 
-    return render(request, 'quiz.html', {'question': question, 'top_scores': top_scores, 'score': score})
+    return render(request, 'quiz.html', {
+        'question': question,
+        'top_scores': top_scores,
+        'score': round(score, 2)  # Round score to 2 decimal places for display
+    })
 
 def submit_score_view(request):
     score = request.session.get('score', 0)  # Retrieve session score

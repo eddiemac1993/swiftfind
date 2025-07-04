@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count
-from .models import Post, Comment
+from .models import Post, Comment, CategoryChoices
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
 from .forms import PostForm  # Ensure you have a form for post creation
@@ -13,8 +13,24 @@ class PostCreateView(CreateView):
 
 # List posts with brief description
 def post_list(request):
+    category = request.GET.get('category')
     posts = Post.objects.annotate(comment_count=Count('comments')).order_by('-created_at')
-    return render(request, 'posts/post_list.html', {'posts': posts})
+
+    if category:
+        posts = posts.filter(category=category)
+
+    category_choices = [(choice.value, choice.name.title()) for choice in CategoryChoices]
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'posts/post_list_partial.html', {
+            'posts': posts,
+            'category_choices': category_choices
+        })
+
+    return render(request, 'posts/post_list.html', {
+        'posts': posts,
+        'category_choices': category_choices
+    })
 
 # Detailed view with full description, voting, and comments
 def post_detail(request, post_id):

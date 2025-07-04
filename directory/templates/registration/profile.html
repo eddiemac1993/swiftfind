@@ -15,7 +15,7 @@
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js" defer></script>
     <style>
         :root {
             --primary-color: #07C160;
@@ -40,7 +40,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         body {
@@ -171,6 +171,12 @@
             gap: 20px;
         }
 
+        @media (max-width: 1024px) {
+            .profile-layout {
+                grid-template-columns: 240px 1fr;
+            }
+        }
+
         @media (max-width: 768px) {
             .profile-layout {
                 grid-template-columns: 1fr;
@@ -211,15 +217,17 @@
             margin: 0 auto 16px;
             border: 3px solid var(--primary-color);
             position: relative;
+            display: block;
         }
 
         .upload-button {
             position: absolute;
-            bottom: 0;
-            right: 0;
+            top: 50%;
+            right: -16px;
+            transform: translateY(-50%);
             background: var(--primary-color);
             color: white;
-            border: none;
+            border: 2px solid var(--white);
             border-radius: 50%;
             width: 32px;
             height: 32px;
@@ -228,120 +236,135 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 10;
         }
 
         .upload-button:hover {
-            background: var(--primary-dark);
-            transform: scale(1.1);
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
-/* Hide default checkbox */
-/* Enhanced styles for the Store Link Visibility section */
-.form-section {
-    background-color: var(--white);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
 
-.dark-mode .form-section {
-    background-color: var(--dark-surface);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
+        .sidebar-user .relative {
+            display: inline-block;
+            margin-bottom: 16px;
+        }
 
-.section-title {
-    color: var(--primary-color);
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+        /* Form sections */
+        .form-section {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
 
-.dark-mode .section-title {
-    border-bottom-color: rgba(255, 255, 255, 0.1);
-}
+        .dark-mode .form-section {
+            background-color: var(--dark-surface);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
 
-.section-title i {
-    font-size: 16px;
-    width: 24px;
-    text-align: center;
-}
+        .form-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
 
-/* Enhanced toggle switch styles */
-.toggle-container {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
+        .dark-mode .form-section-header {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
 
-.toggle-label {
-    position: relative;
-    display: inline-block;
-    width: 52px;
-    height: 28px;
-    background-color: #ccc;
-    border-radius: 34px;
-    transition: background-color 0.3s ease;
-    cursor: pointer;
-}
+        .section-title {
+            color: var(--primary-color);
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-.toggle-label:after {
-    content: "";
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 24px;
-    height: 24px;
-    background-color: white;
-    border-radius: 50%;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
+        .section-title i {
+            font-size: 16px;
+            width: 24px;
+            text-align: center;
+        }
 
-.toggle-checkbox:checked + .toggle-label {
-    background-color: var(--primary-color);
-}
+        .section-progress {
+            font-size: 12px;
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
 
-.toggle-checkbox:checked + .toggle-label:after {
-    transform: translateX(24px);
-}
+        .dark-mode .section-progress {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
 
-.toggle-checkbox:focus + .toggle-label {
-    box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.3);
-}
+        /* Toggle switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
 
-.toggle-text {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-color);
-    transition: color 0.3s ease;
-}
+        .toggle-label {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+            background-color: #ccc;
+            border-radius: 34px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
 
-.dark-mode .toggle-text {
-    color: var(--dark-text);
-}
+        .dark-mode .toggle-label {
+            background-color: #4b5563;
+        }
 
-/* Form group specific styles */
-.form-group {
-    margin-bottom: 1.5rem;
-}
+        .toggle-label:after {
+            content: "";
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
 
-.form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-    font-size: 14px;
-    color: var(--text-color);
-}
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: var(--primary-color);
+        }
 
-.dark-mode .form-group label {
-    color: var(--dark-text);
-}
+        .toggle-checkbox:checked + .toggle-label:after {
+            transform: translateX(24px);
+        }
 
+        .toggle-checkbox:focus + .toggle-label {
+            box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.3);
+        }
+
+        .toggle-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-color);
+            transition: color 0.3s ease;
+        }
+
+        .dark-mode .toggle-text {
+            color: var(--dark-text);
+        }
+
+        /* Sidebar menu */
         .sidebar-menu {
             padding: 16px 0;
         }
@@ -484,24 +507,32 @@
             background-color: rgba(220, 38, 38, 0.2);
         }
 
+        /* File drop zone */
+        .file-drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .file-drop-zone.active {
+            border-color: var(--primary-color);
+            background-color: rgba(7, 193, 96, 0.05);
+        }
+
+        .dark-mode .file-drop-zone {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .dark-mode .file-drop-zone.active {
+            background-color: rgba(7, 193, 96, 0.1);
+        }
+
         /* Form styles */
         .profile-form {
             padding: 24px;
-        }
-
-        .form-section {
-            margin-bottom: 32px;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 12px;
         }
 
         .form-grid {
@@ -513,6 +544,7 @@
         @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
+                gap: 16px;
             }
         }
 
@@ -525,6 +557,21 @@
             font-weight: 500;
             margin-bottom: 8px;
             font-size: 14px;
+        }
+
+        .form-group label .required {
+            color: #dc2626;
+            margin-left: 4px;
+        }
+
+        .form-group .help-text {
+            font-size: 12px;
+            color: var(--light-text);
+            margin-top: 4px;
+        }
+
+        .dark-mode .form-group .help-text {
+            color: var(--dark-light-text);
         }
 
         .form-control {
@@ -590,6 +637,93 @@
             background: #ddd;
         }
 
+        /* Subscription promo styles */
+        .subscription-promo {
+            background-color: rgba(220, 53, 69, 0.1);
+            border-radius: 12px;
+            margin: 8px;
+            padding: 12px;
+            color: #dc3545;
+            border-left: 3px solid #dc3545;
+        }
+
+        .dark-mode .subscription-promo {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #ff6b6b;
+        }
+
+        .promo-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .promo-header i {
+            font-size: 18px;
+        }
+
+        .promo-details p {
+            font-size: 13px;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #07C160;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .whatsapp-btn:hover {
+            background-color: #05a54e;
+        }
+
+        .whatsapp-btn i {
+            margin-right: 6px;
+            font-size: 16px;
+        }
+
+        /* Verification badge */
+        .verified-badge {
+            color: var(--primary-color);
+            font-weight: 500;
+            background-color: rgba(7, 193, 96, 0.1);
+            border-radius: 8px;
+            margin: 8px;
+            padding: 12px;
+            border-left: 3px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .dark-mode .verified-badge {
+            background-color: rgba(7, 193, 96, 0.2);
+        }
+
+        .verified-badge i {
+            flex-shrink: 0;
+            margin-right: 12px;
+        }
+
+        .verified-badge-content p:first-child {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .verified-badge-content p:last-child {
+            font-size: 12px;
+        }
+
         /* Bottom navigation */
         .bottom-nav {
             position: fixed;
@@ -618,6 +752,7 @@
             font-size: 12px;
             font-weight: 500;
             padding: 6px 16px;
+            position: relative;
         }
 
         .nav-item i {
@@ -627,6 +762,36 @@
 
         .nav-item.active {
             color: var(--primary-color);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+        }
+
+        /* CKEditor 5 custom styling */
+        .ck-editor__editable {
+            min-height: 200px;
+            border-radius: 12px !important;
+            border: 1px solid var(--border-color) !important;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .ck-editor__editable {
+            background: var(--dark-surface) !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+            color: var(--dark-text) !important;
+        }
+
+        .ck.ck-editor {
+            transition: all 0.3s ease;
         }
 
         /* Responsive adjustments */
@@ -645,75 +810,6 @@
                 justify-content: center;
             }
         }
-/* Subscription promo styles */
-.subscription-promo {
-    background-color: rgba(220, 53, 69, 0.1);
-    border-radius: 12px;
-    margin: 8px;
-    padding: 12px;
-    color: #dc3545;
-    border-left: 3px solid #dc3545;
-}
-
-.promo-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 500;
-    margin-bottom: 8px;
-}
-
-.promo-header i {
-    font-size: 18px;
-}
-
-.promo-details p {
-    font-size: 13px;
-    margin-bottom: 12px;
-    line-height: 1.4;
-}
-
-.whatsapp-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #07C160;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    text-decoration: none;
-    transition: background-color 0.2s ease;
-}
-
-.whatsapp-btn:hover {
-    background-color: #05a54e;
-}
-
-.whatsapp-btn i {
-    margin-right: 6px;
-    font-size: 16px;
-}
-
-.verified-badge {
-    color: var(--primary-color);
-    font-weight: 500;
-    background-color: rgba(7, 193, 96, 0.1);
-    border-radius: 8px;
-    margin: 8px;
-    padding: 12px;
-    border-left: 3px solid var(--primary-color);
-}
-
-.dark-mode .subscription-promo {
-    background-color: rgba(220, 53, 69, 0.2);
-    color: #ff6b6b;
-}
-
-.dark-mode .verified-badge {
-    background-color: rgba(7, 193, 96, 0.2);
-}
     </style>
 </head>
 <body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
@@ -725,30 +821,21 @@
                 <span>Profile</span>
             </div>
             <div class="user-actions">
-                <button id="theme-toggle" class="theme-btn">
+                <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">
                     <i class="fas fa-moon light-icon"></i>
                     <i class="fas fa-sun dark-icon"></i>
                 </button>
                 <div class="relative">
-                    <button id="dropdownToggle" class="flex items-center gap-2 focus:outline-none">
+                    <button id="dropdownToggle" class="flex items-center gap-2 focus:outline-none" aria-label="User menu">
                         {% if business.logo %}
-                            <img src="{{ business.logo.url }}" alt="Profile" class="w-8 h-8 rounded-full object-cover">
+                            <img src="{{ business.logo.url }}" loading="lazy" alt="Profile" class="w-8 h-8 rounded-full object-cover">
                         {% else %}
                             <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
                                 <i class="fas fa-user text-gray-500"></i>
                             </div>
                         {% endif %}
                         <span class="font-medium">{{ user.username }}</span>
-                        <i class="fas fa-caret-down"></i>
                     </button>
-                    <div id="dropdownMenu" class="dropdown-menu">
-                        <form id="logoutForm" method="post" action="{% url 'logout' %}">
-                            {% csrf_token %}
-                            <button type="submit" class="w-full text-left">
-                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                            </button>
-                        </form>
-                    </div>
                 </div>
             </div>
         </div>
@@ -761,11 +848,11 @@
             <!-- Sidebar -->
             <aside class="sidebar">
                 <div class="sidebar-user">
-                    <div class="relative">
+                    <div class="relative inline-block">
                         {% if business.logo %}
-                            <img src="{{ business.logo.url }}" alt="Business Logo" class="sidebar-avatar">
+                            <img src="{{ business.logo.url }}" loading="lazy" alt="Business Logo" class="sidebar-avatar relative">
                         {% else %}
-                            <div class="sidebar-avatar bg-gray-200 flex items-center justify-center">
+                            <div class="sidebar-avatar bg-gray-200 flex items-center justify-center relative">
                                 <i class="fas fa-building text-gray-500 text-3xl"></i>
                             </div>
                         {% endif %}
@@ -777,51 +864,57 @@
                     <p>Business Owner</p>
                 </div>
 
-<div class="sidebar-menu">
-    {% if business.is_verified %}
-        <a href="#" class="menu-item active">
-            <i class="fas fa-user-circle"></i>
-            <span>Business Profile</span>
-        </a>
-        <a href="{% url 'pos_system:dashboard' %}" class="menu-item">
-            <i class="fas fa-cash-register"></i>
-            <span>POS system</span>
-        </a>
-        <a href="{% url 'create_paper' %}" class="menu-item">
-            <i class="fas fa-file-invoice"></i>
-            <span>Create Quotations</span>
-        </a>
-        <div class="menu-item verified-badge">
-            <i class="fas fa-check-circle"></i>
-            <span>Verified ({{ business.verification_days_left }} days left)</span>
-        </div>
-    {% else %}
-        <a href="#" class="menu-item active">
-            <i class="fas fa-user-circle"></i>
-            <span>Business Profile</span>
-        </a>
-        <div class="subscription-promo">
-            <div class="promo-header">
-                <i class="fas fa-exclamation-circle"></i>
-                <span>Subscribe to unlock features</span>
-            </div>
-            <div class="promo-details">
-                <p>K1 per day - WhatsApp us to verify your account</p>
-                <a href="https://wa.me/260772447190?text=I%20want%20my%20account%20verified%20for%20{{ business.name }}"
-                   class="whatsapp-btn">
-                    <i class="fab fa-whatsapp"></i> Contact Us
-                </a>
-            </div>
-        </div>
-    {% endif %}
-</div>
-
+                <div class="sidebar-menu">
+                    {% if business.is_verified %}
+                        <a href="#" class="menu-item active">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Business Profile</span>
+                        </a>
+                        <a href="{% url 'pos_system:dashboard' %}" class="menu-item">
+                            <i class="fas fa-cash-register"></i>
+                            <span>POS system</span>
+                        </a>
+                        <a href="{% url 'create_paper' %}" class="menu-item">
+                            <i class="fas fa-file-invoice"></i>
+                            <span>Create Quotations</span>
+                        </a>
+                        <div class="menu-item verified-badge">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="verified-badge-content ml-3">
+                                <p>Verified Business</p>
+                                <p>{{ business.verification_days_left }} days remaining</p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="#" class="menu-item active">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Business Profile</span>
+                        </a>
+                        <div class="subscription-promo">
+                            <div class="promo-header">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>Subscribe to unlock features</span>
+                            </div>
+                            <div class="promo-details">
+                                <p>K1 per day - WhatsApp us to verify your account</p>
+                                <a href="https://wa.me/260772447190?text=I%20want%20my%20account%20verified%20for%20{{ business.name }}"
+                                   class="whatsapp-btn">
+                                    <i class="fab fa-whatsapp"></i> Contact Us
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
             </aside>
 
             <!-- Main Content -->
             <main class="main-content">
                 <div class="content-header">
-                    <h2 class="content-title">Edit Business Information</h2>
+                    <h2 class="content-title">
+                        {% if has_business %}Edit Business Information{% else %}Create Your Business Profile{% endif %}
+                    </h2>
                 </div>
 
                 {% if messages %}
@@ -833,46 +926,94 @@
                     {% endfor %}
                 {% endif %}
 
-                <form method="post" enctype="multipart/form-data" class="profile-form">
-                    {% csrf_token %}
-
-                    <!-- Account Information Section -->
-                    <div class="form-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-user-circle"></i> Account Information
-                        </h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="{{ user_form.username.id_for_label }}">Username</label>
-                                <input type="text"
-                                       id="{{ user_form.username.id_for_label }}"
-                                       name="{{ user_form.username.name }}"
-                                       value="{{ user_form.username.value }}"
-                                       class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="{{ user_form.email.id_for_label }}">Email</label>
-                                <input type="email"
-                                       id="{{ user_form.email.id_for_label }}"
-                                       name="{{ user_form.email.name }}"
-                                       value="{{ user_form.email.value }}"
-                                       class="form-control">
-                            </div>
+                {% if not has_business %}
+                    <!-- Add Business CTA Section -->
+                    <div class="form-section" style="text-align: center; padding: 40px 20px;">
+                        <div style="max-width: 500px; margin: 0 auto;">
+                            <i class="fas fa-store" style="font-size: 48px; color: var(--primary-color); margin-bottom: 20px;"></i>
+                            <h3 style="font-size: 20px; margin-bottom: 15px;">You haven't created a business profile yet</h3>
+                            <p style="margin-bottom: 25px; color: var(--light-text);">
+                                Add your business to get listed in our directory and access all business features.
+                            </p>
+                            <a href="{% url 'add-business' %}" class="btn btn-primary" style="padding: 12px 30px; font-size: 16px;">
+                                <i class="fas fa-plus mr-2"></i> Add Your Business
+                            </a>
                         </div>
                     </div>
+                {% else %}
+                    <form method="post" enctype="multipart/form-data" class="profile-form">
+                        {% csrf_token %}
 
-                    <!-- Business Details Section -->
-                    <div class="form-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-building"></i> Business Details
-                        </h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Business Logo</label>
-                                <div class="file-input-container">
-                                    <label for="logo-upload" class="file-input-label">
-                                        <i class="fas fa-upload mr-2"></i> Choose Logo
+                        <!-- Account Information Section -->
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3 class="section-title">
+                                    <i class="fas fa-user-circle"></i> Account Information
+                                </h3>
+                                <span class="section-progress">1 of 5</span>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="{{ user_form.username.id_for_label }}">
+                                        Username
+                                        {% if user_form.username.field.required %}<span class="required">*</span>{% endif %}
                                     </label>
+                                    <input type="text"
+                                           id="{{ user_form.username.id_for_label }}"
+                                           name="{{ user_form.username.name }}"
+                                           value="{{ user_form.username.value }}"
+                                           class="form-control"
+                                           aria-describedby="help-{{ user_form.username.id_for_label }}">
+                                    {% if user_form.username.help_text %}
+                                        <small id="help-{{ user_form.username.id_for_label }}" class="help-text">
+                                            {{ user_form.username.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ user_form.email.id_for_label }}">
+                                        Email
+                                        {% if user_form.email.field.required %}<span class="required">*</span>{% endif %}
+                                    </label>
+                                    <input type="email"
+                                           id="{{ user_form.email.id_for_label }}"
+                                           name="{{ user_form.email.name }}"
+                                           value="{{ user_form.email.value }}"
+                                           class="form-control"
+                                           aria-describedby="help-{{ user_form.email.id_for_label }}">
+                                    {% if user_form.email.help_text %}
+                                        <small id="help-{{ user_form.email.id_for_label }}" class="help-text">
+                                            {{ user_form.email.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Business Details Section -->
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3 class="section-title">
+                                    <i class="fas fa-building"></i> Business Details
+                                </h3>
+                                <span class="section-progress">2 of 5</span>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Business Logo</label>
+                                    <div class="file-drop-zone"
+                                         ondragover="event.preventDefault(); this.classList.add('active');"
+                                         ondragleave="this.classList.remove('active');"
+                                         ondrop="handleFileDrop(event, 'logo-upload')">
+                                        <p>Drag & drop your logo here</p>
+                                        <p class="help-text">or</p>
+                                        <label for="logo-upload" class="file-input-label mt-2 inline-block">
+                                            <i class="fas fa-upload mr-2"></i> Select File
+                                        </label>
+                                        <small class="help-text block mt-2">
+                                            Recommended: 500×500 px, JPG/PNG (max 2MB)
+                                        </small>
+                                    </div>
                                     <input type="file"
                                            id="logo-upload"
                                            name="{{ business_form.logo.name }}"
@@ -890,105 +1031,186 @@
                                         {% endif %}
                                     </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="{{ business_form.name.id_for_label }}">Business Name</label>
-                                <input type="text"
-                                       id="{{ business_form.name.id_for_label }}"
-                                       name="{{ business_form.name.name }}"
-                                       value="{{ business_form.name.value|default:'' }}"
-                                       class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="{{ business_form.category.id_for_label }}">Category</label>
-                                <select id="{{ business_form.category.id_for_label }}"
-                                        name="{{ business_form.category.name }}"
-                                        class="form-control">
-                                    {% for value, label in business_form.category.field.choices %}
-                                        <option value="{{ value }}" {% if business_form.category.value == value %}selected{% endif %}>
-                                            {{ label }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
+                                <div class="form-group">
+                                    <label for="{{ business_form.name.id_for_label }}">
+                                        Business Name
+                                        {% if business_form.name.field.required %}<span class="required">*</span>{% endif %}
+                                    </label>
+                                    <input type="text"
+                                           id="{{ business_form.name.id_for_label }}"
+                                           name="{{ business_form.name.name }}"
+                                           value="{{ business_form.name.value|default:'' }}"
+                                           class="form-control"
+                                           aria-describedby="help-{{ business_form.name.id_for_label }}">
+                                    {% if business_form.name.help_text %}
+                                        <small id="help-{{ business_form.name.id_for_label }}" class="help-text">
+                                            {{ business_form.name.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ business_form.category.id_for_label }}">
+                                        Category
+                                        {% if business_form.category.field.required %}<span class="required">*</span>{% endif %}
+                                    </label>
+                                    <select id="{{ business_form.category.id_for_label }}"
+                                            name="{{ business_form.category.name }}"
+                                            class="form-control"
+                                            aria-describedby="help-{{ business_form.category.id_for_label }}">
+                                        {% for value, label in business_form.category.field.choices %}
+                                            <option value="{{ value }}" {% if business_form.category.value == value %}selected{% endif %}>
+                                                {{ label }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    {% if business_form.category.help_text %}
+                                        <small id="help-{{ business_form.category.id_for_label }}" class="help-text">
+                                            {{ business_form.category.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
 
-                    </div>
                         <!-- Store Link Visibility Section -->
-<div class="form-section">
-    <h3 class="section-title">
-        <i class="fas fa-store"></i> Store Link Visibility
-    </h3>
-    <div class="form-group">
-        <label for="{{ business_form.show_store_link.id_for_label }}">Show Store Link in Navigation</label>
-        <div class="toggle-container">
-            {{ business_form.show_store_link }}
-            <label for="{{ business_form.show_store_link.id_for_label }}" class="toggle-label">
-                <span class="toggle-text">
-                    {% if business_form.show_store_link.value %}Link is visible{% else %}Link is hidden{% endif %}
-                </span>
-            </label>
-        </div>
-    </div>
-</div>
-                    <!-- Contact Information Section -->
-                    <div class="form-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-address-card"></i> Contact Information
-                        </h3>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="{{ business_form.email.id_for_label }}">Business Email</label>
-                                <input type="email"
-                                       id="{{ business_form.email.id_for_label }}"
-                                       name="{{ business_form.email.name }}"
-                                       value="{{ business_form.email.value|default:'' }}"
-                                       class="form-control">
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3 class="section-title">
+                                    <i class="fas fa-store"></i> Store Link Visibility
+                                </h3>
+                                <span class="section-progress">3 of 5</span>
                             </div>
                             <div class="form-group">
-                                <label for="{{ business_form.phone_number.id_for_label }}">Business Phone</label>
-                                <input type="tel"
-                                       id="{{ business_form.phone_number.id_for_label }}"
-                                       name="{{ business_form.phone_number.name }}"
-                                       value="{{ business_form.phone_number.value|default:'' }}"
-                                       class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label for="{{ business_form.city.id_for_label }}">City</label>
-                                <input type="text"
-                                       id="{{ business_form.city.id_for_label }}"
-                                       name="{{ business_form.city.name }}"
-                                       value="{{ business_form.city.value|default:'' }}"
-                                       class="form-control">
+                                <label for="{{ business_form.show_store_link.id_for_label }}">Show Store Link in Navigation</label>
+                                <div class="toggle-container">
+                                    <input type="checkbox"
+                                           id="{{ business_form.show_store_link.id_for_label }}"
+                                           name="{{ business_form.show_store_link.name }}"
+                                           class="toggle-checkbox"
+                                           {% if business_form.show_store_link.value %}checked{% endif %}>
+                                    <label for="{{ business_form.show_store_link.id_for_label }}" class="toggle-label"></label>
+                                    <span class="toggle-text">
+                                        {% if business_form.show_store_link.value %}Link is visible{% else %}Link is hidden{% endif %}
+                                    </span>
+                                </div>
+                                {% if business_form.show_store_link.help_text %}
+                                    <small id="help-{{ business_form.show_store_link.id_for_label }}" class="help-text">
+                                        {{ business_form.show_store_link.help_text }}
+                                    </small>
+                                {% endif %}
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Business Description Section -->
-                    <div class="form-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-align-left"></i> Business Description
-                        </h3>
-                        <div class="form-group">
-                            <label for="{{ business_form.description.id_for_label }}">Description</label>
-                            <textarea id="{{ business_form.description.id_for_label }}"
-                                      name="{{ business_form.description.name }}"
-                                      class="form-control"
-                                      rows="5">{{ business_form.description.value|default:'' }}</textarea>
+                        <!-- Contact Information Section -->
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3 class="section-title">
+                                    <i class="fas fa-address-card"></i> Contact Information
+                                </h3>
+                                <span class="section-progress">4 of 5</span>
+                            </div>
+                            <div class="form-grid">
+                                                                <div class="form-group">
+                                    <label for="{{ business_form.email.id_for_label }}">
+                                        Business Email
+                                        {% if business_form.email.field.required %}<span class="required">*</span>{% endif %}
+                                    </label>
+                                    <input type="email"
+                                           id="{{ business_form.email.id_for_label }}"
+                                           name="{{ business_form.email.name }}"
+                                           value="{{ business_form.email.value|default:'' }}"
+                                           class="form-control"
+                                           aria-describedby="help-{{ business_form.email.id_for_label }}">
+                                    {% if business_form.email.help_text %}
+                                        <small id="help-{{ business_form.email.id_for_label }}" class="help-text">
+                                            {{ business_form.email.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ business_form.phone_number.id_for_label }}">
+                                        Business Phone
+                                        {% if business_form.phone_number.field.required %}<span class="required">*</span>{% endif %}
+                                    </label>
+                                    <input type="tel"
+                                           id="{{ business_form.phone_number.id_for_label }}"
+                                           name="{{ business_form.phone_number.name }}"
+                                           value="{{ business_form.phone_number.value|default:'' }}"
+                                           class="form-control"
+                                           aria-describedby="help-{{ business_form.phone_number.id_for_label }}">
+                                    {% if business_form.phone_number.help_text %}
+                                        <small id="help-{{ business_form.phone_number.id_for_label }}" class="help-text">
+                                            {{ business_form.phone_number.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ business_form.city.id_for_label }}">
+                                        City
+                                        {% if business_form.city.field.required %}<span class="required">*</span>{% endif %}
+                                    </label>
+                                    <input type="text"
+                                           id="{{ business_form.city.id_for_label }}"
+                                           name="{{ business_form.city.name }}"
+                                           value="{{ business_form.city.value|default:'' }}"
+                                           class="form-control"
+                                           aria-describedby="help-{{ business_form.city.id_for_label }}">
+                                    {% if business_form.city.help_text %}
+                                        <small id="help-{{ business_form.city.id_for_label }}" class="help-text">
+                                            {{ business_form.city.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Company Profile Section -->
-                    <div class="form-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-file-pdf"></i> Company Profile Document
-                        </h3>
-                        <div class="form-group">
-                            <label>Upload PDF Profile (Max 5MB)</label>
-                            <div class="file-input-container">
-                                <label for="pdf-upload" class="file-input-label">
-                                    <i class="fas fa-file-upload mr-2"></i> Choose PDF
+                        <!-- Business Description Section -->
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3 class="section-title">
+                                    <i class="fas fa-align-left"></i> Business Description
+                                </h3>
+                                <span class="section-progress">5 of 5</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ business_form.description.id_for_label }}">
+                                    Description
+                                    {% if business_form.description.field.required %}<span class="required">*</span>{% endif %}
                                 </label>
+                                <textarea
+                                    id="{{ business_form.description.id_for_label }}"
+                                    name="{{ business_form.description.name }}"
+                                    class="form-control"
+                                    aria-describedby="help-{{ business_form.description.id_for_label }}"
+                                >{{ business_form.description.value|default:'' }}</textarea>
+                                {% if business_form.description.help_text %}
+                                    <small id="help-{{ business_form.description.id_for_label }}" class="help-text">
+                                        {{ business_form.description.help_text }}
+                                    </small>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Company Profile Section -->
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-file-pdf"></i> Company Profile Document
+                            </h3>
+                            <div class="form-group">
+                                <label>Upload PDF Profile (Max 5MB)</label>
+                                <div class="file-drop-zone"
+                                     ondragover="event.preventDefault(); this.classList.add('active');"
+                                     ondragleave="this.classList.remove('active');"
+                                     ondrop="handleFileDrop(event, 'pdf-upload')">
+                                    <p>Drag & drop your PDF here</p>
+                                    <p class="help-text">or</p>
+                                    <label for="pdf-upload" class="file-input-label mt-2 inline-block">
+                                        <i class="fas fa-file-upload mr-2"></i> Select File
+                                    </label>
+                                    <small class="help-text block mt-2">
+                                        PDF format only (max 5MB)
+                                    </small>
+                                </div>
                                 <input type="file"
                                        id="pdf-upload"
                                        name="{{ business_form.company_profile.name }}"
@@ -1012,181 +1234,202 @@
                                 {% endif %}
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Form Actions -->
-                    <div class="form-actions">
-                        <button type="reset" class="btn btn-secondary">
-                            <i class="fas fa-undo mr-2"></i> Reset
-                        </button>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save mr-2"></i> Save Changes
-                        </button>
-                    </div>
-                </form>
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="reset" class="btn btn-secondary">
+                                <i class="fas fa-undo mr-2"></i> Reset
+                            </button>
+                            <button type="submit" class="btn btn-primary" id="submit-btn">
+                                <i class="fas fa-save mr-2"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                {% endif %}
             </main>
         </div>
     </div>
 
     <!-- Bottom navigation -->
     <nav class="bottom-nav">
-        <a href="{% url 'games_hub' %}" class="nav-item">
-            <i class="fas fa-gamepad"></i>
-            <span>Games</span>
-        </a>
         <a href="{% url 'discover' %}" class="nav-item">
             <i class="fas fa-compass"></i>
             <span>Discover</span>
         </a>
-        <a href="{% url 'about' %}" class="nav-item">
+        <a href="{% url 'newsfeed-list' %}" class="nav-item">
+            <i class="fas fa-sync"></i>
+            <span>Update</span>
+        </a>
+        <a href="{% url 'about' %}" class="nav-item {% if request.path == '/about/' %}active{% endif %}">
             <i class="fas fa-info-circle"></i>
             <span>About</span>
         </a>
-        <a href="{% url 'profile' %}" class="nav-item active">
-            <i class="fas fa-user"></i>
-            <span>Profile</span>
-        </a>
+        <form id="logoutForm" method="post" action="{% url 'logout' %}" class="nav-item">
+            {% csrf_token %}
+            <button type="submit" style="background: none; border: none; color: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center;">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </form>
     </nav>
 
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const toggleSwitch = document.getElementById('{{ business_form.show_store_link.id_for_label }}');
-    const toggleLabel = document.querySelector(`label[for="{{ business_form.show_store_link.id_for_label }}"]`);
+        // Handle file drops
+        function handleFileDrop(event, elementId) {
+            event.preventDefault();
+            event.stopPropagation();
+            const dropZone = event.currentTarget;
+            dropZone.classList.remove('active');
 
-    if (toggleSwitch) {
-        // Initialize toggle text
-        updateToggleText(toggleSwitch);
+            const fileInput = document.getElementById(elementId);
+            if (fileInput && event.dataTransfer.files.length > 0) {
+                fileInput.files = event.dataTransfer.files;
 
-        // Add change event listener to the actual checkbox
-        toggleSwitch.addEventListener('change', function() {
-            updateToggleText(this);
-        });
-
-        function updateToggleText(toggle) {
-            const toggleText = toggle.nextElementSibling.querySelector('.toggle-text');
-            if (toggle.checked) {
-                toggleText.textContent = 'Link is visible';
-            } else {
-                toggleText.textContent = 'Link is hidden';
+                // Trigger change event to update preview
+                const changeEvent = new Event('change');
+                fileInput.dispatchEvent(changeEvent);
             }
         }
-    }
 
-    // Make sure the form submits when the toggle changes
-    const toggleCheckbox = document.querySelector('.toggle-checkbox');
-    if (toggleCheckbox) {
-        toggleCheckbox.addEventListener('change', function() {
-            // You can either submit the form automatically or wait for the user to click save
-            // For automatic submission:
-            // this.form.submit();
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme toggle
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function() {
+                    document.body.classList.toggle('dark-mode');
+                    const isDark = document.body.classList.contains('dark-mode');
+                    document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
 
-            // Or just ensure the value is included in the form submission
-            // No additional action needed as the checkbox value will be included
-        });
-    }
-});
-        // Theme toggle
-        document.getElementById('theme-toggle').addEventListener('click', function() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
-        });
+                    // Refresh CKEditor to apply dark mode
+                    if (window.ClassicEditor && ClassicEditor.instances) {
+                        Object.values(ClassicEditor.instances).forEach(editor => {
+                            editor.editing.view.change(writer => {
+                                writer.setStyle(
+                                    'background-color',
+                                    isDark ? 'var(--dark-surface)' : 'white',
+                                    editor.editing.view.document.getRoot()
+                                );
+                            });
+                        });
+                    }
+                });
+            }
 
-        // Dropdown menu toggle
-        document.getElementById('dropdownToggle').addEventListener('click', function(e) {
-            e.stopPropagation();
-            const menu = document.getElementById('dropdownMenu');
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        });
+            // Toggle switch functionality
+            const toggleSwitch = document.getElementById('{{ business_form.show_store_link.id_for_label }}');
+            if (toggleSwitch) {
+                toggleSwitch.addEventListener('change', function() {
+                    const toggleText = document.querySelector('.toggle-text');
+                    if (toggleText) {
+                        toggleText.textContent = this.checked ? 'Link is visible' : 'Link is hidden';
+                    }
+                });
+            }
 
-        document.addEventListener('click', function() {
-            document.getElementById('dropdownMenu').style.display = 'none';
-        });
+            // Logo upload preview
+            const logoUpload = document.getElementById('logo-upload');
+            if (logoUpload) {
+                logoUpload.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        // Validate file type
+                        const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                        if (!validTypes.includes(file.type)) {
+                            alert('Please upload an image file (JPEG, PNG, GIF)');
+                            this.value = '';
+                            return;
+                        }
 
-        // Logo upload preview
-        document.getElementById('logo-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                // Validate file type
-                const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                if (!validTypes.includes(file.type)) {
-                    alert('Please upload an image file (JPEG, PNG, GIF)');
-                    this.value = '';
-                    return;
-                }
+                        // Validate file size (2MB)
+                        if (file.size > 2 * 1024 * 1024) {
+                            alert('Image size exceeds 2MB limit');
+                            this.value = '';
+                            return;
+                        }
 
-                // Validate file size (2MB)
-                if (file.size > 2 * 1024 * 1024) {
-                    alert('Image size exceeds 2MB limit');
-                    this.value = '';
-                    return;
-                }
+                        // Preview image
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const previewContainer = document.querySelector('.file-preview');
+                            if (previewContainer) {
+                                previewContainer.innerHTML = `
+                                    <img src="${e.target.result}" class="image-preview">
+                                    <div class="file-info">${file.name}</div>
+                                `;
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
 
-                // Preview image
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const previewContainer = document.querySelector('.file-preview');
-                    previewContainer.innerHTML = `
-                        <img src="${e.target.result}" class="image-preview">
-                        <div class="file-info">${file.name}</div>
-                    `;
-                };
-                reader.readAsDataURL(file);
+            // PDF upload preview
+            const pdfUpload = document.getElementById('pdf-upload');
+            if (pdfUpload) {
+                pdfUpload.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        // Validate file type
+                        if (!file.type.includes('pdf') && !file.name.toLowerCase().endsWith('.pdf')) {
+                            alert('Please upload a PDF file');
+                            this.value = '';
+                            return;
+                        }
+
+                        // Validate file size (5MB)
+                        if (file.size > 5 * 1024 * 1024) {
+                            alert('File size exceeds 5MB limit');
+                            this.value = '';
+                            return;
+                        }
+
+                        // Show file info
+                        const previewContainer = document.querySelector('.file-preview');
+                        if (!previewContainer) {
+                            const container = document.createElement('div');
+                            container.className = 'file-preview mt-3';
+                            container.innerHTML = `
+                                <i class="fas fa-file-pdf text-red-500 text-2xl"></i>
+                                <div class="file-info file-info-pdf">${file.name}</div>
+                            `;
+                            this.parentNode.appendChild(container);
+                        } else {
+                            previewContainer.innerHTML = `
+                                <i class="fas fa-file-pdf text-red-500 text-2xl"></i>
+                                <div class="file-info file-info-pdf">${file.name}</div>
+                            `;
+                        }
+                    }
+                });
+            }
+
+            // Form submission loading state
+            const profileForm = document.querySelector('.profile-form');
+            if (profileForm) {
+                profileForm.addEventListener('submit', function(e) {
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
+                    }
+                });
+            }
+
+            // Initialize CKEditor
+            if (typeof ClassicEditor !== 'undefined') {
+                ClassicEditor
+                    .create(document.querySelector('#{{ business_form.description.id_for_label }}'), {
+                        toolbar: [
+                            'heading', '|',
+                            'bold', 'italic', 'link', 'bulletedList', 'numberedList',
+                            'blockQuote', 'undo', 'redo'
+                        ]
+                    })
+                    .catch(error => {
+                        console.error('CKEditor error:', error);
+                    });
             }
         });
-
-        // PDF upload preview
-        document.getElementById('pdf-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                // Validate file type
-                if (!file.type.includes('pdf') && !file.name.toLowerCase().endsWith('.pdf')) {
-                    alert('Please upload a PDF file');
-                    this.value = '';
-                    return;
-                }
-
-                // Validate file size (5MB)
-                if (file.size > 5 * 1024 * 1024) {
-                    alert('File size exceeds 5MB limit');
-                    this.value = '';
-                    return;
-                }
-
-                // Show file info
-                const previewContainer = document.querySelector('.file-preview');
-                if (!previewContainer) {
-                    const container = document.createElement('div');
-                    container.className = 'file-preview mt-3';
-                    container.innerHTML = `
-                        <i class="fas fa-file-pdf text-red-500 text-2xl"></i>
-                        <div class="file-info file-info-pdf">${file.name}</div>
-                    `;
-                    this.parentNode.appendChild(container);
-                } else {
-                    previewContainer.innerHTML = `
-                        <i class="fas fa-file-pdf text-red-500 text-2xl"></i>
-                        <div class="file-info file-info-pdf">${file.name}</div>
-                    `;
-                }
-            }
-        });
-
-        // Initialize CKEditor
-        if (typeof CKEDITOR !== 'undefined') {
-            CKEDITOR.replace('{{ business_form.description.id_for_label }}', {
-                toolbar: [
-                    { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike'] },
-                    { name: 'paragraph', items: ['NumberedList', 'BulletedList', 'Blockquote'] },
-                    { name: 'links', items: ['Link', 'Unlink'] },
-                    { name: 'tools', items: ['Maximize'] },
-                    { name: 'styles', items: ['Format'] }
-                ],
-                removePlugins: 'elementspath',
-                resize_enabled: false,
-                height: 200
-            });
-        }
     </script>
 </body>
 </html>

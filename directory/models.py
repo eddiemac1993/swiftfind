@@ -9,7 +9,7 @@ from django.db.models import Avg
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from django.utils import timezone
-from ckeditor.fields import RichTextField
+from django_ckeditor_5.fields import CKEditor5Field
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
 
@@ -28,7 +28,7 @@ class NewsFeed(models.Model):
 
     title = models.CharField(max_length=200)
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default='news')
-    content = RichTextField()
+    content = CKEditor5Field(config_name='default')
     image = models.ImageField(upload_to='newsfeed_images/', blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
@@ -148,7 +148,7 @@ class Business(models.Model):
     )
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_businesses', null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
-    description = RichTextField(blank=True, null=True)
+    description = CKEditor5Field(config_name='default')
     address = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=15)
     is_admin_added = models.BooleanField(default=False, verbose_name="Verified Status")
@@ -285,7 +285,7 @@ class BusinessPost(models.Model):
 
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='posts')
     title = models.CharField(max_length=200)
-    content = RichTextField()
+    content = CKEditor5Field('text')
     post_type = models.CharField(max_length=20, choices=POST_TYPE_CHOICES, default='product')
     image = models.ImageField(upload_to='business_posts/', blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)

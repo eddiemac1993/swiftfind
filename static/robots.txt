@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /private/
+Disallow: /account/
+
+Sitemap: https://www.swiftfindzm.com/sitemap.xml

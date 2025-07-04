@@ -9,24 +9,23 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from .env file
+load_dotenv(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-=udh)je!ql09a_n0_g353ixb6qc=g+8y#$kgysq&yo7zj#bvxn"
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-import os
-from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
 
 # Access the API key
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
@@ -61,15 +60,15 @@ INSTALLED_APPS = [
     'import_export',
     'django_admin_listfilter_dropdown',
     'rangefilter',
-    'ckeditor',
+    'django_ckeditor_5',
+    'django_user_agents',
 ]
 
-# settings.py
-CKEDITOR_CONFIGS = {
+# Customize CKEditor 5 (optional)
+CKEDITOR_5_CONFIGS = {
     'default': {
-        'toolbar': 'Full',
-        'height': 300,
-        'width': '100%',
+        'toolbar': ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList'],
+        'height': '200px',
     },
 }
 
@@ -94,9 +93,12 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django_user_agents.middleware.UserAgentMiddleware',
 ]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+USER_AGENTS_CACHE = 'default'
 
 ROOT_URLCONF = "swiftfind.urls"
 
@@ -161,8 +163,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-import os
-
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'  # URL prefix for static files
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Additional directories for static files
@@ -184,3 +184,50 @@ LOGIN_REDIRECT_URL = '/'
 
 # Redirect to this URL after logout
 LOGOUT_REDIRECT_URL = 'login'  # Redirect to the login page after logout
+
+# settings.py
+
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # manjoloe800@gmail.com from .env
+EMAIL_HOST_PASSWORD = os.getenv('GMAIL_APP_PASSWORD')  # App password from .env
+DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
+ADMINS = [('Admin', os.getenv('ADMIN_EMAIL'))]  # Sends error emails
+
+# Admin Notifications (uses ADMIN_EMAIL from .env)
+ADMINS = [
+    ('Swiftfind Admin', os.getenv('ADMIN_EMAIL')),  # Sends 500 errors and signup alerts
+]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',  # Only send emails for ERROR and CRITICAL
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['mail_admins', 'console'],
+            'level': 'INFO',  # Log INFO and above (but only email for ERROR+)
+            'propagate': True,
+        },
+    },
+}

@@ -1,45 +1,52 @@
-// static/js/serviceworker.js
-const CACHE_NAME = 'business-directory-v1';
-const urlsToCache = [
-  '/',
-  '/offline.html',
-  '/static/css/styles.css',
-  '/static/js/main.js',
-  '/static/images/logo.png',
-  // Add other static files you want to cache
+const CACHE_NAME = 'swiftfind-pwa-v1';
+const OFFLINE_URL = '/offline/';
+const CACHEABLE_URLS = [
+    OFFLINE_URL,
+    '/static/css/styles.css',
+    '/static/js/main.js',
+    '/static/images/logo.png',
+    // Add other essential URLs
 ];
 
-// Install the service worker and cache resources
+// Install - Cache critical resources
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(urlsToCache))
-  );
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then((cache) => cache.addAll(CACHEABLE_URLS))
+            .then(() => self.skipWaiting())
+    );
 });
 
-// Serve cached resources when offline
+// Activate - Clean old caches
+self.addEventListener('activate', (event) => {
+    event.waitUntil(
+        caches.keys().then((cacheNames) => 
+            Promise.all(
+                cacheNames.map((cache) => 
+                    cache !== CACHE_NAME ? caches.delete(cache) : null
+                )
+            )
+        ).then(() => self.clients.claim())
+    );
+});
+
+// Fetch - Smart caching strategy
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Return cached resource if found
-        if (response) {
-          return response;
-        }
-        // Otherwise, fetch from the network
-        return fetch(event.request)
-          .then((networkResponse) => {
-            // Optionally cache the new resource for future use
-            return caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, networkResponse.clone());
-                return networkResponse;
-              });
-          })
-          .catch(() => {
-            // If both cache and network fail, serve a custom offline page
-            return caches.match('/offline.html');
-          });
-      })
-  );
+    // Skip non-GET requests
+    if (event.request.method !== 'GET') return;
+    
+    // Handle HTML requests with network-first strategy
+    if (event.request.headers.get('accept').includes('text/html')) {
+        event.respondWith(
+            fetch(event.request)
+                .catch(() => caches.match(OFFLINE_URL))
+        );
+        return;
+    }
+    
+    // Handle static assets with cache-first strategy
+    event.respondWith(
+        caches.match(event.request)
+            .then((cached) => cached || fetch(event.request))
+    );
 });

@@ -505,81 +505,6 @@ def inventory_view(request):
         return redirect('pos_system:dashboard')
 
 @login_required
-def edit_product(request, product_id):
-    """Edit an existing product"""
-    business, error = get_user_business(request)
-    if error:
-        messages.error(request, error)
-        return redirect('pos_system:dashboard')
-
-    product = get_object_or_404(Product, id=product_id, business=business)
-
-    if request.method == 'POST':
-        # Update product with POST data
-        product.name = request.POST.get('name')
-        product.price = request.POST.get('price')
-        product.stock_quantity = request.POST.get('stock_quantity')
-        product.barcode = request.POST.get('barcode')
-        product.is_active = 'is_active' in request.POST
-
-        # Handle category if you have it
-        category_id = request.POST.get('category')
-        if category_id:
-            product.category = get_object_or_404(Category, id=category_id, business=business)
-        else:
-            product.category = None
-
-        product.save()
-        messages.success(request, 'Product updated successfully')
-        return redirect('pos_system:inventory')
-
-    # Get all categories for the dropdown
-    categories = Category.objects.filter(business=business)
-
-    return render(request, 'pos_system/edit_product.html', {
-        'product': product,
-        'categories': categories
-    })
-
-@login_required
-def delete_product(request, product_id):
-    """Delete a product"""
-    business, error = get_user_business(request)
-    if error:
-        messages.error(request, error)
-        return redirect('pos_system:dashboard')
-
-    product = get_object_or_404(Product, id=product_id, business=business)
-
-    if request.method == 'POST':
-        product.delete()
-        messages.success(request, 'Product deleted successfully')
-        return redirect('pos_system:inventory')
-
-    return render(request, 'pos_system/confirm_delete_product.html', {
-        'product': product
-    })
-
-@login_required
-def print_receipt(request, sale_id):
-    """View for printing receipts"""
-    business, error = get_user_business(request)
-    if error:
-        messages.error(request, error)
-        return redirect('pos_system:dashboard')
-
-    sale = get_object_or_404(Sale, id=sale_id, business=business)
-    items = sale.pos_system_items.select_related('product')
-
-    context = {
-        'business': business,
-        'sale': sale,
-        'items': items,
-    }
-
-    return render(request, 'pos_system/receipt.html', context)
-
-@login_required
 def add_product(request):
     """Add new product"""
     business, error = get_user_business(request)
@@ -604,6 +529,7 @@ def add_product(request):
                 stock_quantity=stock_quantity,
                 barcode=request.POST.get('barcode', '').strip(),
                 sku=request.POST.get('sku', '').strip(),
+                location=request.POST.get('location', '').strip(),  # Add this line
                 is_active=True
             )
 
@@ -652,6 +578,7 @@ def edit_product(request, product_id):
             product.stock_quantity = int(request.POST.get('stock_quantity', 0))
             product.barcode = request.POST.get('barcode', '').strip()
             product.sku = request.POST.get('sku', '').strip()
+            product.location = request.POST.get('location', '').strip()  # Add this line
             product.is_active = request.POST.get('is_active') == 'on'
 
             category_id = request.POST.get('category')
@@ -681,10 +608,9 @@ def edit_product(request, product_id):
 
     return render(request, 'pos_system/edit_product.html', context)
 
-
 @login_required
 def delete_product(request, product_id):
-    """Delete product"""
+    """Delete a product"""
     business, error = get_user_business(request)
     if error:
         messages.error(request, error)
@@ -693,22 +619,32 @@ def delete_product(request, product_id):
     product = get_object_or_404(Product, id=product_id, business=business)
 
     if request.method == 'POST':
-        try:
-            product_name = product.name
-            product.delete()
-            messages.success(request, f"Product '{product_name}' deleted successfully!")
-            return redirect('pos_system:inventory')
-        except Exception as e:
-            messages.error(request, f"Error deleting product: {str(e)}")
-            return redirect('pos_system:inventory')
+        product.delete()
+        messages.success(request, 'Product deleted successfully')
+        return redirect('pos_system:inventory')
+
+    return render(request, 'pos_system/confirm_delete_product.html', {
+        'product': product
+    })
+
+@login_required
+def print_receipt(request, sale_id):
+    """View for printing receipts"""
+    business, error = get_user_business(request)
+    if error:
+        messages.error(request, error)
+        return redirect('pos_system:dashboard')
+
+    sale = get_object_or_404(Sale, id=sale_id, business=business)
+    items = sale.pos_system_items.select_related('product')
 
     context = {
         'business': business,
-        'product': product,
+        'sale': sale,
+        'items': items,
     }
 
-    return render(request, 'pos_system/confirm_delete_product.html', context)
-
+    return render(request, 'pos_system/receipt.html', context)
 
 @login_required
 def category_list(request):

@@ -40,6 +40,10 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('post_detail', args=[str(self.slug)])
 
+    @classmethod
+    def choices(cls):
+        return [(choice.value, choice.name.title()) for choice in cls]
+
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
     parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name="replies")

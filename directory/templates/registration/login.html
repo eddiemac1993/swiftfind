@@ -369,7 +369,30 @@
         .nav-item.active i {
             transform: translateY(-2px);
         }
+.is-invalid {
+    border-color: #ff4444 !important;
+}
 
+.error-message {
+    color: #ff4444;
+    background: #ffeeee;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #ffcccc;
+    animation: fadeIn 0.3s ease;
+}
+
+.field-error {
+    color: #ff4444;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
         .cart-count {
             position: absolute;
             top: -2px;
@@ -409,25 +432,57 @@
                 <h2>Welcome Back</h2>
                 <p>Sign in to continue shopping</p>
             </div>
-            <form method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" class="form-control" placeholder="Enter your username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
-                </div>
-                <div class="login-options">
-                    <div class="remember-me">
-                        <input type="checkbox" id="remember" name="remember">
-                        <label for="remember">Remember me</label>
-                    </div>
-                    <a href="{% url 'password_reset' %}">Forgot Password?</a>
-                </div>
-                <button type="submit" class="login-btn">Sign In</button>
-            </form>
+<form method="post">
+    {% csrf_token %}
+
+    <!-- Non-field errors (e.g., invalid credentials) -->
+    {% if form.non_field_errors %}
+        <div class="error-message" style="color: #ff4444; background: #ffeeee; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffcccc;">
+            {% for error in form.non_field_errors %}
+                {{ error }}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Username field with errors -->
+    <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+               placeholder="e.g., gamer123 or email@example.com" required
+               value="{% if form.username.value %}{{ form.username.value }}{% endif %}">
+        {% if form.username.errors %}
+            <div class="field-error" style="color: #ff4444; font-size: 13px; margin-top: 5px;">
+                {% for error in form.username.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Password field with errors -->
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+               placeholder="Enter your secure password" required>
+        {% if form.password.errors %}
+            <div class="field-error" style="color: #ff4444; font-size: 13px; margin-top: 5px;">
+                {% for error in form.password.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="login-options">
+        <div class="remember-me">
+            <input type="checkbox" id="remember" name="remember">
+            <label for="remember">Remember me</label>
+        </div>
+        <a href="{% url 'password_reset' %}">Forgot Password?</a>
+    </div>
+
+    <button type="submit" class="login-btn">Sign In</button>
+</form>
             <div class="divider">
                 <span>or continue with</span>
             </div>

@@ -5,6 +5,7 @@ from directory.models import Business
 class ProductCategory(models.Model):
     name = models.CharField(max_length=50)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='pos_system_product_categories')
+    location = models.CharField(max_length=100, blank=True, null=True, help_text="Physical location of this category (e.g., Aisle 3, Section B)")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -30,7 +31,8 @@ class Product(models.Model):
     stock_status = models.CharField(max_length=20, choices=STOCK_STATUS_CHOICES, default='in_stock')
     category = models.ForeignKey(ProductCategory, on_delete=models.SET_NULL, null=True, blank=True)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='pos_system_products')
-    image = models.ImageField(upload_to='pos_system_product_images/', blank=True, null=True)
+    location = models.CharField(max_length=100, blank=True, null=True, help_text="Physical location of the product (e.g., Shelf 4, Warehouse A)")
+    image = models.ImageField(upload_to='pos_system_product_images/', default='business_logos/default.jpg', blank=True, null=True)
     barcode = models.CharField(max_length=50, blank=True, null=True)
     sku = models.CharField(max_length=50, blank=True, null=True)
     is_active = models.BooleanField(default=True)
@@ -83,6 +85,7 @@ class Sale(models.Model):
     total = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='cash')
     is_paid = models.BooleanField(default=True)
+    location = models.CharField(max_length=100, blank=True, null=True, help_text="Location where the sale was made")
     notes = models.TextField(blank=True, null=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='pos_system_sales_created')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -97,6 +100,7 @@ class SaleItem(models.Model):
     quantity = models.PositiveIntegerField()
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    location = models.CharField(max_length=100, blank=True, null=True, help_text="Location where the item was stored")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

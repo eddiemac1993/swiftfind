@@ -669,14 +669,15 @@
     </main>
 
     <!-- Bottom navigation -->
+    <!-- Bottom navigation -->
     <nav class="bottom-nav">
-        <a href="{% url 'games_hub' %}" class="nav-item">
-            <i class="fas fa-gamepad"></i>
-            <span>Games</span>
-        </a>
-        <a href="{% url 'discover' %}" class="nav-item active">
+        <a href="{% url 'discover' %}" class="nav-item">
             <i class="fas fa-compass"></i>
             <span>Discover</span>
+        </a>
+        <a href="{% url 'newsfeed-list' %}" class="nav-item active">
+            <i class="fas fa-sync"></i>
+            <span>Update</span>
         </a>
         <a href="{% url 'about' %}" class="nav-item">
             <i class="fas fa-info-circle"></i>
