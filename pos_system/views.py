@@ -12,6 +12,33 @@ from django.db.models import Avg
 from .models import Product, ProductCategory, Sale, SaleItem
 from directory.models import Business
 
+def marketplace_view(request):
+    # Get active products from verified businesses with store link enabled
+    products = Product.objects.filter(
+        business__is_admin_added=True,
+        business__show_store_link=True,
+        is_active=True,
+        stock_quantity__gt=0
+    ).select_related('business', 'category').order_by('name')
+
+    # Get all distinct categories that have products matching our filters
+    categories = ProductCategory.objects.filter(
+        product__in=products
+    ).distinct()
+
+    # Get unique businesses for the business filter
+    unique_businesses = Business.objects.filter(
+        id__in=products.values_list('business', flat=True).distinct(),
+        status='active'
+    )
+
+    context = {
+        'products': products,
+        'categories': categories,
+        'unique_businesses': unique_businesses,
+        'all_businesses': True  # Flag to show business filter
+    }
+    return render(request, 'pos_system/marketplace.html', context)
 
 def get_user_business(request):
     """Helper function to get user's business with proper error handling"""

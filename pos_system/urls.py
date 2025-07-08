@@ -6,6 +6,7 @@ app_name = 'pos_system'
 urlpatterns = [
     # Main views
     path('', views.dashboard, name='dashboard'),
+    path('marketplace/', views.marketplace_view, name='marketplace'),
     path('store/', views.public_store_all, name='public_store_all'),
     path('store/<slug:business_slug>/', views.public_store, name='public_store'),
     path('pos/', views.pos_view, name='pos'),
