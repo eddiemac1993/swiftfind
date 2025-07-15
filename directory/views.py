@@ -47,6 +47,175 @@ from .forms import (
 from .utils import get_client_ip, generate_random_name
 from .auth_backends import BusinessAuthBackend
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from .models import Business, BusinessPost
+from .forms import BusinessPostForm
+
+@login_required
+def products_list(request):
+    # Get the user's business
+    business = Business.objects.filter(owner=request.user).first()
+    if not business:
+        messages.warning(request, "You don't have a business profile yet.")
+        return redirect('profile')
+
+    # Get all products/services for this business
+    products = BusinessPost.objects.filter(business=business).order_by('-created_at')
+
+    # Pagination
+    paginator = Paginator(products, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'directory/products_list.html', {
+        'products': page_obj,
+        'business': business
+    })
+
+@login_required
+def add_product(request):
+    business = Business.objects.filter(owner=request.user).first()
+    if not business:
+        messages.warning(request, "You don't have a business profile yet.")
+        return redirect('profile')
+
+    if request.method == 'POST':
+        form = BusinessPostForm(request.POST, request.FILES)
+        if form.is_valid():
+            product = form.save(commit=False)
+            product.business = business
+            product.save()
+            messages.success(request, 'Product/Service added successfully!')
+            return redirect('products-list')
+    else:
+        form = BusinessPostForm()
+
+    return render(request, 'directory/add_product.html', {
+        'form': form,
+        'business': business
+    })
+
+@login_required
+def edit_product(request, pk):
+    product = get_object_or_404(BusinessPost, pk=pk)
+
+    # Check if the product belongs to the user's business
+    if product.business.owner != request.user:
+        messages.error(request, "You don't have permission to edit this item.")
+        return redirect('products-list')
+
+    if request.method == 'POST':
+        form = BusinessPostForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Product/Service updated successfully!')
+            return redirect('products-list')
+    else:
+        form = BusinessPostForm(instance=product)
+
+    return render(request, 'directory/edit_product.html', {
+        'form': form,
+        'product': product
+    })
+
+@login_required
+def delete_product(request, pk):
+    product = get_object_or_404(BusinessPost, pk=pk)
+
+    # Check if the product belongs to the user's business
+    if product.business.owner != request.user:
+        messages.error(request, "You don't have permission to delete this item.")
+        return redirect('products-list')
+
+    if request.method == 'POST':
+        product.delete()
+        messages.success(request, 'Product/Service deleted successfully!')
+        return redirect('products-list')
+
+    return render(request, 'directory/delete_product.html', {
+        'product': product
+    })
+
+from django.db.models import Count, Q
+
+def all_products(request):
+    # Get all active products
+    products = BusinessPost.objects.filter().select_related('business')
+
+    # Get distinct businesses and categories for filters
+    all_businesses = Business.objects.filter(
+        id__in=products.values_list('business_id', flat=True).distinct()
+    ).order_by('name')
+
+    all_categories = Category.objects.filter(
+        id__in=products.values_list().distinct()
+    ).order_by('name')
+
+    # Apply filters
+    search_query = request.GET.get('q')
+    selected_business = request.GET.get('business')
+    selected_category = request.GET.get('category')
+    selected_type = request.GET.get('type')
+    sort_by = request.GET.get('sort', 'newest')
+
+    if search_query:
+        products = products.filter(
+            Q(title__icontains=search_query) |
+            Q(content__icontains=search_query) |
+            Q(business__name__icontains=search_query)
+        )
+
+    if selected_business:
+        products = products.filter(business_id=selected_business)
+
+    if selected_category:
+        products = products.filter(category_id=selected_category)
+
+    if selected_type:
+        products = products.filter(post_type=selected_type)
+
+    # Apply sorting
+    if sort_by == 'newest':
+        products = products.order_by('-created_at')
+    elif sort_by == 'popular':
+        products = products.annotate(
+            review_count=Count('reviews')
+        ).order_by('-review_count', '-created_at')
+    elif sort_by == 'price_asc':
+        products = products.order_by('price')
+    elif sort_by == 'price_desc':
+        products = products.order_by('-price')
+
+    # Pagination
+    paginator = Paginator(products, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'directory/all_products.html', {
+        'products': page_obj,
+        'all_businesses': all_businesses,
+        'all_categories': all_categories,
+        'search_query': search_query,
+        'selected_business': selected_business,
+        'selected_category': selected_category,
+        'selected_type': selected_type,
+        'sort_by': sort_by,
+    })
+
+def product_detail(request, business_id, product_id):
+    product = get_object_or_404(BusinessPost, pk=product_id, business__id=business_id)
+
+    related_products = BusinessPost.objects.filter(
+        business=product.business
+    ).exclude(pk=product.id).order_by('?')[:4]
+
+    return render(request, 'directory/product_detail.html', {
+        'product': product,
+        'related_products': related_products,
+        'business': product.business
+    })
 # Helper functions
 def handle_review_submission(request, business):
     review_form = ReviewForm(request.POST)

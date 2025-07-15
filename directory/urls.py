@@ -6,10 +6,14 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('profile/', views.profile, name='profile'),
 
-
     path('business/<int:pk>/', views.business_detail, name='business-detail'),
     path('business/<int:pk>/store/', views.business_detail, name='business-store'),
-
+    path('profile/products/', views.products_list, name='products-list'),
+    path('profile/products/add/', views.add_product, name='add-product'),
+    path('profile/products/<int:pk>/edit/', views.edit_product, name='edit-product'),
+    path('profile/products/<int:pk>/delete/', views.delete_product, name='delete-product'),
+    path('products/', views.all_products, name='all-products'),
+    path('business/<int:business_id>/products/<int:product_id>/', views.product_detail, name='product-detail'),
     # Business-specific URLs
     path('business/<slug:business_slug>/', views.business_dashboard, name='business_dashboard'),
     path('business/<slug:business_slug>/login/', views.business_login, name='business_login'),

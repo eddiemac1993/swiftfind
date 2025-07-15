@@ -21,12 +21,12 @@
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
             border-color: #ff6b35;
         }
-        
+
         /* Alibaba-style gradient */
         .alibaba-gradient {
             background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
         }
-        
+
         /* Search bar styling */
         .search-container {
             background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
@@ -34,13 +34,13 @@
             padding: 2rem;
             margin-bottom: 2rem;
         }
-        
+
         .search-box {
             position: relative;
             max-width: 600px;
             margin: 0 auto;
         }
-        
+
         .search-input {
             width: 100%;
             padding: 16px 60px 16px 20px;
@@ -50,7 +50,7 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             outline: none;
         }
-        
+
         .search-btn {
             position: absolute;
             right: 8px;
@@ -65,12 +65,12 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .search-btn:hover {
             background: #e55a2b;
             transform: translateY(-50%) scale(1.05);
         }
-        
+
         /* Filter tabs */
         .filter-tabs {
             display: flex;
@@ -79,7 +79,7 @@
             overflow-x: auto;
             padding: 0 1rem;
         }
-        
+
         .filter-tab {
             padding: 8px 16px;
             background: white;
@@ -90,13 +90,13 @@
             white-space: nowrap;
             font-size: 14px;
         }
-        
+
         .filter-tab:hover, .filter-tab.active {
             background: #ff6b35;
             color: white;
             border-color: #ff6b35;
         }
-        
+
         /* Bottom Navigation Styles */
         .bottom-nav {
             position: fixed;
@@ -111,7 +111,7 @@
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
             z-index: 1000;
         }
-        
+
         .nav-item {
             display: flex;
             flex-direction: column;
@@ -122,25 +122,25 @@
             padding: 5px 10px;
             transition: all 0.3s ease;
         }
-        
+
         .nav-item i {
             font-size: 1.25rem;
             margin-bottom: 2px;
         }
-        
+
         .nav-item.active {
             color: #ff6b35;
         }
-        
+
         .nav-item:hover {
             color: #ff6b35;
         }
-        
+
         /* Add padding to main content to prevent overlap with bottom nav */
         .main-content {
             padding-bottom: 70px;
         }
-        
+
         /* Price styling */
         .price-tag {
             background: linear-gradient(135deg, #ff6b35, #f7931e);
@@ -149,7 +149,7 @@
             background-clip: text;
             font-weight: 700;
         }
-        
+
         /* Business badge */
         .business-badge {
             background: rgba(255, 107, 53, 0.1);
@@ -159,7 +159,7 @@
             font-size: 12px;
             font-weight: 500;
         }
-        
+
         /* Location badge */
         .location-badge {
             background: rgba(107, 114, 128, 0.1);
@@ -168,7 +168,7 @@
             border-radius: 12px;
             font-size: 12px;
         }
-        
+
         /* View store button */
         .view-store-btn {
             background: linear-gradient(135deg, #ff6b35, #f7931e);
@@ -183,12 +183,12 @@
             text-align: center;
             width: 100%;
         }
-        
+
         .view-store-btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
         }
-        
+
         /* Categories section */
         .categories-section {
             background: white;
@@ -197,45 +197,45 @@
             margin-bottom: 2rem;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
-        
+
         /* Mobile responsive adjustments */
         @media (max-width: 768px) {
             .search-container {
                 padding: 1.5rem 1rem;
             }
-            
+
             .filter-tabs {
                 padding: 0 0.5rem;
             }
-            
+
             .product-card {
                 margin-bottom: 1rem;
             }
         }
-        
+
         /* Highlight animation */
         @keyframes highlightPulse {
             0% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0.7); }
             70% { box-shadow: 0 0 0 10px rgba(255, 107, 0, 0); }
             100% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0); }
         }
-        
+
         .highlighted-product {
             animation: highlightPulse 2s;
             position: relative;
             z-index: 10;
         }
-        
+
         /* Quick View Modal Styles */
         #quickViewModal {
             transition: opacity 0.3s ease;
             display: none;
         }
-        
+
         #quickViewModal.show {
             display: block;
         }
-        
+
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -245,7 +245,7 @@
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1000;
         }
-        
+
         .modal-container {
             position: fixed;
             top: 50%;
@@ -259,11 +259,11 @@
             overflow-y: auto;
             z-index: 1001;
         }
-        
+
         .modal-content {
             padding: 20px;
         }
-        
+
         .modal-close {
             position: absolute;
             top: 10px;
@@ -274,22 +274,22 @@
             cursor: pointer;
             z-index: 1002;
         }
-        
+
         /* Star rating */
         .stars {
             color: #fbbf24;
         }
-        
+
         .empty-star {
             color: #d1d5db;
         }
-        
+
         /* Focus styles */
         button:focus, input:focus, select:focus {
             outline: 2px solid #ff6b35;
             outline-offset: 2px;
         }
-        
+
         .product-card:focus-within {
             box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.5);
         }
@@ -431,9 +431,9 @@
                 <h1 class="text-white text-3xl font-bold mb-2">Find Products from Trusted Suppliers</h1>
                 <p class="text-white text-opacity-90">Discover quality products from verified businesses</p>
             </div>
-            
+
             <div class="search-box">
-                <input type="text" id="search-input" placeholder="Search for products, suppliers, or categories..." 
+                <input type="text" id="search-input" placeholder="Search for products, suppliers, or categories..."
                        class="search-input">
                 <button id="search-button" class="search-btn" aria-label="Search products">
                     <i class="fas fa-search"></i>
@@ -457,7 +457,7 @@
                         {% endfor %}
                     </select>
                 </div>
-                
+
                 <!-- Business Filter -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Business</label>
@@ -477,7 +477,7 @@
                 <h2 class="text-xl font-semibold text-gray-800">Products</h2>
                 <span class="text-sm text-gray-600" id="results-count">Showing all products</span>
             </div>
-            
+
             <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {% for product in products %}
                 <div class="product-card bg-white rounded-lg overflow-hidden"
@@ -488,20 +488,20 @@
                      data-description="{{ product.description|default_if_none:'' }}"
                      data-business-name="{{ product.business.name }}"
                      tabindex="0">
-                    
+
                     <!-- Product Image -->
                     <div class="relative h-48 overflow-hidden group">
-                        <img src="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/300x300?text=No+Image{% endif %}" 
-                             alt="{{ product.name }}" 
+                        <img src="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/300x300?text=No+Image{% endif %}"
+                             alt="{{ product.name }}"
                              class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                              loading="lazy">
-                        
+
                         <!-- Business Logo Badge -->
                         <div class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white p-1 shadow-md">
-                            <img src="{{ product.business.logo.url }}" alt="{{ product.business.name }}" 
+                            <img src="{{ product.business.logo.url }}" alt="{{ product.business.name }}"
                                  class="w-full h-full object-cover rounded-full">
                         </div>
-                        
+
                         <!-- Quick View Overlay -->
                         <a href="{% if product.business and product.id %}{% url 'business-store' pk=product.business.pk %}?highlight={{ product.id }}{% else %}#{% endif %}">
                             <div class="quick-view-container">
@@ -509,11 +509,11 @@
                             </div>
                         </a>
                     </div>
-                    
+
                     <!-- Product Info -->
                     <div class="p-4">
                         <h3 class="text-base font-medium text-gray-800 mb-2 line-clamp-2">{{ product.name }}</h3>
-                        
+
                         <div class="business-meta mb-3">
                             <div class="business-rating flex items-center">
                                 <span class="stars">
@@ -536,29 +536,29 @@
                             </span>
                             {% endif %}
                         </div>
-                        
+
                         <div class="flex items-center justify-between mb-3">
                             <span class="price-tag text-lg font-bold">ZMW {{ product.price }}</span>
-                            <span class="text-xs text-gray-500">1 piece</span>
+                            <span class="text-xs text-gray-500">Order</span>
                         </div>
-                        
+
                         <div class="flex items-center gap-2 mb-3">
                             <span class="business-badge">{{ product.business.name }}</span>
                         </div>
-                        
+
                         {% if product.location %}
                         <div class="flex items-center gap-2 mb-4">
                             <i class="fas fa-map-marker-alt text-gray-400 text-xs"></i>
                             <span class="location-badge">{{ product.location }}</span>
                         </div>
                         {% endif %}
-                        
+
                         <div class="flex gap-2 mt-3">
-                            <a href="{% url 'business-store' pk=product.business.pk %}?highlight={{ product.id }}" 
+                            <a href="{% url 'business-store' pk=product.business.pk %}?highlight={{ product.id }}"
                                class="view-store-btn flex-1">
                                 Contact Supplier
                             </a>
-                            <button class="share-btn bg-gray-100 hover:bg-gray-200 text-gray-800 p-2 rounded-lg transition-colors" 
+                            <button class="share-btn bg-gray-100 hover:bg-gray-200 text-gray-800 p-2 rounded-lg transition-colors"
                                     data-product-id="{{ product.id }}"
                                     data-product-name="{{ product.name }}"
                                     data-product-price="ZMW {{ product.price }}"
@@ -566,7 +566,7 @@
                                     data-product-image="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/300x300?text=No+Image{% endif %}"
                                     data-product-url="{% url 'business-store' pk=product.business.pk %}?highlight={{ product.id }}"
                                     data-business-location="{{ product.location|default_if_none:'' }}">
-                                <i class="fas fa-share-alt"></i>
+                                <i class="fas fa-download download"></i>
                             </button>
                         </div>
                     </div>
@@ -602,25 +602,9 @@
     <div id="shareModal" class="share-modal">
         <div class="share-modal-content">
             <button class="share-modal-close" aria-label="Close modal">&times;</button>
-            <h3 class="text-lg font-semibold mb-4">Share Product</h3>
+            <h3 class="text-lg font-semibold mb-4">Download Product Card</h3>
             <div class="share-options">
-                <div class="share-option whatsapp" data-share-method="whatsapp">
-                    <i class="fab fa-whatsapp whatsapp"></i>
-                    <span class="share-option-label">WhatsApp</span>
-                </div>
-                <div class="share-option facebook" data-share-method="facebook">
-                    <i class="fab fa-facebook facebook"></i>
-                    <span class="share-option-label">Facebook</span>
-                </div>
-                <div class="share-option twitter" data-share-method="twitter">
-                    <i class="fab fa-twitter twitter"></i>
-                    <span class="share-option-label">Twitter</span>
-                </div>
-                <div class="share-option link" data-share-method="link">
-                    <i class="fas fa-link link"></i>
-                    <span class="share-option-label">Copy Link</span>
-                </div>
-                <div class="share-option download" data-share-method="download">
+                    <div class="share-option download" data-share-method="download">
                     <i class="fas fa-download download"></i>
                     <span class="share-option-label">Download</span>
                 </div>
@@ -667,88 +651,88 @@
         const businessFilter = document.getElementById('business-filter');
         const productCards = document.querySelectorAll('.product-card');
         const resultsCount = document.getElementById('results-count');
-        
+
         // Quick View Modal elements
         const quickViewModal = document.getElementById('quickViewModal');
         const quickViewContent = document.getElementById('quickViewContent');
         const modalClose = document.querySelector('.modal-close');
         const modalOverlay = document.querySelector('.modal-overlay');
-        
+
         // Share Modal elements
         const shareModal = document.getElementById('shareModal');
         const shareModalClose = document.querySelector('.share-modal-close');
         const shareOptions = document.querySelectorAll('.share-option');
-        
+
         // State for share functionality
         const state = {
             shareCache: {},
             currentProduct: null
         };
-        
+
         function updateResultsCount() {
-            const visibleCards = Array.from(productCards).filter(card => 
+            const visibleCards = Array.from(productCards).filter(card =>
                 card.style.display !== 'none'
             );
             const count = visibleCards.length;
             resultsCount.textContent = `Showing ${count} product${count !== 1 ? 's' : ''}`;
         }
-        
+
         function filterProducts() {
             const searchTerm = searchInput.value.toLowerCase();
             const selectedCategory = categoryFilter.value;
             const selectedBusiness = businessFilter.value;
-            
+
             productCards.forEach(card => {
                 const productName = card.querySelector('h3').textContent.toLowerCase();
                 const productCategory = card.dataset.categoryId;
                 const productBusiness = card.dataset.businessId;
                 const productLocation = card.dataset.location.toLowerCase();
                 const productDescription = card.dataset.description.toLowerCase();
-                
-                const matchesSearch = searchTerm === '' || 
-                    productName.includes(searchTerm) || 
+
+                const matchesSearch = searchTerm === '' ||
+                    productName.includes(searchTerm) ||
                     productLocation.includes(searchTerm) ||
                     productDescription.includes(searchTerm);
-                
-                const matchesCategory = selectedCategory === 'all' || 
+
+                const matchesCategory = selectedCategory === 'all' ||
                     (productCategory && productCategory === selectedCategory);
-                
-                const matchesBusiness = selectedBusiness === 'all' || 
+
+                const matchesBusiness = selectedBusiness === 'all' ||
                     productBusiness === selectedBusiness;
-                
+
                 if (matchesSearch && matchesCategory && matchesBusiness) {
                     card.style.display = 'block';
                 } else {
                     card.style.display = 'none';
                 }
             });
-            
+
             updateResultsCount();
         }
-        
+
         // Function to handle quick view button click
         function handleQuickViewClick(event) {
             event.preventDefault();
             const productId = this.dataset.productId;
             const businessId = this.dataset.businessId;
-            
+
             // Redirect to business store with product highlight
             window.location.href = `/business-store/${businessId}/?highlight=${productId}`;
         }
-        
+
         // Function to show share modal
         function showShareModal(productData) {
             state.currentProduct = productData;
             shareModal.classList.add('show');
             document.body.style.overflow = 'hidden';
         }
-        
+
         // Function to hide share modal
         function hideShareModal() {
             shareModal.classList.remove('show');
             document.body.style.overflow = '';
         }
-        
+
         // Function to show loading indicator
         function showShareLoadingIndicator() {
             if (!document.getElementById('share-loading-indicator')) {
@@ -766,7 +750,7 @@
                 document.body.insertAdjacentHTML('beforeend', loadingHTML);
             }
         }
-        
+
         // Function to hide loading indicator
         function hideShareLoadingIndicator() {
             const indicator = document.getElementById('share-loading-indicator');
@@ -774,7 +758,7 @@
                 indicator.remove();
             }
         }
-        
+
         // Function to generate share card
         function generateShareCard(productData) {
             return new Promise((resolve, reject) => {
@@ -1053,10 +1037,10 @@
         // Function to handle share action
         async function handleShare(method) {
             if (!state.currentProduct) return;
-            
+
             try {
                 const shareData = await generateShareCard(state.currentProduct);
-                
+
                 switch(method) {
                     case 'whatsapp':
                         window.open(`https://wa.me/?text=${encodeURIComponent(`${shareData.text}\n${shareData.url}`)}`, '_blank');
@@ -1081,7 +1065,7 @@
                         document.body.removeChild(link);
                         break;
                 }
-                
+
                 hideShareModal();
             } catch (error) {
                 console.error('Error sharing:', error);
@@ -1123,18 +1107,18 @@
         searchButton.addEventListener('click', filterProducts);
         categoryFilter.addEventListener('change', filterProducts);
         businessFilter.addEventListener('change', filterProducts);
-        
+
         // Initialize results count
         updateResultsCount();
-        
+
         // Add smooth scrolling for better UX
         searchInput.addEventListener('focus', function() {
-            this.parentElement.parentElement.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
+            this.parentElement.parentElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
             });
         });
-        
+
         // Close modal with Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape' && !quickViewModal.classList.contains('hidden')) {

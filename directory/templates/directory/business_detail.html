@@ -12,8 +12,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --primary-color: #07C160;
-            --primary-dark: #05a54e;
+            --primary-color: #FF6A00;
+            --primary-dark: #FF6A00;
             --primary-light: #e6f7ef;
             --primary-extra-light: #f5fdf9;
             --secondary-color: #F8F8F8;
@@ -1968,12 +1968,6 @@
                 <i class="fas fa-arrow-left"></i>
                 <span>Back</span>
             </a>
-            <div class="user-actions">
-                <button id="theme-toggle" class="theme-btn">
-                    <i class="fas fa-moon light-icon"></i>
-                    <i class="fas fa-sun dark-icon"></i>
-                </button>
-            </div>
         </div>
     </header>
 
@@ -2019,7 +2013,7 @@
     <span>{{ business_stats.average_rating|floatformat:1 }}</span>
 </div>
 <span class="business-review-count">{{ business_stats.review_count }} reviews</span><span class="business-category">
-                        <i class="fas fa-tag"></i>
+
                         {{ business.category.name }}
                     </span>
                 </div>
@@ -2184,366 +2178,92 @@
             {% endif %}
         </div>
 
-        <!-- Products & Services Section -->
-        <div class="business-posts-section">
-            <h2 class="section-title">
-                <i class="fas fa-boxes"></i>
-                Products & Services
-            </h2>
+{% if business.show_store_link %}
+<!-- Store Link Section (only shown when store link is visible) -->
+<div class="store-link-section">
+    <h2 class="section-title">
+        <i class="fas fa-store"></i>
+        Visit Our Store
+    </h2>
 
-{% if is_owner_or_admin %}
-<div class="products-services-section">
+    <div class="store-link-container">
+        <a href="{% url 'business-store' pk=business.pk %}" class="store-link-button">
+            <i class="fas fa-shopping-cart"></i>
+            Explore Products & Services
+        </a>
 
-  <div class="add-post-form">
-    <button class="toggle-form-btn" onclick="toggleForm()">Add New Product/Service</button>
-
-    <form id="postForm" method="post" enctype="multipart/form-data" style="display: none;">
-      {% csrf_token %}
-
-      <div class="form-group">
-        <label for="post_type">Post Type</label>
-        <select id="post_type" name="post_type" class="form-control">
-          <option value="product">Product</option>
-          <option value="service">Service</option>
-          <option value="announcement">Announcement</option>
-          <option value="offer">Special Offer</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="title">Title</label>
-        <input type="text" id="title" name="title" class="form-control" placeholder="Enter title" required>
-      </div>
-
-      <div class="form-group">
-        <label for="content">Content</label>
-        <textarea id="content" name="content" class="form-control rich-text-editor" rows="5" placeholder="Describe your product or service"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="price">Price (zmw)</label>
-        <input type="number" id="price" name="price" class="form-control" min="0" step="0.01" placeholder="0.00">
-      </div>
-
-      <div class="form-group">
-        <label for="image">Image</label>
-        <div class="file-upload-wrapper">
-          <input type="file" id="image" name="image" class="file-upload-input" accept="image/jpeg,image/png,image/gif">
-          <label for="image" class="file-upload-label">
-            <span class="file-upload-text">No file chosen</span>
-            <span class="file-upload-btn">Choose File</span>
-          </label>
-        </div>
-        <small class="form-text text-muted">Upload an image (JPG, PNG, GIF). Max size: 2MB</small>
-      </div>
-
-      <div class="form-group form-check">
-        <input type="checkbox" id="is_featured" name="is_featured" class="form-check-input">
-        <label class="form-check-label" for="is_featured">Feature this post (show at the top)</label>
-      </div>
-
-      <button type="submit" name="submit_post" class="btn btn-primary">Add Post</button>
-    </form>
-  </div>
+        {% if is_owner_or_admin %}
+        <p class="store-admin-note">
+            <small>
+                <i class="fas fa-info-circle"></i>
+                You can manage your products from your <a href="{% url 'profile' %}">profile page</a>
+            </small>
+        </p>
+        {% endif %}
+    </div>
 </div>
 
 <style>
-.products-services-section {
-  margin: 30px 0;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.store-link-section {
+    background-color: var(--white);
+    border-radius: 16px;
+    padding: 20px;
+    margin: 0 16px 20px;
+    box-shadow: var(--shadow);
 }
 
-.section-title {
-  color: #333;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
+.dark-mode .store-link-section {
+    background-color: var(--dark-surface);
+    box-shadow: var(--dark-shadow);
 }
 
-.add-post-form {
-  margin-top: 20px;
+.store-link-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 0;
 }
 
-.toggle-form-btn {
-  background-color: #4CAF50;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  margin-bottom: 20px;
+.store-link-button {
+    padding: 16px 24px;
+    border-radius: 12px;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
 }
 
-.toggle-form-btn:hover {
-  background-color: #45a049;
+.store-link-button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
 }
 
-.form-group {
-  margin-bottom: 15px;
+.store-admin-note {
+    color: var(--light-text);
+    text-align: center;
+    margin-top: 12px;
 }
 
-.form-control {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
+.dark-mode .store-admin-note {
+    color: var(--dark-light-text);
 }
 
-.form-control:focus {
-  border-color: #66afe9;
-  outline: none;
-  box-shadow: 0 0 5px rgba(102, 175, 233, 0.5);
+.store-admin-note a {
+    color: var(--primary-color);
+    text-decoration: none;
 }
 
-.rich-text-editor {
-  min-height: 150px;
-}
-
-.file-upload-wrapper {
-  position: relative;
-  margin-bottom: 5px;
-}
-
-.file-upload-input {
-  position: absolute;
-  left: 0;
-  top: 0;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-}
-
-.file-upload-label {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  border-radius: 4px;
-}
-
-.file-upload-text {
-  color: #6c757d;
-}
-
-.file-upload-btn {
-  background-color: #e9ecef;
-  padding: 5px 10px;
-  border-radius: 4px;
-  color: #495057;
-}
-
-.form-check {
-  display: flex;
-  align-items: center;
-}
-
-.form-check-input {
-  margin-right: 10px;
-}
-
-.btn-primary {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.btn-primary:hover {
-  background-color: #0069d9;
-}
-
-.form-text {
-  color: #6c757d;
-  font-size: 14px;
+.store-admin-note a:hover {
+    text-decoration: underline;
 }
 </style>
-
-<script>
-// Full Image Modal Functionality
-document.addEventListener('DOMContentLoaded', function() {
-    // Get the modal
-    const modal = document.getElementById("image-modal");
-    const modalImg = document.getElementById("modal-image");
-    const captionText = document.getElementById("modal-caption");
-
-    // Get all images that should open in modal
-    const images = document.querySelectorAll('.post-image, .business-hero-image, .thumbnail img, .main-image img');
-
-    // Function to open modal
-    function openModal(imgElement) {
-        modal.style.display = "block";
-        modalImg.src = imgElement.src || imgElement.dataset.src;
-        captionText.innerHTML = imgElement.alt || "Image";
-        document.body.style.overflow = "hidden"; // Prevent scrolling behind modal
-    }
-
-    // Function to close modal
-    function closeModal() {
-        modal.style.display = "none";
-        document.body.style.overflow = ""; // Re-enable scrolling
-    }
-
-    // Add click/touch event to each image
-    images.forEach(img => {
-        // Handle both click and touch events
-        img.addEventListener('click', function(e) {
-            e.preventDefault();
-            openModal(this);
-        });
-
-        // For better touch support
-        img.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            openModal(this);
-        }, { passive: false });
-    });
-
-    // Close modal when clicking the X
-    document.querySelector('.close-modal').addEventListener('click', closeModal);
-    document.querySelector('.close-modal').addEventListener('touchend', closeModal);
-
-    // Close modal when clicking outside the image
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-
-    // Also handle touch events outside
-    modal.addEventListener('touchend', function(e) {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-
-    // Close modal with ESC key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === "Escape" && modal.style.display === "block") {
-            closeModal();
-        }
-    });
-
-    // Prevent card click when clicking on image inside card
-    document.querySelectorAll('.post-card').forEach(card => {
-        card.addEventListener('click', function(e) {
-            // If the click was on the image, let the image click handler handle it
-            if (e.target.closest('.post-image-container') ||
-                e.target.classList.contains('post-image') ||
-                e.target.tagName === 'IMG') {
-                e.stopPropagation();
-                return;
-            }
-        });
-    });
-});
-function toggleForm() {
-  const form = document.getElementById('postForm');
-  const btn = document.querySelector('.toggle-form-btn');
-
-  if (form.style.display === 'none') {
-    form.style.display = 'block';
-    btn.textContent = 'Cancel';
-  } else {
-    form.style.display = 'none';
-    btn.textContent = 'Add New Product/Service';
-  }
-}
-
-// Update file input label text
-document.getElementById('image').addEventListener('change', function(e) {
-  const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen';
-  document.querySelector('.file-upload-text').textContent = fileName;
-});
-</script>
-            {% endif %}
-
-            <div class="posts-grid">
-                {% for post in posts %}
-                <div class="post-card">
-                    {% if post.image %}
-                    <div class="post-image-container">
-                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image" loading="lazy">
-                    </div>
-                    {% endif %}
-
-                    <div class="post-content">
-                        <div class="post-badges">
-                            <span class="post-type-badge">
-                                {{ post.get_post_type_display }}
-                            </span>
-                            {% if post.is_featured %}
-                            <span class="featured-badge">
-                                Featured
-                            </span>
-                            {% endif %}
-                        </div>
-
-                        <h3 class="post-title">{{ post.title }}</h3>
-                        <div class="post-text">
-                            {{ post.content|safe|truncatewords:30 }}
-                        </div>
-
-                        {% if post.price %}
-                        <div class="post-price">
-                            <strong>Price: ${{ post.price }}</strong>
-                        </div>
-                        {% endif %}
-
-                        <div class="post-meta">
-                            <small>Posted {{ post.created_at|timesince }} ago</small>
-                        </div>
-                    </div>
-
-                    {% if is_owner_or_admin %}
-                    <div class="post-actions">
-                        <!-- Delete Button -->
-                        <form method="post" action="{% url 'business-detail' pk=business.pk %}" onsubmit="return confirm('Are you sure you want to delete this post?');">
-                            {% csrf_token %}
-                            <input type="hidden" name="delete_post" value="1">
-                            <input type="hidden" name="post_id" value="{{ post.id }}">
-                            <button type="submit" class="delete-btn">
-                                <i class="fas fa-trash"></i> Delete
-                            </button>
-                        </form>
-                    </div>
-                    {% endif %}
-                </div>
-                {% empty %}
-                <div class="no-posts-card">
-                    <i class="fas fa-box-open no-posts-icon"></i>
-                    <p>No products or services posted yet.</p>
-                </div>
-                {% endfor %}
-            </div>
-
-            {% if posts.has_other_pages %}
-            <div class="pagination">
-                {% if posts.has_previous %}
-                <a href="?post_page={{ posts.previous_page_number }}#posts" class="pagination-button">Previous</a>
-                {% endif %}
-
-                {% for i in posts.paginator.page_range %}
-                    {% if posts.number == i %}
-                    <span class="pagination-button active">{{ i }}</span>
-                    {% else %}
-                    <a href="?post_page={{ i }}#posts" class="pagination-button">{{ i }}</a>
-                    {% endif %}
-                {% endfor %}
-
-                {% if posts.has_next %}
-                <a href="?post_page={{ posts.next_page_number }}#posts" class="pagination-button">Next</a>
-                {% endif %}
-            </div>
-            {% endif %}
-        </div>
+{% endif %}
 
         <!-- Social Sharing -->
         <div class="social-sharing">

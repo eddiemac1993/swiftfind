@@ -8,6 +8,80 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+    /* Add to your existing styles */
+
+    .business-details {
+        background-color: var(--secondary-color);
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+    }
+
+    .dark-mode .business-details {
+        background-color: var(--dark-surface);
+    }
+
+    .business-details div {
+        margin-bottom: 8px;
+    }
+
+    .contact-section {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px dashed var(--border-color);
+    }
+
+    .dark-mode .contact-section {
+        border-top-color: rgba(255,255,255,0.1);
+    }
+
+    .recent-posts {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px dashed var(--border-color);
+    }
+
+    .product-result {
+        background-color: var(--secondary-color);
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+    }
+
+    .dark-mode .product-result {
+        background-color: var(--dark-surface);
+    }
+
+    .product-info {
+        margin-top: 8px;
+        font-size: 14px;
+        color: var(--light-text);
+    }
+
+    .dark-mode .product-info {
+        color: var(--dark-light-text);
+    }
+
+    .product-desc {
+        margin-top: 8px;
+        font-size: 14px;
+        color: var(--text-color);
+    }
+
+    .dark-mode .product-desc {
+        color: var(--dark-text);
+    }
+
+    .product-location {
+        margin-top: 8px;
+        font-size: 13px;
+        color: var(--light-text);
+    }
+
+    .dark-mode .product-location {
+        color: var(--dark-light-text);
+    }
+</style><style>
         :root {
             --primary-color: #07C160;
             --primary-dark: #05a54e;
@@ -475,18 +549,18 @@
         /* Loading skeleton */
         .skeleton {
             animation: skeleton-loading 1.5s ease-in-out infinite;
-            background: linear-gradient(90deg, 
-                var(--secondary-color) 25%, 
-                rgba(0,0,0,0.05) 50%, 
+            background: linear-gradient(90deg,
+                var(--secondary-color) 25%,
+                rgba(0,0,0,0.05) 50%,
                 var(--secondary-color) 75%);
             background-size: 200% 100%;
             border-radius: 4px;
         }
 
         .dark-mode .skeleton {
-            background: linear-gradient(90deg, 
-                var(--dark-surface) 25%, 
-                rgba(255,255,255,0.05) 50%, 
+            background: linear-gradient(90deg,
+                var(--dark-surface) 25%,
+                rgba(255,255,255,0.05) 50%,
                 var(--dark-surface) 75%);
         }
 
@@ -695,7 +769,7 @@
             </div>
             <div class="modal-body">
                 <p>Welcome to the Business Directory Assistant! Here's how you can use this chatbot:</p>
-                
+
                 <h3>What I Can Do:</h3>
                 <ul>
                     <li><strong>Find businesses</strong> by name, category, or location</li>
@@ -704,7 +778,7 @@
                     <li><strong>Browse business categories</strong> to discover services</li>
                     <li><strong>Find businesses near you</strong> (if location is enabled)</li>
                 </ul>
-                
+
                 <h3>Example Queries:</h3>
                 <ul>
                     <li>"Restaurants in Lusaka"</li>
@@ -713,7 +787,7 @@
                     <li>"List all hardware stores"</li>
                     <li>"Recent posts from construction companies"</li>
                 </ul>
-                
+
                 <h3>Tips:</h3>
                 <ul>
                     <li>Use the suggestion chips for quick queries</li>
@@ -730,7 +804,7 @@
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
             document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
-            
+
             // Toggle icon visibility
             document.querySelector('.light-icon').style.display = isDark ? 'none' : 'inline';
             document.querySelector('.dark-icon').style.display = isDark ? 'inline' : 'none';
@@ -800,22 +874,22 @@
             const typingDiv = document.createElement('div');
             typingDiv.id = 'typing-indicator';
             typingDiv.classList.add('typing-indicator');
-            
+
             const typingText = document.createElement('span');
             typingText.textContent = 'Assistant is typing';
-            
+
             const dotsContainer = document.createElement('div');
             dotsContainer.classList.add('typing-dots');
-            
+
             for (let i = 0; i < 3; i++) {
                 const dot = document.createElement('div');
                 dot.classList.add('typing-dot');
                 dotsContainer.appendChild(dot);
             }
-            
+
             typingDiv.appendChild(typingText);
             typingDiv.appendChild(dotsContainer);
-            
+
             chatBox.appendChild(typingDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
@@ -832,7 +906,7 @@
         function addQuickReplies(replies) {
             const quickRepliesDiv = document.createElement('div');
             quickRepliesDiv.classList.add('quick-replies');
-            
+
             replies.forEach(reply => {
                 const button = document.createElement('button');
                 button.classList.add('quick-reply-btn');
@@ -843,7 +917,7 @@
                 };
                 quickRepliesDiv.appendChild(button);
             });
-            
+
             return quickRepliesDiv;
         }
 
@@ -857,7 +931,7 @@
 
             // Disable send button while processing
             sendButton.disabled = true;
-            
+
             addMessage(message, 'user');
             input.value = '';
 
@@ -886,13 +960,13 @@
                 if (data.response) {
                     const messageDiv = document.createElement('div');
                     messageDiv.innerHTML = data.response;
-                    
+
                     // Add quick replies if provided
                     if (data.quick_replies && data.quick_replies.length > 0) {
                         const quickReplies = addQuickReplies(data.quick_replies);
                         messageDiv.appendChild(quickReplies);
                     }
-                    
+
                     addMessage(messageDiv.innerHTML, 'bot', true);
                 } else {
                     addMessage("I'm sorry, I didn't understand that. Can you rephrase?", 'bot');
@@ -954,22 +1028,22 @@
                 </ul>
                 <p>Try asking:</p>
             `;
-            
+
             const quickReplies = addQuickReplies([
                 "Find restaurants in Lusaka",
                 "Posts about plumbing services",
                 "List all businesses",
                 "How to add my business?"
             ]);
-            
+
             welcomeMessage.appendChild(quickReplies);
-            
+
             addMessage(welcomeMessage.innerHTML, 'bot', true);
-            
+
             // Focus input field
             document.getElementById('userInput').focus();
         };
     </script>
-    
+
 </body>
 </html>

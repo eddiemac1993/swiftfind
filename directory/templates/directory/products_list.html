@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products & Services - {{ business.name }}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #FF6A00;
+            --primary-light: #FFF4ED;
+            --text-color: #333;
+            --light-text: #666;
+            --border-color: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-color);
+        }
+
+        /* Header Styles */
+        .header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            margin: 0 20px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 16px;
+            padding-right: 40px;
+        }
+
+        .search-bar button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--light-text);
+            cursor: pointer;
+        }
+
+        .user-actions a {
+            margin-left: 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .page-title i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        /* Filter and Product Grid */
+        .content-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .filter-sidebar {
+            width: 250px;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-right: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .filter-options label {
+            display: block;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .filter-options input {
+            margin-right: 8px;
+        }
+
+        .products-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .product-image {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .product-card:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .product-details {
+            padding: 15px;
+        }
+
+        .product-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-price {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .product-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--light-text);
+        }
+
+        .product-actions {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn {
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #e05d00;
+        }
+
+        .btn-outline {
+            border: 1px solid var(--border-color);
+            background: none;
+        }
+
+        .btn-outline:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .pagination a, .pagination span {
+            padding: 8px 16px;
+            margin: 0 4px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .pagination a:hover {
+            background-color: #f5f5f5;
+        }
+
+        .pagination .current {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .filter-sidebar {
+                width: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            .logo {
+                margin-bottom: 10px;
+            }
+
+            .search-bar {
+                width: 100%;
+                margin: 10px 0;
+            }
+
+            .user-actions {
+                margin-top: 10px;
+            }
+
+            .content-wrapper {
+                flex-direction: column;
+            }
+
+            .filter-sidebar {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <img src="{{ business.logo.url }}" alt="{{ business.name }}">
+                {{ business.name }}
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search products...">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="user-actions">
+                <a href="{% url 'profile' %}"><i class="fas fa-user"></i> My Account</a>
+                <a href="{% url 'products-list' %}"><i class="fas fa-boxes"></i> My Products</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-title">
+            <i class="fas fa-boxes"></i>
+            Products & Services
+        </div>
+
+        <div class="content-wrapper">
+            <!-- Filter Sidebar -->
+            <aside class="filter-sidebar">
+                <div class="filter-group">
+                    <div class="filter-title">Categories</div>
+                    <div class="filter-options">
+                        <label><input type="checkbox" checked> All Products</label>
+                        <label><input type="checkbox"> Physical Goods</label>
+                        <label><input type="checkbox"> Services</label>
+                        <label><input type="checkbox"> Digital Products</label>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-title">Price Range</div>
+                    <div class="filter-options">
+                        <label><input type="checkbox" checked> All Prices</label>
+                        <label><input type="checkbox"> Under $50</label>
+                        <label><input type="checkbox"> $50 - $100</label>
+                        <label><input type="checkbox"> $100 - $500</label>
+                        <label><input type="checkbox"> Over $500</label>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-title">Sort By</div>
+                    <div class="filter-options">
+                        <label><input type="radio" name="sort" checked> Newest</label>
+                        <label><input type="radio" name="sort"> Price: Low to High</label>
+                        <label><input type="radio" name="sort"> Price: High to Low</label>
+                        <label><input type="radio" name="sort"> Most Popular</label>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" style="width: 100%; margin-top: 10px;">
+                    Apply Filters
+                </button>
+            </aside>
+
+            <!-- Products Grid -->
+            <main class="products-grid">
+                {% for product in products %}
+                <div class="product-card">
+                    <div class="product-image">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" alt="{{ product.title }}">
+                        {% else %}
+                        <div style="background-color: #f5f5f5; height: 100%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-box-open" style="font-size: 48px; color: #ccc;"></i>
+                        </div>
+                        {% endif %}
+                        <span class="product-badge">{{ product.get_post_type_display }}</span>
+                    </div>
+                    <div class="product-details">
+                        <h3 class="product-title">{{ product.title }}</h3>
+                        {% if product.price %}
+                        <div class="product-price">${{ product.price }}</div>
+                        {% endif %}
+                        <div class="product-meta">
+                            <span><i class="fas fa-calendar-alt"></i> {{ product.created_at|date:"M d, Y" }}</span>
+                            <span><i class="fas fa-eye"></i> 1.2k views</span>
+                        </div>
+                        <div class="product-actions">
+                            <a href="{% url 'edit-product' product.id %}" class="btn btn-outline">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="#" class="btn btn-primary">
+                                <i class="fas fa-shopping-cart"></i> View
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                    <i class="fas fa-box-open" style="font-size: 48px; color: #ccc; margin-bottom: 20px;"></i>
+                    <h3>No products found</h3>
+                    <p>You haven't added any products or services yet.</p>
+                    <a href="{% url 'add-product' %}" class="btn btn-primary" style="margin-top: 20px;">
+                        <i class="fas fa-plus"></i> Add Your First Product
+                    </a>
+                </div>
+                {% endfor %}
+            </main>
+        </div>
+
+        <!-- Pagination -->
+        {% if products.has_other_pages %}
+        <div class="pagination">
+            {% if products.has_previous %}
+            <a href="?page={{ products.previous_page_number }}">&laquo;</a>
+            {% else %}
+            <span>&laquo;</span>
+            {% endif %}
+
+            {% for i in products.paginator.page_range %}
+            {% if products.number == i %}
+            <span class="current">{{ i }}</span>
+            {% else %}
+            <a href="?page={{ i }}">{{ i }}</a>
+            {% endif %}
+            {% endfor %}
+
+            {% if products.has_next %}
+            <a href="?page={{ products.next_page_number }}">&raquo;</a>
+            {% else %}
+            <span>&raquo;</span>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Simple search functionality
+        document.querySelector('.search-bar input').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                const searchTerm = this.value.toLowerCase();
+                const productCards = document.querySelectorAll('.product-card');
+                
+                productCards.forEach(card => {
+                    const title = card.querySelector('.product-title').textContent.toLowerCase();
+                    if (title.includes(searchTerm)) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // Reset search when clicking the search icon
+        document.querySelector('.search-bar button').addEventListener('click', function() {
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                card.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
