@@ -644,6 +644,37 @@
     </nav>
 
     <script>
+// In your marketplace.html template
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Track when products come into view
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const productId = entry.target.dataset.productId;
+                trackProductView(productId);
+                observer.unobserve(entry.target); // Stop observing after first view
+            }
+        });
+    }, { threshold: 0.5 }); // Trigger when 50% of product is visible
+
+    // Observe all product cards
+    document.querySelectorAll('.product-card').forEach(card => {
+        observer.observe(card);
+    });
+
+    // Function to send view tracking request
+    function trackProductView(productId) {
+        fetch(`/pos/track-view/${productId}/`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin'
+        }).catch(error => console.error('Error tracking view:', error));
+    }
+});
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('search-input');
         const searchButton = document.getElementById('search-button');

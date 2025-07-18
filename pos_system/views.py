@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import json
 from decimal import Decimal, InvalidOperation
 from django.db.models import Avg
-from .models import Product, ProductCategory, Sale, SaleItem
+from .models import Product, ProductCategory, Sale, SaleItem, ProductView, RewardClaim
 from directory.models import Business
 
 def marketplace_view(request):
@@ -39,6 +39,165 @@ def marketplace_view(request):
         'all_businesses': True  # Flag to show business filter
     }
     return render(request, 'pos_system/marketplace.html', context)
+
+# In your pos_system/views.py
+
+from django.views.decorators.http import require_GET
+from django.contrib.sessions.backends.db import SessionStore
+from django.db.models import Count, Sum
+from decimal import Decimal
+@require_GET
+def product_detail(request, product_id):
+    """Product detail page with view tracking"""
+    try:
+        product = get_object_or_404(Product, id=product_id, is_active=True)
+
+        # Track the view
+        track_product_view(request, product_id)
+
+        # Get related products
+        related_products = Product.objects.filter(
+            business=product.business,
+            is_active=True,
+            stock_quantity__gt=0
+        ).exclude(id=product.id).order_by('?')[:4]  # Random 4 related products
+
+        context = {
+            'product': product,
+            'related_products': related_products,
+            'business': product.business,
+        }
+
+        return render(request, 'pos_system/product_detail.html', context)
+
+    except Exception as e:
+        messages.error(request, f"Error loading product: {str(e)}")
+        return redirect('pos_system:public_store_all')
+
+from django.views.decorators.http import require_GET
+from django.http import JsonResponse
+
+@require_GET
+def track_product_view(request, product_id):
+    """Track product views with AJAX support"""
+    try:
+        product = Product.objects.get(id=product_id)
+        session_key = request.session.session_key or request.GET.get('session_key')
+        ip_address = request.META.get('REMOTE_ADDR')
+
+        # Create a session if one doesn't exist
+        if not session_key:
+            request.session.save()
+            session_key = request.session.session_key
+
+        # Check if view already exists in the last 30 minutes
+        last_view = ProductView.objects.filter(
+            product=product,
+            session_key=session_key
+        ).order_by('-viewed_at').first()
+
+        if not last_view or (timezone.now() - last_view.viewed_at) > timedelta(minutes=30):
+            ProductView.objects.create(
+                product=product,
+                viewer=request.user if request.user.is_authenticated else None,
+                session_key=session_key,
+                ip_address=ip_address,
+                is_organic=True,
+                source=request.GET.get('source', 'direct')
+            )
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'success': True})
+
+        return JsonResponse({'success': True})
+
+    except Product.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Product not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@login_required
+def product_analytics(request):
+    """Business owner's product analytics dashboard"""
+    business, error = get_user_business(request)
+    if error:
+        messages.error(request, error)
+        return redirect('pos_system:dashboard')
+
+    try:
+        # Get view statistics for the business's products
+        view_stats = Product.objects.filter(business=business).annotate(
+            total_views=Count('views'),
+            last_7_days_views=Count('views', filter=Q(views__viewed_at__gte=timezone.now()-timedelta(days=7))),
+            last_30_days_views=Count('views', filter=Q(views__viewed_at__gte=timezone.now()-timedelta(days=30)))
+        ).order_by('-total_views')
+
+        # Calculate estimated rewards
+        conversion_rate = Decimal('0.001')  # Example: 0.1% of views convert to revenue
+        reward_per_view = Decimal('0.05')  # Example: $0.05 per view
+
+        total_views = sum(p.total_views for p in view_stats)
+        estimated_revenue = total_views * reward_per_view
+
+        # Get pending and approved claims
+        claims = RewardClaim.objects.filter(business=business).order_by('-requested_at')
+
+        context = {
+            'business': business,
+            'view_stats': view_stats,
+            'total_views': total_views,
+            'estimated_revenue': estimated_revenue,
+            'reward_per_view': reward_per_view,
+            'claims': claims,
+        }
+
+        return render(request, 'pos_system/product_analytics.html', context)
+
+    except Exception as e:
+        messages.error(request, f"Error loading analytics: {str(e)}")
+        return redirect('pos_system:dashboard')
+
+@login_required
+def claim_rewards(request):
+    """Handle reward claims from business owners"""
+    business, error = get_user_business(request)
+    if error:
+        messages.error(request, error)
+        return redirect('pos_system:dashboard')
+
+    if request.method == 'POST':
+        try:
+            # Get last 30 days views
+            last_30_days = timezone.now() - timedelta(days=30)
+            views_count = ProductView.objects.filter(
+                product__business=business,
+                viewed_at__gte=last_30_days
+            ).count()
+
+            if views_count == 0:
+                messages.error(request, "No views to claim rewards for")
+                return redirect('pos_system:product_analytics')
+
+            # Calculate reward amount (example: $0.05 per view)
+            reward_per_view = Decimal('0.05')
+            amount = Decimal(views_count) * reward_per_view
+
+            # Create claim
+            RewardClaim.objects.create(
+                business=business,
+                amount=amount,
+                views_count=views_count
+            )
+
+            messages.success(request, f"Reward claim for ZMW {amount:.2f} submitted for review")
+            return redirect('pos_system:product_analytics')
+
+        except Exception as e:
+            messages.error(request, f"Error submitting claim: {str(e)}")
+            return redirect('pos_system:product_analytics')
+
+    return redirect('pos_system:product_analytics')
 
 def get_user_business(request):
     """Helper function to get user's business with proper error handling"""

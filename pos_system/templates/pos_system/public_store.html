@@ -1521,7 +1521,9 @@
                             <div class="product-actions">
         <div class="product-action-btn product-favorite" data-product-id="{{ product.id }}">
             <i class="far fa-heart"></i>
-        </div>
+        </div>    <a href="{% url 'pos_system:product_detail' product.id %}" class="product-action-btn product-view" title="View Details">
+        <i class="fas fa-eye"></i>
+    </a>
         <div class="product-action-btn product-share" data-product-id="{{ product.id }}">
             <i class="fas fa-share-alt"></i>
         </div>
@@ -1871,22 +1873,69 @@ $(document).on('click', function(e) {
         showToast(`${productName} removed from cart`, 'danger');
     });
 
-    // Quick View functionality
-    $('.product-card').click(function(e) {
-        if ($(e.target).closest('.product-action-btn').length) return;
+// Product card click handler
+$(document).on('click', '.product-card', function(e) {
+    // Don't open if clicking on action buttons or links
+    if ($(e.target).closest('.product-action-btn, a').length) return;
 
-        const $card = $(this);
-        const productId = $card.data('product-id');
+    const $card = $(this);
+    const productId = $card.data('product-id');
 
-        $('#quick-view-img').attr('src', $card.find('.product-image img').attr('src'));
-        $('#quick-view-title').text($card.find('.product-name').text());
-        $('#quick-view-price').text($card.find('.product-price').text());
-        $('#quick-view-description').text($card.data('description') || 'No description available');
-        $('#quick-view-add-to-cart').data('product-id', productId);
-        $('#quick-view-share').data('product-id', productId);
+    // Track the view
+    trackProductView(productId);
 
-        $('#quick-view').addClass('active');
-    });
+    // Update quick view modal content
+    $('#quick-view-img').attr('src', $card.find('.product-image img').attr('src'));
+    $('#quick-view-title').text($card.find('.product-name').text());
+    $('#quick-view-price').text($card.find('.product-price').text());
+    $('#quick-view-description').text($card.data('description') || 'No description available');
+    $('#quick-view-add-to-cart').data('product-id', productId);
+    $('#quick-view-share').data('product-id', productId);
+
+    // Show the modal
+    $('#quick-view').addClass('active');
+
+    // Prevent default behavior
+    e.preventDefault();
+    return false;
+});
+
+// Close quick view
+$('#close-quick-view, #quick-view').click(function(e) {
+    if (e.target === this || $(e.target).hasClass('close-quick-view')) {
+        $('#quick-view').removeClass('active');
+    }
+});
+
+// Prevent closing when clicking inside modal
+$('.quick-view-content').click(function(e) {
+    e.stopPropagation();
+});
+
+function trackProductView(productId) {
+    // Only track if not already tracked in this session
+    if (!sessionStorage.getItem(`viewed_${productId}`)) {
+        $.ajax({
+            url: `/pos_system/track-product-view/${productId}/`,
+            method: 'GET',
+            data: {
+                organic: true,
+                source: 'store_view'
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Mark as viewed in this session to prevent duplicate tracking
+                    sessionStorage.setItem(`viewed_${productId}`, 'true');
+                } else {
+                    console.error('Tracking failed:', response.error);
+                }
+            },
+            error: function(xhr) {
+                console.error('Tracking error:', xhr.responseText);
+            }
+        });
+    }
+}
 
     $('#close-quick-view, #quick-view').click(function(e) {
         if (e.target === this || $(e.target).hasClass('close-quick-view')) {

@@ -18,6 +18,11 @@ urlpatterns = [
     path('reports/sale/<int:sale_id>/', views.sale_detail, name='sale_detail'),
     path('reports/print-receipt/<int:sale_id>/', views.print_receipt, name='print_receipt'),
 
+    path('track-view/<int:product_id>/', views.track_product_view, name='track_product_view'),
+    path('analytics/', views.product_analytics, name='product_analytics'),
+    path('claim-rewards/', views.claim_rewards, name='claim_rewards'),
+    path('product/<int:product_id>/', views.product_detail, name='product_detail'),
+
     # Product management
     path('add-product/', views.add_product, name='add_product'),
     path('edit-product/<int:product_id>/', views.edit_product, name='edit_product'),

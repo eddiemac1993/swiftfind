@@ -4,7 +4,34 @@ from django.urls import reverse
 from django.db.models import Sum, F, DecimalField
 from django.db.models.functions import Coalesce
 from .models import ProductCategory, Product, Sale, SaleItem
+from .models import RewardClaim
+from django.utils import timezone
 
+@admin.register(RewardClaim)
+class RewardClaimAdmin(admin.ModelAdmin):
+    list_display = ('business', 'amount', 'views_count', 'status', 'requested_at')
+    list_filter = ('status', 'requested_at')
+    search_fields = ('business__name',)
+    actions = ['approve_claims', 'reject_claims']
+
+    def approve_claims(self, request, queryset):
+        updated = queryset.filter(status='pending').update(
+            status='approved',
+            processed_at=timezone.now(),
+            processed_by=request.user
+        )
+        self.message_user(request, f"{updated} claims approved")
+
+    def reject_claims(self, request, queryset):
+        updated = queryset.filter(status='pending').update(
+            status='rejected',
+            processed_at=timezone.now(),
+            processed_by=request.user
+        )
+        self.message_user(request, f"{updated} claims rejected")
+
+    approve_claims.short_description = "Approve selected claims"
+    reject_claims.short_description = "Reject selected claims"
 # Common admin settings
 class BaseAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', 'updated_at')

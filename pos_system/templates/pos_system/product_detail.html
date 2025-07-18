@@ -1,0 +1,1030 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} - Product Details</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --alibaba-orange: #ff6a00;
+            --alibaba-orange-light: #ff7a1a;
+            --alibaba-orange-dark: #e55a00;
+            --alibaba-blue: #1688a8;
+            --alibaba-blue-light: #2196f3;
+            --alibaba-gray: #666666;
+            --alibaba-light-gray: #f5f5f5;
+            --alibaba-border: #e6e6e6;
+            --alibaba-success: #52c41a;
+            --alibaba-warning: #faad14;
+            --alibaba-danger: #ff4d4f;
+            --alibaba-text: #333333;
+            --alibaba-text-light: #999999;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8f8f8;
+            color: var(--alibaba-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+
+        /* Header/Top Bar */
+        .product-header {
+            background: white;
+            border-bottom: 1px solid var(--alibaba-border);
+            padding: 1rem 0;
+            margin-bottom: 1rem;
+        }
+
+        /* Breadcrumb Alibaba Style */
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            font-size: 0.875rem;
+        }
+
+        .breadcrumb-item a {
+            color: var(--alibaba-blue);
+            text-decoration: none;
+        }
+
+        .breadcrumb-item a:hover {
+            color: var(--alibaba-orange);
+        }
+
+        .breadcrumb-item.active {
+            color: var(--alibaba-text-light);
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: ">";
+            color: var(--alibaba-text-light);
+        }
+
+        /* Main Content Area */
+        .product-main {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        /* Product Image Section */
+        .product-image-section {
+            padding: 2rem;
+            border-right: 1px solid var(--alibaba-border);
+        }
+
+        .product-image-main {
+            border: 1px solid var(--alibaba-border);
+            border-radius: 8px;
+            background: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            min-height: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-image-main img {
+            max-width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+        }
+
+        .zoom-icon {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .image-thumbnails {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .thumbnail {
+            width: 60px;
+            height: 60px;
+            border: 1px solid var(--alibaba-border);
+            border-radius: 4px;
+            padding: 3px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .thumbnail:hover,
+        .thumbnail.active {
+            border-color: var(--alibaba-orange);
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Product Info Section */
+        .product-info-section {
+            padding: 2rem;
+        }
+
+        .product-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--alibaba-text);
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .supplier-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--alibaba-light-gray);
+            border-radius: 6px;
+        }
+
+        .supplier-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--alibaba-orange);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 1rem;
+        }
+
+        .supplier-details h6 {
+            margin: 0;
+            color: var(--alibaba-text);
+            font-weight: 600;
+        }
+
+        .supplier-details small {
+            color: var(--alibaba-text-light);
+        }
+
+        .contact-supplier {
+            margin-left: auto;
+        }
+
+        .btn-contact {
+            background: var(--alibaba-blue);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .btn-contact:hover {
+            background: var(--alibaba-blue-light);
+            color: white;
+        }
+
+        /* Price Section */
+        .price-section {
+            background: #fff7e6;
+            border: 1px solid #ffd591;
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .price-label {
+            font-size: 0.875rem;
+            color: var(--alibaba-text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .price-main {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--alibaba-orange);
+            margin-bottom: 0.5rem;
+        }
+
+        .price-range {
+            font-size: 0.875rem;
+            color: var(--alibaba-text-light);
+        }
+
+        .stock-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stock-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .stock-badge.in-stock {
+            background: #f6ffed;
+            color: var(--alibaba-success);
+            border: 1px solid #b7eb8f;
+        }
+
+        .stock-badge.low-stock {
+            background: #fffbe6;
+            color: var(--alibaba-warning);
+            border: 1px solid #ffe58f;
+        }
+
+        .stock-badge.out-of-stock {
+            background: #fff2f0;
+            color: var(--alibaba-danger);
+            border: 1px solid #ffccc7;
+        }
+
+        /* Action Buttons */
+        .action-section {
+            margin-bottom: 2rem;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .quick-action-btn {
+            padding: 0.5rem;
+            border: 1px solid var(--alibaba-border);
+            background: white;
+            border-radius: 4px;
+            color: var(--alibaba-text-light);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .quick-action-btn:hover {
+            color: var(--alibaba-orange);
+            border-color: var(--alibaba-orange);
+        }
+
+        /* Product Details */
+        .product-details {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+
+        .details-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--alibaba-border);
+            background: var(--alibaba-light-gray);
+        }
+
+        .details-header h5 {
+            margin: 0;
+            color: var(--alibaba-text);
+            font-weight: 600;
+        }
+
+        .details-content {
+            padding: 1.5rem;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            color: var(--alibaba-text-light);
+            min-width: 120px;
+        }
+
+        .detail-value {
+            color: var(--alibaba-text);
+            font-weight: 400;
+        }
+
+        /* Description */
+        .description-section {
+            margin-top: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .description-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--alibaba-border);
+            background: var(--alibaba-light-gray);
+        }
+
+        .description-content {
+            padding: 1.5rem;
+            line-height: 1.8;
+        }
+
+        /* Related Products */
+        .related-products {
+            margin-top: 3rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .related-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--alibaba-border);
+            background: var(--alibaba-light-gray);
+        }
+
+        .related-content {
+            padding: 1.5rem;
+        }
+
+        .product-card {
+            border: 1px solid var(--alibaba-border);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-card-body {
+            padding: 1rem;
+        }
+
+        .product-card-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--alibaba-text);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-card-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .product-card-title a:hover {
+            color: var(--alibaba-orange);
+        }
+
+        .product-card-price {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--alibaba-orange);
+            margin-bottom: 0.5rem;
+        }
+
+        .product-card-supplier {
+            font-size: 0.75rem;
+            color: var(--alibaba-text-light);
+            margin-bottom: 1rem;
+        }
+
+        .product-card-footer {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid var(--alibaba-border);
+            background: #fafafa;
+        }
+/* Dropdown styles */
+.dropdown-menu {
+    border: 1px solid var(--alibaba-border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 6px;
+    padding: 0.5rem;
+}
+
+.dropdown-item {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.dropdown-item:hover {
+    background: var(--alibaba-light-gray);
+    color: var(--alibaba-orange);
+}
+
+.dropdown-divider {
+    border-color: var(--alibaba-border);
+}
+
+/* Make the share button look clickable */
+#shareDropdown::after {
+    display: none;
+}
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .product-image-section {
+                border-right: none;
+                border-bottom: 1px solid var(--alibaba-border);
+            }
+
+            .product-title {
+                font-size: 1.5rem;
+            }
+
+            .price-main {
+                font-size: 1.5rem;
+            }
+
+            .supplier-info {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .contact-supplier {
+                margin-left: 0;
+                margin-top: 1rem;
+            }
+        }
+
+        /* Alibaba-style animations */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .loading-spin {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="product-header">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'pos_system:public_store_all' %}">All Categories</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'pos_system:public_store' product.business.slug %}">{{ product.business.name }}</a></li>
+                    {% if product.category %}
+                    <li class="breadcrumb-item"><a href="#">{{ product.category.name }}</a></li>
+                    {% endif %}
+                    <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="product-main">
+            <div class="row g-0">
+                <!-- Product Images -->
+                <div class="col-lg-5">
+                    <div class="product-image-section">
+                        <div class="product-image-main">
+                            <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-product.png' %}{% endif %}"
+                                 alt="{{ product.name }}" id="main-image">
+                            <div class="zoom-icon">
+                                <i class="fas fa-search-plus"></i> Zoom
+                            </div>
+                        </div>
+                        <div class="image-thumbnails">
+                            <div class="thumbnail active">
+                                <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-product.png' %}{% endif %}"
+                                     alt="{{ product.name }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="col-lg-7">
+                    <div class="product-info-section">
+                        <h1 class="product-title">{{ product.name }}</h1>
+
+                        <div class="supplier-info">
+                            <div class="supplier-avatar">
+                                {{ product.business.name|first|upper }}
+                            </div>
+                            <div class="supplier-details">
+                                <h6>{{ product.business.name }}</h6>
+                                <small>
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    {{ product.location|default:"Location not specified" }}
+                                </small>
+                            </div>
+                            <div class="contact-supplier">
+                                <button class="btn btn-contact">
+                                    <i class="fas fa-phone me-1"></i> Contact Supplier
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="price-section">
+                            <div class="price-label">Price</div>
+                            <div class="price-main">ZMW {{ product.price }}</div>
+                            <div class="price-range">Min. order: 1 piece</div>
+
+                            <div class="stock-info">
+                                {% if product.stock_quantity > 10 %}
+                                    <span class="stock-badge in-stock">
+                                        <i class="fas fa-check-circle me-1"></i>In Stock
+                                    </span>
+                                {% elif product.stock_quantity > 0 %}
+                                    <span class="stock-badge low-stock">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>Low Stock
+                                    </span>
+                                {% else %}
+                                    <span class="stock-badge out-of-stock">
+                                        <i class="fas fa-times-circle me-1"></i>Out of Stock
+                                    </span>
+                                {% endif %}
+                                <span class="text-muted">{{ product.stock_quantity }} pieces available</span>
+                            </div>
+                        </div>
+
+                        <div class="action-section">
+                            <div class="quick-actions">
+                                <!-- Share Button with Dropdown -->
+                                <div class="dropdown">
+                                    <button class="quick-action-btn dropdown-toggle" id="shareDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Share">
+                                        <i class="fas fa-share-alt"></i>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="shareDropdown">
+                                        <li><a class="dropdown-item" href="#" onclick="shareOnWhatsApp()"><i class="fab fa-whatsapp me-2"></i> WhatsApp</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="shareOnFacebook()"><i class="fab fa-facebook me-2"></i> Facebook</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="shareOnTwitter()"><i class="fab fa-twitter me-2"></i> Twitter</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="shareOnTelegram()"><i class="fab fa-telegram me-2"></i> Telegram</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="#" onclick="copyProductLink()"><i class="fas fa-link me-2"></i> Copy Link</a></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Download Button -->
+                                <button class="quick-action-btn" id="download-btn" title="Download Info" onclick="downloadProductInfo()">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="product-details">
+            <div class="details-header">
+                <h5><i class="fas fa-info-circle me-2"></i>Product Details</h5>
+            </div>
+            <div class="details-content">
+                {% if product.barcode %}
+                <div class="detail-row">
+                    <div class="detail-label">Barcode:</div>
+                    <div class="detail-value">{{ product.barcode }}</div>
+                </div>
+                {% endif %}
+                {% if product.sku %}
+                <div class="detail-row">
+                    <div class="detail-label">SKU:</div>
+                    <div class="detail-value">{{ product.sku }}</div>
+                </div>
+                {% endif %}
+                <div class="detail-row">
+                    <div class="detail-label">Category:</div>
+                    <div class="detail-value">{{ product.category.name|default:"Not specified" }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Brand:</div>
+                    <div class="detail-value">{{ product.business.name }}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Views:</div>
+                    <div class="detail-value">{{ product.views.count }} times</div>
+                </div>
+                {% if product.location %}
+                <div class="detail-row">
+                    <div class="detail-label">Location:</div>
+                    <div class="detail-value">{{ product.location }}</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Description -->
+        {% if product.description %}
+        <div class="description-section">
+            <div class="description-header">
+                <h5><i class="fas fa-file-alt me-2"></i>Product Description</h5>
+            </div>
+            <div class="description-content">
+                {{ product.description|linebreaks }}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Related Products -->
+        {% if related_products %}
+        <div class="related-products">
+            <div class="related-header">
+                <h5><i class="fas fa-tags me-2"></i>Related Products</h5>
+            </div>
+            <div class="related-content">
+                <div class="row g-3">
+                    {% for product in related_products %}
+                    <div class="col-lg-3 col-md-6">
+                        <div class="product-card">
+                            <a href="{% url 'pos_system:product_detail' product.id %}">
+                                <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-product.png' %}{% endif %}"
+                                     alt="{{ product.name }}">
+                            </a>
+                            <div class="product-card-body">
+                                <h6 class="product-card-title">
+                                    <a href="{% url 'pos_system:product_detail' product.id %}">
+                                        {{ product.name }}
+                                    </a>
+                                </h6>
+                                <div class="product-card-price">ZMW {{ product.price }}</div>
+                                <div class="product-card-supplier">
+                                    <i class="fas fa-store me-1"></i>{{ product.business.name }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div style="height: 50px;"></div>
+
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    $(document).ready(function() {
+        // Track the view when page loads
+        trackProductView({{ product.id }});
+
+        // Image zoom functionality
+        $('.zoom-icon').click(function() {
+            const img = $('#main-image');
+            const src = img.attr('src');
+
+            // Create modal for zoom
+            const modal = $(`
+                <div class="modal fade" id="imageZoomModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">{{ product.name }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body text-center">
+                                <img src="${src}" class="img-fluid" alt="{{ product.name }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `);
+
+            $('body').append(modal);
+            $('#imageZoomModal').modal('show');
+
+            $('#imageZoomModal').on('hidden.bs.modal', function() {
+                $(this).remove();
+            });
+        });
+
+        // Smooth animations
+        $('.product-card').addClass('fade-in');
+    });
+
+    // Enhanced product view tracking function
+    function trackProductView(productId) {
+        // First check if we've already tracked this view in the current session
+        const viewedKey = `viewed_product_${productId}`;
+        if (sessionStorage.getItem(viewedKey)) {
+            console.log('View already tracked in this session');
+            return;
+        }
+
+        // Get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+        const referrer = document.referrer || 'direct';
+        const isOrganic = referrer.includes('organic') ||
+                         referrer.includes('search') ||
+                         !['direct', 'none'].includes(referrer.toLowerCase());
+
+        $.ajax({
+            url: `/pos_system/track-product-view/${productId}/`,
+            method: 'POST',  // Changed to POST for better semantics
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrftoken
+            },
+            data: {
+                organic: isOrganic,
+                source: 'product_detail',
+                referrer: referrer,
+                user_agent: navigator.userAgent,
+                screen_resolution: `${window.screen.width}x${window.screen.height}`,
+                view_time: new Date().toISOString()
+            },
+            success: function(response) {
+                if (response.success) {
+                    console.log('View tracked successfully');
+                    // Mark as viewed in this session
+                    sessionStorage.setItem(viewedKey, 'true');
+
+                    // Update view count display if element exists
+                    const viewCountElement = $('#view-count');
+                    if (viewCountElement.length) {
+                        const currentCount = parseInt(viewCountElement.text()) || 0;
+                        viewCountElement.text(currentCount + 1);
+                    }
+                } else {
+                    console.error('Tracking failed:', response.error);
+                }
+            },
+            error: function(xhr) {
+                console.error('Tracking error:', xhr.responseText);
+
+                // Fallback: Try again after 5 seconds
+                setTimeout(() => {
+                    trackProductView(productId);
+                }, 5000);
+            }
+        });
+    }
+
+    // Enhanced sharing functions
+    function getShareData() {
+        const currentUrl = window.location.href;
+        const productName = "{{ product.name }}";
+        const price = "ZMW {{ product.price }}";
+        const business = "{{ product.business.name }}";
+        const description = "{{ product.description|default:''|escapejs|truncatechars:100 }}";
+
+        return {
+            url: currentUrl,
+            text: `Check out ${productName} for ${price} from ${business}\n\n${description}\n\n${currentUrl}`,
+            title: productName,
+            productName: productName,
+            price: price,
+            business: business,
+            description: description
+        };
+    }
+
+    function shareOnWhatsApp() {
+        const shareData = getShareData();
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareData.text)}`;
+        window.open(whatsappUrl, '_blank');
+
+        // Track share event
+        trackShareEvent('whatsapp');
+    }
+
+    function shareOnFacebook() {
+        const shareData = getShareData();
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareData.url)}&quote=${encodeURIComponent(shareData.description)}`;
+        window.open(facebookUrl, '_blank', 'width=600,height=400');
+
+        // Track share event
+        trackShareEvent('facebook');
+    }
+
+    function shareOnTwitter() {
+        const shareData = getShareData();
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.text)}&url=${encodeURIComponent(shareData.url)}`;
+        window.open(twitterUrl, '_blank', 'width=600,height=400');
+
+        // Track share event
+        trackShareEvent('twitter');
+    }
+
+    function shareOnTelegram() {
+        const shareData = getShareData();
+        const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareData.url)}&text=${encodeURIComponent(shareData.text)}`;
+        window.open(telegramUrl, '_blank');
+
+        // Track share event
+        trackShareEvent('telegram');
+    }
+
+    function copyProductLink() {
+        const shareData = getShareData();
+        navigator.clipboard.writeText(shareData.url).then(function() {
+            showToast('Product link copied to clipboard!', 'success');
+
+            // Track share event
+            trackShareEvent('copy_link');
+        }).catch(function() {
+            // Fallback for older browsers
+            const tempInput = document.createElement('input');
+            tempInput.value = shareData.url;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showToast('Product link copied to clipboard!', 'success');
+
+            // Track share event
+            trackShareEvent('copy_link');
+        });
+    }
+
+    function downloadProductInfo() {
+        const productData = {
+            id: "{{ product.id }}",
+            name: "{{ product.name }}",
+            price: "ZMW {{ product.price }}",
+            business: "{{ product.business.name }}",
+            phone: "{{ product.business.phone_number|default:'Not provided' }}",
+            location: "{{ product.location|default:'Not specified' }}",
+            description: `{{ product.description|default:'No description available'|escapejs }}`,
+            image_url: "{% if product.image %}{{ product.image.url }}{% endif %}"
+        };
+
+        // Create a text blob with product info
+        const text = `
+            PRODUCT INFORMATION
+            ===================
+
+            Name: ${productData.name}
+            Price: ${productData.price}
+            Business: ${productData.business}
+
+            Contact: ${productData.phone}
+            Location: ${productData.location}
+
+            Description:
+            ${productData.description}
+
+            Product URL: ${window.location.href}
+
+            Generated by SwiftFind Marketplace
+        `;
+
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${productData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_info.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        // Track download event
+        trackShareEvent('download_info');
+    }
+
+    // Track share/download events
+    function trackShareEvent(platform) {
+        const productId = "{{ product.id }}";
+        const csrftoken = getCookie('csrftoken');
+
+        $.ajax({
+            url: `/pos_system/track-product-view/${productId}/`,
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrftoken
+            },
+            data: {
+                action: 'share',
+                platform: platform,
+                source: 'product_detail'
+            },
+            success: function(response) {
+                console.log(`${platform} share tracked`);
+            },
+            error: function(xhr) {
+                console.error('Error tracking share:', xhr.responseText);
+            }
+        });
+    }
+
+    // Toast notification function
+    function showToast(message, type = 'info') {
+        const toast = $(`
+            <div class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <i class="fas ${type === 'success' ? 'fa-check-circle' :
+                                      type === 'danger' ? 'fa-exclamation-circle' :
+                                      'fa-info-circle'} me-2"></i>
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        `);
+
+        $('#toast-container').append(toast);
+        const bsToast = new bootstrap.Toast(toast[0]);
+        bsToast.show();
+
+        toast.on('hidden.bs.toast', function() {
+            $(this).remove();
+        });
+    }
+
+    // Helper function to get cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+</body>
+</html>

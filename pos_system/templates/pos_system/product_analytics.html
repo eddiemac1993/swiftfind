@@ -1,0 +1,442 @@
+{% load custom_filters %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Analytics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #FF6A00;
+            --secondary-color: #FF9900;
+            --dark-color: #333;
+            --light-color: #f8f8f8;
+            --success-color: #4CAF50;
+            --danger-color: #F44336;
+            --warning-color: #FFC107;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            padding-bottom: 70px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+
+        .reward-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .reward-rate {
+            font-size: 16px;
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            display: inline-block;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #e05d00;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card h3 {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .stat-card p {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .text-primary {
+            color: var(--primary-color);
+        }
+
+        .text-success {
+            color: var(--success-color);
+        }
+
+        /* Table Styles */
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead th {
+            padding: 12px 20px;
+            text-align: left;
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table tbody td {
+            padding: 15px 20px;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .product-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+
+        .product-name {
+            font-weight: 500;
+        }
+
+        .product-category {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-approved {
+            background-color: #e8f5e9;
+            color: var(--success-color);
+        }
+
+        .status-pending {
+            background-color: #fff8e1;
+            color: var(--warning-color);
+        }
+
+        .status-rejected {
+            background-color: #ffebee;
+            color: var(--danger-color);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 12px;
+            padding: 5px 0;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .reward-info {
+                width: 100%;
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .table thead {
+                display: none;
+            }
+
+            .table tbody tr {
+                display: block;
+                margin-bottom: 15px;
+                border-bottom: 1px solid #eee;
+            }
+
+            .table tbody td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 15px;
+                border-bottom: none;
+            }
+
+            .table tbody td::before {
+                content: attr(data-label);
+                font-weight: 500;
+                color: #666;
+                margin-right: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <h1>Product Analytics</h1>
+            <div class="reward-info">
+                <span class="reward-rate">SwiftFind</span>
+                <form method="post" action="{% url 'pos_system:claim_rewards' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        Claim Rewards
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Stats Summary -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Total Views</h3>
+                <p>{{ total_views }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Estimated Revenue</h3>
+                <p class="text-primary">ZMW {{ estimated_revenue|floatformat:2 }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Available to Claim</h3>
+                <p class="text-success">ZMW {{ estimated_revenue|floatformat:2 }}</p>
+            </div>
+        </div>
+
+        <!-- Product Performance Table -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Product Performance</h2>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Total Views</th>
+                            <th>Last 7 Days</th>
+                            <th>Last 30 Days</th>
+                            <th>Estimated Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in view_stats %}
+                        <tr>
+                            <td data-label="Product">
+                                <div class="product-info">
+                                    <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-product.png' %}{% endif %}"
+                                         alt="{{ product.name }}" class="product-image">
+                                    <div>
+                                        <div class="product-name">{{ product.name }}</div>
+                                        <div class="product-category">{{ product.category.name|default:"No category" }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td data-label="Total Views">{{ product.total_views }}</td>
+                            <td data-label="Last 7 Days">{{ product.last_7_days_views }}</td>
+                            <td data-label="Last 30 Days">{{ product.last_30_days_views }}</td>
+                            <td data-label="Estimated Value" class="text-primary">ZMW {{ product.total_views|multiply:reward_per_view|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 20px; color: #666;">No products found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Reward Claims History -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Reward Claims History</h2>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Views</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Processed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for claim in claims %}
+                        <tr>
+                            <td data-label="Date">{{ claim.requested_at|date:"M d, Y" }}</td>
+                            <td data-label="Views">{{ claim.views_count }}</td>
+                            <td data-label="Amount" class="{% if claim.status == 'approved' %}text-success{% elif claim.status == 'rejected' %}text-danger{% else %}text-primary{% endif %}">
+                                ZMW {{ claim.amount|floatformat:2 }}
+                            </td>
+                            <td data-label="Status">
+                                <span class="status-badge
+                                    {% if claim.status == 'approved' %}status-approved
+                                    {% elif claim.status == 'rejected' %}status-rejected
+                                    {% else %}status-pending{% endif %}">
+                                    {{ claim.get_status_display }}
+                                </span>
+                            </td>
+                            <td data-label="Processed">
+                                {% if claim.processed_at %}{{ claim.processed_at|date:"M d, Y" }}{% else %}--{% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 20px; color: #666;">No claims found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'pos_system:marketplace' %}" class="nav-item active">
+            <i class="fas fa-store"></i>
+            <span>Store</span>
+        </a>
+        <a href="{% url 'newsfeed-list' %}" class="nav-item">
+            <i class="fas fa-sync"></i>
+            <span>Update</span>
+        </a>
+        <a href="{% url 'about' %}" class="nav-item">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
+        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
+    </nav>
+</body>
+</html>

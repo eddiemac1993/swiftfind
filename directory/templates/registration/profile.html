@@ -883,6 +883,10 @@
                 <i class="fas fa-boxes"></i>
                 <span>Products/Services</span>
             </a>
+            <a href="{% url 'pos_system:product_analytics' %}" class="menu-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Analytics</span>
+        </a>
             <div class="menu-item verified-badge">
                 <div class="flex-shrink-0">
                     <i class="fas fa-check-circle"></i>
@@ -892,6 +896,7 @@
                     <p>{{ business.verification_days_left }} days remaining</p>
                 </div>
             </div>
+
         {% else %}
             <a href="#" class="menu-item active">
                 <i class="fas fa-user-circle"></i>

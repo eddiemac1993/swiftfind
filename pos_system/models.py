@@ -109,3 +109,35 @@ class SaleItem(models.Model):
     def save(self, *args, **kwargs):
         self.total_price = self.quantity * self.unit_price
         super().save(*args, **kwargs)
+
+# In your pos_system/models.py
+
+class ProductView(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='views')
+    viewer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    session_key = models.CharField(max_length=40, blank=True, null=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    viewed_at = models.DateTimeField(auto_now_add=True)
+    is_organic = models.BooleanField(default=True)  # Whether the view came from organic discovery
+
+    class Meta:
+        ordering = ['-viewed_at']
+
+class RewardClaim(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, related_name='reward_claims')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    views_count = models.PositiveIntegerField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    requested_at = models.DateTimeField(auto_now_add=True)
+    processed_at = models.DateTimeField(null=True, blank=True)
+    processed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='processed_claims')
+    notes = models.TextField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['-requested_at']
