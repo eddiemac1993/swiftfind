@@ -55,14 +55,40 @@ from .forms import BusinessPostForm
 
 @login_required
 def products_list(request):
-    # Get the user's business
-    business = Business.objects.filter(owner=request.user).first()
-    if not business:
-        messages.warning(request, "You don't have a business profile yet.")
-        return redirect('profile')
+    # Get all products from all businesses
+    products = BusinessPost.objects.all().select_related('business').order_by('-created_at')
 
-    # Get all products/services for this business
-    products = BusinessPost.objects.filter(business=business).order_by('-created_at')
+    # Get distinct businesses for filters
+    all_businesses = Business.objects.filter(
+        id__in=products.values_list('business_id', flat=True).distinct()
+    ).order_by('name')
+
+    # Apply filters
+    search_query = request.GET.get('q')
+    selected_business = request.GET.get('business')
+    sort_by = request.GET.get('sort', 'newest')
+
+    if search_query:
+        products = products.filter(
+            Q(title__icontains=search_query) |
+            Q(description__icontains=search_query) |
+            Q(business__name__icontains=search_query)
+        )
+
+    if selected_business:
+        products = products.filter(business_id=selected_business)
+
+    # Apply sorting
+    if sort_by == 'newest':
+        products = products.order_by('-created_at')
+    elif sort_by == 'popular':
+        products = products.annotate(
+            review_count=Count('reviews')
+        ).order_by('-review_count', '-created_at')
+    elif sort_by == 'price_asc':
+        products = products.order_by('price')
+    elif sort_by == 'price_desc':
+        products = products.order_by('-price')
 
     # Pagination
     paginator = Paginator(products, 12)
@@ -71,7 +97,10 @@ def products_list(request):
 
     return render(request, 'directory/products_list.html', {
         'products': page_obj,
-        'business': business
+        'all_businesses': all_businesses,
+        'search_query': search_query,
+        'selected_business': selected_business,
+        'sort_by': sort_by,
     })
 
 @login_required

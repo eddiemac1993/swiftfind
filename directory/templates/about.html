@@ -415,10 +415,14 @@
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease;
+            /* Add these properties for better scrolling */
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--secondary-color);
         }
 
         .terms-content.show {
-            max-height: 2000px;
+            max-height: 5000px; /* Increased from 2000px */
+            overflow-y: auto; /* Add scrolling if content exceeds viewport height */
         }
 
         .terms-text {
@@ -447,7 +451,7 @@
             color: var(--text-color);
         }
 
-        .dark-mode .terms-text p, 
+        .dark-mode .terms-text p,
         .dark-mode .terms-text ul {
             color: var(--dark-text);
         }
@@ -604,19 +608,21 @@
             .about-hero h1 {
                 font-size: 1.8rem;
             }
-            
+
             .about-hero p {
                 font-size: 1rem;
             }
-            
+    .terms-content.show {
+        max-height: 3000px; /* Slightly smaller max-height for mobile */
+    }
             .features-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .cta-section h2 {
                 font-size: 1.3rem;
             }
-            
+
             .cta-section p {
                 font-size: 0.95rem;
             }
@@ -656,7 +662,7 @@
         <section class="about-hero">
             <div class="about-hero-content">
                 <h1>About SwiftFind</h1>
-                <p>Your trusted partner in connecting locals with businesses and services in their area.</p>
+                <p>Your trusted partner in connecting locals with organizations and services in their area.</p>
             </div>
         </section>
 
@@ -667,13 +673,13 @@
                 Our Mission
             </h2>
             <p class="mission-statement">
-                At SwiftFind, we are dedicated to simplifying how people discover and interact with local businesses.
+                At SwiftFind, we are dedicated to simplifying how people discover and interact with local organizations.
                 Our mission is to empower communities by providing a seamless platform where users can find, review,
-                and engage with businesses, while enabling businesses to showcase their offerings and connect with customers.
+                and engage with organizations, while enabling organizations to showcase their offerings and connect with community members.
             </p>
             <p class="mission-statement">
-                We believe in fostering strong local economies and creating meaningful connections between businesses
-                and their communities. SwiftFind is designed to make local discovery effortless, transparent, and rewarding.
+                We believe in fostering strong local communities and creating meaningful connections between organizations
+                and the people they serve. SwiftFind is designed to make local discovery effortless, transparent, and rewarding.
             </p>
         </section>
 
@@ -689,8 +695,8 @@
                         <i class="fas fa-search-location"></i>
                     </div>
                     <div class="feature-content">
-                        <h3>Local Business Discovery</h3>
-                        <p>Easily find businesses in your area with advanced search and filtering options.</p>
+                        <h3>Local Organization Discovery</h3>
+                        <p>Easily find organizations in your area with advanced search and filtering options.</p>
                     </div>
                 </div>
 
@@ -699,8 +705,8 @@
                         <i class="fas fa-store"></i>
                     </div>
                     <div class="feature-content">
-                        <h3>Business Listings</h3>
-                        <p>Businesses can create detailed profiles showcasing services, contact information, and operating hours.</p>
+                        <h3>Organization Listings</h3>
+                        <p>Organizations can create detailed profiles showcasing services, contact information, and operating hours.</p>
                     </div>
                 </div>
 
@@ -740,7 +746,7 @@
                     </div>
                     <div class="feature-content">
                         <h3>Seamless Communication</h3>
-                        <p>Connect with businesses through our messaging system for inquiries and support.</p>
+                        <p>Connect with organizations through our messaging system for inquiries and support.</p>
                     </div>
                 </div>
             </div>
@@ -759,7 +765,7 @@
                     </div>
                     <div>
                         <h4>Increased Visibility</h4>
-                        <p>Reach thousands of potential customers in your local area.</p>
+                        <p>Reach thousands of potential community members in your local area.</p>
                     </div>
                 </div>
 
@@ -769,7 +775,7 @@
                     </div>
                     <div>
                         <h4>Verified Profiles</h4>
-                        <p>Build trust with customers through verified business profiles.</p>
+                        <p>Build trust with community members through verified organization profiles.</p>
                     </div>
                 </div>
 
@@ -779,7 +785,7 @@
                     </div>
                     <div>
                         <h4>Exclusive Offers</h4>
-                        <p>Promote special deals and discounts to attract more customers.</p>
+                        <p>Promote special deals and services to attract more community engagement.</p>
                     </div>
                 </div>
 
@@ -789,7 +795,7 @@
                     </div>
                     <div>
                         <h4>Analytics Dashboard</h4>
-                        <p>Track your performance and customer engagement with our tools.</p>
+                        <p>Track your performance and community engagement with our tools.</p>
                     </div>
                 </div>
             </div>
@@ -798,7 +804,7 @@
         <!-- CTA Section -->
         <section class="cta-section">
             <h2>Ready to Join?</h2>
-            <p>Sign up today and start growing your business with SwiftFind.</p>
+            <p>Sign up today and start growing your organization's reach with SwiftFind.</p>
             <a href="https://wa.me/+260772447190?text=Hi%2C%20I%27m%20interested%20in%20becoming%20a%20partner%20with%20SwiftFind%21" class="cta-button" target="_blank">Become a Partner</a>
         </section>
 
@@ -809,58 +815,160 @@
                 <i class="fas fa-chevron-down"></i>
             </div>
             <div class="terms-content" id="terms-content">
-                <div class="terms-text">
-                    <h4>1. Acceptance of Terms</h4>
-                    <p>By accessing or using the SwiftFind platform, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you must not use our services.</p>
+<div class="terms-text">
+    <h4>1. Acceptance of Terms</h4>
+    <p>By accessing, browsing, or using the SwiftFind platform ("Service"), you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions ("Terms"). These Terms constitute a legally binding agreement between you and SwiftFind. If you do not agree to these Terms in their entirety, you must immediately discontinue all use of the Service.</p>
 
-                    <h4>2. User Responsibilities</h4>
-                    <p>As a user of SwiftFind, you agree to:</p>
-                    <ul>
-                        <li>Provide accurate and current information in your profile</li>
-                        <li>Use the platform only for lawful purposes</li>
-                        <li>Not engage in any fraudulent, deceptive, or harmful activities</li>
-                        <li>Respect the intellectual property rights of others</li>
-                        <li>Not attempt to disrupt or interfere with the platform's operation</li>
-                    </ul>
+    <h4>2. Account Registration and Security</h4>
+    <p>To access certain features of the Service, you may be required to create an account. You agree to:</p>
+    <ul>
+        <li>Provide accurate, current, and complete information during registration</li>
+        <li>Maintain and promptly update your account information</li>
+        <li>Maintain the confidentiality of your password and account</li>
+        <li>Be responsible for all activities that occur under your account</li>
+        <li>Notify SwiftFind immediately of any unauthorized use of your account</li>
+        <li>Use your real identity (pseudonyms or false identities are prohibited)</li>
+    </ul>
 
-                    <h4>3. Business Listings</h4>
-                    <p>Businesses listing on SwiftFind must:</p>
-                    <ul>
-                        <li>Provide truthful and accurate information about their services</li>
-                        <li>Honor any offers or promotions advertised on the platform</li>
-                        <li>Maintain the quality of service as represented in their profile</li>
-                        <li>Respond to customer inquiries in a timely manner</li>
-                    </ul>
-                    <p>SwiftFind reserves the right to remove or suspend any business listing that violates these terms.</p>
+    <h4>3. User Responsibilities and Conduct</h4>
+    <p>As a user of SwiftFind, you agree to:</p>
+    <ul>
+        <li>Comply with all applicable laws and regulations</li>
+        <li>Not use the Service for any illegal or unauthorized purpose</li>
+        <li>Not harass, abuse, threaten, or intimidate other users</li>
+        <li>Not upload or transmit viruses or any malicious code</li>
+        <li>Not attempt to gain unauthorized access to the Service or its systems</li>
+        <li>Not engage in any activity that interferes with or disrupts the Service</li>
+        <li>Not use the Service to collect or harvest personal information</li>
+        <li>Not create multiple accounts for deceptive or fraudulent purposes</li>
+    </ul>
 
-                    <h4>4. Reviews and Ratings</h4>
-                    <p>User reviews must:</p>
-                    <ul>
-                        <li>Be based on genuine experiences with the business</li>
-                        <li>Not contain false, defamatory, or misleading statements</li>
-                        <li>Not include personal attacks or inappropriate content</li>
-                    </ul>
-                    <p>SwiftFind may remove reviews that violate these guidelines.</p>
+    <h4>4. Organization Listings and Content</h4>
+    <p>Organizations listing on SwiftFind must:</p>
+    <ul>
+        <li>Provide complete, accurate, and truthful information about their services, location, and contact details</li>
+        <li>Clearly disclose all material terms of any offers or promotions</li>
+        <li>Maintain appropriate licenses and certifications required for their operations</li>
+        <li>Respond to user inquiries and reviews in a professional manner</li>
+        <li>Not engage in false advertising or deceptive marketing practices</li>
+        <li>Not post content that infringes on intellectual property rights</li>
+        <li>Not discriminate against any users based on race, religion, gender, or other protected characteristics</li>
+    </ul>
+    <p>SwiftFind reserves the right to verify organization information and may remove or suspend any listing that violates these terms or is reported to be fraudulent or misleading.</p>
 
-                    <h4>5. Privacy Policy</h4>
-                    <p>Your use of SwiftFind is also governed by our Privacy Policy, which explains how we collect, use, and protect your personal information.</p>
+    <h4>5. Reviews and User-Generated Content</h4>
+    <p>Users may post reviews, comments, and other content ("User Content") as long as it:</p>
+    <ul>
+        <li>Is based on first-hand experiences with the organization</li>
+        <li>Is truthful and not misleading</li>
+        <li>Does not contain hate speech, threats, or harassment</li>
+        <li>Does not contain confidential information</li>
+        <li>Does not violate any third-party rights</li>
+    </ul>
+    <p>By posting User Content, you grant SwiftFind a perpetual, irrevocable license to use, modify, and display such content. SwiftFind may remove any User Content that violates these guidelines without notice.</p>
 
-                    <h4>6. Limitation of Liability</h4>
-                    <p>SwiftFind is not responsible for:</p>
-                    <ul>
-                        <li>The quality or safety of services provided by listed businesses</li>
-                        <li>Any transactions between users and businesses</li>
-                        <li>Any damages or losses resulting from the use of our platform</li>
-                    </ul>
+    <h4>6. Privacy and Data Protection</h4>
+    <p>Your use of SwiftFind is governed by our Privacy Policy, which outlines:</p>
+    <ul>
+        <li>What personal data we collect and how we use it</li>
+        <li>How we protect your personal information</li>
+        <li>Your rights regarding your personal data</li>
+        <li>Our use of cookies and tracking technologies</li>
+        <li>Circumstances under which we may disclose information</li>
+    </ul>
+    <p>By using the Service, you consent to our collection and use of personal data in accordance with our Privacy Policy.</p>
 
-                    <h4>7. Changes to Terms</h4>
-                    <p>We may update these Terms and Conditions from time to time. Continued use of the platform after changes constitutes acceptance of the new terms.</p>
+    <h4>7. Intellectual Property Rights</h4>
+    <p>All content on the SwiftFind platform, including text, graphics, logos, and software, is the property of SwiftFind or its licensors and is protected by copyright and other intellectual property laws. You agree not to:</p>
+    <ul>
+        <li>Reproduce, duplicate, copy, or resell any part of the Service</li>
+        <li>Use any data mining, robots, or similar data gathering tools</li>
+        <li>Create derivative works based on the Service</li>
+        <li>Remove any copyright or proprietary notices</li>
+    </ul>
 
-                    <h4>8. Governing Law</h4>
-                    <p>These terms shall be governed by and construed in accordance with the laws of the jurisdiction where SwiftFind operates.</p>
+    <h4>8. Payments and Fees</h4>
+    <p>Certain features of the Service may require payment of fees. You agree to:</p>
+    <ul>
+        <li>Pay all applicable fees as described on the Service</li>
+        <li>Provide accurate billing and payment information</li>
+        <li>Promptly update account information for changes</li>
+        <li>Authorize SwiftFind to charge your payment method</li>
+    </ul>
+    <p>All fees are non-refundable unless otherwise stated. SwiftFind reserves the right to change fees and payment terms with 30 days' notice.</p>
 
-                    <p>Last updated: June 2023</p>
-                </div>
+    <h4>9. Limitation of Liability</h4>
+    <p>To the maximum extent permitted by law, SwiftFind shall not be liable for:</p>
+    <ul>
+        <li>Any indirect, incidental, or consequential damages</li>
+        <li>Loss of profits, data, or business opportunities</li>
+        <li>The quality, safety, or legality of services provided by listed organizations</li>
+        <li>The accuracy or completeness of organization listings</li>
+        <li>Any user interactions or transactions</li>
+        <li>Unauthorized access to or alteration of your transmissions</li>
+    </ul>
+    <p>SwiftFind's total liability for any claim related to the Service shall not exceed the amount you paid (if any) to use the Service in the 12 months preceding the claim.</p>
+
+    <h4>10. Indemnification</h4>
+    <p>You agree to indemnify and hold harmless SwiftFind, its affiliates, officers, and employees from any claims, damages, or expenses (including attorneys' fees) arising from:</p>
+    <ul>
+        <li>Your use of or inability to use the Service</li>
+        <li>Your violation of these Terms</li>
+        <li>Your violation of any rights of another party</li>
+        <li>Your User Content</li>
+        <li>Your interactions with any organizations or other users</li>
+    </ul>
+
+    <h4>11. Service Modifications and Availability</h4>
+    <p>SwiftFind reserves the right to:</p>
+    <ul>
+        <li>Modify or discontinue the Service at any time</li>
+        <li>Change Service features or functionality</li>
+        <li>Impose limits on certain features or restrict access</li>
+    </ul>
+    <p>We will provide reasonable notice of any material changes that adversely affect your use of the Service.</p>
+
+    <h4>12. Termination</h4>
+    <p>SwiftFind may terminate or suspend your access to the Service:</p>
+    <ul>
+        <li>For violation of these Terms</li>
+        <li>For fraudulent or illegal activity</li>
+        <li>For creating risk or legal exposure</li>
+        <li>For prolonged inactivity</li>
+    </ul>
+    <p>You may terminate your account at any time by contacting us. Certain provisions will survive termination, including those regarding intellectual property, warranties, limitations of liability, and indemnification.</p>
+
+    <h4>13. Dispute Resolution</h4>
+    <p>Any disputes arising from these Terms shall be resolved as follows:</p>
+    <ul>
+        <li>First through good faith negotiations between the parties</li>
+        <li>If unresolved, through binding arbitration in accordance with [Your Jurisdiction] law</li>
+        <li>Each party shall bear its own arbitration costs</li>
+        <li>Claims must be brought within one year of the event giving rise to the claim</li>
+    </ul>
+
+    <h4>14. Governing Law</h4>
+    <p>These Terms shall be governed by and construed in accordance with the laws of [Your Jurisdiction], without regard to its conflict of law provisions. Any legal action shall be brought in the courts located in [Your Jurisdiction].</p>
+
+    <h4>15. General Provisions</h4>
+    <ul>
+        <li>These Terms constitute the entire agreement between you and SwiftFind</li>
+        <li>If any provision is found invalid, the remaining provisions remain in effect</li>
+        <li>Our failure to enforce any right does not waive that right</li>
+        <li>You may not assign your rights under these Terms without our consent</li>
+        <li>We may assign our rights without restriction</li>
+    </ul>
+
+    <h4>16. Changes to Terms</h4>
+    <p>We may modify these Terms at any time. We will notify you of material changes through the Service or by email. Your continued use after changes constitutes acceptance. We recommend reviewing the Terms periodically.</p>
+
+    <p>For questions about these Terms, please contact us at :</p>
+          <p>
+                <strong>WhatsApp:</strong>
+                <a href="https://wa.me/260772447190" class="text-primary hover:underline">+260 772 447 190</a>
+            </p>
+    <p>Last updated: July 2025</p>
+</div>
             </div>
         </section>
     </main>
@@ -875,10 +983,6 @@
         <a href="{% url 'pos_system:marketplace' %}" class="nav-item">
             <i class="fas fa-store"></i>
             <span>Store</span>
-        </a>
-        <a href="{% url 'all-products' %}" class="nav-item">
-            <i class="fas fa-sync"></i>
-            <span>Update</span>
         </a>
         <a href="{% url 'about' %}" class="nav-item active">
             <i class="fas fa-info-circle"></i>

@@ -247,11 +247,26 @@ class BusinessDepartmentAdmin(admin.ModelAdmin):
         return obj.businesses.count()
     business_count.short_description = 'Businesses'
 
+from django.urls import path
+from django.shortcuts import redirect
+from django.urls import reverse
+
 @admin.register(Business)
 class BusinessAdmin(ImportExportModelAdmin):
     resource_class = BusinessResource
-    list_display = ('name', 'owner', 'category', 'city', 'status', 'verified_badge',
-                   'average_rating', 'review_count', 'member_count', 'created_at')
+    list_display = (
+        'name',
+        'owner',
+        'category',
+        'city',
+        'status',
+        'quick_verify',  # New quick verification column
+        'verified_badge',
+        'average_rating',
+        'review_count',
+        'member_count',
+        'created_at'
+    )
     list_filter = (
         'status',
         'is_admin_added',
@@ -296,6 +311,61 @@ class BusinessAdmin(ImportExportModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                '<int:pk>/verify/',
+                self.admin_site.admin_view(self.verify_business),
+                name='%s_%s_verify' % (self.model._meta.app_label, self.model._meta.model_name),
+            ),
+            path(
+                '<int:pk>/unverify/',
+                self.admin_site.admin_view(self.unverify_business),
+                name='%s_%s_unverify' % (self.model._meta.app_label, self.model._meta.model_name),
+            ),
+        ]
+        return custom_urls + urls
+
+    def quick_verify(self, obj):
+        verify_url = reverse(
+            'admin:%s_%s_verify' % (self.model._meta.app_label, self.model._meta.model_name),
+            args=[obj.id]
+        )
+        unverify_url = reverse(
+            'admin:%s_%s_unverify' % (self.model._meta.app_label, self.model._meta.model_name),
+            args=[obj.id]
+        )
+
+        if obj.is_verified:
+            return format_html(
+                '<a class="button" href="{}" style="background:#dc3545;color:white;padding:3px 8px;border-radius:4px;text-decoration:none;">Unverify</a>',
+                unverify_url
+            )
+        else:
+            return format_html(
+                '<a class="button" href="{}" style="background:#28a745;color:white;padding:3px 8px;border-radius:4px;text-decoration:none;">Verify</a>',
+                verify_url
+            )
+    quick_verify.short_description = 'Quick Action'
+    quick_verify.allow_tags = True
+
+    def verify_business(self, request, pk):
+        business = Business.objects.get(pk=pk)
+        business.is_admin_added = True
+        business.verified_until = timezone.now() + timezone.timedelta(days=30)  # Default 30 days verification
+        business.save()
+        self.message_user(request, f"'{business.name}' has been verified for 30 days.")
+        return redirect('admin:directory_business_changelist')
+
+    def unverify_business(self, request, pk):
+        business = Business.objects.get(pk=pk)
+        business.is_admin_added = False
+        business.verified_until = None
+        business.save()
+        self.message_user(request, f"'{business.name}' has been unverified.")
+        return redirect('admin:directory_business_changelist')
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)

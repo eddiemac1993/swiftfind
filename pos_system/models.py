@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from directory.models import Business
+from django.db.models import Q
 
 class ProductCategory(models.Model):
     name = models.CharField(max_length=50)
@@ -112,16 +113,59 @@ class SaleItem(models.Model):
 
 # In your pos_system/models.py
 
+# pos_system/models.py (updated)
 class ProductView(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='views')
     viewer = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     session_key = models.CharField(max_length=40, blank=True, null=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     viewed_at = models.DateTimeField(auto_now_add=True)
-    is_organic = models.BooleanField(default=True)  # Whether the view came from organic discovery
+    is_organic = models.BooleanField(default=True)
+    source = models.CharField(max_length=50, blank=True, null=True)
+    user_agent = models.TextField(blank=True, null=True)
+    referrer = models.TextField(blank=True, null=True)
+    device_type = models.CharField(max_length=50, blank=True, null=True)
+    view_duration = models.PositiveIntegerField(default=0)  # in seconds
+    claimed = models.BooleanField(default=False)
+    claimed_at = models.DateTimeField(null=True, blank=True)
+    claim = models.ForeignKey('RewardClaim', null=True, blank=True, on_delete=models.SET_NULL)
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['product', 'viewer'],
+                name='unique_product_viewer',
+                condition=Q(viewer__isnull=False)
+            ),
+            models.UniqueConstraint(
+                fields=['product', 'session_key'],
+                name='unique_product_session',
+                condition=Q(session_key__isnull=False)
+            )
+        ]
+        indexes = [
+            models.Index(fields=['product', 'viewed_at']),
+            models.Index(fields=['session_key']),
+            models.Index(fields=['viewed_at']),
+            models.Index(fields=['claimed']),
+            models.Index(fields=['product', 'viewer']),
+            models.Index(fields=['product', 'session_key']),
+        ]
         ordering = ['-viewed_at']
+
+    def __str__(self):
+        return f"View of {self.product.name} at {self.viewed_at}"
+
+    def save(self, *args, **kwargs):
+        # Set device type based on user agent
+        if self.user_agent:
+            if 'Mobile' in self.user_agent:
+                self.device_type = 'mobile'
+            elif 'Tablet' in self.user_agent:
+                self.device_type = 'tablet'
+            else:
+                self.device_type = 'desktop'
+        super().save(*args, **kwargs)
 
 class RewardClaim(models.Model):
     STATUS_CHOICES = [

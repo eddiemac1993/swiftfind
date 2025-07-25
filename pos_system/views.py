@@ -10,16 +10,20 @@ import json
 from decimal import Decimal, InvalidOperation
 from django.db.models import Avg
 from .models import Product, ProductCategory, Sale, SaleItem, ProductView, RewardClaim
-from directory.models import Business
+from directory.models import Business, Advertisement
+from django.db.models.functions import Random
 
 def marketplace_view(request):
+    """Display marketplace with products in random order"""
     # Get active products from verified businesses with store link enabled
     products = Product.objects.filter(
         business__is_admin_added=True,
         business__show_store_link=True,
         is_active=True,
         stock_quantity__gt=0
-    ).select_related('business', 'category').order_by('name')
+    ).select_related('business', 'category').annotate(
+        view_count=Count('views')
+    ).order_by(Random())  # Changed from .order_by('name') to random ordering
 
     # Get all distinct categories that have products matching our filters
     categories = ProductCategory.objects.filter(
@@ -62,10 +66,19 @@ def product_detail(request, product_id):
             stock_quantity__gt=0
         ).exclude(id=product.id).order_by('?')[:4]  # Random 4 related products
 
+        # Get active advertisements
+        now = timezone.now()
+        advertisements = Advertisement.objects.filter(
+            is_active=True,
+            start_time__lte=now,
+            end_time__gte=now
+        ).order_by('slot')
+
         context = {
             'product': product,
             'related_products': related_products,
             'business': product.business,
+            'advertisements': advertisements
         }
 
         return render(request, 'pos_system/product_detail.html', context)
@@ -77,45 +90,82 @@ def product_detail(request, product_id):
 from django.views.decorators.http import require_GET
 from django.http import JsonResponse
 
-@require_GET
+from django.views.decorators.csrf import csrf_exempt
+# pos_system/views.py (updated)
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.db.models import Q
+
+@csrf_exempt
+@csrf_exempt
 def track_product_view(request, product_id):
-    """Track product views with AJAX support"""
+    """
+    Tracks product views with the following behavior:
+    - Only counts views from logged-in users
+    - Counts only once per user per product (unique count)
+    - Still tracks anonymous views but doesn't count them
+    """
     try:
         product = Product.objects.get(id=product_id)
-        session_key = request.session.session_key or request.GET.get('session_key')
-        ip_address = request.META.get('REMOTE_ADDR')
 
-        # Create a session if one doesn't exist
-        if not session_key:
-            request.session.save()
-            session_key = request.session.session_key
+        # Initialize response data
+        response_data = {
+            'success': True,
+            'views_count': product.views.count(),
+            'new_view': False,
+            'user_authenticated': request.user.is_authenticated
+        }
 
-        # Check if view already exists in the last 30 minutes
-        last_view = ProductView.objects.filter(
-            product=product,
-            session_key=session_key
-        ).order_by('-viewed_at').first()
+        # Only process counting for authenticated users
+        if request.user.is_authenticated:
+            # Get client IP
+            x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+            ip = x_forwarded_for.split(',')[0] if x_forwarded_for else request.META.get('REMOTE_ADDR')
 
-        if not last_view or (timezone.now() - last_view.viewed_at) > timedelta(minutes=30):
-            ProductView.objects.create(
+            # Determine if traffic is organic
+            referrer = request.META.get('HTTP_REFERER', '')
+            is_organic = bool(referrer) and request.get_host() not in referrer
+
+            # Try to create new view record for authenticated user
+            view, created = ProductView.objects.get_or_create(
                 product=product,
-                viewer=request.user if request.user.is_authenticated else None,
-                session_key=session_key,
-                ip_address=ip_address,
-                is_organic=True,
-                source=request.GET.get('source', 'direct')
+                viewer=request.user,
+                defaults={
+                    'ip_address': ip,
+                    'user_agent': request.META.get('HTTP_USER_AGENT', '')[:500],
+                    'referrer': referrer[:500],
+                    'is_organic': is_organic,
+                    'source': request.GET.get('source', 'direct'),
+                    'viewed_at': timezone.now()
+                }
             )
 
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'success': True})
+            # Update response data if this was a new view
+            if created:
+                response_data.update({
+                    'views_count': product.views.count(),
+                    'new_view': True
+                })
 
-        return JsonResponse({'success': True})
+        return JsonResponse(response_data)
 
     except Product.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Product not found'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
+
+from django.conf import settings
+reward_per_view = settings.REWARD_PER_VIEW
+
+from django.conf import settings
+from decimal import Decimal
+# ... other imports ...
 
 @login_required
 def product_analytics(request):
@@ -129,16 +179,20 @@ def product_analytics(request):
         # Get view statistics for the business's products
         view_stats = Product.objects.filter(business=business).annotate(
             total_views=Count('views'),
-            last_7_days_views=Count('views', filter=Q(views__viewed_at__gte=timezone.now()-timedelta(days=7))),
-            last_30_days_views=Count('views', filter=Q(views__viewed_at__gte=timezone.now()-timedelta(days=30)))
+            unclaimed_views=Count('views', filter=Q(views__claimed=False)),
+            last_7_days_views=Count('views', filter=Q(
+                views__viewed_at__gte=timezone.now() - timedelta(days=7),
+                views__claimed=False
+            )),
+            last_30_days_views=Count('views', filter=Q(
+                views__viewed_at__gte=timezone.now() - timedelta(days=30),
+                views__claimed=False
+            ))
         ).order_by('-total_views')
 
-        # Calculate estimated rewards
-        conversion_rate = Decimal('0.001')  # Example: 0.1% of views convert to revenue
-        reward_per_view = Decimal('0.05')  # Example: $0.05 per view
-
-        total_views = sum(p.total_views for p in view_stats)
-        estimated_revenue = total_views * reward_per_view
+        # Calculate estimated rewards using the setting
+        total_unclaimed_views = sum(p.unclaimed_views for p in view_stats)
+        estimated_revenue = total_unclaimed_views * settings.REWARD_PER_VIEW
 
         # Get pending and approved claims
         claims = RewardClaim.objects.filter(business=business).order_by('-requested_at')
@@ -146,9 +200,9 @@ def product_analytics(request):
         context = {
             'business': business,
             'view_stats': view_stats,
-            'total_views': total_views,
+            'total_views': total_unclaimed_views,
             'estimated_revenue': estimated_revenue,
-            'reward_per_view': reward_per_view,
+            'reward_per_view': settings.REWARD_PER_VIEW,  # Pass the setting to template
             'claims': claims,
         }
 
@@ -168,27 +222,32 @@ def claim_rewards(request):
 
     if request.method == 'POST':
         try:
-            # Get last 30 days views
+            # Get last 30 days unclaimed views
             last_30_days = timezone.now() - timedelta(days=30)
-            views_count = ProductView.objects.filter(
+            unclaimed_views = ProductView.objects.filter(
                 product__business=business,
-                viewed_at__gte=last_30_days
-            ).count()
+                viewed_at__gte=last_30_days,
+                claimed=False
+            )
+
+            views_count = unclaimed_views.count()
 
             if views_count == 0:
-                messages.error(request, "No views to claim rewards for")
+                messages.error(request, "No unclaimed views available to claim rewards for")
                 return redirect('pos_system:product_analytics')
 
-            # Calculate reward amount (example: $0.05 per view)
-            reward_per_view = Decimal('0.05')
-            amount = Decimal(views_count) * reward_per_view
+            # Calculate reward amount using the setting
+            amount = Decimal(views_count) * settings.REWARD_PER_VIEW
 
             # Create claim
-            RewardClaim.objects.create(
+            claim = RewardClaim.objects.create(
                 business=business,
                 amount=amount,
                 views_count=views_count
             )
+
+            # Mark views as claimed
+            unclaimed_views.update(claimed=True, claimed_at=timezone.now(), claim=claim)
 
             messages.success(request, f"Reward claim for ZMW {amount:.2f} submitted for review")
             return redirect('pos_system:product_analytics')

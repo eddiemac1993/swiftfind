@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 {% load jcustom_filters %}
 <!DOCTYPE html>
 <html lang="en">
@@ -103,7 +104,6 @@
         .user-actions {
             display: flex;
             align-items: center;
-            gap: 15px;
         }
 
         .user-actions i {
@@ -860,6 +860,101 @@
         .dark-mode .category-display {
             color: var(--dark-light-text);
         }
+/* Notification Button Styles */
+/* Notification Button */
+.notification-btn {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    margin-right: 10px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.dark-mode .notification-btn {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--dark-text);
+}
+
+.notification-btn:hover {
+    background-color: rgba(7, 193, 96, 0.1);
+    transform: scale(1.05);
+}
+
+/* Pure CSS Notification Badge */
+.notification-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 12px;
+    height: 12px;
+    background-color: #ff0000; /* Red color */
+    border: 2px solid #ffffff; /* White border */
+    border-radius: 50%;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+}
+
+/* If you want to show the count inside the badge */
+.notification-badge::after {
+    content: '{{ request.user.business.businesspost_set.count }}';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 8px;
+    font-weight: bold;
+}
+
+/* For screen readers */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.dark-mode .notification-btn {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--dark-text);
+}
+
+.notification-btn:hover {
+    background-color: rgba(7, 193, 96, 0.1);
+    transform: scale(1.05);
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    border: 2px solid var(--white);
+}
+
+.dark-mode .notification-badge {
+    border-color: var(--dark-surface);
+}
     </style>
 </head>
 <body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
@@ -874,6 +969,16 @@
             <span>Hi, {{ user.username }}</span>
         </div>
         <div class="user-actions">
+            <!-- Products Notification Button -->
+<!-- Notification Button with Pure CSS -->
+<a href="{% url 'products-list' %}" class="notification-btn" title="My Products">
+    <i class="fas fa-bell"></i>
+
+        <span class="notification-badge"></span>
+
+</a>
+
+
             <button id="theme-toggle" class="theme-btn">
                 <i class="fas fa-moon light-icon"></i>
                 <i class="fas fa-sun dark-icon"></i>
@@ -893,7 +998,7 @@
         <div class="banner-slide active" style="background: linear-gradient(135deg, #FF6A00 0%, #FF8C1A 50%, #FF5000 100%);">
             <div class="banner-content">
                 <h3>Discover Local Businesses</h3>
-                <p>Find the best businesses in your area. Showing {{ businesses_count }} businesses.</p>
+                <p>Find the best businesses in your area. {{ businesses_count|intcomma }} Organization and {{ user_count|intcomma }} users connected.</p>
                 <a href="#" class="shop-button">
                     <i class="fas fa-store"></i>
                     <span>Visit Shop</span>
@@ -980,6 +1085,7 @@
     </section>
 
 <style>
+
         .banner-carousel {
             position: relative;
             margin: 0 auto 24px;
@@ -1381,7 +1487,7 @@
         <div class="filter-controls">
             <form method="get" action="." class="w-full flex flex-col md:flex-row gap-2">
                 <!-- Search input with black text -->
-                <input type="text" name="q" placeholder="Search businesses..."
+                <input type="text" name="q" placeholder="Search Organization..."
                        value="{{ query|default:'' }}"
                        class="filter-select search-input w-full md:flex-2">
 
@@ -1496,9 +1602,10 @@
                                 </div>
 
                                 <div class="business-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span>{{ business.city }}</span>
-                                </div>
+    <i class="fas fa-map-marker-alt"></i>
+    <span>{{ business.city|upper }}</span>
+</div>
+
                             </div>
 
                             <div class="business-category">
@@ -1603,10 +1710,6 @@
         <i class="fas fa-store"></i>
         <span>Store</span>
     </a>
-    <a href="{% url 'all-products' %}" class="nav-item">
-        <i class="fas fa-sync"></i>
-        <span>Update</span>
-    </a>
     <a href="{% url 'about' %}" class="nav-item">
         <i class="fas fa-info-circle"></i>
         <span>About</span>
@@ -1691,5 +1794,393 @@
             });
         }
     </script>
+<!-- Registration Instruction Popups -->
+{% if not user.is_authenticated %}
+<!-- Popup for non-authenticated users -->
+<div id="instruction-popup" class="popup-container hidden">
+    <div class="popup-card">
+        <button class="popup-close-btn" onclick="closePopup()" aria-label="Close instructions">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="popup-content">
+            <h3>Join Our Community</h3>
+            <p class="popup-intro">Registering takes less than a minute and unlocks all features!</p>
+
+            <div class="instruction-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Click "Login"</strong> in the bottom navigation
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <strong>Select "Register"</strong> to create your account
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>Fill in your details</strong> (username, email, password)
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <strong>Complete registration</strong> with one click
+                    </div>
+                </div>
+            </div>
+
+            <div class="benefits-box">
+                <p><i class="fas fa-check-circle"></i> Personalized experience</p>
+                <p><i class="fas fa-check-circle"></i> Register your Organization later</p>
+            </div>
+        </div>
+        <div class="popup-footer">
+    <button class="popup-action-btn primary" onclick="window.location.href='https://www.swiftfindzm.com/directory/register/'; closePopup();">
+        Register Now <i class="fas fa-arrow-right"></i>
+    </button>
+        </div>
+    </div>
+</div>
+{% elif user.is_authenticated and not user.owned_businesses.exists %}
+<!-- Popup for authenticated users without business -->
+<div id="instruction-popup" class="popup-container hidden">
+    <div class="popup-card">
+        <button class="popup-close-btn" onclick="closePopup()" aria-label="Close instructions">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="popup-content">
+            <div class="popup-icon">
+                <i class="fas fa-store"></i>
+            </div>
+            <h3>Grow Your Business With Us</h3>
+            <p class="popup-intro">Reach more customers by listing your business in just a few steps:</p>
+
+            <div class="instruction-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Go to your profile</strong> in the bottom navigation
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <strong>Tap "Register Business"</strong> in the menu
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>Enter business details</strong> (takes about 5 minutes)
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <strong>Submit for review</strong> (we'll notify you when approved)
+                    </div>
+                </div>
+            </div>
+
+            <div class="success-message">
+                <i class="fas fa-lightbulb"></i>
+                <p>Once approved, your business will be visible to thousands of potential customers!</p>
+            </div>
+        </div>
+        <div class="popup-footer">
+    <button class="popup-action-btn primary" onclick="window.location.href='https://www.swiftfindzm.com/directory/profile/add-business'; closePopup();">
+        Register Business Now <i class="fas fa-arrow-right"></i>
+    </button>
+    <button class="popup-action-btn secondary" onclick="closePopup(true)">
+        Remind Me Later
+    </button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<style>
+.popup-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+    padding: 20px;
+}
+
+.popup-container.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.popup-card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 30px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    position: relative;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.popup-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.popup-close-btn:hover {
+    color: #333;
+    background: #f5f5f5;
+}
+
+.popup-icon {
+    text-align: center;
+    font-size: 48px;
+    color: var(--primary-color, #4a6bff);
+    margin-bottom: 15px;
+}
+
+.popup-content {
+    margin-top: 10px;
+}
+
+.popup-content h3 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #333;
+}
+
+.popup-intro {
+    text-align: center;
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.instruction-steps {
+    margin: 25px 0;
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.step-number {
+    background-color: var(--primary-color, #4a6bff);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-right: 15px;
+    margin-top: 2px;
+}
+
+.step-content {
+    font-size: 15px;
+    color: #444;
+    line-height: 1.5;
+}
+
+.benefits-box {
+    background-color: #f8f9ff;
+    border-radius: 10px;
+    padding: 15px;
+    margin: 25px 0;
+    border-left: 4px solid var(--primary-color, #4a6bff);
+}
+
+.benefits-box p {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    color: #444;
+}
+
+.benefits-box i {
+    color: var(--primary-color, #4a6bff);
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.success-message {
+    background-color: #f0f8ff;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    align-items: flex-start;
+    margin: 25px 0;
+}
+
+.success-message i {
+    color: #4a6bff;
+    font-size: 20px;
+    margin-right: 12px;
+    margin-top: 2px;
+}
+
+.success-message p {
+    margin: 0;
+    color: #333;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.popup-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.popup-action-btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-action-btn i {
+    margin-left: 8px;
+    font-size: 14px;
+}
+
+.popup-action-btn.primary {
+    background-color: var(--primary-color, #4a6bff);
+    color: white;
+}
+
+.popup-action-btn.primary:hover {
+    background-color: #3a5bef;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 107, 255, 0.3);
+}
+
+.popup-action-btn.secondary {
+    background-color: white;
+    color: #666;
+    border: 1px solid #ddd;
+}
+
+.popup-action-btn.secondary:hover {
+    background-color: #f9f9f9;
+    border-color: #ccc;
+}
+
+@media (max-width: 480px) {
+    .popup-card {
+        padding: 25px 20px;
+    }
+
+    .popup-content h3 {
+        font-size: 22px;
+    }
+
+    .popup-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .popup-action-btn {
+        width: 100%;
+    }
+}
+</style>
+<script>
+// ======================
+// Registration Instruction Popup
+// ======================
+function showPopup() {
+    const popup = document.getElementById('instruction-popup');
+    if (popup) {
+        popup.classList.remove('hidden');
+        // Add a class to body to prevent scrolling when popup is open
+        document.body.classList.add('popup-open');
+    }
+}
+
+function closePopup() {
+    const popup = document.getElementById('instruction-popup');
+    if (popup) {
+        popup.classList.add('hidden');
+        document.body.classList.remove('popup-open');
+        // Don't store anything in localStorage - popup should show on every page visit
+    }
+}
+
+// Show popup based on user state
+document.addEventListener('DOMContentLoaded', function() {
+    const popup = document.getElementById('instruction-popup');
+    if (popup) {
+        // Always show the popup if it exists (user needs to complete required action)
+        // Show after 3 seconds (change to 10000 for production)
+        setTimeout(showPopup, 12000);
+
+        // Close popup when clicking outside content
+        popup.addEventListener('click', function(e) {
+            if (e.target === popup) {
+                closePopup();
+            }
+        });
+    }
+});
+</script>
+
+
 </body>
 </html>

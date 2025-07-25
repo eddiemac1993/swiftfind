@@ -154,6 +154,10 @@ def discover(request):
     category = request.GET.get('category')
     sort_by = request.GET.get('sort_by')
 
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    user_count = User.objects.count()
+
     # Log search query if applicable
     if query or city or category or sort_by:
         search_query, created = SearchQuery.objects.get_or_create(
@@ -283,6 +287,7 @@ def discover(request):
         'businesses_count': businesses_count,
         'business': first_business,
         'random_product': random_product,
+        'user_count': user_count,
     })
 
 def get_cart(request):

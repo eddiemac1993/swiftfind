@@ -6,7 +6,77 @@ from django.db.models.functions import Coalesce
 from .models import ProductCategory, Product, Sale, SaleItem
 from .models import RewardClaim
 from django.utils import timezone
+from .models import ProductView  # Add this import at the top
 
+# ... [your existing admin code] ...
+
+@admin.register(ProductView)
+class ProductViewAdmin(admin.ModelAdmin):
+    list_display = (
+        'product_link',
+        'viewer_link',
+        'viewed_at',
+        'ip_address',
+        'is_organic',
+        'device_info',
+        'view_duration'
+    )
+    list_filter = (
+        'is_organic',
+        'viewed_at',
+        'product__business',
+        'product__category',
+    )
+    search_fields = (
+        'product__name',
+        'viewer__username',
+        'viewer__email',
+        'ip_address',
+        'user_agent'
+    )
+    readonly_fields = (
+        'viewed_at',
+        'ip_address',
+        'user_agent',
+        'referrer',
+        'device_type',
+        'view_duration'
+    )
+    date_hierarchy = 'viewed_at'
+    list_per_page = 50
+
+    def product_link(self, obj):
+        if obj.product:
+            url = reverse('admin:pos_system_product_change', args=[obj.product.id])
+            return format_html('<a href="{}">{}</a>', url, obj.product.name)
+        return "-"
+    product_link.short_description = 'Product'
+    product_link.admin_order_field = 'product__name'
+
+    def viewer_link(self, obj):
+        if obj.viewer:
+            url = reverse('admin:auth_user_change', args=[obj.viewer.id])
+            return format_html('<a href="{}">{}</a>', url, obj.viewer.username)
+        return "Anonymous"
+    viewer_link.short_description = 'Viewer'
+    viewer_link.admin_order_field = 'viewer__username'
+
+    def device_info(self, obj):
+        if obj.user_agent:
+            return obj.user_agent[:50] + "..." if len(obj.user_agent) > 50 else obj.user_agent
+        return "-"
+    device_info.short_description = 'Device Info'
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related(
+            'product', 'product__business', 'product__category', 'viewer'
+        )
+
+    def has_add_permission(self, request):
+        return False  # Prevent manual creation of view records
+
+    def has_change_permission(self, request, obj=None):
+        return False  # Make all records read-only
 @admin.register(RewardClaim)
 class RewardClaimAdmin(admin.ModelAdmin):
     list_display = ('business', 'amount', 'views_count', 'status', 'requested_at')

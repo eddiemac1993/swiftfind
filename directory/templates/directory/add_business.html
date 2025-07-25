@@ -17,8 +17,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --primary-color: #07C160;
-            --primary-dark: #05a54e;
+            --primary-color: #FF6A00;
+            --primary-dark: #FF6A00;
             --primary-light: #e6f7ef;
             --secondary-color: #F8F8F8;
             --text-color: #333;
@@ -580,7 +580,7 @@
         <div class="header-top">
             <div class="location">
                 <i class="fas fa-store"></i>
-                <span>Add Business</span>
+                <span>Add Organization</span>
             </div>
             <div class="user-actions">
                 <button id="theme-toggle" class="theme-btn">
@@ -604,11 +604,11 @@
     </header>
 
     <div class="container">
-        <h1 class="page-title">Add Your Business</h1>
+        <h1 class="page-title">Add Your Organization</h1>
 
         <div class="main-content">
             <div class="content-header">
-                <h2 class="content-title">Business Information</h2>
+                <h2 class="content-title">Organization Information</h2>
             </div>
 
             {% if messages %}
@@ -656,11 +656,11 @@
                 <div class="form-step step-1 active">
                     <div class="form-section">
                         <h3 class="section-title">
-                            <i class="fas fa-building"></i> Business Details
+                            <i class="fas fa-building"></i> Organization Details
                         </h3>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label>Business Logo</label>
+                                <label>Organization Logo</label>
                                 <div class="file-input-container">
                                     <label for="logo-upload" class="file-input-label">
                                         <i class="fas fa-upload mr-2"></i> Choose Logo
@@ -676,7 +676,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="name">Business Name*</label>
+                                <label for="name">Organization Name*</label>
                                 <input type="text"
                                        id="name"
                                        name="name"
@@ -698,12 +698,12 @@
                                 <div class="step-error" id="category-error"></div>
                             </div>
                             <div class="form-group">
-                                <label for="description">Business Description</label>
+                                <label for="description">Organization Description</label>
                                 <textarea id="description"
                                           name="description"
                                           class="form-control"
                                           rows="4"
-                                          placeholder="Briefly describe your business, products, or services (50-300 characters)"></textarea>
+                                          placeholder="Briefly describe your Organization, products, or services (50-300 characters)"></textarea>
                             </div>
                         </div>
                     </div>
@@ -717,7 +717,7 @@
                         </h3>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="email">Business Email</label>
+                                <label for="email">Organization Email</label>
                                 <input type="email"
                                        id="email"
                                        name="email"
@@ -726,7 +726,7 @@
                                 <div class="step-error" id="email-error"></div>
                             </div>
                             <div class="form-group">
-                                <label for="phone_number">Business Phone*</label>
+                                <label for="phone_number">Organization Phone*</label>
                                 <input type="tel"
                                        id="phone_number"
                                        name="phone_number"
@@ -746,7 +746,7 @@
                                 <div class="step-error" id="city-error"></div>
                             </div>
                             <div class="form-group">
-                                <label for="address">Business Address*</label>
+                                <label for="address">Organization Address*</label>
                                 <input type="text"
                                        id="address"
                                        name="address"
@@ -767,7 +767,7 @@
                         </h3>
                         <div class="form-grid">
                             <div class="form-group">
-                                <h4 class="font-medium mb-4">Business Details</h4>
+                                <h4 class="font-medium mb-4">Organization Details</h4>
                                 <div id="review-name" class="mb-2"></div>
                                 <div id="review-category" class="mb-2"></div>
                                 <div id="review-description" class="mb-4"></div>
@@ -796,7 +796,7 @@
                         Next <i class="fas fa-arrow-right ml-2"></i>
                     </button>
                     <button type="submit" class="btn btn-primary btn-submit">
-                        <i class="fas fa-save mr-2"></i> Create Business
+                        <i class="fas fa-save mr-2"></i> Create Organization
                     </button>
                 </div>
             </form>

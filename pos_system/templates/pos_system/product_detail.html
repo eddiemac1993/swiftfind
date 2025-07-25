@@ -1,4 +1,6 @@
 {% load static %}
+{% load custom_filters %}
+{% load view_filters %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -469,7 +471,48 @@
 .dropdown-divider {
     border-color: var(--alibaba-border);
 }
+/* Advertisement Styles */
+.advertisement-section {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+}
 
+.ad-card {
+    border: 1px solid var(--alibaba-border);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.2s;
+}
+
+.ad-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.ad-card img {
+    height: 150px;
+    object-fit: cover;
+}
+
+.ad-card .card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.ad-card .card-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.ad-card small {
+    font-size: 0.75rem;
+}
 /* Make the share button look clickable */
 #shareDropdown::after {
     display: none;
@@ -525,8 +568,8 @@
         <div class="container">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{% url 'pos_system:public_store_all' %}">All Categories</a></li>
-                    <li class="breadcrumb-item"><a href="{% url 'pos_system:public_store' product.business.slug %}">{{ product.business.name }}</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'discover' %}">Discover</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'pos_system:marketplace'  %}">MarketPlace</a></li>
                     {% if product.category %}
                     <li class="breadcrumb-item"><a href="#">{{ product.category.name }}</a></li>
                     {% endif %}
@@ -535,7 +578,6 @@
             </nav>
         </div>
     </div>
-
     <div class="container">
         <div class="product-main">
             <div class="row g-0">
@@ -682,7 +724,35 @@
             </div>
         </div>
         {% endif %}
-
+<!-- Advertisement Section -->
+<hr/>
+{% if advertisements %}
+<div class="advertisement-section mb-4">
+    <h5 class="mb-3">Sponsored Ads</h5>
+    <div class="row g-3">
+        {% for ad in advertisements %}
+        <div class="col-md-6 col-lg-12">
+            <div class="ad-card card h-100">
+                <a href="{{ ad.link }}" target="_blank" class="text-decoration-none">
+                    <div class="card-body p-0">
+                        <img src="{{ ad.image.url }}" alt="{{ ad.title }}" class="img-fluid w-100 rounded-top">
+                        <div class="p-3">
+                            <h6 class="card-title text-dark">{{ ad.title }}</h6>
+                            <small class="text-muted">{{ ad.small_text }}</small>
+                            {% if ad.days_remaining %}
+                            <div class="mt-2">
+                                <small class="text-muted">Ends in {{ ad.days_remaining }} days</small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
         <!-- Related Products -->
         {% if related_products %}
         <div class="related-products">
@@ -763,78 +833,94 @@
         $('.product-card').addClass('fade-in');
     });
 
-    // Enhanced product view tracking function
+  // Enhanced product view tracking function
     function trackProductView(productId) {
         // First check if we've already tracked this view in the current session
         const viewedKey = `viewed_product_${productId}`;
-        if (sessionStorage.getItem(viewedKey)) {
-            console.log('View already tracked in this session');
-            return;
-        }
+        const lastViewTime = sessionStorage.getItem(viewedKey);
+        const now = new Date().getTime();
 
-        // Get CSRF token
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
+        // Only send the request if we haven't tracked this view recently
+        if (!lastViewTime || (now - parseInt(lastViewTime)) > 1800000) { // 30 minutes
+            $.ajax({
+                url: `/pos_system/track-product-view/${productId}/`,
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                data: {
+                    source: 'product_detail',
+                    referrer: document.referrer || 'direct',
+                    is_organic: !['direct', 'none'].includes(document.referrer.toLowerCase()) &&
+                               !document.referrer.includes(window.location.hostname)
+                },
+                success: function(response) {
+                    if (response.success && response.new_view) {
+                        // Update the view count display
+                        const viewCountElement = $('.detail-value').filter(function() {
+                            return $(this).text().includes('times');
+                        });
+                        if (viewCountElement.length) {
+                            const currentCount = parseInt(viewCountElement.text().match(/\d+/)[0]) || 0;
+                            viewCountElement.text((currentCount + 1) + ' times');
+                        }
+                        // Mark as viewed in this session with current timestamp
+                        sessionStorage.setItem(viewedKey, now.toString());
                     }
+                },
+                error: function(xhr) {
+                    console.error('Tracking error:', xhr.responseText);
                 }
-            }
-            return cookieValue;
+            });
         }
-
-        const csrftoken = getCookie('csrftoken');
-        const referrer = document.referrer || 'direct';
-        const isOrganic = referrer.includes('organic') ||
-                         referrer.includes('search') ||
-                         !['direct', 'none'].includes(referrer.toLowerCase());
-
-        $.ajax({
-            url: `/pos_system/track-product-view/${productId}/`,
-            method: 'POST',  // Changed to POST for better semantics
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRFToken': csrftoken
-            },
-            data: {
-                organic: isOrganic,
-                source: 'product_detail',
-                referrer: referrer,
-                user_agent: navigator.userAgent,
-                screen_resolution: `${window.screen.width}x${window.screen.height}`,
-                view_time: new Date().toISOString()
-            },
-            success: function(response) {
-                if (response.success) {
-                    console.log('View tracked successfully');
-                    // Mark as viewed in this session
-                    sessionStorage.setItem(viewedKey, 'true');
-
-                    // Update view count display if element exists
-                    const viewCountElement = $('#view-count');
-                    if (viewCountElement.length) {
-                        const currentCount = parseInt(viewCountElement.text()) || 0;
-                        viewCountElement.text(currentCount + 1);
-                    }
-                } else {
-                    console.error('Tracking failed:', response.error);
-                }
-            },
-            error: function(xhr) {
-                console.error('Tracking error:', xhr.responseText);
-
-                // Fallback: Try again after 5 seconds
-                setTimeout(() => {
-                    trackProductView(productId);
-                }, 5000);
-            }
-        });
     }
+
+    // Call the function when the page loads
+    $(document).ready(function() {
+        trackProductView({{ product.id }});
+
+        // Track time spent on page
+        let startTime = new Date();
+        let activeTime = 0;
+        const checkActivity = setInterval(function() {
+            activeTime += 1; // in seconds
+
+            // Send periodic updates (every 30 seconds)
+            if (activeTime % 30 === 0) {
+                $.ajax({
+                    url: `/pos_system/track-product-view/{{ product.id }}/`,
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    data: {
+                        action: 'update_duration',
+                        duration: activeTime
+                    }
+                });
+            }
+        }, 1000);
+
+        // Update duration when leaving the page
+        $(window).on('beforeunload', function() {
+            clearInterval(checkActivity);
+            $.ajax({
+                url: `/pos_system/track-product-view/{{ product.id }}/`,
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                async: false, // Make synchronous to ensure it completes
+                data: {
+                    action: 'update_duration',
+                    duration: activeTime
+                }
+            });
+        });
+    });
 
     // Enhanced sharing functions
     function getShareData() {

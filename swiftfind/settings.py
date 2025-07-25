@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from decimal import Decimal
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,13 +40,13 @@ ALLOWED_HOSTS = ["swiftfindzm.com", "www.swiftfindzm.com", '*']
 # Application definition
 
 INSTALLED_APPS = [
+    'directory',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'directory',
     'chatbot',
     'taggit',
     'imagekit',
@@ -232,3 +233,5 @@ LOGGING = {
         },
     },
 }
+
+REWARD_PER_VIEW = Decimal('0.015')
