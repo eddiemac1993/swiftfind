@@ -406,9 +406,7 @@
 
         /* Main content */
         .main-content {
-            background-color: var(--white);
             border-radius: 16px;
-            box-shadow: var(--shadow);
             overflow: hidden;
         }
 
@@ -532,7 +530,6 @@
 
         /* Form styles */
         .profile-form {
-            padding: 24px;
         }
 
         .form-grid {
@@ -887,6 +884,10 @@
             <i class="fas fa-chart-line"></i>
             <span>Analytics</span>
         </a>
+            <a href="{% url 'referral_dashboard' %}" class="menu-item">
+        <i class="fas fa-hand-holding-usd"></i>
+        <span>Referrals</span>
+    </a>
             <div class="menu-item verified-badge">
                 <div class="flex-shrink-0">
                     <i class="fas fa-check-circle"></i>

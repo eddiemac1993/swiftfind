@@ -18,6 +18,21 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import BusinessMember, BusinessRole, BusinessDepartment
 
+class ReferralForm(forms.Form):
+    referrer_username = forms.CharField(
+        max_length=150,
+        required=False,
+        help_text="Enter the username of the person who referred you (optional)"
+    )
+
+    def clean_referrer_username(self):
+        username = self.cleaned_data.get('referrer_username')
+        if username:
+            try:
+                return User.objects.get(username=username)
+            except User.DoesNotExist:
+                raise forms.ValidationError("User with this username does not exist.")
+        return None
 class BusinessMemberForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
 

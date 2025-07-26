@@ -132,6 +132,7 @@ class BusinessDepartment(models.Model):
     def __str__(self):
         return self.name
 
+
 class Business(models.Model):
     STATUS_CHOICES = [
         ('active', 'Active'),
@@ -149,6 +150,8 @@ class Business(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_businesses', null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     description = CKEditor5Field(config_name='default')
+    referred_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='businesses_referred')
+    referral_fee_paid = models.BooleanField(default=False)
     address = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=15)
     is_admin_added = models.BooleanField(default=False, verbose_name="Verified Status")
@@ -399,9 +402,30 @@ class UserProfile(models.Model):
     bio = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    referred_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='referrals')
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
 
 # Add this method to the User model
 User.add_to_class('get_profile', lambda user: UserProfile.objects.get_or_create(user=user)[0])
+
+class Referral(models.Model):
+    referrer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='referrals_made')
+    referred_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='referrals_received')
+    referred_business = models.ForeignKey(
+        Business,
+        on_delete=models.CASCADE,
+        related_name='referrals',
+        null=True,  # Make this optional
+        blank=True
+    )
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=2.50)
+    is_paid = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('referred_user', 'referred_business')
+
+    def __str__(self):
+        return f"{self.referrer} → {self.referred_user}"

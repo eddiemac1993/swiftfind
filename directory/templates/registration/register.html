@@ -15,6 +15,26 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Add these to your head section -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .select2-container--default .select2-selection--single {
+        height: 48px;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 10px;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 46px;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 26px;
+    }
+    .dark-mode .select2-container--default .select2-selection--single {
+        background-color: var(--dark-surface);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+</style>
     <style>
         :root {
             --primary-color: #FF6A00;
@@ -770,20 +790,25 @@
             </div>
 
             <!-- Progress Steps -->
-            <div class="progress-steps">
-                <div class="step active" data-step="1">
-                    <div class="step-number">1</div>
-                    <div class="step-label">Basic Info</div>
-                </div>
-                <div class="step" data-step="2">
-                    <div class="step-number">2</div>
-                    <div class="step-label">Password</div>
-                </div>
-                <div class="step" data-step="3">
-                    <div class="step-number">3</div>
-                    <div class="step-label">Complete</div>
-                </div>
-            </div>
+<!-- Update the progress-steps div -->
+<div class="progress-steps">
+    <div class="step active" data-step="1">
+        <div class="step-number">1</div>
+        <div class="step-label">Basic Info</div>
+    </div>
+    <div class="step" data-step="2">
+        <div class="step-number">2</div>
+        <div class="step-label">Password</div>
+    </div>
+    <div class="step" data-step="3">
+        <div class="step-number">3</div>
+        <div class="step-label">Confirm</div>
+    </div>
+    <div class="step" data-step="4">
+        <div class="step-number">4</div>
+        <div class="step-label">Referral</div>
+    </div>
+</div>
 
             <!-- Form Error Messages -->
             {% if form.errors %}
@@ -926,7 +951,25 @@
                         <p>Want to register your business? You can add your business details after signing up in your profile settings.</p>
                     </div>
                 </div>
-
+<!-- Add this after the Step 3 form section but before the form navigation buttons -->
+<!-- Add this as step 4 in your form -->
+<div class="form-step step-4">
+    <div class="form-group">
+        <label for="referrer">Were you referred by someone? (optional)</label>
+        <select name="referrer" id="referrer" class="form-control">
+            <option value="">-- Select a referrer --</option>
+            {% for user in registered_users %}
+                <option value="{{ user.username }}"
+                    {% if request.GET.ref == user.username %}selected{% endif %}>
+                    {{ user.username }} ({{ user.get_full_name|default:user.email }})
+                </option>
+            {% endfor %}
+        </select>
+        <small class="helptext">
+            Select a user who referred you to our platform. They'll receive K5 when you create your first business.
+        </small>
+    </div>
+</div>
                 <!-- Navigation Buttons -->
                 <div class="form-navigation">
                     <button type="button" class="btn-prev">Previous</button>
@@ -967,279 +1010,309 @@
             </a>
         {% endif %}
     </nav>
-    <script>
-        // Generate random number for username suggestions
-        const random_number = Math.floor(Math.random() * 1000) + 1;
-        const current_year = new Date().getFullYear();
+<script>
+    // Generate random number for username suggestions
+    const random_number = Math.floor(Math.random() * 1000) + 1;
+    const current_year = new Date().getFullYear();
 
-        // Update suggestion buttons with random numbers
-        document.querySelectorAll('.suggestion-btn').forEach(btn => {
-            const suggestion = btn.getAttribute('data-suggestion');
-            btn.setAttribute('data-suggestion', suggestion.replace('{{ random_number }}', random_number));
-            btn.textContent = suggestion.replace('{{ random_number }}', random_number);
-        });
+    // Update suggestion buttons with random numbers
+    document.querySelectorAll('.suggestion-btn').forEach(btn => {
+        const suggestion = btn.getAttribute('data-suggestion');
+        btn.setAttribute('data-suggestion', suggestion.replace('{{ random_number }}', random_number));
+        btn.textContent = suggestion.replace('{{ random_number }}', random_number);
+    });
 
-        // Toggle dark mode
-        document.getElementById('theme-toggle').addEventListener('click', function() {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}; Secure; SameSite=Lax`;
-        });
+    // Toggle dark mode
+    document.getElementById('theme-toggle').addEventListener('click', function() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}; Secure; SameSite=Lax`;
+    });
 
-        // Multi-step form functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('registration-form');
-            const steps = document.querySelectorAll('.form-step');
-            const progressSteps = document.querySelectorAll('.progress-steps .step');
-            const nextBtn = document.querySelector('.btn-next');
-            const prevBtn = document.querySelector('.btn-prev');
-            const submitBtn = document.querySelector('.btn-submit');
-            let currentStep = 0;
+    // Multi-step form functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('registration-form');
+        const steps = document.querySelectorAll('.form-step');
+        const progressSteps = document.querySelectorAll('.progress-steps .step');
+        const nextBtn = document.querySelector('.btn-next');
+        const prevBtn = document.querySelector('.btn-prev');
+        const submitBtn = document.querySelector('.btn-submit');
+        let currentStep = 0;
+        const totalSteps = 4; // Now we have 4 steps (0-indexed)
 
-            // Initialize form
-            function showStep(stepIndex) {
-                // Hide all steps
-                steps.forEach(step => step.classList.remove('active'));
-                progressSteps.forEach(step => step.classList.remove('active', 'completed'));
+        // Initialize form
+        function showStep(stepIndex) {
+            // Hide all steps
+            steps.forEach(step => step.classList.remove('active'));
+            progressSteps.forEach(step => step.classList.remove('active', 'completed'));
 
-                // Show current step
-                steps[stepIndex].classList.add('active');
+            // Show current step
+            steps[stepIndex].classList.add('active');
 
-                // Update progress steps
-                progressSteps[stepIndex].classList.add('active');
+            // Update progress steps
+            progressSteps[stepIndex].classList.add('active');
 
-                // Mark previous steps as completed
-                for (let i = 0; i < stepIndex; i++) {
-                    progressSteps[i].classList.add('completed');
-                }
-
-                // Update button visibility
-                if (stepIndex === 0) {
-                    prevBtn.style.visibility = 'hidden';
-                } else {
-                    prevBtn.style.visibility = 'visible';
-                }
-
-                if (stepIndex === steps.length - 1) {
-                    nextBtn.style.display = 'none';
-                    submitBtn.style.display = 'block';
-                } else {
-                    nextBtn.style.display = 'block';
-                    submitBtn.style.display = 'none';
-                }
-
-                currentStep = stepIndex;
+            // Mark previous steps as completed
+            for (let i = 0; i < stepIndex; i++) {
+                progressSteps[i].classList.add('completed');
             }
 
-            // Validate current step before proceeding
-            function validateStep(stepIndex) {
-                let isValid = true;
-                const step = steps[stepIndex];
-                const inputs = step.querySelectorAll('input[required]');
-
-                // First check for server-side errors
-                const serverErrors = step.querySelectorAll('.field-error.show');
-                if (serverErrors.length > 0) {
-                    isValid = false;
-                }
-
-                // Validate each input
-                inputs.forEach(input => {
-                    const errorEl = document.getElementById(input.id + '-error');
-
-                    if (!input.value.trim()) {
-                        if (errorEl) {
-                            errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> This field is required';
-                            errorEl.classList.add('show');
-                            input.classList.add('is-invalid');
-                            input.classList.remove('is-valid');
-                        }
-                        isValid = false;
-                    } else if (input.id === 'email' && !isValidEmail(input.value)) {
-                        if (errorEl) {
-                            errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Enter a valid email address';
-                            errorEl.classList.add('show');
-                            input.classList.add('is-invalid');
-                            input.classList.remove('is-valid');
-                        }
-                        isValid = false;
-                    } else if (input.id === 'username' && !isValidUsername(input.value)) {
-                        if (errorEl) {
-                            errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Only letters, numbers and @/./+/-/_ allowed';
-                            errorEl.classList.add('show');
-                            input.classList.add('is-invalid');
-                            input.classList.remove('is-valid');
-                        }
-                        isValid = false;
-                    } else if (input.id === 'password1' && input.value.length < 8) {
-                        if (errorEl) {
-                            errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Password must be at least 8 characters';
-                            errorEl.classList.add('show');
-                            input.classList.add('is-invalid');
-                            input.classList.remove('is-valid');
-                        }
-                        isValid = false;
-                    } else {
-                        // Clear error if validation passes
-                        if (errorEl) {
-                            errorEl.classList.remove('show');
-                            input.classList.remove('is-invalid');
-                            if (input.value.trim().length > 0) {
-                                input.classList.add('is-valid');
-                            }
-                        }
-                    }
-                });
-
-                // Special validation for password confirmation
-                if (stepIndex === 2) {
-                    const password1 = document.getElementById('password1').value;
-                    const password2 = document.getElementById('password2').value;
-                    const errorEl = document.getElementById('password2-error');
-
-                    if (password1 !== password2) {
-                        if (errorEl) {
-                            errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Passwords do not match';
-                            errorEl.classList.add('show');
-                            document.getElementById('password2').classList.add('is-invalid');
-                            document.getElementById('password2').classList.remove('is-valid');
-                        }
-                        isValid = false;
-                    } else if (errorEl) {
-                        errorEl.classList.remove('show');
-                        document.getElementById('password2').classList.remove('is-invalid');
-                        if (password2.length > 0) {
-                            document.getElementById('password2').classList.add('is-valid');
-                        }
-                    }
-                }
-
-                return isValid;
+            // Update button visibility
+            if (stepIndex === 0) {
+                prevBtn.style.visibility = 'hidden';
+            } else {
+                prevBtn.style.visibility = 'visible';
             }
 
-            function isValidEmail(email) {
-                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            if (stepIndex === totalSteps - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'block';
+                submitBtn.style.display = 'none';
             }
 
-            function isValidUsername(username) {
-                return /^[a-zA-Z0-9@.+-_]+$/.test(username);
+            currentStep = stepIndex;
+        }
+
+        // Validate current step before proceeding
+        function validateStep(stepIndex) {
+            let isValid = true;
+            const step = steps[stepIndex];
+            const inputs = step.querySelectorAll('input[required], select[required]');
+
+            // First check for server-side errors
+            const serverErrors = step.querySelectorAll('.field-error.show');
+            if (serverErrors.length > 0) {
+                isValid = false;
             }
 
-            // Next button click handler
-            nextBtn.addEventListener('click', function() {
-                if (validateStep(currentStep)) {
-                    showStep(currentStep + 1);
-                }
-            });
+            // Validate each input
+            inputs.forEach(input => {
+                const errorEl = document.getElementById(input.id + '-error');
 
-            // Previous button click handler
-            prevBtn.addEventListener('click', function() {
-                showStep(currentStep - 1);
-            });
-
-            // Form submission handler
-            form.addEventListener('submit', function(e) {
-                // Validate all steps before submission
-                let allValid = true;
-                for (let i = 0; i < steps.length; i++) {
-                    if (!validateStep(i)) {
-                        allValid = false;
-                        showStep(i); // Show the first invalid step
-                        break;
-                    }
-                }
-
-                if (!allValid) {
-                    e.preventDefault();
-                    return;
-                }
-
-                // Show loading state
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner"></i> Creating Account...';
-            });
-
-            // Initialize first step
-            showStep(0);
-
-            // Password visibility toggle
-            document.querySelectorAll('.toggle-password').forEach(button => {
-                button.addEventListener('click', function() {
-                    const input = this.parentElement.querySelector('input');
-                    const icon = this.querySelector('i');
-                    if (input.type === 'password') {
-                        input.type = 'text';
-                        icon.classList.replace('fa-eye', 'fa-eye-slash');
-                    } else {
-                        input.type = 'password';
-                        icon.classList.replace('fa-eye-slash', 'fa-eye');
-                    }
-                });
-            });
-
-            // Username input handling - auto-replace spaces with underscores
-            document.getElementById('username').addEventListener('input', function() {
-                // Replace spaces with underscores
-                if (/\s/.test(this.value)) {
-                    this.value = this.value.replace(/\s+/g, '_');
-                }
-
-                // Validate username
-                const username = this.value;
-                const errorEl = document.getElementById('username-error');
-
-                if (username.length > 0) {
-                    if (username.length < 4) {
-                        errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Username must be at least 4 characters';
+                if (!input.value.trim() && input.required) {
+                    if (errorEl) {
+                        errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> This field is required';
                         errorEl.classList.add('show');
-                        this.classList.add('is-invalid');
-                        this.classList.remove('is-valid');
-                    } else if (!isValidUsername(username)) {
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+                    }
+                    isValid = false;
+                } else if (input.id === 'email' && !isValidEmail(input.value)) {
+                    if (errorEl) {
+                        errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Enter a valid email address';
+                        errorEl.classList.add('show');
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+                    }
+                    isValid = false;
+                } else if (input.id === 'username' && !isValidUsername(input.value)) {
+                    if (errorEl) {
                         errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Only letters, numbers and @/./+/-/_ allowed';
                         errorEl.classList.add('show');
-                        this.classList.add('is-invalid');
-                        this.classList.remove('is-valid');
-                    } else {
-                        errorEl.classList.remove('show');
-                        this.classList.remove('is-invalid');
-                        this.classList.add('is-valid');
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
                     }
+                    isValid = false;
+                } else if (input.id === 'password1' && input.value.length < 8) {
+                    if (errorEl) {
+                        errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Password must be at least 8 characters';
+                        errorEl.classList.add('show');
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+                    }
+                    isValid = false;
+                } else {
+                    // Clear error if validation passes
+                    if (errorEl) {
+                        errorEl.classList.remove('show');
+                        input.classList.remove('is-invalid');
+                        if (input.value.trim().length > 0) {
+                            input.classList.add('is-valid');
+                        }
+                    }
+                }
+            });
+
+            // Special validation for password confirmation
+            if (stepIndex === 2) {
+                const password1 = document.getElementById('password1').value;
+                const password2 = document.getElementById('password2').value;
+                const errorEl = document.getElementById('password2-error');
+
+                if (password1 !== password2) {
+                    if (errorEl) {
+                        errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Passwords do not match';
+                        errorEl.classList.add('show');
+                        document.getElementById('password2').classList.add('is-invalid');
+                        document.getElementById('password2').classList.remove('is-valid');
+                    }
+                    isValid = false;
+                } else if (errorEl) {
+                    errorEl.classList.remove('show');
+                    document.getElementById('password2').classList.remove('is-invalid');
+                    if (password2.length > 0) {
+                        document.getElementById('password2').classList.add('is-valid');
+                    }
+                }
+            }
+
+            return isValid;
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function isValidUsername(username) {
+            return /^[a-zA-Z0-9@.+-_]+$/.test(username);
+        }
+
+        // Next button click handler
+        nextBtn.addEventListener('click', function() {
+            if (validateStep(currentStep)) {
+                showStep(currentStep + 1);
+            }
+        });
+
+        // Previous button click handler
+        prevBtn.addEventListener('click', function() {
+            showStep(currentStep - 1);
+        });
+
+        // Form submission handler
+        form.addEventListener('submit', function(e) {
+            // Validate all steps before submission
+            let allValid = true;
+            for (let i = 0; i < totalSteps; i++) {
+                if (!validateStep(i)) {
+                    allValid = false;
+                    showStep(i); // Show the first invalid step
+                    break;
+                }
+            }
+
+            if (!allValid) {
+                e.preventDefault();
+                return;
+            }
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner"></i> Creating Account...';
+        });
+
+        // Initialize first step
+        showStep(0);
+
+        // Password visibility toggle
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const input = this.parentElement.querySelector('input');
+                const icon = this.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            });
+        });
+
+        // Username input handling - auto-replace spaces with underscores
+        document.getElementById('username').addEventListener('input', function() {
+            // Replace spaces with underscores
+            if (/\s/.test(this.value)) {
+                this.value = this.value.replace(/\s+/g, '_');
+            }
+
+            // Validate username
+            const username = this.value;
+            const errorEl = document.getElementById('username-error');
+
+            if (username.length > 0) {
+                if (username.length < 4) {
+                    errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Username must be at least 4 characters';
+                    errorEl.classList.add('show');
+                    this.classList.add('is-invalid');
+                    this.classList.remove('is-valid');
+                } else if (!isValidUsername(username)) {
+                    errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Only letters, numbers and @/./+/-/_ allowed';
+                    errorEl.classList.add('show');
+                    this.classList.add('is-invalid');
+                    this.classList.remove('is-valid');
                 } else {
                     errorEl.classList.remove('show');
                     this.classList.remove('is-invalid');
-                    this.classList.remove('is-valid');
+                    this.classList.add('is-valid');
                 }
-            });
-
-            // Username suggestion buttons
-            document.querySelectorAll('.suggestion-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const suggestion = this.getAttribute('data-suggestion');
-                    const usernameInput = document.getElementById('username');
-                    usernameInput.value = suggestion;
-                    usernameInput.dispatchEvent(new Event('input'));
-                });
-            });
-
-            // Show server errors on relevant steps
-            const errorFields = document.querySelectorAll('.field-error.show');
-            if (errorFields.length > 0) {
-                // Find which step contains the first error
-                let errorStep = 0;
-                const firstError = errorFields[0];
-                const errorInput = document.getElementById(firstError.id.replace('-error', ''));
-
-                if (errorInput) {
-                    if (['password1', 'password2'].includes(errorInput.id)) {
-                        errorStep = errorInput.id === 'password1' ? 1 : 2;
-                    } else if (errorInput.id === 'email') {
-                        errorStep = 0;
-                    }
-                }
-
-                showStep(errorStep);
+            } else {
+                errorEl.classList.remove('show');
+                this.classList.remove('is-invalid');
+                this.classList.remove('is-valid');
             }
         });
-    </script>
+
+        // Username suggestion buttons
+        document.querySelectorAll('.suggestion-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const suggestion = this.getAttribute('data-suggestion');
+                const usernameInput = document.getElementById('username');
+                usernameInput.value = suggestion;
+                usernameInput.dispatchEvent(new Event('input'));
+            });
+        });
+
+        // Show server errors on relevant steps
+        const errorFields = document.querySelectorAll('.field-error.show');
+        if (errorFields.length > 0) {
+            // Find which step contains the first error
+            let errorStep = 0;
+            const firstError = errorFields[0];
+            const errorInput = document.getElementById(firstError.id.replace('-error', ''));
+
+            if (errorInput) {
+                if (['password1', 'password2'].includes(errorInput.id)) {
+                    errorStep = errorInput.id === 'password1' ? 1 : 2;
+                } else if (errorInput.id === 'email') {
+                    errorStep = 0;
+                } else if (errorInput.id === 'referrer') {
+                    errorStep = 3;
+                }
+            }
+
+            showStep(errorStep);
+        }
+
+        // Initialize Select2 for referrer dropdown
+        $(document).ready(function() {
+            $('#referrer').select2({
+                placeholder: "Search for a user...",
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('.step-4'),
+                theme: document.body.classList.contains('dark-mode') ? 'dark' : 'default'
+            });
+
+            // Pre-select if ref parameter exists in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const refParam = urlParams.get('ref');
+            if (refParam) {
+                $('#referrer').val(refParam).trigger('change');
+            }
+        });
+
+        // Update Select2 theme when dark mode changes
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            const isDark = document.body.classList.contains('dark-mode');
+            $('#referrer').select2({
+                theme: isDark ? 'dark' : 'default'
+            });
+        });
+
+    }); // End of DOMContentLoaded
+</script>
 </body>
 </html>

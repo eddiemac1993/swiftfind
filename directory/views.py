@@ -618,18 +618,29 @@ def handle_post_delete(request, business, pk):
     return redirect('business-detail', pk=pk)
 
 from .models import Category  # Import your Category model
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import ReferralForm
+from .models import Referral
 
 @login_required
 def add_business(request):
     categories = Category.objects.all()
 
     if request.method == 'POST':
-        form = BusinessForm(request.POST, request.FILES)
-        if form.is_valid():
+        business_form = BusinessForm(request.POST, request.FILES)
+        referral_form = ReferralForm(request.POST)
+
+        if business_form.is_valid() and referral_form.is_valid():
             try:
                 with transaction.atomic():
-                    business = form.save(commit=False)
+                    business = business_form.save(commit=False)
                     business.owner = request.user
+
+                    # Handle referral if provided
+                    referrer = referral_form.cleaned_data.get('referrer_username')
+                    if referrer:
+                        business.referred_by = referrer
 
                     # Set default values for required fields not in form
                     if not business.description:
@@ -637,21 +648,66 @@ def add_business(request):
                     business.show_store_link = True
 
                     business.save()
-                    form.save_m2m()  # For any many-to-many fields
+                    business_form.save_m2m()  # For any many-to-many fields
+
+                    # Create referral record if applicable
+                    if referrer:
+                        Referral.objects.create(
+                            referrer=referrer,
+                            referred_user=request.user,
+                            referred_business=business,
+                            amount=2.50  # referral fee
+                        )
+                        messages.info(request, f"Thank you for using {referrer.username}'s referral!")
 
                     messages.success(request, 'Business created successfully!')
                     return redirect('profile')
+
             except Exception as e:
                 messages.error(request, f'Error creating business: {str(e)}')
         else:
-            # Form is invalid - show errors
-            messages.error(request, 'Please correct the errors below.')
+            # Forms are invalid - show errors
+            for field, errors in business_form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+            for field, errors in referral_form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Referral: {error}")
     else:
-        form = BusinessForm()
+        # Pre-fill referral form if ref parameter exists
+        referral_username = request.GET.get('ref')
+        initial = {'referrer_username': referral_username} if referral_username else {}
+
+        business_form = BusinessForm()
+        referral_form = ReferralForm(initial=initial)
 
     return render(request, 'directory/add_business.html', {
-        'form': form,
+        'form': business_form,
+        'referral_form': referral_form,
         'categories': categories
+    })
+
+from django.urls import reverse
+from django.db.models import Sum
+
+@login_required
+def referral_dashboard(request):
+    referrals_made = Referral.objects.filter(referrer=request.user).select_related('referred_business', 'referred_user')
+    total_earned = referrals_made.aggregate(Sum('amount'))['amount__sum'] or 0
+    total_paid = referrals_made.filter(is_paid=True).aggregate(Sum('amount'))['amount__sum'] or 0
+    pending_payment = total_earned - total_paid
+
+    # Generate a unique referral link
+    referral_link = request.build_absolute_uri(
+        reverse('register') + f"?ref={request.user.username}"
+    )
+
+    return render(request, 'referrals/dashboard.html', {
+        'referrals_made': referrals_made,
+        'total_earned': total_earned,
+        'total_paid': total_paid,
+        'pending_payment': pending_payment,
+        'referral_link': referral_link,
     })
 
 def upload_business_image(request, business_id):
@@ -712,17 +768,45 @@ def newsfeed_detail(request, pk):
         'comments': comments,
     })
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth import login
+from .forms import UserRegistrationForm, ReferralForm
+from .models import UserProfile, Referral
+from directory.models import Business  # Import your Business model if needed
+
+from django.contrib.auth import get_user_model
+User = get_user_model()
 def register(request):
+    # Get all active registered users (excluding staff/superusers if needed)
+    registered_users = User.objects.filter(is_active=True).exclude(
+        username__in=['admin', 'staff']  # Exclude any special accounts
+    ).order_by('username')[:100]  # Limit to 100 users for performance
+
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            if not UserProfile.objects.filter(user=user).exists():
-                UserProfile.objects.create(user=user)
+            user = form.save(commit=False)
+
+            # Handle referral if provided
+            referrer_username = request.POST.get('referrer')
+            if referrer_username:
+                try:
+                    referrer = User.objects.get(username=referrer_username)
+                    user._referrer = referrer  # Temporary attribute for signal
+                except User.DoesNotExist:
+                    messages.warning(request, "Invalid referral code. Proceeding with normal registration.")
+
+            user.save()
+            messages.success(request, "Registration successful! Please log in.")
             return redirect('login')
     else:
         form = UserRegistrationForm()
-    return render(request, 'registration/register.html', {'form': form})
+
+    return render(request, 'registration/register.html', {
+        'form': form,
+        'registered_users': registered_users
+    })
 
 @login_required
 def profile(request):

@@ -64,7 +64,10 @@ INSTALLED_APPS = [
     'rangefilter',
     'django_ckeditor_5',
     'django_user_agents',
+    'django.contrib.sites',
 ]
+
+SITE_ID = 1
 
 # Customize CKEditor 5 (optional)
 CKEDITOR_5_CONFIGS = {
