@@ -18,21 +18,21 @@ def handle_user_creation(sender, instance, created, **kwargs):
     - Admin notifications
     """
     request = kwargs.get('request')
-    
+
     # 1. Handle profile creation
     profile, _ = UserProfile.objects.get_or_create(user=instance)
-    
+
     # 2. Process referral if exists
     if hasattr(instance, '_referrer'):
         profile.referred_by = instance._referrer
         profile.save()
-        
+
         Referral.objects.create(
             referrer=instance._referrer,
             referred_user=instance,
         )
         del instance._referrer
-    
+
     # 3. Send notifications for new users
     if created:
         send_user_signup_notification(instance, request)
@@ -49,10 +49,10 @@ def send_user_signup_notification(user, request=None):
         <p>Email: {user.email}</p>
         """
     )
-    
+
     # Detailed notification with device info if available
     device_info = get_device_info(request) if request else "Device info unavailable"
-    
+
     mail_admins(
         subject=f"[Detailed] New Signup: {user.username}",
         message=f"""
@@ -102,19 +102,19 @@ def send_business_creation_notification(business):
     """Sends notification to admins about new business"""
     current_site = Site.objects.get_current()
     admin_url = f"https://{current_site.domain}{reverse('admin:directory_business_change', args=[business.id])}"
-    
+
     mail_admins(
         subject=f"New Business Added: {business.name}",
         message=f"""
         A new business has been added:
-        
+
         Name: {business.name}
         Owner: {business.owner.username} ({business.owner.email})
         Category: {business.category.name if business.category else 'None'}
         Address: {business.address}
         Phone: {business.phone_number}
         Status: {'Verified' if business.is_verified else 'Pending verification'}
-        
+
         Admin URL: {admin_url}
         """,
         html_message=f"""
@@ -133,21 +133,21 @@ def send_business_creation_notification(business):
 def send_business_welcome_email(business):
     """Sends welcome email to business owner"""
     subject = f"Welcome to Our Platform - {business.name}"
-    
+
     send_mail(
         subject=subject,
         message=f"""
         Dear {business.owner.username},
-        
+
         Thank you for adding your business "{business.name}" to our platform!
-        
+
         Here are your next steps:
         1. Complete your business profile
         2. Add your products/services
         3. Verify your contact information
-        
+
         We're excited to have you on board!
-        
+
         The Platform Team
         """,
         from_email='noreply@yourdomain.com',
@@ -155,18 +155,33 @@ def send_business_welcome_email(business):
         html_message=f"""
         <h2>Welcome to Our Platform!</h2>
         <p>Dear {business.owner.username},</p>
-        
+
         <p>Thank you for adding your business <strong>{business.name}</strong> to our platform!</p>
-        
+
         <h3>Next Steps:</h3>
         <ol>
             <li>Complete your business profile</li>
             <li>Add your products/services</li>
             <li>Verify your contact information</li>
         </ol>
-        
+
         <p>We're excited to have you on board!</p>
-        
+
         <p>The Platform Team</p>
         """
     )
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+@receiver(post_save, sender=Business)
+def handle_business_referral(sender, instance, created, **kwargs):
+    if created and instance.referred_by:
+        # Check if a referral already exists for this user-business combo
+        if not Referral.objects.filter(referred_user=instance.owner, referred_business=instance).exists():
+            Referral.objects.create(
+                referrer=instance.referred_by,
+                referred_user=instance.owner,
+                referred_business=instance,
+                amount=2.50
+            )

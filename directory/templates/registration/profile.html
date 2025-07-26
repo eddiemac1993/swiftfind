@@ -790,7 +790,55 @@
         .ck.ck-editor {
             transition: all 0.3s ease;
         }
+/* Earnings Card Styles */
+.earnings-card {
+    background-color: rgba(255, 106, 0, 0.05);
+    border-left: 3px solid var(--primary-color);
+    border-radius: 0 8px 8px 0;
+    padding: 16px;
+    margin: 0 8px 16px 8px;
+}
 
+.dark-mode .earnings-card {
+    background-color: rgba(255, 106, 0, 0.1);
+}
+
+.earnings-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.earnings-label {
+    color: var(--light-text);
+}
+
+.dark-mode .earnings-label {
+    color: var(--dark-light-text);
+}
+
+.earnings-amount {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.earnings-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.earnings-link:hover {
+    text-decoration: underline;
+}
+
+.earnings-link i {
+    font-size: 12px;
+}
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .sidebar {
@@ -862,6 +910,24 @@
     </div>
 
     <div class="sidebar-menu">
+<!-- Add Referral Earnings Card at the top -->
+    <div class="earnings-card">
+        <div class="earnings-row">
+            <span class="earnings-label">Total Earned:</span>
+            <span class="earnings-amount">K{{ referral_stats.total_earned|floatformat:2 }}</span>
+        </div>
+        <div class="earnings-row">
+            <span class="earnings-label">Paid Out:</span>
+            <span class="earnings-amount">K{{ referral_stats.total_paid|floatformat:2 }}</span>
+        </div>
+        <div class="earnings-row">
+            <span class="earnings-label">Pending:</span>
+            <span class="earnings-amount">K{{ referral_stats.pending_payment|floatformat:2 }}</span>
+        </div>
+        <a href="{% url 'referral_dashboard' %}" class="earnings-link">
+            <i class="fas fa-external-link-alt mr-1"></i> View Details
+        </a>
+    </div>
         {% if business.is_verified %}
             <a href="#" class="menu-item active">
                 <i class="fas fa-user-circle"></i>

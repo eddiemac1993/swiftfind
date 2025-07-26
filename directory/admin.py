@@ -14,7 +14,7 @@ from .models import (
     BusinessRole, BusinessDepartment, Business,
     BusinessMember, BusinessPost, Review,
     BusinessImage, ChatRoom, ChatMessage,
-    SearchQuery, UserProfile
+    SearchQuery, Referral,  UserProfile
 )
 
 # ======================
@@ -116,7 +116,44 @@ class CustomUserAdmin(UserAdmin):
         updated = queryset.update(is_active=False)
         self.message_user(request, f"{updated} users were deactivated.")
     deactivate_users.short_description = "Deactivate selected users"
+# Add this to your existing admin.py file, preferably near the other model admin classes
 
+@admin.register(Referral)
+class ReferralAdmin(admin.ModelAdmin):
+    list_display = (
+        'referrer',
+        'referred_user',
+        'referred_business',
+        'amount',
+        'is_paid',
+        'created_at'
+    )
+    list_filter = (
+        'is_paid',
+        ('referrer', RelatedDropdownFilter),
+        ('referred_user', RelatedDropdownFilter),
+        ('referred_business', RelatedDropdownFilter),
+        ('created_at', DateRangeFilter),
+    )
+    search_fields = (
+        'referrer__username',
+        'referred_user__username',
+        'referred_business__name'
+    )
+    raw_id_fields = ('referrer', 'referred_user', 'referred_business')
+    readonly_fields = ('created_at',)
+    date_hierarchy = 'created_at'
+    actions = ['mark_as_paid', 'mark_as_unpaid']
+
+    def mark_as_paid(self, request, queryset):
+        updated = queryset.update(is_paid=True)
+        self.message_user(request, f"{updated} referrals were marked as paid.")
+    mark_as_paid.short_description = "Mark selected as paid"
+
+    def mark_as_unpaid(self, request, queryset):
+        updated = queryset.update(is_paid=False)
+        self.message_user(request, f"{updated} referrals were marked as unpaid.")
+    mark_as_unpaid.short_description = "Mark selected as unpaid"
 # ======================
 # MAIN MODEL ADMIN CLASSES
 # ======================

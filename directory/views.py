@@ -624,6 +624,7 @@ from .forms import ReferralForm
 from .models import Referral
 
 @login_required
+@login_required
 def add_business(request):
     categories = Category.objects.all()
 
@@ -637,36 +638,31 @@ def add_business(request):
                     business = business_form.save(commit=False)
                     business.owner = request.user
 
-                    # Handle referral if provided
+                    # Check if user was referred by someone
+                    user_referral = Referral.objects.filter(referred_user=request.user).first()
+                    if user_referral:
+                        business.referred_by = user_referral.referrer
+
+                    # Handle direct business referral if provided
                     referrer = referral_form.cleaned_data.get('referrer_username')
                     if referrer:
                         business.referred_by = referrer
-
-                    # Set default values for required fields not in form
-                    if not business.description:
-                        business.description = "No description provided"
-                    business.show_store_link = True
-
-                    business.save()
-                    business_form.save_m2m()  # For any many-to-many fields
-
-                    # Create referral record if applicable
-                    if referrer:
                         Referral.objects.create(
                             referrer=referrer,
                             referred_user=request.user,
                             referred_business=business,
-                            amount=2.50  # referral fee
+                            amount=2.50
                         )
                         messages.info(request, f"Thank you for using {referrer.username}'s referral!")
 
+                    business.save()
+                    business_form.save_m2m()
                     messages.success(request, 'Business created successfully!')
                     return redirect('profile')
 
             except Exception as e:
                 messages.error(request, f'Error creating business: {str(e)}')
         else:
-            # Forms are invalid - show errors
             for field, errors in business_form.errors.items():
                 for error in errors:
                     messages.error(request, f"{field}: {error}")
@@ -674,10 +670,8 @@ def add_business(request):
                 for error in errors:
                     messages.error(request, f"Referral: {error}")
     else:
-        # Pre-fill referral form if ref parameter exists
         referral_username = request.GET.get('ref')
         initial = {'referrer_username': referral_username} if referral_username else {}
-
         business_form = BusinessForm()
         referral_form = ReferralForm(initial=initial)
 
@@ -692,6 +686,12 @@ from django.db.models import Sum
 
 @login_required
 def referral_dashboard(request):
+    # Get all referrals where user is the referrer
+    referrals_made = Referral.objects.filter(
+        Q(referrer=request.user) |
+        Q(referred_business__owner=request.user)
+    ).select_related('referred_user', 'referred_business').distinct()
+
     referrals_made = Referral.objects.filter(referrer=request.user).select_related('referred_business', 'referred_user')
     total_earned = referrals_made.aggregate(Sum('amount'))['amount__sum'] or 0
     total_paid = referrals_made.filter(is_paid=True).aggregate(Sum('amount'))['amount__sum'] or 0
@@ -778,10 +778,9 @@ from directory.models import Business  # Import your Business model if needed
 from django.contrib.auth import get_user_model
 User = get_user_model()
 def register(request):
-    # Get all active registered users (excluding staff/superusers if needed)
     registered_users = User.objects.filter(is_active=True).exclude(
-        username__in=['admin', 'staff']  # Exclude any special accounts
-    ).order_by('username')[:100]  # Limit to 100 users for performance
+        username__in=['admin', 'staff']
+    ).order_by('username')[:100]
 
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
@@ -793,11 +792,21 @@ def register(request):
             if referrer_username:
                 try:
                     referrer = User.objects.get(username=referrer_username)
-                    user._referrer = referrer  # Temporary attribute for signal
+                    user.save()  # Save user first to get an ID
+
+                    # Create referral record
+                    Referral.objects.create(
+                        referrer=referrer,
+                        referred_user=user,
+                        amount=2.50
+                    )
+                    messages.success(request, f"Thanks for signing up through {referrer.username}'s referral!")
                 except User.DoesNotExist:
                     messages.warning(request, "Invalid referral code. Proceeding with normal registration.")
+                    user.save()
+            else:
+                user.save()
 
-            user.save()
             messages.success(request, "Registration successful! Please log in.")
             return redirect('login')
     else:
@@ -811,13 +820,18 @@ def register(request):
 @login_required
 def profile(request):
     profile = request.user.profile
-    business = Business.objects.filter(owner=request.user).first()  # Get user's business if exists
+    business = Business.objects.filter(owner=request.user).first()
+
+    # Calculate referral earnings
+    referral_stats = {
+        'total_earned': Referral.objects.filter(referrer=request.user).aggregate(Sum('amount'))['amount__sum'] or 0,
+        'total_paid': Referral.objects.filter(referrer=request.user, is_paid=True).aggregate(Sum('amount'))['amount__sum'] or 0,
+        'pending_payment': Referral.objects.filter(referrer=request.user, is_paid=False).aggregate(Sum('amount'))['amount__sum'] or 0,
+    }
 
     if request.method == 'POST':
         user_form = UserUpdateForm(request.POST, instance=request.user)
         profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
-
-        # Only include business form if business exists
         business_form = BusinessUpdateForm(request.POST, request.FILES, instance=business) if business else None
 
         if all(form.is_valid() for form in filter(None, [user_form, profile_form, business_form])):
@@ -846,8 +860,9 @@ def profile(request):
         'user_form': user_form,
         'profile_form': profile_form,
         'business_form': business_form,
-        'business': business,  # Pass business to template
-        'has_business': business is not None  # Add flag for business existence
+        'business': business,
+        'has_business': business is not None,
+        'referral_stats': referral_stats,  # Add referral stats to context
     }
     return render(request, 'registration/profile.html', context)
 
