@@ -17,6 +17,7 @@ urlpatterns = [
     path('bot/', include('chatbot.urls')),
     path('taxi/', include('taxi.urls')),
     path('tracking/', include('tracking.urls')),
+    path('messages/', include('messaging.urls')),
 
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/password_reset/',

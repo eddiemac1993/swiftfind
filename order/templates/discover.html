@@ -970,14 +970,15 @@
         </div>
         <div class="user-actions">
             <!-- Products Notification Button -->
-<!-- Notification Button with Pure CSS -->
-<a href="{% url 'products-list' %}" class="notification-btn" title="My Products">
-    <i class="fas fa-bell"></i>
 
-        <span class="notification-badge"></span>
-
+<a href="{% url 'messaging:conversation_list' %}" class="nav-item">
+    <i class="fas {% if is_business_owner %}fa-comments{% else %}fa-envelope{% endif %}"></i>
+    {% if unread_count > 0 %}
+    <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+        {{ unread_count }}
+    </span>
+    {% endif %}
 </a>
-
 
             <button id="theme-toggle" class="theme-btn">
                 <i class="fas fa-moon light-icon"></i>

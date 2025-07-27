@@ -835,7 +835,57 @@
 .earnings-link:hover {
     text-decoration: underline;
 }
+/* Notification Button Styles */
+.notification-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
 
+.dark-mode .notification-btn {
+    color: var(--dark-text);
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #FF6A00;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.notification-btn:hover {
+    color: var(--primary-color);
+}
+
+.notification-btn:hover i {
+    color: var(--primary-color);
+}
+
+/* If you want to make it stand out more */
+.notification-btn.highlight {
+    background-color: rgba(255, 106, 0, 0.1);
+    border-left: 3px solid var(--primary-color);
+}
+
+.notification-btn.highlight i {
+    color: var(--primary-color);
+}
+
+.dark-mode .notification-btn.highlight {
+    background-color: rgba(255, 106, 0, 0.2);
+}
 .earnings-link i {
     font-size: 12px;
 }
@@ -927,6 +977,13 @@
         <a href="{% url 'referral_dashboard' %}" class="earnings-link">
             <i class="fas fa-external-link-alt mr-1"></i> View Details
         </a>
+<a href="{% url 'products-list' %}" class="notification-btn menu-item {% if unread_announcements_count > 0 %}highlight{% endif %}" title="My Products">
+    <i class="fas fa-bullhorn"></i>
+    <span>Announcements</span>
+    {% if unread_announcements_count > 0 %}
+        <span class="notification-badge">{{ unread_announcements_count }}</span>
+    {% endif %}
+</a>
     </div>
         {% if business.is_verified %}
             <a href="#" class="menu-item active">

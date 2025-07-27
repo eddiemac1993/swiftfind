@@ -1,0 +1,424 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FF6A00">
+    <title>Messages - SwiftFind</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #FF6A00;
+            --primary-dark: #E05D00;
+            --secondary-color: #F8F8F8;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #EEE;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding-bottom: 72px;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        /* Header styles */
+        .app-header {
+            background-color: var(--white);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .dark-mode .page-title {
+            color: var(--dark-text);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--secondary-color);
+        }
+
+        .dark-mode .theme-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-btn .dark-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .light-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .dark-icon {
+            display: block;
+        }
+
+        /* Conversation List */
+        .conversation-list {
+            background-color: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin: 16px;
+        }
+
+        .dark-mode .conversation-list {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .conversation-item {
+            display: block;
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            transition: background-color 0.2s ease;
+        }
+
+        .dark-mode .conversation-item {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .conversation-item:hover {
+            background-color: rgba(255, 106, 0, 0.05);
+        }
+
+        .dark-mode .conversation-item:hover {
+            background-color: rgba(255, 106, 0, 0.1);
+        }
+
+        .unread-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background-color: #FF4D4F;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .conversation-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .conversation-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .conversation-name {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+
+        .dark-mode .conversation-name {
+            color: var(--dark-text);
+        }
+
+        .conversation-preview {
+            font-size: 0.875rem;
+            color: var(--light-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .dark-mode .conversation-preview {
+            color: var(--dark-light-text);
+        }
+
+        .conversation-time {
+            font-size: 0.75rem;
+            color: var(--light-text);
+            margin-left: 16px;
+            white-space: nowrap;
+        }
+
+        .dark-mode .conversation-time {
+            color: var(--dark-light-text);
+        }
+
+        .empty-state {
+            padding: 40px 16px;
+            text-align: center;
+            color: var(--light-text);
+        }
+
+        .dark-mode .empty-state {
+            color: var(--dark-light-text);
+        }
+
+        .empty-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .empty-icon {
+            color: var(--dark-light-text);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--white);
+            padding: 12px 0 8px;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--light-text);
+            font-size: 12px;
+            font-weight: 500;
+            position: relative;
+            padding: 6px 16px;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active i {
+            transform: translateY(-2px);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+        }
+
+        /* Chat button */
+        .chat-button {
+            position: fixed;
+            bottom: 150px;
+            right: 20px;
+            color: white;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            text-decoration: none;
+            font-size: 12px;
+            background: var(--dark-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .chat-button:hover {
+            background: var(--dark-bg);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Chat Button -->
+    <a href="{% url 'chat' %}" class="chat-button">
+        <span class="star">✨</span> <span>Ai</span>
+    </a>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-top">
+            <h1 class="page-title">
+                <i class="fas fa-comments"></i>
+                Messages
+            </h1>
+            <div class="user-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main">
+        <div class="conversation-list">
+            {% for conversation in conversations %}
+            <a href="{% url 'messaging:conversation_detail' conversation.id %}" class="conversation-item">
+                {% if conversation.unread_count > 0 %}
+                <span class="unread-badge">{{ conversation.unread_count }}</span>
+                {% endif %}
+                <div class="conversation-content">
+                    <div class="conversation-info">
+                        <h3 class="conversation-name">{{ conversation.display_name }}</h3>
+                        <p class="conversation-preview">
+                            {% with last_message=conversation.messages.last %}
+                                {{ last_message.content|truncatechars:50 }}
+                            {% endwith %}
+                        </p>
+                    </div>
+                    <div class="conversation-time">
+                        {{ conversation.updated_at|timesince }} ago
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-comment-slash"></i>
+                </div>
+                <h3>No conversations yet</h3>
+                <p>Start a conversation with a business to see it here</p>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'pos_system:marketplace' %}" class="nav-item">
+            <i class="fas fa-store"></i>
+            <span>Store</span>
+        </a>
+        <a href="{% url 'messaging:conversation_list' %}" class="nav-item active">
+            <i class="fas fa-comments"></i>
+            <span>Messages</span>
+        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
+    </nav>
+
+    <script>
+        // Theme Toggle
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+        });
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('{% static "service-worker.js" %}')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

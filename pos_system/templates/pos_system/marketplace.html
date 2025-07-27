@@ -562,7 +562,7 @@
                         {% endif %}
 
                         <div class="flex gap-2 mt-3">
-                            <a href="{% url 'business-store' pk=product.business.pk %}?highlight={{ product.id }}"
+                            <a href="{% url 'messaging:start_conversation' product.business.id %}"
                                class="view-store-btn flex-1">
                                 Contact Supplier
                             </a>
