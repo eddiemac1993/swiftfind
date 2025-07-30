@@ -1806,32 +1806,50 @@ $(document).on('click', function(e) {
         saveCart();
     }
 
-    function addToCart(productId) {
-        const $productCard = $(`.product-card[data-product-id="${productId}"]`);
-        const productName = $productCard.find('.product-name').text();
-        const productPrice = parseFloat($productCard.find('.product-price').text().replace(config.currencySymbol, ''));
-        const productBusiness = $productCard.find('.product-business').text();
-        const productImage = $productCard.find('.product-image img').attr('src');
+function addToCart(productId) {
+    const $productCard = $(`.product-card[data-product-id="${productId}"]`);
+    const productName = $productCard.find('.product-name').text();
+    const productPrice = parseFloat($productCard.find('.product-price').text().replace(config.currencySymbol, ''));
+    const productBusiness = $productCard.find('.product-business').text();
+    const productImage = $productCard.find('.product-image img').attr('src');
+    const businessId = $productCard.data('business-id');
 
-        if (state.cart[productId]) {
-            state.cart[productId].quantity += 1;
-        } else {
-            state.cart[productId] = {
-                name: productName,
-                price: productPrice,
-                quantity: 1,
-                business: productBusiness || config.businessName,
-                image: productImage
-            };
-        }
+    // Check if cart contains items from other businesses
+    if (Object.keys(state.cart).length > 0) {
+        const existingBusinesses = new Set();
+        Object.values(state.cart).forEach(item => {
+            existingBusinesses.add(item.businessId);
+        });
 
-        updateCartUI();
-        showToast(`${productName} added to cart`, 'success');
-
-        if (Object.keys(state.cart).length === 1) {
-            openCart();
+        if (existingBusinesses.size > 0 && !existingBusinesses.has(businessId)) {
+            if (!confirm(`This product is from ${productBusiness || config.businessName}. Your cart contains items from other businesses. Would you like to clear your current cart and add this item?`)) {
+                return;
+            }
+            // Clear cart if user confirms
+            state.cart = {};
         }
     }
+
+    if (state.cart[productId]) {
+        state.cart[productId].quantity += 1;
+    } else {
+        state.cart[productId] = {
+            name: productName,
+            price: productPrice,
+            quantity: 1,
+            business: productBusiness || config.businessName,
+            businessId: businessId,
+            image: productImage
+        };
+    }
+
+    updateCartUI();
+    showToast(`${productName} added to cart`, 'success');
+
+    if (Object.keys(state.cart).length === 1) {
+        openCart();
+    }
+}
 
     // Cart event handlers
     $('#cart-icon').click(openCart);

@@ -4,6 +4,10 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('home/', views.home, name='home'),
+    path('sw.js', views.service_worker),
+    path('api/push-subscribe/', views.save_push_subscription, name='save-push-subscription'),
+    path('save-subscription/', views.save_subscription, name='save-subscription'),
+
     path('todos/', views.task_list, name='task_list'),
     path('create/', views.task_create, name='task_create'),
     path('<int:pk>/', views.task_detail, name='task_detail'),

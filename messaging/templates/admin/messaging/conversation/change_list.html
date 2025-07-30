@@ -1,0 +1,12 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools %}
+    <div class="object-tools">
+        {% block object-tools-items %}
+            {{ block.super }}
+            <a href="{% url 'admin:messaging_conversation_send_bulk_message' %}" class="addlink">
+                Send Bulk Message
+            </a>
+        {% endblock %}
+    </div>
+{% endblock %}

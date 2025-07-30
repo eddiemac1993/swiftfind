@@ -28,3 +28,21 @@ self.addEventListener('install', (event) => {
       .then(() => self.skipWaiting())
   );
 });
+// In your main JS file
+if ('serviceWorker' in navigator && 'PushManager' in window) {
+    navigator.serviceWorker.register('/sw.js')
+        .then(function(registration) {
+            console.log('ServiceWorker registration successful');
+            return registration.pushManager.getSubscription()
+                .then(function(subscription) {
+                    if (subscription) return subscription;
+                    return registration.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+                    });
+                });
+        })
+        .catch(function(err) {
+            console.log('ServiceWorker registration failed: ', err);
+        });
+}

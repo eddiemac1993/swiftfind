@@ -1,9 +1,10 @@
+# messaging/views.py
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
-from .models import Conversation, Message
+from .models import Conversation, Message, Notification
 from directory.models import Business
 from django.contrib.auth import get_user_model
+from django.http import JsonResponse
 
 User = get_user_model()
 
@@ -13,7 +14,6 @@ def conversation_list(request):
         participants=request.user
     ).order_by('-updated_at')
 
-    # Add display names and unread counts
     for conv in conversations:
         conv.display_name = conv.get_display_name(request.user)
         conv.unread_count = conv.messages.filter(read=False).exclude(sender=request.user).count()
@@ -33,24 +33,31 @@ def conversation_detail(request, conversation_id):
     # Mark messages as read when viewing conversation
     conversation.messages.filter(read=False).exclude(sender=request.user).update(read=True)
 
-    # Get appropriate display name
-    display_name = conversation.get_display_name(request.user)
-
     if request.method == 'POST':
         content = request.POST.get('content', '').strip()
         if content:
-            Message.objects.create(
+            message = Message.objects.create(
                 conversation=conversation,
                 sender=request.user,
                 content=content
             )
+            
+            # Create notifications for all other participants
+            for participant in conversation.participants.exclude(id=request.user.id):
+                Notification.objects.create(
+                    user=participant,
+                    message=message,
+                    is_read=False
+                )
+
             conversation.save()
             return redirect('messaging:conversation_detail', conversation_id=conversation.id)
 
     return render(request, 'messaging/conversation.html', {
         'conversation': conversation,
-        'display_name': display_name,
-        'messages': conversation.messages.all().order_by('timestamp')
+        'display_name': conversation.get_display_name(request.user),
+        'messages': conversation.messages.all().order_by('timestamp'),
+        'current_user_id': request.user.id,
     })
 
 @login_required
@@ -72,3 +79,15 @@ def start_conversation(request, business_id):
         conversation.participants.add(request.user, business.owner)
 
     return redirect('messaging:conversation_detail', conversation_id=conversation.id)
+
+@login_required
+def unread_count(request):
+    count = Notification.objects.filter(user=request.user, is_read=False).count()
+    return JsonResponse({'count': count})
+
+@login_required
+def mark_notifications_read(request):
+    if request.method == 'POST':
+        Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=400)

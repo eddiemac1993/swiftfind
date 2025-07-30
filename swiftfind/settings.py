@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'chatbot',
     'messaging',
+    'webpush',
     'taggit',
     'imagekit',
     'paper',
@@ -199,15 +200,26 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')  # manjoloe800@gmail.com from .env
-EMAIL_HOST_PASSWORD = os.getenv('GMAIL_APP_PASSWORD')  # App password from .env
-DEFAULT_FROM_EMAIL = os.getenv('EMAIL_HOST_USER')
-ADMINS = [('Admin', os.getenv('ADMIN_EMAIL'))]  # Sends error emails
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'manjoloe800@gmail.com')  # Default fallback
+EMAIL_HOST_PASSWORD = os.getenv('GMAIL_APP_PASSWORD')  # Required - no fallback
+DEFAULT_FROM_EMAIL = os.getenv('EMAIL_FROM', EMAIL_HOST_USER)  # Can be different from host user
+SERVER_EMAIL = os.getenv('SERVER_EMAIL', DEFAULT_FROM_EMAIL)  # For error emails
 
-# Admin Notifications (uses ADMIN_EMAIL from .env)
+# Admin notifications
 ADMINS = [
-    ('Swiftfind Admin', os.getenv('ADMIN_EMAIL')),  # Sends 500 errors and signup alerts
+    ('SwiftFind Admin', os.getenv('ADMIN_EMAIL', 'admin@swiftfindzm.com')),
 ]
+
+# Optional - Different settings for different environments
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+WEBPUSH_SETTINGS = {
+    "VAPID_PUBLIC_KEY": "BBJJB0l44DXAL0_iDAGGdAqo-XTPe2rOjSlp8qBXmcH5MnF5zhq4cm-ihwKInTLAWJUkSR5tgivEPEYTvR7OoKE=",
+    "VAPID_PRIVATE_KEY": "WGRM2IvGlPTn4Ett7skSdotfZA6I_op9cvK7UpIMETc=",
+    "VAPID_ADMIN_EMAIL": "admin@swiftfindzm.com"
+}
+
 
 LOGGING = {
     'version': 1,
@@ -240,3 +252,4 @@ LOGGING = {
 }
 
 REWARD_PER_VIEW = Decimal('0.015')
+

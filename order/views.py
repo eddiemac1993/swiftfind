@@ -21,6 +21,81 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Task
 from .forms import TaskForm
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.conf import settings
+from pywebpush import webpush, WebPushException
+# In your Django view
+from pywebpush import webpush
+import json
+
+
+def service_worker(request):
+    response = HttpResponse(
+        open('static/sw.js').read(),
+        content_type='application/javascript'
+    )
+    response['Service-Worker-Allowed'] = '/'
+    return response
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+import json
+from pywebpush import webpush, WebPushException
+
+@require_POST
+def send_push_notification(request):
+    try:
+        data = json.loads(request.body)
+        subscription = data.get('subscription')
+        payload = data.get('payload', {
+            "title": "New Notification",
+            "body": "You have a new message!",
+            "icon": "/static/notif-icon.png"
+        })
+
+        webpush(
+            subscription_info=subscription,
+            data=json.dumps(payload),
+            vapid_private_key=settings.WEBPUSH_SETTINGS['VAPID_PRIVATE_KEY'],
+            vapid_claims={
+                "sub": f"mailto:{settings.WEBPUSH_SETTINGS['VAPID_ADMIN_EMAIL']}",
+                "aud": "https://www.swiftfindzm.com"  # Must match your domain
+            }
+        )
+        return JsonResponse({"status": "success"})
+
+    except WebPushException as e:
+        return JsonResponse({
+            "status": "error",
+            "message": str(e),
+            "details": e.response.json() if hasattr(e, 'response') else None
+        }, status=400)
+
+@csrf_exempt
+def save_subscription(request):
+    if request.method == 'POST':
+        subscription_info = json.loads(request.body)
+        # Optionally save subscription_info to DB
+        request.session['subscription'] = subscription_info
+        return JsonResponse({'status': 'subscription saved'})
+
+
+@csrf_exempt
+def save_push_subscription(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            # Save subscription to database
+            # Example: PushSubscription.objects.create(user=request.user, data=data)
+            return JsonResponse({'status': 'success'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error'}, status=405)
 
 @login_required
 def task_list(request):

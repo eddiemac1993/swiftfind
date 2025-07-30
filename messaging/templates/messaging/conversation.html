@@ -186,26 +186,35 @@
         .app-main {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 16px;
+            padding: 0 9px;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 136px); /* Adjust based on header and bottom nav heights */
         }
 
-        /* Messages container */
+        /* Messages container - fixed height */
         .messages-container {
-            background-color: var(--white);
-            border-radius: 16px;
-            box-shadow: var(--shadow-sm);
-            padding: 16px;
-            height: calc(100vh - 220px);
+            padding: 0; /* Remove padding here, add to inner elements */
+            flex: 1;
             min-height: 300px;
-            overflow-y: auto;
             margin: 16px 0;
-            scroll-behavior: smooth;
             transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Hide any overflow from the container */
         }
 
         .dark-mode .messages-container {
-            background-color: var(--dark-surface);
             box-shadow: var(--dark-shadow-sm);
+        }
+
+        /* Scrollable messages area */
+        .messages-scrollable {
+            flex: 1;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            padding: 16px;
+            padding-right: 8px; /* Space for scrollbar */
         }
 
         /* Message styles */
@@ -288,7 +297,6 @@
         .message-form-container {
             position: sticky;
             bottom: 80px;
-            background-color: var(--white);
             padding: 12px 0;
             transition: var(--transition);
         }
@@ -564,26 +572,28 @@
             .app-header {
                 padding: 16px 24px;
             }
-            
+
             .messages-container {
-                height: calc(100vh - 240px);
-                padding: 24px;
                 margin: 24px 0;
             }
-            
+
+            .messages-scrollable {
+                padding: 24px;
+            }
+
             .message-form-container {
                 padding: 16px 0;
             }
-            
+
             .bottom-nav {
                 padding: 12px 0;
             }
-            
+
             .nav-item {
                 font-size: 11px;
                 padding: 4px 16px;
             }
-            
+
             .nav-item i {
                 font-size: 22px;
             }
@@ -593,12 +603,11 @@
             .app-header {
                 padding: 16px 32px;
             }
-            
-            .messages-container {
-                height: calc(100vh - 260px);
+
+            .messages-scrollable {
                 padding: 32px;
             }
-            
+
             .message {
                 max-width: 70%;
             }
@@ -660,11 +669,6 @@
             </div>
             <div class="user-actions">
                 <button class="action-btn" aria-label="Search conversation">
-                    <i class="fas fa-search"></i>
-                </button>
-                <button class="action-btn" aria-label="Conversation options">
-                    <i class="fas fa-ellipsis-vertical"></i>
-                </button>
                 <button id="theme-toggle" class="action-btn theme-btn" aria-label="Toggle dark mode">
                     <i class="fas fa-moon light-icon"></i>
                     <i class="fas fa-sun dark-icon"></i>
@@ -676,50 +680,52 @@
     <!-- Main Content -->
     <main class="app-main">
         <div class="messages-container" id="messages-container">
-            {% if messages %}
-                {% for message in messages %}
-                {% ifchanged message.timestamp.date %}
-                <div class="date-separator">
-                    {{ message.timestamp|date:"F j, Y" }}
-                </div>
-                {% endifchanged %}
-                <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
-                    <div class="message-bubble">
-                        <p>{{ message.content }}</p>
+            <div class="messages-scrollable">
+                {% if messages %}
+                    {% for message in messages %}
+                    {% ifchanged message.timestamp.date %}
+                    <div class="date-separator">
+                        {{ message.timestamp|date:"F j, Y" }}
                     </div>
-                    <div class="message-time">
-                        {{ message.timestamp|time:"g:i A" }}
-                        {% if message.sender == request.user %}
-                        <span class="message-status">
-                            <i class="fas fa-check"></i>
-                        </span>
-                        {% endif %}
+                    {% endifchanged %}
+                    <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+                        <div class="message-bubble">
+                            <p>{{ message.content }}</p>
+                        </div>
+                        <div class="message-time">
+                            {{ message.timestamp|time:"g:i A" }}
+                            {% if message.sender == request.user %}
+                            <span class="message-status">
+                                <i class="fas fa-check"></i>
+                            </span>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
-                {% endfor %}
-            {% else %}
-                <div class="empty-messages">
-                    <div class="empty-icon">
-                        <i class="fas fa-comment-dots"></i>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-messages">
+                        <div class="empty-icon">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <h3 class="empty-title">No messages yet</h3>
+                        <p class="empty-description">Start the conversation with {{ conversation.business.name }}</p>
                     </div>
-                    <h3 class="empty-title">No messages yet</h3>
-                    <p class="empty-description">Start the conversation with {{ conversation.business.name }}</p>
+                {% endif %}
+
+                <!-- Typing indicator -->
+                <div class="typing-indicator" id="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
                 </div>
-            {% endif %}
-            
-            <!-- Typing indicator -->
-            <div class="typing-indicator" id="typing-indicator">
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
             </div>
         </div>
-        
+
         <div class="message-form-container">
             <form method="post" class="message-form">
                 {% csrf_token %}
                 <div class="message-input-container">
-                    <input type="text" name="content" placeholder="Type your message..." 
+                    <input type="text" name="content" placeholder="Type your message..."
                            class="message-input" required id="message-input">
                     <div class="input-actions">
                         <button type="button" class="input-action-btn" aria-label="Attach file">
@@ -770,27 +776,27 @@
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
             document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
-            
+
             // Update meta theme-color
             const themeColor = isDark ? '#121212' : '#FF6A00';
             document.querySelector('meta[name="theme-color"]').setAttribute('content', themeColor);
         });
 
         // Auto-scroll to bottom of messages
-        const messagesContainer = document.getElementById('messages-container');
+        const messagesScrollable = document.querySelector('.messages-scrollable');
         function scrollToBottom() {
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            messagesScrollable.scrollTop = messagesScrollable.scrollHeight;
         }
-        
+
         // Initial scroll to bottom
         scrollToBottom();
-        
-        // Scroll to bottom when new message is added (for potential future real-time updates)
+
+        // Update the MutationObserver to watch the scrollable container
         const observer = new MutationObserver(function(mutations) {
             scrollToBottom();
         });
-        
-        observer.observe(messagesContainer, {
+
+        observer.observe(messagesScrollable, {
             childList: true,
             subtree: true
         });
@@ -802,20 +808,20 @@
         let typingTimeout;
         const messageInput = document.getElementById('message-input');
         const typingIndicator = document.getElementById('typing-indicator');
-        
+
         messageInput.addEventListener('input', function() {
             // In a real app, you would send a "user is typing" event to the server
             simulateTypingIndicator();
         });
-        
+
         function simulateTypingIndicator() {
             // Show typing indicator
             typingIndicator.classList.add('active');
             document.getElementById('typing-status').textContent = ' is typing...';
-            
+
             // Clear any existing timeout
             clearTimeout(typingTimeout);
-            
+
             // Hide after 2 seconds of inactivity
             typingTimeout = setTimeout(function() {
                 typingIndicator.classList.remove('active');
@@ -840,7 +846,7 @@
         function updateConnectionStatus() {
             const statusElement = document.getElementById('connection-status');
             const isOnline = navigator.onLine;
-            
+
             if (isOnline) {
                 statusElement.textContent = 'Online';
                 statusElement.style.color = '';
@@ -849,7 +855,7 @@
                 statusElement.style.color = '#FF5252';
             }
         }
-        
+
         window.addEventListener('online', updateConnectionStatus);
         window.addEventListener('offline', updateConnectionStatus);
         updateConnectionStatus();

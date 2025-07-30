@@ -7,6 +7,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('webpush/', include('webpush.urls')),
     path('ckeditor5/', include('django_ckeditor_5.urls')),
     path('directory/', include('directory.urls')),
     path('paper/', include('paper.urls')),

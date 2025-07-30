@@ -1,26 +1,29 @@
-const CACHE_NAME = 'swiftfind-v7';
-const ESSENTIAL_URLS = [
+const CACHE_NAME = 'swiftfind-cache-v1';
+const OFFLINE_URL = '/offline.html'; // Create this file if needed
+
+const urlsToCache = [
   '/',
-  '/static/css/styles.css',
-  '/static/js/main.js'
-  // Removed problematic files from initial cache list
+  '/static/css/main.css',
+  '/static/js/main.js',
+  // Add other essential files
 ];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        // Only cache files we know exist
-        return cache.addAll(ESSENTIAL_URLS)
+        console.log('Opened cache');
+        return cache.addAll(urlsToCache)
           .then(() => {
-            // Attempt to cache optional files separately
-            return Promise.all([
-              cacheOptionalFile(cache, '/static/images/logo.png'),
-              cacheOptionalFile(cache, '/offline/')
-            ]);
+            // Only cache offline page if it exists
+            return fetch(OFFLINE_URL)
+              .then(response => {
+                if (response.ok) return cache.add(OFFLINE_URL);
+                return Promise.resolve();
+              })
+              .catch(() => Promise.resolve());
           });
       })
-      .then(() => self.skipWaiting())
   );
 });
 

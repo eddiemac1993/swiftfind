@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products Marketplace</title>
     <!-- Tailwind CSS -->
@@ -421,6 +422,59 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Add to cart button styles */
+/* Add to Cart button styles */
+.add-to-cart-button {
+    transition: all 0.2s ease;
+    background-color: rgba(255, 107, 53, 0.05);
+}
+
+.add-to-cart-button:hover {
+    background-color: rgba(255, 107, 53, 0.1);
+    border-color: #ff6b35;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(255, 107, 53, 0.1);
+}
+
+.add-to-cart-button:active {
+    transform: translateY(0);
+    background-color: rgba(255, 107, 53, 0.15);
+}
+        
+        /* Toast notification styles */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+        
+        .toast.success {
+            background: #4CAF50;
+        }
+        
+        .toast.warning {
+            background: #FF9800;
+        }
+        
+        .toast i {
+            font-size: 18px;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -435,7 +489,7 @@
             <div class="search-box">
                 <input type="text" id="search-input" placeholder="Search for products, suppliers, or categories..."
                        class="search-input">
-                <button id="search-button" class="search-btn" aria-label="Search products">
+                <button class="search-btn" id="search-button">
                     <i class="fas fa-search"></i>
                 </button>
             </div>
@@ -480,40 +534,38 @@
 
             <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {% for product in products %}
-<div class="product-card bg-white rounded-lg overflow-hidden cursor-pointer"
-     data-product-id="{{ product.id }}"
-     data-business-id="{{ product.business.id }}"
-     data-category-id="{% if product.category %}{{ product.category.id }}{% endif %}"
-     data-location="{{ product.location|default_if_none:'' }}"
-     data-description="{{ product.description|default_if_none:'' }}"
-     data-business-name="{{ product.business.name }}"
-     onclick="window.location.href='{% url 'pos_system:product_detail' product.id %}';"
-     tabindex="0">
+                {% if product.business.show_store_link %}
+                <div class="product-card bg-white rounded-lg overflow-hidden"
+                     data-product-id="{{ product.id }}"
+                     data-business-id="{{ product.business.id }}"
+                     data-category-id="{% if product.category %}{{ product.category.id }}{% endif %}"
+                     data-location="{{ product.location|default_if_none:'' }}"
+                     data-description="{{ product.description|default_if_none:'' }}"
+                     data-business-name="{{ product.business.name }}"
+                     tabindex="0">
 
-                    <!-- Product Image -->
-                    <div class="relative h-48 overflow-hidden group">
-                        <img src="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/300x300?text=No+Image{% endif %}"
-                             alt="{{ product.name }}"
-                             class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                             loading="lazy">
+                    <!-- Product Image with link to product detail -->
+                    <a href="{% url 'pos_system:product_detail' product.id %}" class="product-image-link">
+                        <div class="relative h-48 overflow-hidden group">
+                            <img src="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/300x300?text=No+Image{% endif %}"
+                                 alt="{{ product.name }}"
+                                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                 loading="lazy">
 
-                        <!-- Business Logo Badge -->
-                        <div class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white p-1 shadow-md">
-                            <img src="{{ product.business.logo.url }}" alt="{{ product.business.name }}"
-                                 class="w-full h-full object-cover rounded-full">
+                            <!-- Business Logo Badge with link to business store -->
+                            <a href="{% url 'business-store' pk=product.business.pk %}" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white p-1 shadow-md clickable">
+                                <img src="{{ product.business.logo.url }}" alt="{{ product.business.name }}"
+                                     class="w-full h-full object-cover rounded-full">
+                            </a>
                         </div>
-
-                        <!-- Quick View Overlay -->
-                        <a href="{% if product.business and product.id %}{% url 'business-store' pk=product.business.pk %}?highlight={{ product.id }}{% else %}#{% endif %}">
-                            <div class="quick-view-container">
-                                Quick View
-                            </div>
-                        </a>
-                    </div>
+                    </a>
 
                     <!-- Product Info -->
                     <div class="p-4">
-                        <h3 class="text-base font-medium text-gray-800 mb-2 line-clamp-2">{{ product.name }}</h3>
+                        <!-- Product name with link to product detail -->
+                        <a href="{% url 'pos_system:product_detail' product.id %}" class="clickable">
+                            <h3 class="text-base font-medium text-gray-800 mb-2 line-clamp-2">{{ product.name }}</h3>
+                        </a>
 
                         <div class="business-meta mb-3">
                             <div class="business-rating flex items-center">
@@ -538,20 +590,31 @@
                             {% endif %}
                         </div>
 
-<div class="flex items-center justify-between mb-3">
-    <span class="price-tag text-lg font-bold">ZMW {{ product.price }}</span>
-    <div class="flex items-center">
-        <span class="text-xs text-gray-500 mr-1">{{ product.view_count }}</span>
-        <div class="product-action-btn product-view text-gray-500"
-             title="View Count"
-             onclick="event.stopPropagation();">
-            <i class="fas fa-eye"></i>
-        </div>
-    </div>
-</div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="price-tag text-lg font-bold">ZMW {{ product.price }}</span>
+                            <div class="flex items-center">
+                                <span class="text-xs text-gray-500 mr-1">{{ product.view_count }}</span>
+                                <div class="product-action-btn product-view text-gray-500"
+                                     title="View Count"
+                                     onclick="event.stopPropagation();">
+                                    <i class="fas fa-eye"></i><span>Views</span>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="flex items-center gap-2 mb-3">
-                            <span class="business-badge">{{ product.business.name }}</span>
+                            <!-- Business name with link to business store -->
+                            <a href="{% url 'business-detail' product.business.pk %}" class="business-name-link">
+                                <span class="business-badge">{{ product.business.name }}</span>
+                            </a>
+                        
+                            <!-- Enhanced Add to Cart button -->
+                            <a href="{% url 'business-store' pk=product.business.pk %}?highlight={{ product.id }}" 
+                               class="add-to-cart-button text-xs hover:bg-orange-50 ml-2 flex items-center gap-1 px-3 py-1.5 rounded-full border border-orange-200 transition-all"
+                               title="Add to Cart">
+                                <span class="text-orange-600">Add to Cart</span>
+                                <i class="fas fa-cart-plus text-orange-500"></i>
+                            </a>
                         </div>
 
                         {% if product.location %}
@@ -579,6 +642,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
                 {% empty %}
                 <div class="col-span-full text-center py-16">
                     <div class="max-w-md mx-auto">
@@ -648,38 +712,8 @@
     </nav>
 
     <script>
-// In your marketplace.html template
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Track when products come into view
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const productId = entry.target.dataset.productId;
-                trackProductView(productId);
-                observer.unobserve(entry.target); // Stop observing after first view
-            }
-        });
-    }, { threshold: 0.5 }); // Trigger when 50% of product is visible
-
-    // Observe all product cards
-    document.querySelectorAll('.product-card').forEach(card => {
-        observer.observe(card);
-    });
-
-    // Function to send view tracking request
-    function trackProductView(productId) {
-        fetch(`/pos/track-view/${productId}/`, {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Content-Type': 'application/json',
-            },
-            credentials: 'same-origin'
-        }).catch(error => console.error('Error tracking view:', error));
-    }
-});
     document.addEventListener('DOMContentLoaded', function() {
+        // ===== SEARCH/FILTER FUNCTIONALITY =====
         const searchInput = document.getElementById('search-input');
         const searchButton = document.getElementById('search-button');
         const categoryFilter = document.getElementById('category-filter');
@@ -687,482 +721,135 @@ document.addEventListener('DOMContentLoaded', function() {
         const productCards = document.querySelectorAll('.product-card');
         const resultsCount = document.getElementById('results-count');
 
-        // Quick View Modal elements
-        const quickViewModal = document.getElementById('quickViewModal');
-        const quickViewContent = document.getElementById('quickViewContent');
-        const modalClose = document.querySelector('.modal-close');
-        const modalOverlay = document.querySelector('.modal-overlay');
-
-        // Share Modal elements
-        const shareModal = document.getElementById('shareModal');
-        const shareModalClose = document.querySelector('.share-modal-close');
-        const shareOptions = document.querySelectorAll('.share-option');
-
-        // State for share functionality
-        const state = {
-            shareCache: {},
-            currentProduct: null
-        };
-
-        function updateResultsCount() {
-            const visibleCards = Array.from(productCards).filter(card =>
-                card.style.display !== 'none'
-            );
-            const count = visibleCards.length;
-            resultsCount.textContent = `Showing ${count} product${count !== 1 ? 's' : ''}`;
-        }
-
         function filterProducts() {
             const searchTerm = searchInput.value.toLowerCase();
             const selectedCategory = categoryFilter.value;
             const selectedBusiness = businessFilter.value;
 
             productCards.forEach(card => {
-                const productName = card.querySelector('h3').textContent.toLowerCase();
-                const productCategory = card.dataset.categoryId;
-                const productBusiness = card.dataset.businessId;
-                const productLocation = card.dataset.location.toLowerCase();
-                const productDescription = card.dataset.description.toLowerCase();
-
-                const matchesSearch = searchTerm === '' ||
-                    productName.includes(searchTerm) ||
-                    productLocation.includes(searchTerm) ||
-                    productDescription.includes(searchTerm);
-
-                const matchesCategory = selectedCategory === 'all' ||
-                    (productCategory && productCategory === selectedCategory);
-
+                const matchesSearch = searchTerm === '' || 
+                    card.querySelector('h3').textContent.toLowerCase().includes(searchTerm) ||
+                    card.dataset.description.toLowerCase().includes(searchTerm);
+                
+                const matchesCategory = selectedCategory === 'all' || 
+                    card.dataset.categoryId === selectedCategory;
+                
                 const matchesBusiness = selectedBusiness === 'all' ||
-                    productBusiness === selectedBusiness;
+                    card.dataset.businessId === selectedBusiness;
 
-                if (matchesSearch && matchesCategory && matchesBusiness) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+                card.style.display = matchesSearch && matchesCategory && matchesBusiness ? 'block' : 'none';
             });
 
             updateResultsCount();
         }
 
-        // Function to handle quick view button click
-        function handleQuickViewClick(event) {
-            event.preventDefault();
-            const productId = this.dataset.productId;
-            const businessId = this.dataset.businessId;
-
-            // Redirect to business store with product highlight
-            window.location.href = `/business-store/${businessId}/?highlight=${productId}`;
+        function updateResultsCount() {
+            const visibleCount = Array.from(productCards).filter(card => 
+                card.style.display !== 'none'
+            ).length;
+            resultsCount.textContent = `Showing ${visibleCount} products`;
         }
 
-        // Function to show share modal
-        function showShareModal(productData) {
-            state.currentProduct = productData;
-            shareModal.classList.add('show');
-            document.body.style.overflow = 'hidden';
-        }
-
-        // Function to hide share modal
-        function hideShareModal() {
-            shareModal.classList.remove('show');
-            document.body.style.overflow = '';
-        }
-
-        // Function to show loading indicator
-        function showShareLoadingIndicator() {
-            if (!document.getElementById('share-loading-indicator')) {
-                const loadingHTML = `
-                    <div id="share-loading-indicator">
-                        <div class="spinner"></div>
-                        <div style="font-size: 16px; font-weight: 600; color: #374151; margin-bottom: 8px;">
-                            Creating Share Card...
-                        </div>
-                        <div style="font-size: 12px; color: #6b7280;">
-                            Please wait while we generate your beautiful share card
-                        </div>
-                    </div>
-                `;
-                document.body.insertAdjacentHTML('beforeend', loadingHTML);
-            }
-        }
-
-        // Function to hide loading indicator
-        function hideShareLoadingIndicator() {
-            const indicator = document.getElementById('share-loading-indicator');
-            if (indicator) {
-                indicator.remove();
-            }
-        }
-
-        // Function to generate share card
-        function generateShareCard(productData) {
-            return new Promise((resolve, reject) => {
-                const cacheKey = `${productData.id}_${productData.image}_v8`;
-
-                if (state.shareCache[cacheKey]) {
-                    resolve(state.shareCache[cacheKey]);
-                    return;
-                }
-
-                showShareLoadingIndicator();
-
-                const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(productData.url)}&margin=5&format=png&ecc=M`;
-
-                const $tempContainer = $('<div>').css({
-                    position: 'fixed',
-                    left: '-9999px',
-                    top: 0,
-                    width: '350px',
-                    padding: '0',
-                    background: 'transparent',
-                    fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
-                }).appendTo('body');
-
-                $tempContainer.html(`
-                <div class="enhanced-share-card" style="
-                    position: relative;
-                    width: 350px;
-                    border-radius: 20px;
-                    overflow: hidden;
-                    box-shadow: 0 20px 40px rgba(0,0,0,0.15), 0 10px 20px rgba(0,0,0,0.1);
-                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                ">
-                    <!-- Background image with gradient overlay -->
-                    <div style="
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        right: 0;
-                        bottom: 0;
-                        background-image: url('${productData.image}');
-                        background-size: cover;
-                        background-position: center;
-                        filter: brightness(0.85);
-                        z-index: 1;
-                    "></div>
-                    <div style="
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        right: 0;
-                        bottom: 0;
-                        z-index: 1;
-                    "></div>
-
-                    <!-- Content overlay -->
-                    <div style="
-                        position: relative;
-                        z-index: 2;
-                        height: 100%;
-                        display: flex;
-                        flex-direction: column;
-                        padding: 20px;
-                    ">
-                        <!-- Business name and location -->
-                        <div style="margin-bottom: 15px;">
-                            <div style="
-                                font-size: 22px;
-                                font-weight: 800;
-                                color: white;
-                                text-shadow: 0 2px 6px rgba(0,0,0,0.7);
-                                line-height: 1.2;
-                            ">
-                                ${productData.business || 'SwiftFind'}
-                            </div>
-                            ${productData.location ? `
-                            <div style="
-                                font-size: 14px;
-                                font-weight: 600;
-                                color: white;
-                                text-shadow: 0 1px 4px rgba(0,0,0,0.6);
-                                margin-top: 4px;
-                            ">
-                                📍 ${productData.location}
-                            </div>
-                            ` : ''}
-                        </div>
-
-                        <!-- Product name (auto-adjusts for long text) -->
-                        <div style="margin: 10px 0; min-height: 60px;">
-                            <h3 style="
-                                margin: 0;
-                                font-size: ${productData.name.length > 30 ? '20px' : '24px'};
-                                font-weight: 800;
-                                color: white;
-                                text-shadow: 0 2px 6px rgba(0,0,0,0.7);
-                                line-height: 1.3;
-                            ">
-                                ${productData.name}
-                            </h3>
-                        </div>
-
-                        <!-- Price with stronger emphasis -->
-                        <div style="margin: 15px 0;">
-                            <div style="
-                                font-size: 24px;
-                                font-weight: 800;
-                                color: white;
-                                text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-                                background: rgba(0,0,0,0.3);
-                                display: inline-block;
-                                padding: 5px 12px;
-                                border-radius: 8px;
-                            ">
-                                ${productData.price}
-                            </div>
-                        </div>
-
-                        <!-- Spacer to push QR code to bottom -->
-                        <div style="flex-grow: 1;"></div>
-
-                        <!-- QR Code with "Scan Me" label -->
-                        <div style="
-                            display: flex;
-                            flex-direction: column;
-                            align-items: flex-end;
-                            margin-top: 10px;
-                        ">
-                            <div style="
-                                background: white;
-                                padding: 5px;
-                                border-radius: 8px;
-                                display: inline-block;
-                                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-                            ">
-                                <img src="${qrCodeUrl}"
-                                     alt="QR Code for ${productData.name}"
-                                     style="width: 80px; height: 80px;">
-                            </div>
-                            <div style="
-                                font-size: 10px;
-                                color: white;
-                                text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-                                margin-top: 5px;
-                                font-weight: 600;
-                            ">
-                                Scan to view
-                            </div>
-                        </div>
-
-                        <!-- Footer with phone and branding -->
-                        <div style="margin-top: 15px;">
-                            ${productData.phone ? `
-                            <div style="
-                                font-size: 12px;
-                                font-weight: 600;
-                                color: white;
-                                text-shadow: 0 1px 4px rgba(0,0,0,0.6);
-                                display: flex;
-                                align-items: center;
-                            ">
-                                <svg style="width: 14px; height: 14px; margin-right: 6px;" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
-                                </svg>
-                                ${productData.phone}
-                            </div>
-                            ` : ''}
-
-                            <div style="
-                                display: flex;
-                                align-items: center;
-                                gap: 6px;
-                                margin-top: 10px;
-                            ">
-                                <div style="
-                                    width: 20px;
-                                    height: 20px;
-                                    background: #FF6B00;
-                                    border-radius: 4px;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    color: white;
-                                    font-size: 10px;
-                                    font-weight: bold;
-                                ">
-                                    SF
-                                </div>
-                                <span style="
-                                    font-size: 10px;
-                                    color: white;
-                                    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
-                                    opacity: 0.9;
-                                ">
-                                    Powered by SwiftFind
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                `);
-
-                // Preload images for better rendering
-                const preloadImage = (url) => new Promise((resolve) => {
-                    const img = new Image();
-                    img.onload = () => resolve();
-                    img.src = url;
-                });
-
-                Promise.all([
-                    preloadImage(productData.image),
-                    preloadImage(qrCodeUrl)
-                ]).then(() => {
-                    html2canvas($tempContainer[0], {
-                        backgroundColor: null,
-                        scale: 3,
-                        logging: false,
-                        useCORS: true,
-                        allowTaint: true,
-                        width: 350,
-                        height: $tempContainer.height(),
-                        onclone: function(clonedDoc) {
-                            const fontLink = clonedDoc.createElement('link');
-                            fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap';
-                            fontLink.rel = 'stylesheet';
-                            clonedDoc.head.appendChild(fontLink);
-                        }
-                    }).then(canvas => {
-                        $tempContainer.remove();
-                        hideShareLoadingIndicator();
-
-                        const imageData = canvas.toDataURL('image/png', 0.9);
-                        const shareData = {
-                            imageData,
-                            text: `Check out ${productData.name} from ${productData.business} - ${productData.price}`,
-                            url: productData.url,
-                            name: productData.name,
-                            price: productData.price,
-                            business: productData.business,
-                            location: productData.location
-                        };
-
-                        state.shareCache[cacheKey] = shareData;
-                        resolve(shareData);
-                    }).catch(err => {
-                        $tempContainer.remove();
-                        hideShareLoadingIndicator();
-                        console.error("Failed to generate share card:", err);
-                        reject(new Error("Could not generate image. Please try again."));
-                    });
-                }).catch(() => {
-                    // If image preloading fails, proceed anyway (fallback)
-                    html2canvas($tempContainer[0], {
-                        backgroundColor: null,
-                        scale: 3,
-                        logging: false,
-                        useCORS: true,
-                        allowTaint: true,
-                        width: 350,
-                        height: $tempContainer.height(),
-                    }).then(canvas => {
-                        $tempContainer.remove();
-                        hideShareLoadingIndicator();
-                        const imageData = canvas.toDataURL('image/png', 0.9);
-                        state.shareCache[cacheKey] = { ...productData, imageData };
-                        resolve(state.shareCache[cacheKey]);
-                    }).catch(err => {
-                        $tempContainer.remove();
-                        hideShareLoadingIndicator();
-                        reject(err);
-                    });
-                });
-            });
-        }
-
-        // Function to handle share action
-        async function handleShare(method) {
-            if (!state.currentProduct) return;
-
-            try {
-                const shareData = await generateShareCard(state.currentProduct);
-
-                switch(method) {
-                    case 'whatsapp':
-                        window.open(`https://wa.me/?text=${encodeURIComponent(`${shareData.text}\n${shareData.url}`)}`, '_blank');
-                        break;
-                    case 'facebook':
-                        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareData.url)}&quote=${encodeURIComponent(shareData.text)}`, '_blank');
-                        break;
-                    case 'twitter':
-                        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareData.text)}&url=${encodeURIComponent(shareData.url)}`, '_blank');
-                        break;
-                    case 'link':
-                        navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`).then(() => {
-                            alert('Link copied to clipboard!');
-                        });
-                        break;
-                    case 'download':
-                        const link = document.createElement('a');
-                        link.href = shareData.imageData;
-                        link.download = `${shareData.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_share_card.png`;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        break;
-                }
-
-                hideShareModal();
-            } catch (error) {
-                console.error('Error sharing:', error);
-                alert('Failed to share. Please try again.');
-                hideShareLoadingIndicator();
-            }
-        }
-
-        // Add event listeners for share buttons
-        document.querySelectorAll('.share-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const productData = {
-                    id: this.dataset.productId,
-                    name: this.dataset.productName,
-                    price: this.dataset.productPrice,
-                    business: this.dataset.businessName,
-                    image: this.dataset.productImage,
-                    url: this.dataset.productUrl,
-                    location: this.dataset.businessLocation
-                };
-                showShareModal(productData);
-            });
-        });
-
-        // Add event listeners for share options
-        shareOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                const method = this.dataset.shareMethod;
-                handleShare(method);
-            });
-        });
-
-        // Close share modal
-        shareModalClose.addEventListener('click', hideShareModal);
-        modalOverlay.addEventListener('click', hideShareModal);
-
-        // Add event listeners for filtering
+        // Event listeners
         searchInput.addEventListener('input', filterProducts);
         searchButton.addEventListener('click', filterProducts);
         categoryFilter.addEventListener('change', filterProducts);
         businessFilter.addEventListener('change', filterProducts);
 
-        // Initialize results count
+        // Initialize
         updateResultsCount();
+        
+        // Toast notification
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
 
-        // Add smooth scrolling for better UX
-        searchInput.addEventListener('focus', function() {
-            this.parentElement.parentElement.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
+        // Handle share button clicks
+        document.querySelectorAll('.share-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const productId = this.dataset.productId;
+                const productName = this.dataset.productName;
+                const productPrice = this.dataset.productPrice;
+                const businessName = this.dataset.businessName;
+                const productImage = this.dataset.productImage;
+                const productUrl = this.dataset.productUrl;
+                const businessLocation = this.dataset.businessLocation;
+                
+                // Show share modal
+                const shareModal = document.getElementById('shareModal');
+                shareModal.classList.add('show');
+                
+                // Handle share option clicks
+                document.querySelectorAll('.share-option').forEach(option => {
+                    option.addEventListener('click', function() {
+                        const method = this.dataset.shareMethod;
+                        
+                        if (method === 'download') {
+                            // Create a loading indicator
+                            const loadingIndicator = document.createElement('div');
+                            loadingIndicator.id = 'share-loading-indicator';
+                            loadingIndicator.innerHTML = `
+                                <div class="spinner"></div>
+                                <p>Preparing product card for download...</p>
+                            `;
+                            document.body.appendChild(loadingIndicator);
+                            
+                            // Get the product card element
+                            const productCard = document.querySelector(`.product-card[data-product-id="${productId}"]`);
+                            
+                            // Use html2canvas to capture the card
+                            html2canvas(productCard).then(canvas => {
+                                // Create download link
+                                const link = document.createElement('a');
+                                link.download = `${productName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_product_card.png`;
+                                link.href = canvas.toDataURL('image/png');
+                                link.click();
+                                
+                                // Remove loading indicator
+                                loadingIndicator.remove();
+                                
+                                // Close share modal
+                                shareModal.classList.remove('show');
+                                
+                                // Show success message
+                                showToast('Product card downloaded!', 'success');
+                            });
+                        }
+                    });
+                });
+                
+                // Close modal when clicking close button
+                document.querySelector('.share-modal-close').addEventListener('click', () => {
+                    shareModal.classList.remove('show');
+                });
+                
+                // Close modal when clicking outside
+                shareModal.addEventListener('click', (e) => {
+                    if (e.target === shareModal) {
+                        shareModal.classList.remove('show');
+                    }
+                });
             });
         });
-
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && !quickViewModal.classList.contains('hidden')) {
-                quickViewModal.classList.add('hidden');
-                document.body.style.overflow = '';
-            }
-            if (e.key === 'Escape' && shareModal.classList.contains('show')) {
-                hideShareModal();
-            }
+        
+        // Close quick view modal
+        document.querySelector('.modal-close').addEventListener('click', () => {
+            document.getElementById('quickViewModal').classList.add('hidden');
         });
     });
     </script>

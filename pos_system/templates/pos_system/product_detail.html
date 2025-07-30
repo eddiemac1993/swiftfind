@@ -99,7 +99,6 @@
             border: 1px solid var(--alibaba-border);
             border-radius: 8px;
             background: white;
-            padding: 2rem;
             text-align: center;
             position: relative;
             min-height: 450px;
@@ -616,11 +615,79 @@
                                     {{ product.location|default:"Location not specified" }}
                                 </small>
                             </div>
-                            <div class="contact-supplier">
-                                <button class="btn btn-contact">
-                                    <i class="fas fa-phone me-1"></i> Contact Supplier
-                                </button>
-                            </div>
+<style>
+    /* Contact Supplier Container */
+    .contact-supplier {
+        margin-left: auto;
+        min-width: 180px; /* Ensures consistent width */
+    }
+
+    /* Contact Supplier Button */
+    .view-store-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--alibaba-orange);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.5rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: 0 2px 6px rgba(255, 106, 0, 0.3);
+        width: 100%; /* Takes full width of container */
+        white-space: nowrap;
+    }
+
+    .view-store-btn:hover {
+        background-color: var(--alibaba-orange-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(255, 106, 0, 0.4);
+    }
+
+    .view-store-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(255, 106, 0, 0.3);
+    }
+
+    /* Optional icon */
+    .view-store-btn::before {
+        content: "\f075"; /* FontAwesome message icon */
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        margin-right: 8px;
+        font-size: 0.9em;
+    }
+
+    /* Flex utility */
+    .flex-1 {
+        flex: 1;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .contact-supplier {
+            margin-left: 0;
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .view-store-btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<div class="contact-supplier">
+    <a href="{% url 'messaging:start_conversation' product.business.id %}"
+       class="view-store-btn flex-1">
+        Contact Supplier
+    </a>
+</div>
                         </div>
 
                         <div class="price-section">
@@ -639,10 +706,10 @@
                                     </span>
                                 {% else %}
                                     <span class="stock-badge out-of-stock">
-                                        <i class="fas fa-times-circle me-1"></i>Out of Stock
+                                        <i class="fas fa-times-circle me-1"></i>Out-Stk
                                     </span>
                                 {% endif %}
-                                <span class="text-muted">{{ product.stock_quantity }} pieces available</span>
+                                <span class="text-muted">{{ product.stock_quantity }} pieces av</span>
                             </div>
                         </div>
 
