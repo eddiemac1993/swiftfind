@@ -1,0 +1,10 @@
+Hello {{ receiver.username }},
+
+You have received a new message from {{ sender.username }} regarding {{ business.name }}:
+
+"{{ message }}"
+
+View and reply to your messages at: https://www.swiftfindzm.com/messages/
+
+Best regards,
+The {{ site_name }} Team

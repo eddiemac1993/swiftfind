@@ -193,26 +193,62 @@ LOGIN_REDIRECT_URL = '/'
 # Redirect to this URL after logout
 LOGOUT_REDIRECT_URL = 'login'  # Redirect to the login page after logout
 
-# settings.py
+# Add to settings.py
+if not DEBUG:
+    # Security settings
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'manjoloe800@gmail.com')  # Default fallback
-EMAIL_HOST_PASSWORD = os.getenv('GMAIL_APP_PASSWORD')  # Required - no fallback
-DEFAULT_FROM_EMAIL = os.getenv('EMAIL_FROM', EMAIL_HOST_USER)  # Can be different from host user
-SERVER_EMAIL = os.getenv('SERVER_EMAIL', DEFAULT_FROM_EMAIL)  # For error emails
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'swiftfindzm@gmail.com')
+EMAIL_HOST_PASSWORD = os.getenv('GMAIL_APP_PASSWORD')  # Make sure this is set in .env
+DEFAULT_FROM_EMAIL = os.getenv('EMAIL_FROM', 'no-reply@swiftfindzm.com')  # Professional no-reply address
+SERVER_EMAIL = os.getenv('SERVER_EMAIL', 'errors@swiftfindzm.com')  # Separate address for errors
 
 # Admin notifications
 ADMINS = [
-    ('SwiftFind Admin', os.getenv('ADMIN_EMAIL', 'admin@swiftfindzm.com')),
+    ('Swiftfind', 'manjoloe800@gmail.com'),  # Change to your personal email
+    ('Backup Admin', 'edwardmanjolo09@gmail.com'),   # Optional backup
 ]
 
-# Optional - Different settings for different environments
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# More detailed logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+            'email_backend': 'django.core.mail.backends.smtp.EmailBackend',  # Force SMTP
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['mail_admins', 'console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'django.request': {  # Explicitly log 500 errors
+            'handlers': ['mail_admins', 'console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'messaging': {  # Replace with your app name (e.g., 'messaging')
+            'handlers': ['mail_admins', 'console'],
+            'level': 'ERROR',
+        },
+    },
+}
 
 WEBPUSH_SETTINGS = {
     "VAPID_PUBLIC_KEY": "BBJJB0l44DXAL0_iDAGGdAqo-XTPe2rOjSlp8qBXmcH5MnF5zhq4cm-ihwKInTLAWJUkSR5tgivEPEYTvR7OoKE=",
@@ -220,36 +256,8 @@ WEBPUSH_SETTINGS = {
     "VAPID_ADMIN_EMAIL": "admin@swiftfindzm.com"
 }
 
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',  # Only send emails for ERROR and CRITICAL
-            'class': 'django.utils.log.AdminEmailHandler',
-            'include_html': True,
-        },
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose'
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['mail_admins', 'console'],
-            'level': 'INFO',  # Log INFO and above (but only email for ERROR+)
-            'propagate': True,
-        },
-    },
-}
-
 REWARD_PER_VIEW = Decimal('0.015')
 
+# settings.py
+SITE_URL = 'https://www.swiftfindzm.com/'  # Your site's base URL
+SITE_NAME = 'SwiftFind'  # Your site's name

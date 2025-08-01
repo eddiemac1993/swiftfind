@@ -395,6 +395,18 @@ class SearchQuery(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    receive_message_emails = models.BooleanField(
+        default=True,
+        verbose_name="Receive message notifications via email"
+    )
+    receive_notification_emails = models.BooleanField(
+        default=True,
+        verbose_name="Receive general notifications via email"
+    )
+    receive_marketing_emails = models.BooleanField(
+        default=True,
+        verbose_name="Receive marketing emails"
+    )
     primary_business = models.ForeignKey(Business, on_delete=models.SET_NULL, null=True, blank=True, related_name='primary_employees')
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)

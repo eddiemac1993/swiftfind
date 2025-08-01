@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Message Notification</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .message { background: #f5f5f5; padding: 15px; border-left: 4px solid #ccc; }
+        .button { 
+            display: inline-block; 
+            padding: 10px 15px; 
+            background: #007bff; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 4px; 
+        }
+    </style>
+</head>
+<body>
+    <p>Hello {{ receiver.username }},</p>
+    
+    <p>You have received a new message from {{ sender.username }} regarding {{ business.name }}:</p>
+    
+    <div class="message">{{ message }}</div>
+    
+    <p>
+        <a href="https://www.swiftfindzm.com/messages/" class="button">
+            View your messages
+        </a>
+    </p>
+    
+    <p>Best regards,<br>The {{ site_name }} Team</p>
+</body>
+</html>

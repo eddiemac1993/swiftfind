@@ -41,7 +41,7 @@ def conversation_detail(request, conversation_id):
                 sender=request.user,
                 content=content
             )
-            
+
             # Create notifications for all other participants
             for participant in conversation.participants.exclude(id=request.user.id):
                 Notification.objects.create(
