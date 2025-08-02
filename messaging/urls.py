@@ -5,6 +5,7 @@ app_name = 'messaging'
 
 urlpatterns = [
     path('', views.conversation_list, name='conversation_list'),
+    path('clear-pending-order/', views.clear_pending_order, name='clear_pending_order'),
     path('<int:conversation_id>/', views.conversation_detail, name='conversation_detail'),  # Changed from UUID to int
     path('start/<int:business_id>/', views.start_conversation, name='start_conversation'),
     path('unread_count/', views.unread_count, name='unread_count'),

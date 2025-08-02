@@ -5,8 +5,43 @@ from .models import Conversation, Message, Notification
 from directory.models import Business
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+
 
 User = get_user_model()
+
+@login_required
+@require_POST
+def clear_pending_order(request):
+    if 'pending_order' in request.session:
+        del request.session['pending_order']
+        request.session.modified = True
+    return JsonResponse({'status': 'success'})
+
+@login_required
+def start_conversation(request, business_id):
+    business = get_object_or_404(Business, id=business_id)
+
+    # Prevent users from messaging themselves
+    if request.user == business.owner:
+        return redirect('messaging:conversation_list')
+
+    # Find existing conversation or create a new one
+    conversation = Conversation.objects.filter(
+        participants=request.user,
+        business=business
+    ).first()
+
+    if not conversation:
+        conversation = Conversation.objects.create(business=business)
+        conversation.participants.add(request.user, business.owner)
+
+    # Check for pending order in POST data
+    if request.method == 'POST' and 'pending_order' in request.POST:
+        request.session['pending_order'] = request.POST['pending_order']
+        request.session.modified = True
+
+    return redirect('messaging:conversation_detail', conversation_id=conversation.id)
 
 @login_required
 def conversation_list(request):
@@ -60,25 +95,6 @@ def conversation_detail(request, conversation_id):
         'current_user_id': request.user.id,
     })
 
-@login_required
-def start_conversation(request, business_id):
-    business = get_object_or_404(Business, id=business_id)
-
-    # Prevent users from messaging themselves
-    if request.user == business.owner:
-        return redirect('messaging:conversation_list')
-
-    # Find existing conversation or create a new one
-    conversation = Conversation.objects.filter(
-        participants=request.user,
-        business=business
-    ).first()
-
-    if not conversation:
-        conversation = Conversation.objects.create(business=business)
-        conversation.participants.add(request.user, business.owner)
-
-    return redirect('messaging:conversation_detail', conversation_id=conversation.id)
 
 @login_required
 def unread_count(request):

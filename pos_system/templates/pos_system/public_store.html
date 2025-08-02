@@ -1634,10 +1634,10 @@
                 <textarea class="form-control" id="customer-notes" rows="3" placeholder="Any special instructions?"></textarea>
             </div>
 
-            <button class="checkout-btn" id="checkout-btn">
-                <i class="fab fa-whatsapp"></i>
-                <span>Send Order via WhatsApp</span>
-            </button>
+<button class="checkout-btn" id="checkout-btn">
+    <i class="fas fa-envelope"></i>
+    <span>Send Order via Message</span>
+</button>
         </div>
     </div>
 
@@ -2598,51 +2598,68 @@ function generateShareCard(productData) {
         handleShare(productData);
     });
 
-    // Checkout via WhatsApp
-    $('#checkout-btn').click(function() {
-        const customerName = $('#customer-name').val().trim();
-        const customerPhone = $('#customer-phone').val().trim();
-        const customerNotes = $('#customer-notes').val().trim();
+// Checkout via Messaging System
+$('#checkout-btn').click(function() {
+    const customerName = $('#customer-name').val().trim();
+    const customerPhone = $('#customer-phone').val().trim();
+    const customerNotes = $('#customer-notes').val().trim();
 
-        if (!customerName) {
-            showToast('Please enter your name', 'danger');
-            return;
-        }
+    if (!customerName) {
+        showToast('Please enter your name', 'danger');
+        return;
+    }
 
-        if (!customerPhone) {
-            showToast('Please enter your phone number', 'danger');
-            return;
-        }
+    if (!customerPhone) {
+        showToast('Please enter your phone number', 'danger');
+        return;
+    }
 
-        if (Object.keys(state.cart).length === 0) {
-            showToast('Your cart is empty', 'danger');
-            return;
-        }
+    if (Object.keys(state.cart).length === 0) {
+        showToast('Your cart is empty', 'danger');
+        return;
+    }
 
-        let message = `Hello,\n\nI would like to place an order:\n\n`;
-        message += `*Customer Name:* ${customerName}\n`;
-        message += `*Phone:* ${customerPhone}\n\n`;
+    // Create the order message
+    let message = `Hello,\n\nI would like to place an order:\n\n`;
+    message += `*Customer Name:* ${customerName}\n`;
+    message += `*Phone:* ${customerPhone}\n\n`;
 
-        if (customerNotes) {
-            message += `*Delivery/Notes:* ${customerNotes}\n\n`;
-        }
+    if (customerNotes) {
+        message += `*Delivery/Notes:* ${customerNotes}\n\n`;
+    }
 
-        message += `*Order Details:*\n`;
-        let total = 0;
+    message += `*Order Details:*\n`;
+    let total = 0;
 
-        for (const [productId, item] of Object.entries(state.cart)) {
-            const itemTotal = item.price * item.quantity;
-            total += itemTotal;
-            message += `- ${item.name} (${item.business}) - ${config.currencySymbol}${item.price.toFixed(2)} × ${item.quantity} = ${config.currencySymbol}${itemTotal.toFixed(2)}\n`;
-        }
+    for (const [productId, item] of Object.entries(state.cart)) {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        message += `- ${item.name} (${item.business}) - ${config.currencySymbol}${item.price.toFixed(2)} × ${item.quantity} = ${config.currencySymbol}${itemTotal.toFixed(2)}\n`;
+    }
 
-        message += `\n*Total:* ${config.currencySymbol}${total.toFixed(2)}\n\n`;
-        message += `Please confirm my order. Thank you!`;
+    message += `\n*Total:* ${config.currencySymbol}${total.toFixed(2)}\n\n`;
+    message += `Please confirm my order. Thank you!`;
 
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappUrl = `https://wa.me/${config.businessPhone}?text=${encodedMessage}`;
-        window.open(whatsappUrl, '_blank');
-    });
+    // Create a form and submit it
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = "{% url 'messaging:start_conversation' business.id %}";
+
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = '{{ csrf_token }}';
+    form.appendChild(csrfInput);
+
+    const orderInput = document.createElement('input');
+    orderInput.type = 'hidden';
+    orderInput.name = 'pending_order';
+    orderInput.value = message;
+    form.appendChild(orderInput);
+
+    document.body.appendChild(form);
+    form.submit();
+});
 
     // Filtering functionality
     $('.filter-option[data-category]').click(function() {
