@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
 from django.contrib.auth import views as auth_views
+from pos_system.views import order_details
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -13,6 +14,7 @@ urlpatterns = [
     path('paper/', include('paper.urls')),
     path('pos/', include('pos.urls')),
     path('pos1/', include('pos_system.urls')),
+    path('orders/<int:order_id>/', order_details, name='order_details_root'),
     path('posts/', include('posts.urls')),
     path('', include('order.urls')),
     path('bot/', include('chatbot.urls')),

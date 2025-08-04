@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-2xl font-bold mb-6">Orders Received</h1>
+        
+        {% if orders %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white">
+                <thead>
+                    <tr class="bg-gray-100">
+                        <th class="py-3 px-4 text-left">Order #</th>
+                        <th class="py-3 px-4 text-left">Date</th>
+                        <th class="py-3 px-4 text-left">Customer</th>
+                        <th class="py-3 px-4 text-left">Phone</th>
+                        <th class="py-3 px-4 text-left">Total</th>
+                        <th class="py-3 px-4 text-left">Status</th>
+                        <th class="py-3 px-4 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="py-3 px-4">{{ order.id }}</td>
+                        <td class="py-3 px-4">{{ order.created_at|date:"M d, Y" }}</td>
+                        <td class="py-3 px-4">{{ order.customer_name }}</td>
+                        <td class="py-3 px-4">{{ order.customer_phone }}</td>
+                        <td class="py-3 px-4">ZMW {{ order.total }}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-1 rounded-full text-xs 
+                                {% if order.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                {% elif order.status == 'completed' %}bg-green-100 text-green-800
+                                {% elif order.status == 'cancelled' %}bg-red-100 text-red-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4">
+                            <a href="{% url 'pos_system:order_details' order.id %}" 
+                               class="text-blue-600 hover:text-blue-800">
+                                View Details
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <i class="fas fa-store text-4xl text-gray-300 mb-4"></i>
+            <p class="text-gray-500">You haven't received any orders yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

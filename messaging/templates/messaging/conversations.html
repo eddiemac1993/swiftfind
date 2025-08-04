@@ -315,6 +315,52 @@
             transform: scale(1.05);
         }
     </style>
+    <style>
+        /* Add these styles to your existing style section */
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .notification-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            text-decoration: none;
+        }
+
+        .dark-mode .notification-icon {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--dark-text);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background-color: #FF4D4F;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .notification-icon i {
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
     <!-- Chat Button -->
@@ -330,6 +376,26 @@
                 Messages
             </h1>
             <div class="user-actions">
+                <!-- Orders Made (Customer) -->
+                <a href="{% url 'pos_system:customer_orders' %}" class="notification-icon" title="Your Orders">
+                    <i class="fas fa-shopping-bag"></i>
+                    {% if request.user.customer_orders.unread.count > 0 %}
+                    <span class="notification-badge">{{ request.user.customer_orders.unread.count }}</span>
+                    {% endif %}
+                </a>
+
+                <!-- Orders Received (Business Owner) -->
+                {% if request.user.owned_businesses.exists %}
+                <a href="{% url 'pos_system:business_orders' %}" class="notification-icon" title="Orders Received">
+                    <i class="fas fa-store"></i>
+                    {% with business=request.user.owned_businesses.first %}
+                    {% if business.orders.unread.count > 0 %}
+                    <span class="notification-badge">{{ business.orders.unread.count }}</span>
+                    {% endif %}
+                    {% endwith %}
+                </a>
+                {% endif %}
+
                 <button id="theme-toggle" class="theme-btn">
                     <i class="fas fa-moon light-icon"></i>
                     <i class="fas fa-sun dark-icon"></i>

@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import json
 from decimal import Decimal, InvalidOperation
 from django.db.models import Avg
-from .models import Product, ProductCategory, Sale, SaleItem, ProductView, RewardClaim
+from .models import Product, ProductCategory, OrderStatusUpdate, Sale, SaleItem, ProductView, RewardClaim
 from directory.models import Business, Advertisement
 from django.db.models.functions import Random
 
@@ -1346,3 +1346,303 @@ def process_sale(request):
             'success': False,
             'message': str(e)
         })
+
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ValidationError
+from django.db import transaction
+from decimal import Decimal
+import json
+from .models import Order, OrderItem, Product
+from .utils import send_order_notification
+
+@require_POST
+@csrf_exempt
+def create_order(request):
+    try:
+        # Check content type
+        if not request.content_type == 'application/json':
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid content type',
+                'details': 'Expected application/json'
+            }, status=400)
+
+        # Parse JSON data from request body
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError as e:
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid JSON data',
+                'details': str(e)
+            }, status=400)
+
+        # Validate required fields
+        required_fields = ['business_id', 'customer_name', 'customer_phone', 'items']
+        for field in required_fields:
+            if field not in data:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Missing required field',
+                    'details': f'Field "{field}" is required'
+                }, status=400)
+
+        # Validate items
+        if not isinstance(data['items'], list) or len(data['items']) == 0:
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid items data',
+                'details': 'Order must contain at least one item'
+            }, status=400)
+
+        with transaction.atomic():
+            # Create the order
+            order = Order.objects.create(
+                business_id=data['business_id'],
+                customer_name=data['customer_name'],
+                customer_phone=data['customer_phone'],
+                customer_notes=data.get('customer_notes', ''),
+                subtotal=Decimal(str(data.get('subtotal', 0))),
+                delivery_fee=Decimal(str(data.get('delivery_fee', 0))),
+                total=Decimal(str(data.get('total', 0))),
+                status='pending'
+            )
+
+            # Create order items with product validation
+            order_items = []
+            for item in data['items']:
+                try:
+                    product = Product.objects.get(pk=item['product_id'])
+                except Product.DoesNotExist:
+                    return JsonResponse({
+                        'success': False,
+                        'error': 'Invalid product',
+                        'details': f"Product with ID {item['product_id']} does not exist"
+                    }, status=400)
+
+                order_items.append(OrderItem(
+                    order=order,
+                    product=product,
+                    product_name=item.get('name', product.name),
+                    quantity=item['quantity'],
+                    price=Decimal(str(item['price'])),
+                    business_name=item.get('business', '')
+                ))
+
+            OrderItem.objects.bulk_create(order_items)
+
+        # Send notifications
+        try:
+            send_order_notification(order, to_business=True)
+            send_order_notification(order, to_customer=True)
+        except Exception as e:
+            # Don't fail the order if notification fails
+            print(f"Failed to send notification: {str(e)}")
+
+        return JsonResponse({
+            'success': True,
+            'order_id': order.id,
+            'order_number': order.order_number,
+            'message': 'Order received successfully'
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': 'Internal server error',
+            'details': str(e)
+        }, status=500)
+
+
+def order_details(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    context = {
+        'order': order,
+        'order_items': order.items.all()  # Changed from orderitem_set to items
+    }
+    return render(request, 'pos_system/order_details.html', context)
+
+# views.py
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+
+@require_POST
+@login_required
+def submit_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, customer=request.user)
+
+    if order.submitted:
+        return JsonResponse({
+            'success': False,
+            'error': 'This order has already been submitted'
+        })
+
+    # Mark order as submitted
+    order.submitted = True
+    order.submitted_at = timezone.now()
+    order.save()
+
+    # Create message content
+    message = f"New Order #{order.id}\n\n"
+    message += f"Customer: {order.customer_name}\n"
+    message += f"Phone: {order.customer_phone}\n\n"
+
+    if request.POST.get('customer_message'):
+        message += f"Customer Message: {request.POST['customer_message']}\n\n"
+
+    message += "Order Items:\n"
+    for item in order.items.all():
+        message += f"- {item.product_name} ({item.quantity} × {item.price}) = {item.quantity * item.price}\n"
+
+    message += f"\nSubtotal: {order.subtotal}\n"
+    message += f"Delivery Fee: {order.delivery_fee}\n"
+    message += f"Total: {order.total}\n\n"
+    message += "Please confirm this order. Thank you!"
+
+    # Start conversation with business owner
+    try:
+        conversation = Conversation.objects.create(
+            sender=request.user,
+            recipient=order.business.owner,
+            subject=f"Order #{order.id}",
+            initial_message=message
+        )
+
+        # You might also want to create a notification for the business owner
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Order submitted successfully'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@login_required
+def customer_orders(request):
+    """View for customer to see their orders"""
+    orders = Order.objects.filter(customer=request.user).order_by('-created_at')
+
+    # Mark orders as read when viewed
+    orders.update(is_read=True)
+
+    context = {
+        'orders': orders
+    }
+    return render(request, 'pos_system/customer_orders.html', context)
+
+@login_required
+def business_orders(request):
+    """View for business owner to see received orders"""
+    business = get_object_or_404(Business, owner=request.user)
+    orders = Order.objects.filter(business=business).order_by('-created_at')
+
+    # Mark orders as read when viewed
+    orders.update(is_read=True)
+
+    context = {
+        'business': business,
+        'orders': orders
+    }
+    return render(request, 'pos_system/business_orders.html', context)
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
+
+@require_POST
+@login_required
+def update_order_status(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+
+    # Check if user has permission (business owner or staff)
+    if not (request.user == order.business.owner or request.user in order.business.staff.all()):
+        return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
+
+    new_status = request.POST.get('status')
+    notes = request.POST.get('notes', '')
+
+    if new_status not in dict(Order.ORDER_STATUS).keys():
+        return JsonResponse({'success': False, 'error': 'Invalid status'}, status=400)
+
+    # Create status update record
+    OrderStatusUpdate.objects.create(
+        order=order,
+        status=new_status,
+        notes=notes,
+        updated_by=request.user
+    )
+
+    # Update order status
+    previous_status = order.status
+    order.status = new_status
+    order.save()
+
+    # Prepare response data
+    response_data = {
+        'success': True,
+        'new_status': order.get_status_display(),
+        'status_class': get_status_class(order.status),
+        'status_icon': get_status_icon(order.status),
+        'updated_at': order.updated_at.strftime("%b %d, %Y %H:%M"),
+        'updated_by': request.user.get_full_name() or request.user.username
+    }
+
+    return JsonResponse(response_data)
+
+@login_required
+def direct_status_update(request, order_id, status):
+    order = get_object_or_404(Order, id=order_id)
+
+    # Check permissions
+    if not (request.user == order.business.owner or request.user in order.business.staff.all()):
+        return JsonResponse({'success': False, 'error': 'Permission denied'}, status=403)
+
+    if status not in dict(Order.ORDER_STATUS).keys():
+        return JsonResponse({'success': False, 'error': 'Invalid status'}, status=400)
+
+    # Create status update record
+    OrderStatusUpdate.objects.create(
+        order=order,
+        status=status,
+        updated_by=request.user
+    )
+
+    # Update order status
+    order.status = status
+    order.save()
+
+    return JsonResponse({
+        'success': True,
+        'message': f'Order status updated to {status}'
+    })
+
+# Helper functions
+def get_status_class(status):
+    return {
+        'pending': 'status-pending',
+        'confirmed': 'status-confirmed',
+        'processing': 'status-processing',
+        'shipped': 'status-shipped',
+        'delivered': 'status-delivered',
+        'cancelled': 'status-cancelled'
+    }.get(status, 'status-pending')
+
+def get_status_icon(status):
+    return {
+        'pending': 'fa-clock',
+        'confirmed': 'fa-check',
+        'processing': 'fa-cog fa-spin',
+        'shipped': 'fa-truck',
+        'delivered': 'fa-box-open',
+        'cancelled': 'fa-times-circle'
+    }[status]

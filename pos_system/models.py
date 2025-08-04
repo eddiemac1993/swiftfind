@@ -185,3 +185,171 @@ class RewardClaim(models.Model):
 
     class Meta:
         ordering = ['-requested_at']
+
+# models.py
+from django.db import models
+from django.conf import settings
+from django.core.validators import MinValueValidator
+from django.utils import timezone
+import uuid
+
+class Order(models.Model):
+    ORDER_STATUS = (
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('processing', 'Processing'),
+        ('shipped', 'Shipped'),
+        ('delivered', 'Delivered'),
+        ('cancelled', 'Cancelled'),
+    )
+
+    # Identification
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    order_number = models.CharField(max_length=20, unique=True, blank=True)
+
+    # Relationships
+    business = models.ForeignKey(
+        'directory.Business',
+        on_delete=models.PROTECT,  # Prevent deletion if orders exist
+        related_name='pos_orders'
+    )
+    customer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='orders'
+    )
+    is_read = models.BooleanField(default=False)
+    is_read_business = models.BooleanField(default=False)
+    # Customer information
+    customer_name = models.CharField(max_length=100)
+    customer_phone = models.CharField(max_length=20)
+    customer_email = models.EmailField(blank=True)
+    customer_notes = models.TextField(blank=True)
+
+    # Order details
+    subtotal = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        validators=[MinValueValidator(0)]
+    )
+    delivery_fee = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+        default=0
+    )
+    tax = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+        default=0
+    )
+    total = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        validators=[MinValueValidator(0)]
+    )
+
+    # Status tracking
+    status = models.CharField(
+        max_length=20,
+        choices=ORDER_STATUS,
+        default='pending'
+    )
+    status_changed = models.DateTimeField(auto_now_add=True)
+
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['created_at']),
+            models.Index(fields=['business', 'status']),
+        ]
+
+    def save(self, *args, **kwargs):
+        if not self.order_number:
+            self.order_number = self.generate_order_number()
+        if not self.uuid:
+            self.uuid = uuid.uuid4()
+        super().save(*args, **kwargs)
+
+    def generate_order_number(self):
+        date_part = timezone.now().strftime('%y%m%d')
+        last_order = Order.objects.filter(
+            order_number__startswith=date_part
+        ).order_by('-id').first()
+
+        seq = 1
+        if last_order and last_order.order_number:
+            try:
+                seq = int(last_order.order_number[-4:]) + 1
+            except (ValueError, IndexError):
+                pass
+
+        return f"{date_part}{seq:04d}"
+
+    def update_status(self, new_status, commit=True):
+        if new_status != self.status:
+            self.status = new_status
+            self.status_changed = timezone.now()
+            if commit:
+                self.save()
+            return True
+        return False
+
+    @property
+    def items_total(self):
+        """Backward-compatible alias for total calculation"""
+        return sum(item.subtotal for item in self.items.all())
+
+    def __str__(self):
+        return f"Order #{self.order_number} - {self.customer_name}"
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(
+        Order,
+        related_name='items',
+        on_delete=models.CASCADE
+    )
+    product = models.ForeignKey(
+        'Product',
+        on_delete=models.PROTECT,  # Prevent deletion if ordered
+        related_name='order_items'
+    )
+
+    # Snapshot of product details at time of order
+    product_name = models.CharField(max_length=255)
+    product_code = models.CharField(max_length=50, blank=True)
+    product_description = models.TextField(blank=True)
+    business_name = models.CharField(max_length=255)
+
+    quantity = models.PositiveIntegerField(
+        default=1,
+        validators=[MinValueValidator(1)]
+    )
+    price = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        validators=[MinValueValidator(0)]
+    )
+
+# In your Order model
+class OrderStatusUpdate(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='status_updates')
+    status = models.CharField(max_length=20, choices=Order.ORDER_STATUS)
+    notes = models.TextField(blank=True)
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.order} - {self.get_status_display()} at {self.created_at}"

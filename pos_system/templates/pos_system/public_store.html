@@ -2703,12 +2703,12 @@ function generateShareCard(productData) {
         handleShare(productData);
     });
 
-// Checkout via Messaging System
 $('#checkout-btn').click(function() {
     const customerName = $('#customer-name').val().trim();
     const customerPhone = $('#customer-phone').val().trim();
     const customerNotes = $('#customer-notes').val().trim();
 
+    // Validation
     if (!customerName) {
         showToast('Please enter your name', 'danger');
         return;
@@ -2724,9 +2724,93 @@ $('#checkout-btn').click(function() {
         return;
     }
 
+    // Disable button during processing
+    const $btn = $(this);
+    $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Processing...');
+
+    // Prepare order data with proper numeric formatting
+    const orderData = {
+        business_id: parseInt("{{ business.id }}"),
+        customer_name: customerName,
+        customer_phone: customerPhone,
+        customer_notes: customerNotes,
+        items: Object.entries(state.cart).map(([productId, item]) => ({
+            product_id: parseInt(productId),
+            name: item.name,
+            quantity: parseInt(item.quantity),
+            price: parseFloat(item.price),
+            business: item.business || "{{ business.name }}"
+        }))
+    };
+
+    // Calculate totals
+    let subtotal = 0;
+    let deliveryFee = 30; // Base delivery fee
+
+    Object.values(state.cart).forEach(item => {
+        const itemTotal = item.price * item.quantity;
+        subtotal += itemTotal;
+        deliveryFee += itemTotal * 0.03; // 3% of item total
+    });
+
+    // Round to 2 decimal places
+    deliveryFee = Math.round(deliveryFee * 100) / 100;
+    orderData.subtotal = Math.round(subtotal * 100) / 100;
+    orderData.delivery_fee = deliveryFee;
+    orderData.total = Math.round((subtotal + deliveryFee) * 100) / 100;
+
+    // Submit order via AJAX with proper headers
+    $.ajax({
+        url: "{% url 'pos_system:create_order' %}",
+        method: "POST",
+        contentType: "application/json",
+        headers: {
+            "X-CSRFToken": '{{ csrf_token }}'
+        },
+        data: JSON.stringify(orderData),
+        success: function(response) {
+            if (response.success) {
+                // Clear cart on success
+                state.cart = {};
+                updateCartUI();
+                closeCart();
+
+                // Show success message
+                showToast('Order placed successfully!', 'success');
+
+                // Start conversation with business owner
+                startOrderConversation(response.order_id, customerName, customerPhone, customerNotes);
+
+                // Redirect to order confirmation
+                window.location.href = `/orders/${response.order_id}/`;
+            } else {
+                showToast(response.error || 'Failed to place order', 'danger');
+            }
+        },
+        error: function(xhr) {
+            let errorMsg = 'Error processing order';
+            try {
+                const response = JSON.parse(xhr.responseText);
+                errorMsg = response.error || errorMsg;
+                if (response.details) {
+                    errorMsg += `: ${response.details}`;
+                }
+            } catch (e) {
+                console.error('Error parsing error response:', e);
+            }
+            showToast(errorMsg, 'danger');
+        },
+        complete: function() {
+            $btn.prop('disabled', false).html('<i class="fas fa-paper-plane"></i> Place Order');
+        }
+    });
+});
+
+// Function to start conversation about the order
+function startOrderConversation(orderId, customerName, customerPhone, customerNotes) {
     // Create the order message
-    let message = `Hello,\n\nI would like to place an order:\n\n`;
-    message += `*Customer Name:* ${customerName}\n`;
+    let message = `New Order #${orderId}\n\n`;
+    message += `*Customer:* ${customerName}\n`;
     message += `*Phone:* ${customerPhone}\n\n`;
 
     if (customerNotes) {
@@ -2742,37 +2826,36 @@ $('#checkout-btn').click(function() {
         const itemTotal = item.price * item.quantity;
         subtotal += itemTotal;
         deliveryFee += itemTotal * 0.03; // Add 3% of item total to delivery fee
-        message += `- ${item.name} (${item.business}) - ${config.currencySymbol}${item.price.toFixed(2)} × ${item.quantity} = ${config.currencySymbol}${itemTotal.toFixed(2)}\n`;
+        message += `- ${item.name} (${item.business}) - ZMW ${item.price.toFixed(2)} × ${item.quantity} = ZMW ${itemTotal.toFixed(2)}\n`;
     }
 
     // Round delivery fee to 2 decimal places
     deliveryFee = Math.round(deliveryFee * 100) / 100;
 
-    message += `\n*Subtotal:* ${config.currencySymbol}${subtotal.toFixed(2)}\n`;
-    message += `*Delivery Fee:* ${config.currencySymbol}${deliveryFee.toFixed(2)}\n`;
-    message += `*Total:* ${config.currencySymbol}${(subtotal + deliveryFee).toFixed(2)}\n\n`;
-    message += `Please confirm my order. Thank you!`;
+    message += `\n*Subtotal:* ZMW ${subtotal.toFixed(2)}\n`;
+    message += `*Delivery Fee:* ZMW ${deliveryFee.toFixed(2)}\n`;
+    message += `*Total:* ZMW ${(subtotal + deliveryFee).toFixed(2)}\n\n`;
+    message += `Please confirm this order. Thank you!`;
 
-    // Create a form and submit it
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = "{% url 'messaging:start_conversation' business.id %}";
-
-    const csrfInput = document.createElement('input');
-    csrfInput.type = 'hidden';
-    csrfInput.name = 'csrfmiddlewaretoken';
-    csrfInput.value = '{{ csrf_token }}';
-    form.appendChild(csrfInput);
-
-    const orderInput = document.createElement('input');
-    orderInput.type = 'hidden';
-    orderInput.name = 'pending_order';
-    orderInput.value = message;
-    form.appendChild(orderInput);
-
-    document.body.appendChild(form);
-    form.submit();
-});
+    // Send message via AJAX
+    $.ajax({
+        url: "{% url 'messaging:start_conversation' business.id %}",
+        method: "POST",
+        data: {
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            message: message,
+            order_id: orderId
+        },
+        success: function(response) {
+            if (!response.success) {
+                console.error('Failed to start conversation:', response.error);
+            }
+        },
+        error: function(xhr) {
+            console.error('Error starting conversation:', xhr.responseText);
+        }
+    });
+}
 
     // Filtering functionality
     $('.filter-option[data-category]').click(function() {
