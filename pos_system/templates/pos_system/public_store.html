@@ -1438,6 +1438,32 @@
 .filter-options::-webkit-scrollbar-thumb:hover {
     background: var(--primary-color);
 }
+.cart-summary {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+}
+
+.cart-summary div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.cart-summary div:last-child {
+    margin-bottom: 0;
+}
+
+.cart-total {
+    font-weight: 700;
+    font-size: 16px !important;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-color);
+    margin-top: 8px;
+}
 </style>
 
             {% if all_businesses %}
@@ -1587,59 +1613,128 @@
 
     <!-- Cart Sidebar -->
     <div class="cart-overlay" id="cart-overlay"></div>
-    <div class="cart-sidebar" id="cart-sidebar">
-        <div class="cart-header">
-            <h3>
+<div class="cart-sidebar" id="cart-sidebar">
+    <div class="cart-header">
+        <h3>
+            <i class="fas fa-shopping-cart"></i>
+            <span>Your Cart</span>
+        </h3>
+        <button class="close-cart" id="close-cart">&times;</button>
+    </div>
+
+    <div class="cart-content">
+        <div class="cart-items" id="cart-items">
+            <div class="empty-cart">
                 <i class="fas fa-shopping-cart"></i>
-                <span>Your Cart</span>
-            </h3>
-            <button class="close-cart" id="close-cart">&times;</button>
-        </div>
-
-        <div class="cart-content">
-            <div class="cart-items" id="cart-items">
-                <div class="empty-cart">
-                    <i class="fas fa-shopping-cart"></i>
-                    <p>Your cart is empty</p>
-                </div>
+                <p>Your cart is empty</p>
             </div>
-        </div>
-
-        <div class="cart-footer">
-            <div class="cart-total" id="cart-total">
-                Total: ZMW 0.00
-            </div>
-
-            <div class="form-group">
-                <label for="customer-name">
-                    <i class="fas fa-user"></i>
-                    <span>Your Name</span>
-                </label>
-                <input type="text" class="form-control" id="customer-name" placeholder="Enter your name">
-            </div>
-
-            <div class="form-group">
-                <label for="customer-phone">
-                    <i class="fas fa-phone"></i>
-                    <span>Phone Number</span>
-                </label>
-                <input type="tel" class="form-control" id="customer-phone" placeholder="Enter your phone number">
-            </div>
-
-            <div class="form-group">
-                <label for="customer-notes">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>Delivery Address/Notes</span>
-                </label>
-                <textarea class="form-control" id="customer-notes" rows="3" placeholder="Any special instructions?"></textarea>
-            </div>
-
-<button class="checkout-btn" id="checkout-btn">
-    <i class="fas fa-envelope"></i>
-    <span>Send Order via Message</span>
-</button>
         </div>
     </div>
+
+    <div class="cart-footer">
+        <!-- Compact Summary -->
+        <div class="compact-summary">
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span id="cart-subtotal">ZMW 0.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Delivery</span>
+                <span id="cart-delivery">ZMW 0.00</span>
+            </div>
+            <div class="cart-total" id="cart-total">
+            <span>Total:</span>
+            <span>ZMW 0.00</span>
+        </div>
+        </div>
+
+        <!-- Compact Form -->
+        <div class="compact-form">
+            <div class="form-group">
+                <input type="text" class="form-control" id="customer-name" placeholder="Your name">
+            </div>
+            <div class="form-group">
+                <input type="tel" class="form-control" id="customer-phone" placeholder="Phone number">
+            </div>
+            <div class="form-group">
+                <textarea class="form-control" id="customer-notes" rows="2" placeholder="Delivery address/notes"></textarea>
+            </div>
+        </div>
+
+        <button class="checkout-btn" id="checkout-btn">
+            <i class="fas fa-paper-plane"></i>
+            <span>Send Order</span>
+        </button>
+    </div>
+</div>
+
+<style>
+/* Compact Cart Styles */
+.cart-sidebar {
+    width: 320px; /* Slightly narrower */
+}
+
+.cart-header {
+    padding: 12px 16px;
+}
+
+.cart-content {
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+/* Compact Summary */
+.compact-summary {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.summary-row.total {
+    font-weight: 600;
+    border-top: 1px solid #e9ecef;
+    padding-top: 8px;
+    margin-top: 4px;
+    margin-bottom: 0;
+}
+
+/* Compact Form */
+.compact-form .form-group {
+    margin-bottom: 10px;
+}
+
+.compact-form .form-control {
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 6px;
+}
+
+.compact-form textarea.form-control {
+    min-height: 60px;
+    resize: vertical;
+}
+
+/* Compact Checkout Button */
+.checkout-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+/* Remove icons from labels to save space */
+.compact-form label i {
+    display: none;
+}
+</style>
 
     <!-- Floating Cart Icon -->
     <div class="cart-icon" id="cart-icon">
@@ -1762,49 +1857,59 @@ $(document).on('click', function(e) {
         itemCount > 0 ? $('#cart-badge').text(itemCount).show() : $('#cart-badge').hide();
     }
 
-    function updateCartUI() {
-        const $cartItems = $('#cart-items');
-        let total = 0;
+function updateCartUI() {
+    const $cartItems = $('#cart-items');
+    let subtotal = 0;
+    let deliveryFee = 30; // Base delivery fee of K30
 
-        $cartItems.empty();
+    $cartItems.empty();
 
-        if (Object.keys(state.cart).length === 0) {
-            $cartItems.html(`
-                <div class="empty-cart">
-                    <i class="fas fa-shopping-cart"></i>
-                    <p>Your cart is empty</p>
-                </div>
-            `);
-        } else {
-            for (const [productId, item] of Object.entries(state.cart)) {
-                const itemTotal = item.price * item.quantity;
-                total += itemTotal;
+    if (Object.keys(state.cart).length === 0) {
+        $cartItems.html(`
+            <div class="empty-cart">
+                <i class="fas fa-shopping-cart"></i>
+                <p>Your cart is empty</p>
+            </div>
+        `);
+    } else {
+        for (const [productId, item] of Object.entries(state.cart)) {
+            const itemTotal = item.price * item.quantity;
+            subtotal += itemTotal;
+            deliveryFee += itemTotal * 0.03; // Add 3% of item total to delivery fee
 
-                $cartItems.append(`
-                    <div class="cart-item" data-product-id="${productId}">
-                        <img src="${item.image}" alt="${item.name}" class="cart-item-image">
-                        <div class="cart-item-info">
-                            <div class="cart-item-name">${item.name}</div>
-                            ${item.business ? `<div class="cart-item-business">${item.business}</div>` : ''}
-                            <div class="cart-item-price">${config.currencySymbol}${item.price.toFixed(2)}</div>
-                            <div class="quantity-controls">
-                                <button class="decrease-qty">-</button>
-                                <span>${item.quantity}</span>
-                                <button class="increase-qty">+</button>
-                                <button class="remove-item">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
+            $cartItems.append(`
+                <div class="cart-item" data-product-id="${productId}">
+                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name}</div>
+                        ${item.business ? `<div class="cart-item-business">${item.business}</div>` : ''}
+                        <div class="cart-item-price">${config.currencySymbol}${item.price.toFixed(2)}</div>
+                        <div class="quantity-controls">
+                            <button class="decrease-qty">-</button>
+                            <span>${item.quantity}</span>
+                            <button class="increase-qty">+</button>
+                            <button class="remove-item">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </div>
-                `);
-            }
+                </div>
+            `);
         }
-
-        $('#cart-total').text(`Total: ${config.currencySymbol}${total.toFixed(2)}`);
-        updateCartBadge();
-        saveCart();
     }
+
+    // Round delivery fee to 2 decimal places
+    deliveryFee = Math.round(deliveryFee * 100) / 100;
+    const total = subtotal + deliveryFee;
+
+    // Update all the summary elements
+    $('#cart-subtotal').text(`${config.currencySymbol}${subtotal.toFixed(2)}`);
+    $('#cart-delivery').text(`${config.currencySymbol}${deliveryFee.toFixed(2)}`);
+    $('#cart-total span:last-child').text(`${config.currencySymbol}${total.toFixed(2)}`);
+
+    updateCartBadge();
+    saveCart();
+}
 
 function addToCart(productId) {
     const $productCard = $(`.product-card[data-product-id="${productId}"]`);
@@ -2629,15 +2734,23 @@ $('#checkout-btn').click(function() {
     }
 
     message += `*Order Details:*\n`;
-    let total = 0;
+    let subtotal = 0;
+    let deliveryFee = 30; // Base delivery fee of K30
 
+    // Calculate delivery fee based on 3% of each item's total
     for (const [productId, item] of Object.entries(state.cart)) {
         const itemTotal = item.price * item.quantity;
-        total += itemTotal;
+        subtotal += itemTotal;
+        deliveryFee += itemTotal * 0.03; // Add 3% of item total to delivery fee
         message += `- ${item.name} (${item.business}) - ${config.currencySymbol}${item.price.toFixed(2)} × ${item.quantity} = ${config.currencySymbol}${itemTotal.toFixed(2)}\n`;
     }
 
-    message += `\n*Total:* ${config.currencySymbol}${total.toFixed(2)}\n\n`;
+    // Round delivery fee to 2 decimal places
+    deliveryFee = Math.round(deliveryFee * 100) / 100;
+
+    message += `\n*Subtotal:* ${config.currencySymbol}${subtotal.toFixed(2)}\n`;
+    message += `*Delivery Fee:* ${config.currencySymbol}${deliveryFee.toFixed(2)}\n`;
+    message += `*Total:* ${config.currencySymbol}${(subtotal + deliveryFee).toFixed(2)}\n\n`;
     message += `Please confirm my order. Thank you!`;
 
     // Create a form and submit it
