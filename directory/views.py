@@ -53,6 +53,16 @@ from django.contrib.auth.decorators import login_required
 from .models import Business, BusinessPost
 from .forms import BusinessPostForm
 
+from django.http import JsonResponse
+from django.contrib.auth.models import User
+from .models import Business
+
+def check_email(request):
+    email = request.GET.get('email')
+    user_exists = User.objects.filter(email=email).exists()
+    business_exists = Business.objects.filter(email=email).exists()
+    return JsonResponse({'exists': user_exists or business_exists})
+
 @login_required
 def products_list(request):
     # Get all products from all businesses

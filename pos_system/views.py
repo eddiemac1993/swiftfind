@@ -1529,10 +1529,19 @@ def submit_order(request, order_id):
 @login_required
 def customer_orders(request):
     """View for customer to see their orders"""
-    orders = Order.objects.filter(customer=request.user).order_by('-created_at')
+    print(f"Current user: {request.user}")  # Debug
+    print(f"User email: {request.user.email}")  # Debug
+    print(f"User full name: {request.user.get_full_name()}")  # Debug
 
-    # Mark orders as read when viewed
-    orders.update(is_read=True)
+    orders = Order.objects.filter(
+        Q(customer_name=request.user.get_full_name()) |
+        Q(customer_email=request.user.email)
+    ).order_by('-created_at')
+
+    print(f"Found orders count: {orders.count()}")  # Debug
+
+    # Mark orders as read when viewed by customer
+    orders.filter(is_read=False).update(is_read=True)
 
     context = {
         'orders': orders
@@ -1545,8 +1554,8 @@ def business_orders(request):
     business = get_object_or_404(Business, owner=request.user)
     orders = Order.objects.filter(business=business).order_by('-created_at')
 
-    # Mark orders as read when viewed
-    orders.update(is_read=True)
+    # Mark orders as read when viewed by business
+    orders.filter(is_read_business=False).update(is_read_business=True)
 
     context = {
         'business': business,

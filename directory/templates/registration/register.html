@@ -1314,5 +1314,37 @@
 
     }); // End of DOMContentLoaded
 </script>
+<script>
+// Email validation
+document.getElementById('email').addEventListener('blur', function() {
+    const email = this.value;
+    const errorEl = document.getElementById('email-error');
+
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter a valid email address';
+        errorEl.classList.add('show');
+        this.classList.add('is-invalid');
+        this.classList.remove('is-valid');
+        return;
+    }
+
+    if (email) {
+        fetch(`/check-email/?email=${encodeURIComponent(email)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.exists) {
+                    errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> This email is already registered';
+                    errorEl.classList.add('show');
+                    this.classList.add('is-invalid');
+                    this.classList.remove('is-valid');
+                } else {
+                    errorEl.classList.remove('show');
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                }
+            });
+    }
+});
+</script>
 </body>
 </html>
