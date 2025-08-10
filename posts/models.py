@@ -3,10 +3,13 @@ from django.core.validators import MinValueValidator
 from django.utils.text import slugify
 from django.urls import reverse
 from enum import Enum
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class CategoryChoices(Enum):
     SERVICE = 'service'
     RENT = 'rent'
+    JOB = 'job'
 
     @classmethod
     def choices(cls):
@@ -17,6 +20,16 @@ CATEGORY_CHOICES = CategoryChoices.choices()
 class Post(models.Model):
     title = models.CharField(max_length=255, verbose_name="Post Title", help_text="Enter a descriptive title for your post.")
     slug = models.SlugField(unique=True, blank=True)
+    business = models.ForeignKey(
+        'directory.Business',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='postss',
+        verbose_name="Associated Business",
+        help_text="Select if this post is associated with a business"
+    )
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='posts')
     description = models.TextField(verbose_name="Post Description", help_text="Provide details about the post.")
     category = models.CharField(max_length=15, choices=CATEGORY_CHOICES, verbose_name="Category", help_text="Select the category for the post.")
     phone_number = models.CharField(max_length=15, verbose_name="Phone Number", help_text="Enter your contact phone number.", default="0000000000")
@@ -32,6 +45,9 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
+    def has_business(self):
+        return self.business is not None
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
@@ -44,15 +60,26 @@ class Post(models.Model):
     def choices(cls):
         return [(choice.value, choice.name.title()) for choice in cls]
 
+# models.py
+# models.py
+from django.conf import settings
+from django.contrib.auth import get_user_model
+
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
-    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name="replies")
-    name = models.CharField(max_length=100, verbose_name="Name", help_text="Enter your name or username.", default="Anonymous")
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='comments')
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='comments'
+    )
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
-        ordering = ['created_at']
+        ordering = ['-created_at']  # Newest first by default
 
     def __str__(self):
-        return f"Comment by {self.name} on {self.post.title}"
+        return f"Comment by {self.user.username if self.user else 'Anonymous'} on {self.post.title}"

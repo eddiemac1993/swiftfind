@@ -31,20 +31,12 @@ class PostAdmin(admin.ModelAdmin):
 
     readonly_fields = ('created_at',)  # Make created_at read-only
 
+from django.contrib import admin
+from .models import Comment
+
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('name', 'post', 'content', 'created_at')  # Fields to display in the list view
-    list_filter = ('created_at', 'post')  # Filters for the right sidebar
-    search_fields = ('name', 'content', 'post__title')  # Searchable fields
-
-    fieldsets = (
-        (None, {
-            'fields': ('post', 'name', 'content')
-        }),
-        ('Metadata', {
-            'fields': ('created_at',),
-            'classes': ('collapse',)  # Collapsible section
-        }),
-    )
-
-    readonly_fields = ('created_at',)  # Make created_at read-only
+    list_display = ['content', 'user', 'post', 'created_at']  # Use actual field names
+    list_filter = ['created_at', 'user']
+    search_fields = ['content', 'user__username', 'post__title']
+    raw_id_fields = ['post']

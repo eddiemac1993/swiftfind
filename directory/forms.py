@@ -199,22 +199,57 @@ class BusinessUpdateForm(forms.ModelForm):
 from django.core.exceptions import ValidationError
 from urllib.parse import urlparse
 
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+
 class UserRegistrationForm(UserCreationForm):
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'autocomplete': 'email',
+            'placeholder': 'your.email@example.com'
+        }),
+        help_text="We'll send you important account notifications to this email."
+    )
 
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
 
     def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("This email address is already in use.")
+        email = self.cleaned_data.get('email').lower().strip()  # Normalize email
+
+        # Validate email format
+        try:
+            validate_email(email)
+        except ValidationError:
+            raise forms.ValidationError(
+                "Please enter a valid email address (e.g., user@example.com)."
+            )
+
+        # Check for existing email (case-insensitive)
+        if User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError(
+                "This email is already registered. "
+                "Please try logging in or use a different email address."
+            )
+
         return email
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username').strip()
+        if User.objects.filter(username__iexact=username).exists():
+            raise forms.ValidationError(
+                "Username already taken. Please try a different one."
+            )
+        return username
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.email = self.cleaned_data['email']
+        user.email = self.cleaned_data['email'].lower()  # Ensure lowercase
         if commit:
             user.save()
         return user

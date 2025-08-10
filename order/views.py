@@ -32,6 +32,7 @@ from pywebpush import webpush, WebPushException
 # In your Django view
 from pywebpush import webpush
 import json
+from posts.models import Post
 
 
 def service_worker(request):
@@ -233,6 +234,17 @@ def discover(request):
     User = get_user_model()
     user_count = User.objects.count()
 
+    # Initialize job notification count
+    job_notifications_count = 0
+    if request.user.is_authenticated:
+        # Count job posts relevant to the user
+        job_notifications_count = Post.objects.filter(
+            category='job',
+            # Add any additional filters for jobs relevant to this user
+            # For example, maybe jobs in their location:
+            # location=request.user.profile.location
+        ).count()
+
     # Log search query if applicable
     if query or city or category or sort_by:
         search_query, created = SearchQuery.objects.get_or_create(
@@ -363,6 +375,7 @@ def discover(request):
         'business': first_business,
         'random_product': random_product,
         'user_count': user_count,
+        'job_notifications_count': job_notifications_count,
     })
 
 def get_cart(request):

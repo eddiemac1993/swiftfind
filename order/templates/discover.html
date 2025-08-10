@@ -1,6 +1,7 @@
 {% load static %}
 {% load humanize %}
 {% load jcustom_filters %}
+{% load time_greeting %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1009,11 +1010,20 @@
     </button>
 <header class="app-header">
     <div class="header-top">
-        <div class="location">
-            <i class="fas fa-compass"></i>
-            <span>Hi, {{ user.username }}</span>
-        </div>
+<div class="location">
+    <i class="fas fa-compass"></i>
+    <span>{% time_greeting %}</span>
+</div>
         <div class="user-actions">
+            <!-- Jobs Button -->
+            <a href="{% url 'post_list' %}" class="notification-btn">
+                <i class="fas fa-briefcase"></i>
+                {% if job_notifications_count > 0 %}
+                <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                    {{ job_notifications_count }}
+                </span>
+                {% endif %}
+            </a>
             <a href="{% url 'messaging:conversation_list' %}" class="notification-btn">
                 <i class="fas {% if is_business_owner %}fa-comments{% else %}fa-envelope{% endif %}"></i>
                 {% if unread_count > 0 %}
