@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Style Guide | Professional Template</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ========== BASE STYLES ========== */
+        :root {
+            /* Color Palette */
+            --primary: #2a5bd7;
+            --primary-dark: #1e4ab3;
+            --primary-light: #e8effb;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --info: #17a2b8;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --white: #ffffff;
+            
+            /* Neutral Colors */
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+            --gray-800: #343a40;
+            --gray-900: #212529;
+            
+            /* Typography */
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-serif: 'Playfair Display', Georgia, serif;
+            --base-font-size: 1rem;
+            --scale: 1.25;
+            --h1: calc(var(--h2) * var(--scale));
+            --h2: calc(var(--h3) * var(--scale));
+            --h3: calc(var(--h4) * var(--scale));
+            --h4: calc(var(--h5) * var(--scale));
+            --h5: calc(var(--h6) * var(--scale));
+            --h6: var(--base-font-size);
+            
+            /* Spacing */
+            --space-unit: 1rem;
+            --space-xxs: calc(0.25 * var(--space-unit));
+            --space-xs: calc(0.5 * var(--space-unit));
+            --space-sm: calc(0.75 * var(--space-unit));
+            --space-md: calc(1.25 * var(--space-unit));
+            --space-lg: calc(2 * var(--space-unit));
+            --space-xl: calc(3.25 * var(--space-unit));
+            --space-xxl: calc(5.25 * var(--space-unit));
+            
+            /* Border Radius */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-pill: 999px;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+            --shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            
+            /* Transitions */
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.45s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            color: var(--gray-800);
+            background-color: var(--white);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* ========== TYPOGRAPHY ========== */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-serif);
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: var(--space-sm);
+            color: var(--dark);
+        }
+        
+        h1 { font-size: var(--h1); }
+        h2 { font-size: var(--h2); }
+        h3 { font-size: var(--h3); }
+        h4 { font-size: var(--h4); }
+        h5 { font-size: var(--h5); }
+        h6 { font-size: var(--h6); }
+        
+        p {
+            margin-bottom: var(--space-sm);
+            max-width: 65ch;
+        }
+        
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+        
+        a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        .text-lead {
+            font-size: calc(var(--base-font-size) * 1.25);
+            color: var(--gray-700);
+        }
+        
+        .text-muted {
+            color: var(--gray-600);
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        /* ========== LAYOUT & CONTAINERS ========== */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+        }
+        
+        .section {
+            padding: var(--space-xl) 0;
+        }
+        
+        .section-title {
+            position: relative;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-xs);
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background-color: var(--primary);
+        }
+        
+        /* ========== BUTTONS ========== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-sans);
+            font-weight: 500;
+            font-size: var(--base-font-size);
+            line-height: 1;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-md);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: var(--space-xs);
+            flex-wrap: wrap;
+        }
+        
+        /* ========== CARDS ========== */
+        .card {
+            background-color: var(--white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .card-body {
+            padding: var(--space-md);
+        }
+        
+        .card-title {
+            font-size: var(--h5);
+            margin-bottom: var(--space-xs);
+        }
+        
+        /* ========== NAVIGATION ========== */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-sm) 0;
+            position: relative;
+        }
+        
+        .nav-logo {
+            font-family: var(--font-serif);
+            font-size: var(--h4);
+            font-weight: 600;
+            color: var(--dark);
+            text-decoration: none;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: var(--space-md);
+        }
+        
+        .nav-link {
+            color: var(--gray-700);
+            font-weight: 500;
+            transition: color var(--transition-fast);
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        /* ========== HERO SECTION ========== */
+        .hero {
+            position: relative;
+            padding: var(--space-xxl) 0;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--white) 100%);
+        }
+        
+        .hero-content {
+            max-width: 600px;
+        }
+        
+        .hero-title {
+            font-size: calc(var(--h1) * 1.2);
+            margin-bottom: var(--space-sm);
+        }
+        
+        /* ========== FEATURES ========== */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-lg);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: var(--space-sm);
+        }
+        
+        /* ========== TESTIMONIALS ========== */
+        .testimonial {
+            background-color: var(--gray-100);
+            padding: var(--space-lg);
+            border-radius: var(--radius-md);
+            position: relative;
+        }
+        
+        .testimonial::before {
+            content: '"';
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 4rem;
+            color: var(--gray-300);
+            font-family: var(--font-serif);
+            line-height: 1;
+        }
+        
+        .testimonial-content {
+            position: relative;
+            z-index: 1;
+            font-style: italic;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+        
+        .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        /* ========== FOOTER ========== */
+        .footer {
+            background-color: var(--gray-900);
+            color: var(--gray-300);
+            padding: var(--space-xl) 0;
+        }
+        
+        .footer-logo {
+            font-family: var(--font-serif);
+            font-size: var(--h3);
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: var(--space-md);
+            display: inline-block;
+        }
+        
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-lg);
+        }
+        
+        .footer-title {
+            color: var(--white);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .footer-list {
+            list-style: none;
+        }
+        
+        .footer-link {
+            color: var(--gray-400);
+            display: block;
+            padding: var(--space-xxs) 0;
+            transition: color var(--transition-fast);
+        }
+        
+        .footer-link:hover {
+            color: var(--white);
+            text-decoration: none;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid var(--gray-800);
+            padding-top: var(--space-md);
+            margin-top: var(--space-lg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: var(--space-sm);
+        }
+        
+        .social-link {
+            color: var(--gray-400);
+            transition: color var(--transition-fast);
+        }
+        
+        .social-link:hover {
+            color: var(--white);
+        }
+        
+        /* ========== UTILITY CLASSES ========== */
+        .mt-1 { margin-top: var(--space-xs); }
+        .mt-2 { margin-top: var(--space-sm); }
+        .mt-3 { margin-top: var(--space-md); }
+        .mt-4 { margin-top: var(--space-lg); }
+        .mt-5 { margin-top: var(--space-xl); }
+        
+        .mb-1 { margin-bottom: var(--space-xs); }
+        .mb-2 { margin-bottom: var(--space-sm); }
+        .mb-3 { margin-bottom: var(--space-md); }
+        .mb-4 { margin-bottom: var(--space-lg); }
+        .mb-5 { margin-bottom: var(--space-xl); }
+        
+        .py-1 { padding-top: var(--space-xs); padding-bottom: var(--space-xs); }
+        .py-2 { padding-top: var(--space-sm); padding-bottom: var(--space-sm); }
+        .py-3 { padding-top: var(--space-md); padding-bottom: var(--space-md); }
+        .py-4 { padding-top: var(--space-lg); padding-bottom: var(--space-lg); }
+        .py-5 { padding-top: var(--space-xl); padding-bottom: var(--space-xl); }
+        
+        /* ========== RESPONSIVE ADJUSTMENTS ========== */
+        @media (max-width: 768px) {
+            :root {
+                --scale: 1.125;
+            }
+            
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--space-sm);
+            }
+            
+            .nav-menu {
+                flex-direction: column;
+                gap: var(--space-xs);
+            }
+            
+            .hero {
+                text-align: center;
+            }
+            
+            .hero-content {
+                margin: 0 auto;
+            }
+            
+            .btn-group {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <header class="section" style="padding-bottom: 0;">
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="nav-logo">AcmeCorp</a>
+                <ul class="nav-menu">
+                    <li><a href="#" class="nav-link">Home</a></li>
+                    <li><a href="#" class="nav-link">Services</a></li>
+                    <li><a href="#" class="nav-link">About</a></li>
+                    <li><a href="#" class="nav-link">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Elevate Your Digital Presence</h1>
+                <p class="text-lead">We craft beautiful, high-performing websites that drive results and create memorable user experiences.</p>
+                <div class="btn-group mt-4">
+                    <a href="#" class="btn btn-primary">Get Started</a>
+                    <a href="#" class="btn btn-outline">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title text-center">Our Core Services</h2>
+            <div class="features">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="feature-icon">📐</div>
+                        <h3 class="card-title">UI/UX Design</h3>
+                        <p>Beautiful, intuitive interfaces designed with your users in mind. We focus on creating seamless experiences that delight.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <div class="feature-icon">💻</div>
+                        <h3 class="card-title">Web Development</h3>
+                        <p>Robust, scalable websites built with modern technologies. Performance and security are our top priorities.</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <div class="feature-icon">📈</div>
+                        <h3 class="card-title">Digital Strategy</h3>
+                        <p>Data-driven approaches to grow your online presence. We help you reach and engage your target audience.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials -->
+    <section class="section" style="background-color: var(--gray-100);">
+        <div class="container">
+            <h2 class="section-title text-center">Client Testimonials</h2>
+            <div class="features">
+                <div class="testimonial">
+                    <p class="testimonial-content">Working with AcmeCorp transformed our online presence. Their attention to detail and strategic approach delivered results beyond our expectations.</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/women/43.jpg" alt="Sarah Johnson" class="author-avatar">
+                        <div>
+                            <div>Sarah Johnson</div>
+                            <div class="text-muted">CEO, TechSolutions</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial">
+                    <p class="testimonial-content">The team at AcmeCorp understood our vision perfectly. They delivered a website that not only looks stunning but performs exceptionally well.</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Michael Chen" class="author-avatar">
+                        <div>
+                            <div>Michael Chen</div>
+                            <div class="text-muted">Marketing Director, GlobalBrand</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Call to Action -->
+    <section class="section">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+                <h2 class="mb-3">Ready to elevate your digital presence?</h2>
+                <p class="text-lead mb-4">Let's discuss how we can help you achieve your business goals with a custom digital solution.</p>
+                <a href="#" class="btn btn-primary">Schedule a Consultation</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <div>
+                    <a href="#" class="footer-logo">AcmeCorp</a>
+                    <p>Helping businesses thrive in the digital landscape since 2015.</p>
+                </div>
+                
+                <div>
+                    <h3 class="footer-title">Quick Links</h3>
+                    <ul class="footer-list">
+                        <li><a href="#" class="footer-link">Home</a></li>
+                        <li><a href="#" class="footer-link">Services</a></li>
+                        <li><a href="#" class="footer-link">Case Studies</a></li>
+                        <li><a href="#" class="footer-link">Blog</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="footer-title">Services</h3>
+                    <ul class="footer-list">
+                        <li><a href="#" class="footer-link">Web Design</a></li>
+                        <li><a href="#" class="footer-link">Development</a></li>
+                        <li><a href="#" class="footer-link">SEO</a></li>
+                        <li><a href="#" class="footer-link">Consulting</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="footer-title">Contact</h3>
+                    <ul class="footer-list">
+                        <li><a href="mailto:hello@acmecorp.com" class="footer-link">hello@acmecorp.com</a></li>
+                        <li><a href="tel:+15551234567" class="footer-link">(555) 123-4567</a></li>
+                        <li>123 Business Ave</li>
+                        <li>San Francisco, CA 94107</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="text-muted">© 2023 AcmeCorp. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">Twitter</a>
+                    <a href="#" class="social-link">LinkedIn</a>
+                    <a href="#" class="social-link">Instagram</a>
+                    <a href="#" class="social-link">Facebook</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

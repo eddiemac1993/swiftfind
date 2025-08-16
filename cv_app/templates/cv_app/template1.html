@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ cv.full_name }} | Professional CV</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --text-color: #333;
+            --light-gray: #f5f5f5;
+            --border-color: #e0e0e0;
+        }
+        
+        body {
+            font-family: 'Roboto', 'Lato', Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            color: var(--text-color);
+            background-color: #fff;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        h1 {
+            margin: 0 0 8px 0;
+            color: var(--secondary-color);
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .title {
+            font-size: 18px;
+            color: var(--primary-color);
+            font-weight: 400;
+            margin-bottom: 15px;
+        }
+        
+        .contact-info {
+            margin-bottom: 15px;
+            font-size: 15px;
+            color: #555;
+        }
+        
+        .contact-info a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .contact-info a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+        
+        .section-title {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 10px;
+            margin: 25px 0 15px 0;
+            color: var(--secondary-color);
+            font-size: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .section-content {
+            margin-left: 15px;
+            padding-left: 10px;
+        }
+        
+        .section-content p {
+            margin: 8px 0;
+        }
+        
+        .download-btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 500;
+            margin-top: 30px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .download-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        /* Print-specific styles */
+        @media print {
+            @page {
+                size: A4;
+                margin: 1.5cm;
+            }
+            body {
+                font-size: 11pt;
+                line-height: 1.4;
+                padding: 0;
+            }
+            h1 {
+                color: #000 !important;
+                font-size: 22pt;
+            }
+            .section-title {
+                font-size: 14pt;
+            }
+            a {
+                color: #0066cc;
+                text-decoration: none;
+            }
+            .no-print, .download-btn {
+                display: none;
+            }
+            .header {
+                margin-bottom: 20px;
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>{{ cv.full_name }}</h1>
+        {% if cv.job_title %}<div class="title">{{ cv.job_title }}</div>{% endif %}
+        <div class="contact-info">
+            {% if cv.email %}<a href="mailto:{{ cv.email }}">{{ cv.email }}</a> | {% endif %}
+            {% if cv.phone %}{{ cv.phone }} | {% endif %}
+            {% if cv.address %}{{ cv.address }}{% endif %}
+            {% if cv.website %}<br><a href="{{ cv.website }}" target="_blank">{{ cv.website }}</a>{% endif %}
+            {% if cv.linkedin %}<br><a href="{{ cv.linkedin }}" target="_blank">LinkedIn Profile</a>{% endif %}
+        </div>
+    </div>
+
+    {% if cv.professional_summary %}
+    <div class="section">
+        <h2 class="section-title">Professional Profile</h2>
+        <div class="section-content">
+            <p>{{ cv.professional_summary }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if cv.key_skills %}
+    <div class="section">
+        <h2 class="section-title">Core Competencies</h2>
+        <div class="section-content">
+            <p>{{ cv.key_skills|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if cv.work_experience %}
+    <div class="section">
+        <h2 class="section-title">Professional Experience</h2>
+        <div class="section-content">
+            <p>{{ cv.work_experience|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if cv.education %}
+    <div class="section">
+        <h2 class="section-title">Education</h2>
+        <div class="section-content">
+            <p>{{ cv.education|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if cv.certifications %}
+    <div class="section">
+        <h2 class="section-title">Certifications</h2>
+        <div class="section-content">
+            <p>{{ cv.certifications|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if cv.languages %}
+    <div class="section">
+        <h2 class="section-title">Languages</h2>
+        <div class="section-content">
+            <p>{{ cv.languages|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if cv.projects %}
+    <div class="section">
+        <h2 class="section-title">Key Projects</h2>
+        <div class="section-content">
+            <p>{{ cv.projects|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if cv.references %}
+    <div class="section">
+        <h2 class="section-title">References</h2>
+        <div class="section-content">
+            <p>{{ cv.references|linebreaks }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="{% url 'download_cv' cv.id %}" class="download-btn">Download PDF Version</a>
+        <p style="color: #888; font-size: 12px; margin-top: 15px;">Professionally crafted by Swiftfindzm</p>
+    </div>
+</body>
+</html>

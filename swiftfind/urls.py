@@ -21,6 +21,7 @@ urlpatterns = [
     path('taxi/', include('taxi.urls')),
     path('tracking/', include('tracking.urls')),
     path('messages/', include('messaging.urls')),
+    path('cv/', include('cv_app.urls')),
 
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/password_reset/',

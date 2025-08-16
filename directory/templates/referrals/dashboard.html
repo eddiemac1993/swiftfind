@@ -646,7 +646,7 @@
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
             }
-            
+
             .referral-hero h1 {
                 font-size: 1.6rem;
             }
@@ -660,26 +660,26 @@
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .header-container {
                 padding: 0 10px;
             }
-            
+
             .header-actions {
                 gap: 12px;
             }
-            
+
             .referrals-table {
                 display: block;
                 overflow-x: auto;
                 white-space: nowrap;
             }
-            
+
             .fab-container {
                 bottom: 70px;
                 right: 15px;
             }
-            
+
             .fab-button {
                 width: 48px;
                 height: 48px;
@@ -736,7 +736,7 @@
         <section class="referral-hero animated">
             <div class="referral-hero-content">
                 <h1>Earn With Every Referral</h1>
-                <p>Share SwiftFind with businesses in your community and earn K2.5 for each successful signup</p>
+                <p>Share SwiftFind with businesses in your community and earn K5 for each successful signup</p>
                 <a href="#referral-link" class="hero-cta">Get Your Link</a>
             </div>
         </section>
@@ -790,7 +790,7 @@
                         <tr>
                             <th>Date</th>
                             <th>Referred User</th>
-                            
+
                             <th>Amount</th>
                             <th>Status</th>
                         </tr>
@@ -857,7 +857,7 @@
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
             document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
-            
+
             // Update icons
             const icons = document.querySelectorAll('.header-icon, .nav-item');
             icons.forEach(icon => {
@@ -874,19 +874,19 @@
             const input = document.getElementById('referralLink');
             input.select();
             input.setSelectionRange(0, 99999);
-            
+
             try {
                 document.execCommand('copy');
                 const button = event.target.closest('button');
                 const originalText = button.innerHTML;
                 button.innerHTML = '<i class="fas fa-check"></i> Copied!';
                 button.style.background = '#4CAF50';
-                
+
                 // Vibrate on success
                 if (navigator.vibrate) {
                     navigator.vibrate(50);
                 }
-                
+
                 setTimeout(() => {
                     button.innerHTML = originalText;
                     button.style.background = 'var(--primary-color)';
@@ -905,7 +905,7 @@
             e.preventDefault();
             deferredPrompt = e;
             installButton.style.display = 'flex';
-            
+
             // Show a small tooltip
             const tooltip = document.createElement('div');
             tooltip.textContent = 'Install App';
@@ -920,7 +920,7 @@
             tooltip.style.opacity = '0';
             tooltip.style.transition = 'opacity 0.3s';
             installButton.parentNode.appendChild(tooltip);
-            
+
             setTimeout(() => {
                 tooltip.style.opacity = '1';
                 setTimeout(() => {
@@ -961,7 +961,7 @@
         // Add animation class to elements as they come into view
         document.addEventListener('DOMContentLoaded', function() {
             const animatedElements = document.querySelectorAll('.animated');
-            
+
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
@@ -970,7 +970,7 @@
                     }
                 });
             }, { threshold: 0.1 });
-            
+
             animatedElements.forEach(element => {
                 observer.observe(element);
             });

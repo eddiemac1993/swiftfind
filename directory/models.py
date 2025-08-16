@@ -432,7 +432,7 @@ class Referral(models.Model):
         null=True,  # Make this optional
         blank=True
     )
-    amount = models.DecimalField(max_digits=10, decimal_places=2, default=2.50)
+    amount = models.DecimalField(max_digits=10, decimal_places=2, default=5.50)
     is_paid = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

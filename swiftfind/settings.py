@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'rangefilter',
     'django_ckeditor_5',
     'django_user_agents',
+    'cv_app',
     'django.contrib.sites',
 ]
 

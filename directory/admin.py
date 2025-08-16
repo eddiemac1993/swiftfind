@@ -141,7 +141,7 @@ class ReferralAdmin(admin.ModelAdmin):
         'referred_business__name'
     )
     raw_id_fields = ('referrer', 'referred_user', 'referred_business')
-    readonly_fields = ('created_at',)
+    readonly_fields = ('created_at',)  # amount is not here, so it will be editable
     date_hierarchy = 'created_at'
     actions = ['mark_as_paid', 'mark_as_unpaid']
 
