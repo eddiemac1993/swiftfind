@@ -133,47 +133,36 @@ from xhtml2pdf import pisa
 from .models import Paper, PaperItem
 import os
 
+import random
+from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from weasyprint import HTML
+from .models import Paper
+
 def download_paper(request, paper_id):
-    # Fetch the paper object
     paper = get_object_or_404(Paper, id=paper_id)
-
-    # Debug: Print the logo URL
-    if paper.logo:
-        print(f"Logo URL: {paper.logo.url}")
-    else:
-        print("No logo found for this paper.")
-
-    # Fetch items for the paper
     items = paper.items.all()
 
-    # Use the existing model properties for calculations
-    subtotal = paper.subtotal
-    vat_amount = paper.vat_amount
-    grand_total = paper.total_amount
+    # Generate a random position (1-4) for the stamp
+    random_position = random.randint(1, 4)
 
-    # Render the HTML template
-    html_string = render_to_string('paper/paper_pdf_template.html', {
+    context = {
         'paper': paper,
         'items': items,
-        'subtotal': subtotal,
-        'vat_amount': vat_amount,
-        'grand_total': grand_total,
-    })
+        'subtotal': paper.subtotal,
+        'vat_amount': paper.vat_amount,
+        'grand_total': paper.total_amount,
+        'random_position': random_position,
+    }
 
-    # Debug: Print the HTML string
-    print(html_string)
+    html_string = render_to_string('paper/paper_pdf_template.html', context)
 
-    # Generate PDF using xhtml2pdf
+    # Generate PDF
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{paper.paper_number}.pdf"'
 
-    # Convert HTML to PDF
-    pdf_status = pisa.CreatePDF(html_string, dest=response)
-
-    # Check for errors
-    if pdf_status.err:
-        return HttpResponse('An error occurred while generating the PDF.')
-
+    HTML(string=html_string).write_pdf(response)
     return response
 
 from django.shortcuts import render, redirect, get_object_or_404

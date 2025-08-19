@@ -258,8 +258,8 @@ def discover(request):
             search_query.count += 1
             search_query.save()
 
-    # Get a random product from verified/admin-added businesses
-    random_product = None
+    # Get 6 random products from verified/admin-added businesses
+    featured_products = None
     verified_businesses = Business.objects.filter(
         Q(is_admin_added=True) | Q(verified_until__gte=timezone.now()),
         status='active'
@@ -275,7 +275,11 @@ def discover(request):
             stock_quantity__gt=0  # Only show products with stock
         )
         if products_from_verified.exists():
-            random_product = random.choice(products_from_verified)
+            # Get up to 6 random products
+            featured_products = random.sample(
+                list(products_from_verified),
+                min(6, products_from_verified.count())
+            )
 
     # Annotate businesses with ratings and review counts
     businesses = Business.objects.annotate(
@@ -373,7 +377,7 @@ def discover(request):
         'businesses_count_on_page': businesses_count_on_page,
         'businesses_count': businesses_count,
         'business': first_business,
-        'random_product': random_product,
+        'featured_products': featured_products,  # Changed from random_product to featured_products
         'user_count': user_count,
         'job_notifications_count': job_notifications_count,
     })

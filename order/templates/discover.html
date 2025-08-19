@@ -2,6 +2,7 @@
 {% load humanize %}
 {% load jcustom_filters %}
 {% load time_greeting %}
+{% load pcustom_filters %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1045,497 +1046,614 @@
     <main class="app-main">
         <!-- Banner -->
 <!-- Banner Carousel -->
-    <!-- Enhanced Banner Carousel -->
-    <section class="banner-carousel">
-        <!-- Slide 1: Business Discovery -->
-        <div class="banner-slide active" style="background: linear-gradient(135deg, #FF6A00 0%, #FF8C1A 50%, #FF5000 100%);">
-            <div class="banner-content">
-                <h3>Discover Local Businesses</h3>
-                <p>Find the best businesses in your area. {{ businesses_count|intcomma }} Organization and {{ user_count|intcomma }} users connected.</p>
-                <a href="#" class="shop-button">
-                    <i class="fas fa-store"></i>
-                    <span>Visit Shop</span>
-                </a>
-            </div>
+<section class="banner-carousel">
+    <!-- Slide 1: Promotion -->
+    <a href="{% url 'referral_dashboard' %}" class="banner-slide active" style="background-image: url('{% static 'images/Yellow Black Photo Collage Facebook Cover.png' %}');">
+        <div class="banner-overlay" style="background: linear-gradient(135deg, rgba(106, 17, 203, 0.85) 0%, rgba(37, 117, 252, 0.85) 100%);"></div>
+        <!-- Updated Banner Content Section -->
+<div class="banner-content">
+    <div class="promo-badge">Limited Time</div>
+    <h3 class="banner-title">Referral Bonus</h3>
+    <p class="banner-text">Earn <strong>K10+</strong> for each successful referral</p>
 
-            <!-- Floating decorative elements -->
-            <div class="floating-element">
-                <div class="floating-icon">
-                    <i class="fas fa-star"></i>
-                </div>
-            </div>
-            <div class="floating-element">
-                <div class="floating-icon">
-                    <i class="fas fa-heart"></i>
-                </div>
-            </div>
-            <div class="floating-element">
-                <div class="floating-icon">
-                    <i class="fas fa-shopping-bag"></i>
-                </div>
-            </div>
+    <!-- Moved Countdown inside banner-content -->
+    <div class="promo-countdown">
+        <div class="countdown-item">
+            <span class="countdown-value" id="days">00</span>
+            <span class="countdown-label">Days</span>
+        </div>
+        <div class="countdown-item">
+            <span class="countdown-value" id="hours">23</span>
+            <span class="countdown-label">Hours</span>
+        </div>
+        <div class="countdown-item">
+            <span class="countdown-value" id="minutes">59</span>
+            <span class="countdown-label">Minutes</span>
+        </div>
+        <div class="countdown-item">
+            <span class="countdown-value" id="seconds">59</span>
+            <span class="countdown-label">Seconds</span>
+        </div>
+    </div>
+</div>
 
-            <div class="brand-watermark">
-                Alkebulan: Garden of Eden
+        <div class="brand-watermark">
+            Alkebulan: Garden of Eden
+        </div>
+    </a>
+
+    <!-- Slide 2: Business Discovery -->
+    <a href="{% url 'referral_dashboard' %}" class="banner-slide" style="background-image: url('{% static 'images/White and Blue Modern Esport Facebook Cover.png' %}');">
+        <div class="banner-overlay" style="background: linear-gradient(135deg, rgba(255, 106, 0, 0.85) 0%, rgba(255, 140, 26, 0.85) 50%, rgba(255, 80, 0, 0.85) 100%);"></div>
+        <div class="banner-content">
+            <h3 class="banner-title">Discover Local Businesses</h3>
+            <p class="banner-text">Find the best businesses in your area. <strong class="highlight-number">{{ businesses_count|intcomma }}</strong> Businesses and <strong class="highlight-number">{{ user_count|intcomma }}</strong> users connected.</p>
+        </div>
+
+        <!-- Floating decorative elements -->
+        <div class="floating-element" style="top: 20%; right: 10%;">
+            <div class="floating-icon">
+                <i class="fas fa-star"></i>
+            </div>
+        </div>
+        <div class="floating-element" style="top: 60%; right: 5%;">
+            <div class="floating-icon">
+                <i class="fas fa-heart"></i>
+            </div>
+        </div>
+        <div class="floating-element" style="top: 40%; right: 15%;">
+            <div class="floating-icon">
+                <i class="fas fa-shopping-bag"></i>
             </div>
         </div>
 
-        <!-- Slide 2: Random Product -->
-        {% if random_product %}
-        <div class="banner-slide product-slide">
-            <a href="{% url 'business-store' pk=random_product.business.pk %}" class="card-link">
-                <div class="random-product-card" style="background-image: url('{{ random_product.image.url }}');">
-                    <div class="product-info-top">
-                        <div class="product-price">
-                            <span class="price-currency">K</span>{{ random_product.price }}
-                        </div>
-                        <h4 class="product-name">{{ random_product.name }}</h4>
-                    </div>
+        <div class="brand-watermark">
+            Alkebulan: Garden of Eden
+        </div>
+    </a>
+</section>
 
-                    <div class="product-info-bottom">
-                        <div class="rating">
-                            <div class="stars">
-                                {% for i in "12345" %}
-                                    {% with business=random_product.business %}
-                                        {% if i|add:0 <= business.average_rating %}
-                                            ★
-                                        {% else %}
-                                            ☆
-                                        {% endif %}
-                                    {% endwith %}
-                                {% endfor %}
-                            </div>
-                            <span class="rating-count">
-                                {% with business=random_product.business %}
-                                    {% if business.average_rating %}
-                                    {{ business.average_rating|floatformat:1 }} ({{ business.review_count }} reviews)
-                                    {% else %}
-                                    No reviews yet
-                                    {% endif %}
-                                {% endwith %}
-                            </span>
-                        </div>
-                        <div class="business-info">
-                            <span class="business-name">{{ random_product.business.name }}</span>
-                        </div>
+<style>
+/* Banner Carousel Styles */
+.banner-carousel {
+    position: relative;
+    margin: 0 auto 24px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    height: 300px;
+    max-width: 800px;
+    min-height: 300px; /* Ensure space is reserved */
+    background: #f5f5f5; /* Fallback color */
+    animation: fadeIn 0.5s ease-out;
+}
+/* Alternative more prominent style */
+.highlight-number {
+    font-weight: 900;
+    color: #ffeb3b;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.banner-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: all 1.2s cubic-bezier(0.4, 0.0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    padding: 40px;
+    color: white;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.banner-slide.active {
+    opacity: 1;
+}
+
+.banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+    max-width: 60%;
+    padding: 20px;
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    display: flex;
+    flex-direction: column;
+}
+
+.banner-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    color: white;
+}
+
+
+.banner-text strong {
+    color: #ffeb3b;
+    font-weight: 700;
+}
+
+.promo-badge {
+    display: inline-block;
+    background-color: #ff5722;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Countdown styles */
+.promo-countdown {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 12px 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(5px);
+    align-self: flex-start; /* Align with text content */
+}
+
+.banner-text {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 0; /* Removed the large bottom margin */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    color: white;
+}
+
+.countdown-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 50px;
+}
+
+.countdown-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.countdown-label {
+    font-size: 12px;
+    margin-top: 5px;
+    opacity: 0.9;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Brand watermark */
+.brand-watermark {
+    position: absolute;
+    bottom: 5px;
+    right: 20px;
+    font-size: 12px;
+    opacity: 0.8;
+    z-index: 3;
+    font-weight: 500;
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Floating elements */
+.floating-element {
+    position: absolute;
+    z-index: 3;
+    animation: float 6s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.floating-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Animation keyframes */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .banner-carousel {
+        height: 250px;
+        min-height: 250px;
+        margin: 0 10px 24px;
+        border-radius: 16px;
+    }
+
+    .banner-slide {
+        padding: 20px;
+    }
+
+    .banner-content {
+        max-width: 80%;
+        padding: 15px;
+    }
+
+    .banner-title {
+        font-size: 22px;
+    }
+
+    .banner-text {
+        font-size: 14px;
+    }
+
+    .promo-countdown {
+        bottom: 20px;
+        left: 20px;
+        gap: 10px;
+        padding: 8px 12px;
+    }
+
+    .countdown-value {
+        font-size: 18px;
+    }
+}
+</style>
+
+<script>
+// Immediately show the first slide before any JS runs
+document.addEventListener('DOMContentLoaded', function() {
+    // Make sure first slide is visible immediately
+    const firstSlide = document.querySelector('.banner-slide');
+    if (firstSlide) {
+        firstSlide.classList.add('active');
+        firstSlide.style.opacity = '1';
+    }
+
+    // Initialize carousel after slight delay to ensure DOM is ready
+    setTimeout(initCarousel, 50);
+});
+
+function initCarousel() {
+    console.log('Initializing carousel');
+    const carousel = document.querySelector('.banner-carousel');
+    const slides = document.querySelectorAll('.banner-slide');
+    console.log(`Found ${slides.length} slides`);
+
+    if (carousel && slides.length > 0) {
+        let currentSlide = 0;
+        let carouselInterval;
+        const slideDuration = 8000;
+        let lastTransitionTime = 0;
+
+        // Ensure at least one slide is visible
+        let hasVisibleSlide = false;
+        slides.forEach(slide => {
+            if (slide.classList.contains('active')) {
+                slide.style.opacity = '1';
+                hasVisibleSlide = true;
+                currentSlide = Array.from(slides).indexOf(slide);
+            }
+        });
+
+        // If no active slide found, activate the first one
+        if (!hasVisibleSlide && slides.length > 0) {
+            slides[0].classList.add('active');
+            slides[0].style.opacity = '1';
+            currentSlide = 0;
+        }
+
+        function showSlide(index) {
+            const now = Date.now();
+            if (index >= slides.length) index = 0;
+            if (index < 0) index = slides.length - 1;
+            if (index === currentSlide) return;
+
+            carousel.classList.add('transitioning');
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+                slide.style.opacity = '0';
+            });
+
+            setTimeout(() => {
+                slides[index].classList.add('active');
+                slides[index].style.opacity = '1';
+                currentSlide = index;
+                lastTransitionTime = now;
+                carousel.classList.remove('transitioning');
+            }, 50);
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function startCarousel() {
+            if (carouselInterval) clearInterval(carouselInterval);
+            if (slides.length > 1) {
+                carouselInterval = setInterval(() => {
+                    if (Date.now() - lastTransitionTime >= slideDuration) {
+                        nextSlide();
+                    }
+                }, slideDuration);
+            }
+        }
+
+        function stopCarousel() {
+            clearInterval(carouselInterval);
+        }
+
+        startCarousel();
+        carousel.addEventListener('mouseenter', stopCarousel);
+        carousel.addEventListener('mouseleave', startCarousel);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextSlide();
+            else if (e.key === 'ArrowLeft') showSlide(currentSlide - 1);
+        });
+
+        // Improved Daily Countdown Timer
+        function updateDailyCountdown() {
+            const now = new Date();
+            const midnight = new Date();
+
+            // Set to next midnight
+            midnight.setDate(midnight.getDate() + 1);
+            midnight.setHours(0, 0, 0, 0);
+
+            const distance = midnight - now;
+
+            // Calculate time components
+            const hours = Math.floor(distance / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Update display elements
+            const updateElement = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value.toString().padStart(2, '0');
+            };
+
+            updateElement('days', '01');
+            updateElement('hours', hours);
+            updateElement('minutes', minutes);
+            updateElement('seconds', seconds);
+        }
+
+        // Initialize and run countdown
+        if (document.getElementById('days')) {
+            updateDailyCountdown();
+            // Update every second for smooth countdown
+            setInterval(updateDailyCountdown, 1000);
+        }
+    }
+}
+</script>
+
+
+<!-- Product Cards Section -->
+<section class="product-cards-section">
+    <div class="section-header">
+        <h3>Featured Products</h3>
+        <a href="{% url 'pos_system:marketplace' %}" class="see-all">See All <i class="fas fa-chevron-right"></i></a>
+    </div>
+
+    <div class="product-cards-container">
+        {% if featured_products %}
+            {% for product in featured_products %}
+            <a href="{% url 'business-store' pk=product.business.pk %}" class="product-card">
+                <div class="product-image-container">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                    {% if product.business.is_featured %}
+                    <div class="product-badge featured-badge">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <h4 class="product-name">{{ product.name }}</h4>
+                    <div class="price-container">
+                        <span class="current-price">K{{ product.price }}</span>
+                        {% if product.price|multiply:1.1 > product.price %}
+                        <span class="original-price">K{{ product.price|multiply:1.1|floatformat:2 }}</span>
+                        {% endif %}
                     </div>
                 </div>
             </a>
-
-            <div class="brand-watermark">
-                Alkebulan: Garden of Eden
-            </div>
-        </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-products">No featured products available</p>
         {% endif %}
-
-        <!-- Enhanced carousel indicators -->
-        <div class="carousel-indicators">
-            <span class="indicator active" data-slide="0"></span>
-            {% if random_product %}
-            <span class="indicator" data-slide="1"></span>
-            {% endif %}
-        </div>
-    </section>
+    </div>
+</section>
 
 <style>
+    /* Product Cards Section - Compact Version */
+    .product-cards-section {
+        padding: 0 8px;
+        margin-bottom: 16px;
+    }
 
-        .banner-carousel {
-            position: relative;
-            margin: 0 auto 24px;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            height: 300px;
-            max-width: 800px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    .product-cards-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .product-card {
+        background-color: var(--white);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+        text-decoration: none;
+        color: var(--text-color);
+        border: 1px solid var(--border-color);
+    }
+
+    .dark-mode .product-card {
+        background-color: var(--dark-surface);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        border-color: rgba(255,255,255,0.05);
+        color: var(--dark-text);
+    }
+
+    .product-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark-mode .product-card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .product-image-container {
+        position: relative;
+        width: 100%;
+        height: 100px; /* Smaller image height */
+        overflow: hidden;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .product-info {
+        padding: 6px;
+    }
+
+    .product-name {
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .price-container {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .current-price {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .original-price {
+        font-size: 10px;
+        color: var(--light-text);
+        text-decoration: line-through;
+    }
+
+    .dark-mode .original-price {
+        color: var(--dark-light-text);
+    }
+
+    .product-badge {
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-size: 10px;
+        font-weight: 600;
+        color: white;
+        display: flex;
+        align-items: center;
+    }
+
+    .featured-badge {
+        background-color: var(--primary-color);
+    }
+
+    .no-products {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 10px;
+        font-size: 12px;
+        color: var(--light-text);
+    }
+
+    .dark-mode .no-products {
+        color: var(--dark-light-text);
+    }
+
+    /* Responsive adjustments */
+    @media (min-width: 480px) {
+        .product-cards-container {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media (min-width: 768px) {
+        .product-cards-container {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
         }
 
-        .banner-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: all 1.2s cubic-bezier(0.4, 0.0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            padding: 40px;
-            color: var(--white);
-            background-size: cover;
-            background-position: center;
-        }
-
-        .banner-slide.active {
-            opacity: 1;
-            z-index: 2;
-        }
-
-        .banner-slide::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(0,0,0,0.4), rgba(0,0,0,0.2));
-            z-index: 1;
-        }
-
-        .banner-content {
-            position: relative;
-            z-index: 3;
-            max-width: 60%;
-            animation: slideInFromLeft 1s ease-out;
-        }
-
-        @keyframes slideInFromLeft {
-            0% {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .banner-content h3 {
-            font-size: clamp(24px, 4vw, 36px);
-            margin-bottom: 12px;
-            font-weight: 800;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            background: linear-gradient(45deg, #fff, #e0e0e0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            z-index: 3;
-        }
-
-        .banner-content p {
-            font-size: clamp(14px, 2.5vw, 18px);
-            margin-bottom: 24px;
-            opacity: 0.95;
-            line-height: 1.6;
-            z-index: 3;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-        }
-
-        .shop-button {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            background: linear-gradient(45deg, var(--primary-color), #FF6A00);
-            color: white;
-            padding: 16px 32px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 16px;
-            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            border: 2px solid rgba(255,255,255,0.2);
-        }
-
-        .shop-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.6s;
-        }
-
-        .shop-button:hover::before {
-            left: 100%;
-        }
-
-        .shop-button:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 32px rgba(7, 193, 96, 0.6);
-            background: linear-gradient(45deg, #00d4aa, var(--primary-color));
-        }
-
-        .shop-button i {
-            font-size: 18px;
-            transition: transform 0.3s ease;
-        }
-
-        .shop-button:hover i {
-            transform: rotate(360deg);
-        }
-
-        /* Product slide specific styles */
-        .product-slide {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .random-product-card {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 30px;
-            border-radius: 20px;
-        }
-
-        .random-product-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(0,0,0,0.5), rgba(0,0,0,0.2));
-            z-index: 1;
-            border-radius: 20px;
-        }
-
-        .product-info-top,
-        .product-info-bottom {
-            position: relative;
-            z-index: 2;
-        }
-
-        .product-price {
-            display: inline-block;
-            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 25px;
-            font-weight: 800;
-            font-size: 18px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+        .product-image-container {
+            height: 120px;
         }
 
         .product-name {
-            font-size: 24px;
-            font-weight: 700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-            margin-bottom: 8px;
+            font-size: 13px;
         }
+    }
 
-        .rating {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 12px;
+    @media (min-width: 1024px) {
+        .product-cards-container {
+            grid-template-columns: repeat(6, 1fr);
         }
+    }
+</style>
 
-        .stars {
-            color: #ffc107;
-            font-size: 18px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
 
-        .rating-count {
-            background: rgba(255,255,255,0.2);
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 14px;
-            backdrop-filter: blur(10px);
-        }
 
-        .business-name {
-            font-size: 16px;
-            opacity: 0.9;
-            font-weight: 600;
-        }
 
-        /* Enhanced carousel indicators */
-        .carousel-indicators {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 12px;
-            z-index: 10;
-        }
-
-        .indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: rgba(255,255,255,0.4);
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-            border: 2px solid rgba(255,255,255,0.2);
-            position: relative;
-        }
-
-        .indicator::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.6);
-            transition: all 0.3s ease;
-        }
-
-        .indicator.active {
-            background-color: var(--white);
-            transform: scale(1.2);
-            box-shadow: 0 0 12px rgba(255,255,255,0.8);
-        }
-
-        .indicator.active::before {
-            background: var(--primary-color);
-        }
-
-        .indicator:hover {
-            transform: scale(1.1);
-        }
-
-        /* Floating elements */
-        .floating-element {
-            position: absolute;
-            z-index: 2;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .floating-element:nth-child(1) {
-            top: 20%;
-            right: 10%;
-            animation-delay: 0s;
-        }
-
-        .floating-element:nth-child(2) {
-            top: 60%;
-            right: 5%;
-            animation-delay: 2s;
-        }
-
-        .floating-element:nth-child(3) {
-            top: 40%;
-            right: 15%;
-            animation-delay: 4s;
-        }
-
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0px) rotate(0deg);
-            }
-            50% {
-                transform: translateY(-20px) rotate(5deg);
-            }
-        }
-
-        .floating-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(255,255,255,0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .banner-carousel {
-                height: 250px;
-                margin: 0 10px 24px;
-                border-radius: 16px;
-            }
-
-            .banner-slide {
-                padding: 24px;
-            }
-
-            .banner-content {
-                max-width: 80%;
-            }
-
-            .shop-button {
-                padding: 12px 24px;
-                font-size: 14px;
-            }
-
-            .random-product-card {
-                padding: 20px;
-            }
-        }
-
-        /* Branding watermark */
-        .brand-watermark {
-            position: absolute;
-            bottom: 12px;
-            right: 20px;
-            font-size: 12px;
-            opacity: 0.7;
-            z-index: 5;
-            font-weight: 500;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        }
-.online-badge {
-    bottom: 8px;
-    right: 8px;
-    background-color: #FF6A00;
-}
-        .card-link {
-            display: block;
-            width: 100%;
-            height: 100%;
-            color: inherit;
-            text-decoration: none;
-        }</style>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const slides = document.querySelectorAll('.banner-slide');
-            const indicators = document.querySelectorAll('.indicator');
-
-            if (slides.length > 0) {
-                let currentSlide = 0;
-
-                function showSlide(index) {
-                    slides.forEach(slide => slide.classList.remove('active'));
-                    indicators.forEach(ind => ind.classList.remove('active'));
-
-                    if (slides[index]) slides[index].classList.add('active');
-                    if (indicators[index]) indicators[index].classList.add('active');
-                    currentSlide = index;
-                }
-
-                indicators.forEach((indicator, index) => {
-                    indicator.addEventListener('click', () => showSlide(index));
-                });
-
-                if (slides.length > 1) {
-                    setInterval(() => {
-                        const nextSlide = (currentSlide + 1) % slides.length;
-                        showSlide(nextSlide);
-                    }, 5000);
-                }
-            }
-
-            // Shop button click handler
-            document.querySelector('.shop-button').addEventListener('click', function(e) {
-                e.preventDefault();
-                // Replace this with your actual shop page URL
-                // window.location.href = '/shop/';
-                alert('Navigate to shop page - replace with your actual URL');
-            });
-        });
-    </script>
         <!-- Filter controls with black text -->
         <div class="filter-controls">
             <form method="get" action="." class="w-full flex flex-col md:flex-row gap-2">
