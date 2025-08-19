@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator
 from django.utils.text import slugify
 from django.urls import reverse
 from enum import Enum
+from django.utils import timezone
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
@@ -49,6 +50,16 @@ class Post(models.Model):
         return self.business is not None
 
     def save(self, *args, **kwargs):
+        # Check if this is an existing post being updated
+        if self.pk:
+            original_post = Post.objects.get(pk=self.pk)
+
+            # Delete if post is older than 1 week (7 days)
+            if timezone.now() - original_post.created_at > timedelta(weeks=1):
+                self.delete()
+                return  # Exit without saving
+
+        # Normal save operation for new posts or recent posts
         if not self.slug:
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
