@@ -57,17 +57,23 @@ def post_list(request):
 
 from directory.models import Advertisement
 from django.utils import timezone
+from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Count, F
+from django.utils import timezone
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     business = None
 
-    # Increment view count
+    # Increment view count using atomic update to avoid the save() issue
     if not request.session.get(f'viewed_post_{post_id}'):
-        post.views += 1
-        post.save()
+        # Use atomic update instead of save() to avoid the related field issue
+        Post.objects.filter(id=post_id).update(views=F('views') + 1)
         request.session[f'viewed_post_{post_id}'] = True
         request.session.set_expiry(60 * 60 * 24)
+
+        # Refresh the post instance to get the updated view count
+        post = get_object_or_404(Post, id=post_id)
 
     if post.author and hasattr(post.author, 'profile'):
         business = post.author.profile.primary_business

@@ -951,17 +951,21 @@
                         <p>Want to register your business? You can add your business details after signing up in your profile settings.</p>
                     </div>
                 </div>
-<!-- Add this after the Step 3 form section but before the form navigation buttons -->
-<!-- Add this as step 4 in your form -->
+<!-- Replace your current referral dropdown code with this -->
 <div class="form-step step-4">
     <div class="form-group">
         <label for="referrer">Were you referred by someone? (optional)</label>
         <select name="referrer" id="referrer" class="form-control">
-            <option value="">-- Select a referrer --</option>
+            <option value="">-- Type to search for a user --</option>
             {% for user in registered_users %}
                 <option value="{{ user.username }}"
                     {% if request.GET.ref == user.username %}selected{% endif %}>
-                    {{ user.username }} ({{ user.get_full_name|default:user.email }})
+                    {{ user.username }}
+                    {% if user.first_name or user.last_name %}
+                        - {{ user.first_name }} {{ user.last_name }}
+                    {% elif user.email %}
+                        - {{ user.email }}
+                    {% endif %}
                 </option>
             {% endfor %}
         </select>
@@ -1287,14 +1291,37 @@
         }
 
         // Initialize Select2 for referrer dropdown
+        // Initialize Select2 for referrer dropdown
         $(document).ready(function() {
             $('#referrer').select2({
-                placeholder: "Search for a user...",
+                placeholder: "Type to search users...",
                 allowClear: true,
                 width: '100%',
                 dropdownParent: $('.step-4'),
-                theme: document.body.classList.contains('dark-mode') ? 'dark' : 'default'
+                theme: document.body.classList.contains('dark-mode') ? 'dark' : 'default',
+                minimumInputLength: 1, // Search after 1 character
+                templateResult: formatUserOption,
+                templateSelection: formatUserSelection
             });
+
+            // Format how users appear in the dropdown
+            function formatUserOption(user) {
+                if (!user.id) return user.text;
+
+                var $option = $(
+                    '<div><strong>' + user.text + '</strong></div>' +
+                    '<div style="font-size: 0.8em; color: #666;">' +
+                    (user.element.getAttribute('data-email') || '') +
+                    '</div>'
+                );
+                return $option;
+            }
+
+            // Format how the selected user appears
+            function formatUserSelection(user) {
+                if (!user.id) return user.text;
+                return user.text;
+            }
 
             // Pre-select if ref parameter exists in URL
             const urlParams = new URLSearchParams(window.location.search);

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db import models
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User, Group, Permission
 from django.utils.html import format_html
@@ -126,7 +127,10 @@ class ReferralAdmin(admin.ModelAdmin):
         'referred_business',
         'amount',
         'is_paid',
-        'created_at'
+        'created_at',
+        'referrer_phone',
+        'referred_user_phone',
+        'referrer_pending_amount'  # New column for pending amount
     )
     list_filter = (
         'is_paid',
@@ -138,22 +142,172 @@ class ReferralAdmin(admin.ModelAdmin):
     search_fields = (
         'referrer__username',
         'referred_user__username',
-        'referred_business__name'
+        'referred_business__name',
+        'referrer__profile__phone_number',
+        'referred_user__profile__phone_number'
     )
     raw_id_fields = ('referrer', 'referred_user', 'referred_business')
-    readonly_fields = ('created_at',)  # amount is not here, so it will be editable
+    readonly_fields = ('created_at', 'referrer_phone', 'referred_user_phone', 'referrer_pending_amount')
     date_hierarchy = 'created_at'
-    actions = ['mark_as_paid', 'mark_as_unpaid']
+    actions = ['mark_as_paid', 'mark_as_unpaid', 'export_paid_referrals']
+
+    fieldsets = (
+        (None, {
+            'fields': ('referrer', 'referrer_phone', 'referrer_pending_amount', 'referred_user', 'referred_user_phone', 'referred_business')
+        }),
+        ('Payment', {
+            'fields': ('amount', 'is_paid')
+        }),
+        ('Metadata', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+
+    def referrer_phone(self, obj):
+        if obj.referrer and hasattr(obj.referrer, 'profile'):
+            return obj.referrer.profile.phone_number
+        return "No phone"
+    referrer_phone.short_description = 'Referrer Phone'
+
+    def referred_user_phone(self, obj):
+        if obj.referred_user and hasattr(obj.referred_user, 'profile'):
+            return obj.referred_user.profile.phone_number
+        return "No phone"
+    referred_user_phone.short_description = 'Referred User Phone'
+
+    def referrer_pending_amount(self, obj):
+        # Calculate pending amount for this referrer
+        pending_amount = Referral.objects.filter(
+            referrer=obj.referrer,
+            is_paid=False
+        ).aggregate(total=models.Sum('amount'))['total'] or 0
+
+        return format_html(
+            '<strong style="color: #d9534f;">k{}</strong>',
+            "{:.2f}".format(pending_amount)  # Format the number separately
+        )
+    referrer_pending_amount.short_description = 'Pending Amount'
 
     def mark_as_paid(self, request, queryset):
         updated = queryset.update(is_paid=True)
-        self.message_user(request, f"{updated} referrals were marked as paid.")
+
+        # Calculate total amount paid
+        total_amount = queryset.aggregate(total=models.Sum('amount'))['total'] or 0
+
+        self.message_user(
+            request,
+            f"{updated} referrals were marked as paid. Total amount: k{total_amount:.2f}"
+        )
     mark_as_paid.short_description = "Mark selected as paid"
 
     def mark_as_unpaid(self, request, queryset):
         updated = queryset.update(is_paid=False)
         self.message_user(request, f"{updated} referrals were marked as unpaid.")
     mark_as_unpaid.short_description = "Mark selected as unpaid"
+
+    def export_paid_referrals(self, request, queryset):
+        paid_referrals = queryset.filter(is_paid=True)
+        total_amount = paid_referrals.aggregate(total=models.Sum('amount'))['total'] or 0
+
+        self.message_user(
+            request,
+            f"Preparing export for {paid_referrals.count()} paid referrals. Total amount: k{total_amount:.2f}"
+        )
+    export_paid_referrals.short_description = "Export paid referrals report"
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related(
+            'referrer__profile',
+            'referred_user__profile'
+        )
+
+    def changelist_view(self, request, extra_context=None):
+        if extra_context is None:
+            extra_context = {}
+
+        # Get total paid amount
+        total_paid = Referral.objects.filter(is_paid=True).aggregate(
+            total=models.Sum('amount')
+        )['total'] or 0
+
+        # Get pending payment amount
+        total_pending = Referral.objects.filter(is_paid=False).aggregate(
+            total=models.Sum('amount')
+        )['total'] or 0
+
+        # Get top referrers with pending amounts
+        top_referrers = User.objects.annotate(
+            pending_amount=models.Sum(
+                models.Case(
+                    models.When(referrals_made__is_paid=False, then='referrals_made__amount'),
+                    default=0,
+                    output_field=models.DecimalField()
+                )
+            )
+        ).filter(pending_amount__gt=0).order_by('-pending_amount')[:10]
+
+        extra_context['total_paid'] = total_paid
+        extra_context['total_pending'] = total_pending
+        extra_context['top_referrers'] = top_referrers
+
+        return super().changelist_view(request, extra_context=extra_context)
+
+    # Add custom URL for referrer detail view
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                'referrer/<int:user_id>/',
+                self.admin_site.admin_view(self.referrer_detail_view),
+                name='%s_%s_referrer_detail' % (self.model._meta.app_label, self.model._meta.model_name),
+            ),
+        ]
+        return custom_urls + urls
+
+    def referrer_detail_view(self, request, user_id):
+        """
+        Custom view to show detailed referral information for a specific referrer
+        """
+        from django.shortcuts import render
+        from django.contrib.auth.models import User
+
+        try:
+            referrer = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            from django.contrib import messages
+            messages.error(request, "User not found")
+            return redirect('admin:directory_referral_changelist')
+
+        # Get all referrals for this user
+        referrals = Referral.objects.filter(referrer=referrer).select_related(
+            'referred_user__profile',
+            'referred_business'
+        )
+
+        # Calculate totals
+        paid_referrals = referrals.filter(is_paid=True)
+        pending_referrals = referrals.filter(is_paid=False)
+
+        total_paid = paid_referrals.aggregate(total=models.Sum('amount'))['total'] or 0
+        total_pending = pending_referrals.aggregate(total=models.Sum('amount'))['total'] or 0
+
+        context = {
+            'title': f'Referral Details for {referrer.username}',
+            'referrer': referrer,
+            'paid_referrals': paid_referrals,
+            'pending_referrals': pending_referrals,
+            'total_paid': total_paid,
+            'total_pending': total_pending,
+            'opts': self.model._meta,
+            'has_view_permission': self.has_view_permission(request),
+        }
+
+        return render(request, 'admin/directory/referral/referrer_detail.html', context)
+    def referrer(self, obj):
+        url = reverse('admin:directory_referral_referrer_detail', args=[obj.referrer.id])
+        return format_html('<a href="{}">{}</a>', url, obj.referrer.username)
+    referrer.short_description = 'Referrer'
 # ======================
 # MAIN MODEL ADMIN CLASSES
 # ======================

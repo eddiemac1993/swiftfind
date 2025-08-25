@@ -1078,7 +1078,8 @@
 </div>
 
         <div class="brand-watermark">
-            Alkebulan: Garden of Eden
+            Alkebulan: Garden of Eden | Visits
+            <span class="counter-value" id="visitCount1">0</span>
         </div>
     </a>
 
@@ -1108,12 +1109,81 @@
         </div>
 
         <div class="brand-watermark">
-            Alkebulan: Garden of Eden
+            Alkebulan: Garden of Eden | Visits
+            <span class="counter-value" id="visitCount2">0</span>
         </div>
     </a>
 </section>
+<script>
+ document.addEventListener('DOMContentLoaded', function() {
+    // Visit counter functionality
+    function updateVisitCounter() {
+        const today = new Date().toDateString();
 
+        // Get visit data from localStorage
+        let visitData = JSON.parse(localStorage.getItem('visitData')) || {
+            count: 0,
+            lastVisit: null,
+            resetDate: today
+        };
+
+        // Check if we need to reset (new day)
+        if (visitData.resetDate !== today) {
+            visitData.count = 0;
+            visitData.resetDate = today;
+        }
+
+        // Check if this is a new visit (prevent multiple counts on same page reload)
+        const now = new Date();
+        if (!visitData.lastVisit || (now - new Date(visitData.lastVisit)) > 5000) {
+            visitData.count++;
+            visitData.lastVisit = new Date();
+            localStorage.setItem('visitData', JSON.stringify(visitData));
+        }
+
+        // Update ALL visit counters
+        const visitCounters = document.querySelectorAll('[id^="visitCount"]');
+        visitCounters.forEach(counter => {
+            counter.textContent = visitData.count;
+        });
+    }
+
+    // Initialize the counter
+    updateVisitCounter();
+
+    // Update the counter every minute to catch day changes
+    setInterval(updateVisitCounter, 60000);
+});
+    </script>
 <style>
+        .counter-info {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .counter-info h2 {
+            color: #fc2525;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        .visit-counter {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .counter-value {
+            font-weight: bold;
+            font-size: 18px;
+            color: #0d0102;
+        }
 /* Banner Carousel Styles */
 .banner-carousel {
     position: relative;
@@ -1528,7 +1598,10 @@ function initCarousel() {
         color: var(--text-color);
         border: 1px solid var(--border-color);
     }
-
+        /* Remove the old online badge style */
+        .online-badge {
+            display: none;
+        }
     .dark-mode .product-card {
         background-color: var(--dark-surface);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -1609,7 +1682,23 @@ function initCarousel() {
     .featured-badge {
         background-color: var(--primary-color);
     }
+        /* Online status indicator - NEW POSITION */
+        .online-status {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: #07C160;
+        }
 
+        .status-light {
+            width: 10px;
+            height: 10px;
+            background-color: #07C160;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
     .no-products {
         grid-column: 1 / -1;
         text-align: center;
@@ -1773,22 +1862,24 @@ function initCarousel() {
                                 </div>
 
                                 <div class="business-location">
-    <i class="fas fa-map-marker-alt"></i>
-    <span>{{ business.city|upper }}</span>
-</div>
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{{ business.city|upper }}</span>
+                                </div>
+                {% if business.is_verified and business.show_store_link %}
+                <div class="online-status">
+                    <div class="status-light"></div>
+                    <span>Online Store</span>
+                </div>
+                {% endif %}
 
-                            </div>
 
                             <div class="business-category">
                                 <i class="fas fa-tag"></i>
                                 <span>{{ business.category.name }}</span>
                             </div>
-                        </div>    <!-- Add online status badge here -->
-    {% if business.is_verified and business.show_store_link %}
-    <div class="business-badge online-badge">
-        <i class="fas fa-store"></i>
-    </div>
-    {% endif %}
+                            </div>
+                        </div>
+
                     </a>
                     {% endwith %}
 

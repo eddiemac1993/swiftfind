@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.utils.text import slugify

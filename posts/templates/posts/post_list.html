@@ -15,31 +15,31 @@
     --primary-color: #FF6A00;  /* Alibaba orange (main brand color) */
     --primary-dark: #E05D00;   /* Darker orange for hover states */
     --primary-light: #FFF0E6;  /* Light orange for backgrounds */
-    
+
     /* Alibaba secondary colors */
     --secondary-color: #F8F8F8;  /* Light gray background */
     --text-color: #333333;      /* Main text color */
     --light-text: #999999;       /* Secondary text color */
     --border-color: #EEEEEE;     /* Border and divider color */
-    
+
     /* Basic colors */
     --white: #FFFFFF;
     --black: #000000;
-    
+
     /* Dark mode colors (Alibaba-inspired) */
     --dark-bg: #121212;
     --dark-surface: #1E1E1E;
     --dark-text: #E0E0E0;
     --dark-light-text: #A0A0A0;
-    
+
     /* Shadows */
     --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     --dark-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    
+
     /* Border radius */
     --border-radius: 4px;       /* Alibaba uses slightly smaller radius */
     --card-radius: 8px;
-    
+
     /* Transitions */
     --transition: all 0.3s ease;
 }
@@ -548,16 +548,16 @@
             .main-container {
                 padding: 1rem;
             }
-            
+
             .posts-container {
                 grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
                 gap: 1rem;
             }
-            
+
             .logo {
                 font-size: 1.25rem;
             }
-            
+
             .action-btn {
                 width: 36px;
                 height: 36px;
@@ -568,20 +568,20 @@
             .posts-container {
                 grid-template-columns: 1fr;
             }
-            
+
             .category-filter {
                 padding: 0.75rem 0;
             }
-            
+
             .category-btn {
                 padding: 0.5rem 1rem;
                 font-size: 0.75rem;
             }
-            
+
             .empty-state h3 {
                 font-size: 1.25rem;
             }
-            
+
             .empty-state i {
                 font-size: 3rem;
             }
@@ -665,16 +665,16 @@
                                 <span class="post-category {% if post.category == 'job' %}job{% endif %}">{{ post.get_category_display }}</span>
                             </div>
                             <h3 class="post-title">{{ post.title }}</h3>
-                            
+
                             {% if post.location %}
                             <div class="post-location">
                                 <i class="fas fa-map-marker-alt"></i>
                                 <span>{{ post.location }}</span>
                             </div>
                             {% endif %}
-                            
+
                             <p class="post-description">{{ post.description }}</p>
-                            
+
                             <!-- Author/Business info -->
                             <div class="post-author">
                                 <div class="author-avatar">
@@ -710,7 +710,7 @@
                                     <span class="post-date">{{ post.created_at|naturaltime }}</span>
                                 </div>
                             </div>
-                            
+
                             <div class="post-footer">
                                 <span class="post-price">
                                     {% if post.price_range %}
