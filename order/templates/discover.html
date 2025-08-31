@@ -1269,11 +1269,9 @@
     display: inline-block;
     background-color: #ff5722;
     color: white;
-    padding: 6px 12px;
     border-radius: 20px;
     font-size: 12px;
     font-weight: 700;
-    margin-bottom: 15px;
     text-transform: uppercase;
     letter-spacing: 1px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
@@ -1540,6 +1538,7 @@ function initCarousel() {
 
 
 <!-- Product Cards Section -->
+<!-- Product Cards Section -->
 <section class="product-cards-section">
     <div class="section-header">
         <h3>Featured Products</h3>
@@ -1549,7 +1548,7 @@ function initCarousel() {
     <div class="product-cards-container">
         {% if featured_products %}
             {% for product in featured_products %}
-            <a href="{% url 'business-store' pk=product.business.pk %}" class="product-card">
+            <a href="{% url 'business-store' pk=product.business.pk %}?highlight={{ product.id }}" class="product-card">
                 <div class="product-image-container">
                     <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
                     {% if product.business.is_featured %}

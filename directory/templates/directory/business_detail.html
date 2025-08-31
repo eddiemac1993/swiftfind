@@ -93,48 +93,7 @@
         *:focus {
             outline: none;
         }
-/* Fixed Store Link */
-.fixed-store-link {
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    width: 60px;
-    height: 60px;
-    background-color: var(--primary-color);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 24px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    z-index: 999;
-    transition: all 0.3s ease;
-    text-decoration: none;
-}
 
-.dark-mode .fixed-store-link {
-    background-color: var(--primary-dark);
-}
-
-.fixed-store-link:hover {
-    transform: translateY(-5px) scale(1.1);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-}
-
-.fixed-store-link:active {
-    transform: translateY(0) scale(0.95);
-}
-
-@media (max-width: 768px) {
-    .fixed-store-link {
-        bottom: 70px;
-        right: 15px;
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
-    }
-}
         /* Header */
         .app-header {
             background-color: var(--white);
@@ -2220,93 +2179,6 @@
             {% endif %}
         </div>
 
-{% if business.show_store_link %}
-<!-- Store Link Section (only shown when store link is visible) -->
-<div class="store-link-section">
-    <h2 class="section-title">
-        <i class="fas fa-store"></i>
-        Visit Our Store
-    </h2>
-
-    <div class="store-link-container">
-        <a href="{% url 'business-store' pk=business.pk %}" class="store-link-button">
-            <i class="fas fa-shopping-cart"></i>
-            Explore Our Store
-        </a>
-
-        {% if is_owner_or_admin %}
-        <p class="store-admin-note">
-            <small>
-                <i class="fas fa-info-circle"></i>
-                You can manage your products from your <a href="{% url 'profile' %}">profile page</a>
-            </small>
-        </p>
-        {% endif %}
-    </div>
-</div>
-
-<style>
-.store-link-section {
-    background-color: var(--white);
-    border-radius: 16px;
-    padding: 20px;
-    margin: 0 16px 20px;
-    box-shadow: var(--shadow);
-}
-
-.dark-mode .store-link-section {
-    background-color: var(--dark-surface);
-    box-shadow: var(--dark-shadow);
-}
-
-.store-link-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    padding: 20px 0;
-}
-
-.store-link-button {
-    padding: 16px 24px;
-    border-radius: 12px;
-    background-color: var(--primary-color);
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.3s ease;
-}
-
-.store-link-button:hover {
-    background-color: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
-}
-
-.store-admin-note {
-    color: var(--light-text);
-    text-align: center;
-    margin-top: 12px;
-}
-
-.dark-mode .store-admin-note {
-    color: var(--dark-light-text);
-}
-
-.store-admin-note a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
-
-.store-admin-note a:hover {
-    text-decoration: underline;
-}
-</style>
-{% endif %}
-
         <!-- Social Sharing -->
         <div class="social-sharing">
             <h2 class="section-title">
@@ -2351,6 +2223,218 @@
                 </button>
             </div>
         </div>
+
+{% if business.show_store_link %}
+<!-- Store Section with Product Gallery -->
+<div class="store-section">
+    <h2 class="section-title">
+        <i class="fas fa-store"></i>
+        Our Products
+    </h2>
+
+    <div class="products-gallery">
+        {% with products=business.pos_system_products.all|slice:":6" %}
+            {% if products %}
+                <div class="products-grid">
+                    {% for product in products %}
+                    <div class="product-card">
+                        <a href="{% url 'business-store' pk=business.pk %}#product-{{ product.id }}">
+                            <div class="product-image-container">
+                                <img src="{{ product.image.url|default:'/static/images/default-product.jpg' }}"
+                                     alt="{{ product.name }}"
+                                     class="product-image"
+                                     loading="lazy">
+                                {% if product.stock_status == 'out_of_stock' %}
+                                <div class="out-of-stock-badge">Out of Stock</div>
+                                {% elif product.stock_status == 'low_stock' %}
+                                <div class="low-stock-badge">Low Stock</div>
+                                {% endif %}
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-name">{{ product.name|truncatechars:30 }}</h3>
+                                <p class="product-price">K {{ product.price }}</p>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="store-actions">
+            <a href="{% url 'business-store' pk=business.pk %}" class="view-all-button">
+                <i class="fas fa-shopping-cart"></i>
+                View All Products
+            </a>
+
+            {% if is_owner_or_admin %}
+            <p class="store-admin-note">
+                <small>
+                    <i class="fas fa-info-circle"></i>
+                    You can manage your products from your <a href="{% url 'profile' %}">profile page</a>
+                </small>
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.store-section {
+    background-color: var(--white);
+    border-radius: 16px;
+    padding: 20px;
+    margin: 0 16px 20px;
+    box-shadow: var(--shadow);
+}
+
+.dark-mode .store-section {
+    background-color: var(--dark-surface);
+    box-shadow: var(--dark-shadow);
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.product-card {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: var(--white);
+}
+
+.dark-mode .product-card {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border-color);
+}
+
+.product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-color);
+}
+
+.product-image-container {
+    position: relative;
+    height: 120px;
+    overflow: hidden;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.out-of-stock-badge,
+.low-stock-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.out-of-stock-badge {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.low-stock-badge {
+    background-color: #f39c12;
+    color: white;
+}
+
+.product-info {
+    padding: 12px;
+}
+
+.product-name {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-color);
+    line-height: 1.3;
+}
+
+.dark-mode .product-name {
+    color: var(--dark-text);
+}
+
+.product-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.store-actions {
+    text-align: center;
+}
+
+.view-all-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-bottom: 12px;
+}
+
+.view-all-button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.store-admin-note {
+    color: var(--light-text);
+    margin: 0;
+}
+
+.dark-mode .store-admin-note {
+    color: var(--dark-light-text);
+}
+
+.store-admin-note a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.store-admin-note a:hover {
+    text-decoration: underline;
+}
+
+@media (min-width: 768px) {
+    .products-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .products-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+</style>
+{% endif %}
 
 <!-- Reviews Section -->
 <div class="reviews-section">
@@ -2521,12 +2605,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     </main>
-<!-- Fixed Store Link -->
-{% if business.show_store_link %}
-<a href="{% url 'business-store' pk=business.pk %}" class="fixed-store-link" title="Visit Store">
-    <i class="fas fa-store"></i>
-</a>
-{% endif %}
     <!-- Document Upload Modal -->
     <div class="modal" id="document-modal">
         <div class="modal-content">

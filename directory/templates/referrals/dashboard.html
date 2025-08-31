@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#FF6A00">
-    <meta name="description" content="Referral Dashboard">
+    <meta name="description" content="Earn money by referring businesses to SwiftFind. Track your referrals and earnings.">
     <title>Referral Dashboard - SwiftFind</title>
     <link rel="manifest" href="{% static 'manifest.json' %}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -104,47 +104,6 @@
             display: flex;
             align-items: center;
             gap: 20px;
-        }
-
-        .header-icon {
-            font-size: 20px;
-            color: var(--light-text);
-            position: relative;
-        }
-
-        .dark-mode .header-icon {
-            color: var(--dark-light-text);
-        }
-
-        .header-icon.active {
-            color: var(--primary-color);
-        }
-
-        .badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: var(--primary-color);
-            color: white;
-            border-radius: 50%;
-            width: 16px;
-            height: 16px;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--border-color);
-        }
-
-        .dark-mode .user-avatar {
-            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .theme-btn {
@@ -418,6 +377,51 @@
             margin-top: 2px;
         }
 
+        /* Share buttons */
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .share-btn.whatsapp {
+            background-color: #25D366;
+            color: white;
+        }
+
+        .share-btn.facebook {
+            background-color: #3b5998;
+            color: white;
+        }
+
+        .share-btn.twitter {
+            background-color: #1DA1F2;
+            color: white;
+        }
+
+        .share-btn.email {
+            background-color: #EA4335;
+            color: white;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
         /* Table Section - Alibaba style */
         .table-container {
             background-color: var(--white);
@@ -641,6 +645,26 @@
             background-color: var(--dark-surface);
         }
 
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--black);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .stats-grid {
@@ -707,10 +731,10 @@
         <button id="install-button" class="fab-button secondary" style="display: none;" aria-label="Install app">
             <i class="fas fa-download"></i>
         </button>
-        <a href="{% url 'chat' %}" class="fab-button">
-            <i class="fas fa-comment-dots"></i>
-        </a>
     </div>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast"></div>
 
     <!-- Header -->
     <header class="app-header">
@@ -755,6 +779,10 @@
                 <h3><span class="stat-icon"><i class="fas fa-clock"></i></span> Pending</h3>
                 <p>K{{ pending_payment|floatformat:2 }}</p>
             </div>
+            <div class="stat-card animated delay-1">
+                <h3><span class="stat-icon"><i class="fas fa-users"></i></span> Successful Referrals</h3>
+                <p>{{ successful_referrals_count }}</p>
+            </div>
         </div>
 
         <!-- Referral Link Section -->
@@ -770,6 +798,27 @@
                     Copy Link
                 </button>
             </div>
+            
+            <!-- Share buttons -->
+            <div class="share-buttons">
+                <a href="#" class="share-btn whatsapp" onclick="shareViaWhatsApp(event)">
+                    <i class="fab fa-whatsapp"></i>
+                    WhatsApp
+                </a>
+                <a href="#" class="share-btn facebook" onclick="shareViaFacebook(event)">
+                    <i class="fab fa-facebook-f"></i>
+                    Facebook
+                </a>
+                <a href="#" class="share-btn twitter" onclick="shareViaTwitter(event)">
+                    <i class="fab fa-twitter"></i>
+                    Twitter
+                </a>
+                <a href="#" class="share-btn email" onclick="shareViaEmail(event)">
+                    <i class="fas fa-envelope"></i>
+                    Email
+                </a>
+            </div>
+            
             <div class="referral-description">
                 <i class="fas fa-info-circle"></i>
                 <div>
@@ -790,7 +839,6 @@
                         <tr>
                             <th>Date</th>
                             <th>Referred User</th>
-
                             <th>Amount</th>
                             <th>Status</th>
                         </tr>
@@ -869,6 +917,17 @@
             });
         });
 
+        // Toast notification function
+        function showToast(message, duration = 3000) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
         // Copy Referral Link with better feedback
         function copyReferralLink() {
             const input = document.getElementById('referralLink');
@@ -882,6 +941,9 @@
                 button.innerHTML = '<i class="fas fa-check"></i> Copied!';
                 button.style.background = '#4CAF50';
 
+                // Show toast notification
+                showToast('Link copied to clipboard!');
+
                 // Vibrate on success
                 if (navigator.vibrate) {
                     navigator.vibrate(50);
@@ -893,8 +955,36 @@
                 }, 2000);
             } catch (err) {
                 console.error('Failed to copy text: ', err);
-                alert('Failed to copy link. Please try again or copy manually.');
+                showToast('Failed to copy. Please try again.', 4000);
             }
+        }
+
+        // Share functions
+        function shareViaWhatsApp(e) {
+            e.preventDefault();
+            const text = "Join SwiftFind using my referral link: ";
+            const url = document.getElementById('referralLink').value;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text + url)}`, '_blank');
+        }
+
+        function shareViaFacebook(e) {
+            e.preventDefault();
+            const url = encodeURIComponent(document.getElementById('referralLink').value);
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+        }
+
+        function shareViaTwitter(e) {
+            e.preventDefault();
+            const text = "Join SwiftFind using my referral link: ";
+            const url = document.getElementById('referralLink').value;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        }
+
+        function shareViaEmail(e) {
+            e.preventDefault();
+            const subject = "Join SwiftFind with my referral";
+            const body = "I thought you might be interested in joining SwiftFind. Use my referral link: " + document.getElementById('referralLink').value;
+            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         }
 
         // PWA Installation

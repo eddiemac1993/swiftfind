@@ -509,7 +509,7 @@ def business_detail(request, pk):
         business=business,
         is_active=True,
         stock_quantity__gt=0
-    ).select_related('category')
+    ).select_related('category', 'business').order_by('?')
 
     product_categories = ProductCategory.objects.filter(
         product__in=products_qs
@@ -583,7 +583,7 @@ def business_detail(request, pk):
 
     reviews = paginate_queryset(request, reviews_qs, 'review_page', 50)
     posts = paginate_queryset(request, posts_qs, 'post_page', 16)
-    products = paginate_queryset(request, products_qs, 'product_page', 12)
+    products = paginate_queryset(request, products_qs, 'product_page', 1000)
 
     review_form = ReviewForm()
     post_form = BusinessPostForm() if is_owner_or_admin else None

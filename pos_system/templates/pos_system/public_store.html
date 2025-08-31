@@ -1499,14 +1499,15 @@
 
             <!-- Products Grid -->
             <div class="products-container">
-                <div class="products-grid" id="products-grid">
+                <div class="products-grid" id="products-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
                     {% for product in products %}
-                    <div class="product-card"
-     data-product-id="{{ product.id }}"
-     data-business-id="{{ product.business.id }}"
-     data-category-id="{% if product.category %}{{ product.category.id }}{% endif %}"
-     data-location="{{ product.location|default_if_none:'' }}"
-     data-description="{{ product.description|truncatechars:200 }}">
+        <div class="product-card"
+            data-product-id="{{ product.id }}"
+            data-business-id="{{ product.business.id }}"
+            data-category-id="{% if product.category %}{{ product.category.id }}{% endif %}"
+            data-location="{{ product.location|default_if_none:'' }}"
+            data-description="{{ product.description|truncatechars:200 }}"
+            style="display: block !important; height: auto;">
                         <div class="product-image">
                             <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-product.png' %}{% endif %}" alt="{{ product.name }}">
                             {% if product.category %}

@@ -277,7 +277,7 @@ def public_store_all(request):
         business__status='active',
         is_active=True,
         stock_quantity__gt=0
-    ).select_related('business', 'category').order_by('name')
+    ).select_related('business', 'category').order_by(Random())
 
     # Get all distinct categories that have products matching our filters
     categories = ProductCategory.objects.filter(
@@ -316,7 +316,7 @@ def public_store(request, business_slug):
             business=business,
             is_active=True,
             stock_quantity__gt=0
-        ).select_related('category').order_by('name')
+        ).select_related('category').order_by(Random())
 
         categories = ProductCategory.objects.filter(business=business)
 
