@@ -6,8 +6,10 @@ app_name = 'pos_system'
 urlpatterns = [
     # Main views
     path('', views.dashboard, name='dashboard'),
+    path("ai-assistant/", views.ai_assistant_view, name="ai_assistant"),
     path('marketplace/', views.marketplace_view, name='marketplace'),
     path('store/', views.public_store_all, name='public_store_all'),
+    path('products/search/<str:product_name>/', views.product_fallback_view, name='product_fallback'),
     path('orders/<int:order_id>/submit/', views.submit_order, name='submit_order'),
     path('orders/', views.customer_orders, name='customer_orders'),
     path('business/orders/', views.business_orders, name='business_orders'),

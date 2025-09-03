@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from directory.models import Business
 from django.db.models import Q
+from django.urls import reverse
 
 class ProductCategory(models.Model):
     name = models.CharField(max_length=50)
@@ -68,6 +69,9 @@ class Product(models.Model):
         if self.stock_quantity > 5:
             return 'exclamation-circle'
         return 'times-circle'
+
+    def get_absolute_url(self):
+        return reverse("pos_system:product_detail", args=[self.id])
 
 class Sale(models.Model):
     PAYMENT_METHOD_CHOICES = [
@@ -339,6 +343,15 @@ class OrderItem(models.Model):
         decimal_places=2,
         validators=[MinValueValidator(0)]
     )
+
+class ChatLog(models.Model):
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    question = models.TextField()
+    answer = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Chat at {self.created_at} - {self.user if self.user else 'Guest'}"
 
 # In your Order model
 class OrderStatusUpdate(models.Model):

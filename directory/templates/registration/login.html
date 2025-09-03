@@ -175,7 +175,27 @@
             left: 30%;
             animation-delay: 6s;
         }
+        /* Add this new style for the terms link */
+        .terms-agreement {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--light-text);
+        }
 
+        .dark-mode .terms-agreement {
+            color: var(--dark-light-text);
+        }
+
+        .terms-agreement a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .terms-agreement a:hover {
+            text-decoration: underline;
+        }
         @keyframes float {
             0% {
                 transform: translateY(0) rotate(0deg);
@@ -386,7 +406,7 @@
         .nav-item.active i {
             transform: translateY(-2px);
         }
-        
+
         .is-invalid {
             border-color: #ff4444 !important;
         }
@@ -406,7 +426,7 @@
             font-size: 13px;
             margin-top: 5px;
         }
-        
+
         .error-message i,
         .field-error i {
             margin-right: 8px;
@@ -424,7 +444,7 @@
             align-items: center;
             margin-top: 8px;
         }
-        
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -471,7 +491,7 @@
             <div class="bubble bubble-3"></div>
             <div class="bubble bubble-4"></div>
         </div>
-        
+
         <div class="login-card">
             <div class="login-header">
                 <h2>Welcome Back</h2>
@@ -531,6 +551,9 @@
                 </div>
 
                 <button type="submit" class="login-btn">Sign In</button>
+                <div class="terms-agreement">
+                    By signing in, you agree to our <a href="{% url 'about' %}#terms-content" target="_blank">Terms & Conditions</a>
+                </div>
             </form>
             <div class="divider">
                 <span>or continue with</span>

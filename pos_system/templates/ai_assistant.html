@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FF6A00">
+    <title>Marketplace AI Assistant</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    /* ---------- General ---------- */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Inter', sans-serif;
+    }
+
+    body {
+        background-color: #f4f6f9;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    body.dark-mode {
+        background-color: #181818;
+        color: #f1f1f1;
+    }
+.assistant-summary {
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #f0f4ff;
+    border-left: 4px solid #4a90e2;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+    .chat-container {
+        width: 100%;
+        max-width: 900px;
+        height: 85vh;
+        background: #fff;
+        border-radius: 16px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        transition: background 0.3s ease;
+    }
+
+    body.dark-mode .chat-container {
+        background: #222;
+    }
+
+    /* ---------- Header ---------- */
+    .chat-header {
+        padding: 15px 20px;
+        background: linear-gradient(90deg, #ff6a00, #ee0979);
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .chat-header h2 {
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .theme-btn {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: white;
+        font-size: 18px;
+    }
+
+    /* ---------- Suggestions ---------- */
+    .suggestions {
+        padding: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        background: #f9f9f9;
+        border-bottom: 1px solid #eee;
+    }
+
+    body.dark-mode .suggestions {
+        background: #2a2a2a;
+        border-bottom: 1px solid #444;
+    }
+
+    .suggestion-chip {
+        background: #eee;
+        padding: 8px 14px;
+        border-radius: 20px;
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: background 0.3s;
+    }
+
+    .suggestion-chip:hover {
+        background: #ddd;
+    }
+
+    body.dark-mode .suggestion-chip {
+        background: #444;
+        color: #fff;
+    }
+
+    body.dark-mode .suggestion-chip:hover {
+        background: #555;
+    }
+
+    /* ---------- Chat ---------- */
+    .chat-box {
+        flex: 1;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .chat-bubble {
+        max-width: 80%;
+        padding: 12px 15px;
+        border-radius: 14px;
+        font-size: 15px;
+        line-height: 1.4;
+        word-wrap: break-word;
+        position: relative;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .chat-bubble.user {
+        align-self: flex-end;
+        background: #ff6a00;
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+
+    .chat-bubble.assistant {
+        align-self: flex-start;
+        background: #f1f1f1;
+        border-bottom-left-radius: 4px;
+    }
+
+    body.dark-mode .chat-bubble.assistant {
+        background: #333;
+        color: #eee;
+    }
+
+    .message-time {
+        font-size: 11px;
+        color: #999;
+        margin-top: 4px;
+        text-align: right;
+    }
+
+    body.dark-mode .message-time {
+        color: #bbb;
+    }
+
+    /* ---------- Welcome ---------- */
+    .welcome-message {
+        text-align: center;
+        color: #777;
+        margin-top: 30px;
+        font-size: 15px;
+    }
+
+    body.dark-mode .welcome-message {
+        color: #aaa;
+    }
+
+    /* ---------- Typing Indicator ---------- */
+    .typing-indicator {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+    }
+
+    .typing-indicator span {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        background: #666;
+        border-radius: 50%;
+        animation: bounce 1.3s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes bounce {
+        0%, 80%, 100% { transform: scale(0.8); opacity: 0.6; }
+        40% { transform: scale(1.2); opacity: 1; }
+    }
+
+    /* ---------- Form ---------- */
+    .chat-form {
+        display: flex;
+        padding: 12px;
+        border-top: 1px solid #eee;
+        background: #fff;
+    }
+
+    body.dark-mode .chat-form {
+        background: #222;
+        border-top: 1px solid #444;
+    }
+
+    .input-wrapper {
+        flex: 1;
+    }
+
+    #question-input {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 20px;
+        border: 1px solid #ddd;
+        outline: none;
+        font-size: 14px;
+    }
+
+    body.dark-mode #question-input {
+        background: #2a2a2a;
+        border: 1px solid #444;
+        color: #fff;
+    }
+
+    #send-button {
+        background: #ff6a00;
+        border: none;
+        color: white;
+        margin-left: 8px;
+        padding: 12px 16px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    #send-button:hover {
+        background: #e55a00;
+    }
+
+    /* ---------- Business Cards ---------- */
+    .business-grid {
+        display: grid;
+        gap: 20px;
+        margin-top: 10px;
+    }
+
+    .business-card {
+        background: #fff;
+        border-radius: 14px;
+        padding: 15px;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .business-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+    }
+
+    body.dark-mode .business-card {
+        background: #2a2a2a;
+    }
+
+    .business-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .business-logo {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #eee;
+        flex-shrink: 0;
+        object-fit: cover;
+    }
+
+    .business-info h3 {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .business-category {
+        font-size: 13px;
+        color: #777;
+    }
+
+    .verified-badge {
+        color: #28a745;
+        margin-left: 6px;
+    }
+
+    /* ---------- Products ---------- */
+    .products-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .product-item {
+        display: flex;
+        gap: 12px;
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 10px;
+        transition: background 0.3s ease;
+    }
+
+    body.dark-mode .product-item {
+        border: 1px solid #444;
+    }
+
+    .product-item:hover {
+        background: #fafafa;
+    }
+
+    body.dark-mode .product-item:hover {
+        background: #333;
+    }
+
+    .product-image {
+        width: 70px;
+        height: 70px;
+        border-radius: 10px;
+        background: #ddd;
+        object-fit: cover;
+    }
+
+    .product-details {
+        flex: 1;
+    }
+
+    .product-name {
+        font-weight: 600;
+        font-size: 15px;
+        color: #ff6a00;
+        text-decoration: none;
+    }
+
+    .product-price {
+        font-size: 14px;
+        font-weight: 600;
+        margin: 2px 0;
+    }
+
+    .product-stock {
+        font-size: 12px;
+        color: #777;
+    }
+.business-logo, .product-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    color: #999;
+}
+.suggestions-wrapper {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 10px 0;
+}
+
+.suggestions {
+    display: inline-flex;
+    gap: 10px;
+}
+
+.suggestion-chip {
+    display: inline-flex;
+    align-items: center;
+    background: #f1f1f1;
+    border-radius: 20px;
+    padding: 8px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.3s;
+}
+
+.suggestion-chip i {
+    margin-right: 6px;
+    color: #555;
+}
+
+.suggestion-chip:hover {
+    background: #e0e0e0;
+}
+
+body.dark-mode .business-logo,
+body.dark-mode .product-image {
+    background: #444;
+    color: #bbb;
+}
+    .product-description {
+        font-size: 13px;
+        color: #555;
+    }
+
+    /* ---------- Animations ---------- */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+</head>
+<body>
+<div class="chat-container">
+    <!-- Header -->
+    <div class="chat-header">
+        <h2><i class="fas fa-robot"></i> AI Assistant</h2>
+        <div class="header-actions">
+            <button id="theme-toggle" class="theme-btn" title="Toggle dark mode">
+                <i class="fas fa-moon light-icon"></i>
+                <i class="fas fa-sun dark-icon" style="display: none;"></i>
+            </button>
+        </div>
+    </div>
+
+<!-- Suggestions -->
+<div class="suggestions-wrapper">
+    <div class="suggestions">
+        <div class="suggestion-chip" onclick="fillInput('What activities can I do in Livingstone?')">
+            <i class="fas fa-umbrella-beach"></i> Livingstone Activities
+        </div>
+        <div class="suggestion-chip" onclick="fillInput('Show me clothing and fashion')">
+            <i class="fas fa-tshirt"></i> Fashion
+        </div>
+        <div class="suggestion-chip" onclick="fillInput('How do I sell on this platform?')">
+            <i class="fas fa-store"></i> Selling Guide
+        </div>
+        <!-- Add more chips as needed -->
+    </div>
+</div>
+
+
+<!-- Chat -->
+<div class="chat-box" id="chat-box">
+    {% if answer or businesses %}
+        <!-- User's last question -->
+        {% if request.POST.question %}
+        <div class="chat-bubble user">
+            {{ request.POST.question }}
+            <div class="message-time">Just now</div>
+        </div>
+        {% endif %}
+
+        <!-- Assistant's last response -->
+        <div class="chat-bubble assistant">
+            {% if summary %}
+                <div class="assistant-summary">
+                    {{ summary }}
+                </div>
+            {% endif %}
+
+            {% if businesses %}
+                <!-- Business Grid -->
+                <div class="business-grid">
+                    {% for biz in businesses %}
+                    <div class="business-card">
+                        <div class="business-header">
+                            {% if biz.logo %}
+                                <img src="{{ biz.logo }}" alt="{{ biz.business_name }} logo" class="business-logo">
+                            {% else %}
+                                <div class="business-logo">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                            {% endif %}
+                            <div class="business-info">
+                                <h3>
+                                    {{ biz.business_name }}
+                                    {% if biz.verified %}
+                                        <span class="verified-badge"><i class="fas fa-check-circle"></i></span>
+                                    {% endif %}
+                                </h3>
+                                <p class="business-category">{{ biz.category }}</p>
+                            </div>
+                        </div>
+
+                        {% if biz.products %}
+                        <div class="products-list">
+                            {% for product in biz.products %}
+                            <div class="product-item">
+                                {% if product.image %}
+                                    <a href="{{ product.url }}">
+                                        <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image">
+                                    </a>
+                                {% else %}
+                                    <div class="product-image">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="product-details">
+                                    <a href="{{ product.url }}" class="product-name">{{ product.name }}</a>
+                                    <div class="product-price">ZMW {{ product.price }}</div>
+                                    <div class="product-stock">
+                                        {% if product.stock <= 5 %}
+                                            <span style="color: #ff6a00;">Only {{ product.stock }} left!</span>
+                                        {% else %}
+                                            In stock: {{ product.stock }}
+                                        {% endif %}
+                                    </div>
+                                    <p class="product-description">{{ product.description|truncatewords:20 }}</p>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                            <p class="no-products">No products listed yet.</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            {% elif answer %}
+                <div class="assistant-answer">{{ answer|safe }}</div>
+            {% endif %}
+
+            <div class="message-time">Just now</div>
+        </div>
+    {% else %}
+        <!-- Welcome message when nothing asked yet -->
+        <div class="welcome-message">
+            <i class="fas fa-comments"></i>
+            <p>Welcome! I'm your AI assistant. Ask me anything about our marketplace!</p>
+        </div>
+    {% endif %}
+</div>
+
+
+    <!-- Input -->
+    <form method="post" class="chat-form" id="chat-form">
+        {% csrf_token %}
+        <div class="input-wrapper">
+            <input type="text" name="question" id="question-input" placeholder="Ask me anything about the marketplace..." required autocomplete="off">
+        </div>
+        <button type="submit" id="send-button"><i class="fas fa-paper-plane"></i></button>
+    </form>
+</div>
+
+<script>
+    // ✅ Helper: auto-scroll to bottom
+    function scrollToBottom() {
+        const chatBox = document.getElementById("chat-box");
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    scrollToBottom();
+
+    // ✅ Helper: fill input when clicking suggestions
+    function fillInput(text) {
+        document.getElementById("question-input").value = text;
+        document.getElementById("question-input").focus();
+    }
+
+    // ✅ Typing indicator
+    function showTypingIndicator() {
+        const chatBox = document.getElementById("chat-box");
+        const indicator = document.createElement("div");
+        indicator.classList.add("chat-bubble", "assistant", "typing-indicator");
+        indicator.innerHTML = `<span></span><span></span><span></span>`;
+        chatBox.appendChild(indicator);
+        scrollToBottom();
+    }
+    function hideTypingIndicator() {
+        const indicator = document.querySelector(".typing-indicator");
+        if (indicator) indicator.remove();
+    }
+
+    // ✅ Typing effect for plain text answers
+    function typeWriterEffect(container, text, speed = 60, callback) {
+        const words = text.split(" ");
+        let i = 0;
+        function type() {
+            if (i < words.length) {
+                container.innerHTML += (i === 0 ? "" : " ") + words[i];
+                i++;
+                setTimeout(type, speed);
+            } else if (callback) {
+                callback();
+            }
+        }
+        type();
+    }
+
+    // ✅ Form submit handling (AJAX style)
+    document.getElementById("chat-form").addEventListener("submit", async function(e) {
+        e.preventDefault();
+
+        const input = document.getElementById("question-input");
+        const sendButton = document.getElementById("send-button");
+        const chatBox = document.getElementById("chat-box");
+        const message = input.value.trim();
+        if (!message) return;
+
+        // Add user bubble
+        chatBox.innerHTML += `
+            <div class="chat-bubble user">
+                ${message}
+                <div class="message-time">Just now</div>
+            </div>
+        `;
+        scrollToBottom();
+
+        input.value = "";
+        sendButton.disabled = true;
+        showTypingIndicator();
+
+        // Send request to backend
+        const response = await fetch("", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value,
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams({ question: message })
+        });
+
+        const html = await response.text();
+
+        // Replace page content (to keep chat history updated)
+        const parser = new DOMParser();
+        const newDoc = parser.parseFromString(html, "text/html");
+
+        const newChatBox = newDoc.getElementById("chat-box");
+        document.getElementById("chat-box").innerHTML = newChatBox.innerHTML;
+
+        hideTypingIndicator();
+        sendButton.disabled = false;
+        scrollToBottom();
+    });
+
+    // ✅ Theme toggle
+    const themeToggle = document.getElementById("theme-toggle");
+    const lightIcon = themeToggle.querySelector(".light-icon");
+    const darkIcon = themeToggle.querySelector(".dark-icon");
+
+    themeToggle.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        if (document.body.classList.contains("dark-mode")) {
+            lightIcon.style.display = "none";
+            darkIcon.style.display = "inline-block";
+        } else {
+            lightIcon.style.display = "inline-block";
+            darkIcon.style.display = "none";
+        }
+    });
+
+    // ✅ Persist theme preference
+    if (localStorage.getItem("dark-mode") === "enabled") {
+        document.body.classList.add("dark-mode");
+        lightIcon.style.display = "none";
+        darkIcon.style.display = "inline-block";
+    }
+    themeToggle.addEventListener("click", () => {
+        if (document.body.classList.contains("dark-mode")) {
+            localStorage.setItem("dark-mode", "enabled");
+        } else {
+            localStorage.setItem("dark-mode", "disabled");
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -12,6 +12,232 @@ from django.db.models import Avg
 from .models import Product, ProductCategory, OrderStatusUpdate, Sale, SaleItem, ProductView, RewardClaim
 from directory.models import Business, Advertisement
 from django.db.models.functions import Random
+from django.shortcuts import render
+from django.http import JsonResponse
+from pos_system.models import Product
+from directory.models import Business
+from pos_system.services.ai_assistant import ask_chatgpt
+
+
+from django.shortcuts import render
+from pos_system.models import Product
+from pos_system.services.ai_assistant import ask_chatgpt
+
+
+def build_marketplace_context():
+    """Build fresh marketplace context with structured data"""
+    products = Product.objects.select_related("business", "business__category").filter(
+        is_active=True, stock_quantity__gt=0
+    )[:100]  # Limit for performance
+
+    context = "Available Products and Businesses:\n\n"
+
+    for product in products:
+        business = product.business
+        context += f"""
+Product ID: {product.id}
+Product: {product.name}
+Description: {product.description or 'No description'}
+Price: ZMW {product.price}
+Stock: {product.stock_quantity}
+Business ID: {business.id}
+Business: {business.name}
+Verified: {'Yes' if business.is_verified else 'No'}
+Category: {business.category.name if business.category else 'Uncategorized'}
+City: {business.city or 'Not specified'}
+---
+"""
+    return context
+import json
+from decimal import Decimal
+from django.http import JsonResponse
+
+def serialize_businesses(businesses):
+    serialized = []
+    for biz in businesses:
+        serialized.append({
+            "business_id": biz["business_id"],
+            "business_name": biz["business_name"],
+            "verified": biz["verified"],
+            "category": biz["category"],
+            # convert logo to URL if exists
+            "logo": biz["logo"].url if biz.get("logo") else None,
+            "products": [
+                {
+                    "id": p["id"],
+                    "name": p["name"],
+                    "price": float(p["price"]) if isinstance(p["price"], Decimal) else p["price"],
+                    "stock": p["stock"],
+                    "description": p["description"],
+                    # convert image to URL if exists
+                    "image": p["image"].url if p.get("image") else None,
+                    "url": p["url"],
+                }
+                for p in biz.get("products", [])
+            ]
+        })
+    return serialized
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+from django.db.models import Q
+import json
+import markdown2
+from django.urls import reverse
+
+def ai_assistant_view(request):
+    businesses = None
+    answer = None
+    summary = None
+
+    if request.method == "POST":
+        question = request.POST.get("question")
+        if question:
+            context = build_marketplace_context()
+
+            system_prompt = {
+                "role": "system",
+                "content": (
+                    "You are a smart AI marketplace and travel assistant. "
+                    "RULES: "
+                    "1. If the user asks about businesses or products, you MUST reply with ONLY valid JSON. "
+                    "   JSON schema: "
+                    "[{business_id: integer, business_name: string, verified: boolean, category: string, logo: string|null, "
+                    "products: [{id: integer, name: string, price: number, stock: integer, description: string, image: string|null}]}]. "
+                    "   - Only include products and businesses that actually exist in the database. "
+                    "2. If no matching products exist, reply with plain text: 'No matching products found.' "
+                    "3. If the user asks about tourism, travel, safaris, family trips, cultural visits, experiences, or activities "
+                    "(including budget-related travel queries), reply in plain text with friendly suggestions. "
+                    "4. If the user asks about how to use the platform (e.g., selling, registering, or how it works), reply in plain text. "
+                    "5. Never mix JSON with plain text in the same response. "
+                    "6. Always ensure the JSON strictly follows the schema and is valid."
+                ),
+            }
+
+
+            chat_input = [
+                system_prompt,
+                {"role": "system", "content": context},
+                {"role": "user", "content": question},
+            ]
+
+            raw_answer = ask_chatgpt(chat_input)
+
+            try:
+                # Try to parse as JSON first
+                ai_businesses = json.loads(raw_answer.strip().strip("`").replace("json\n", ""))
+
+                validated_businesses = []
+
+                for ai_biz in ai_businesses:
+                    try:
+                        # Find actual business
+                        if "business_id" in ai_biz:
+                            business = Business.objects.get(id=ai_biz["business_id"], status="active")
+                        else:
+                            business = Business.objects.get(
+                                name__iexact=ai_biz["business_name"],
+                                status="active"
+                            )
+
+                        validated_products = []
+                        for ai_product in ai_biz.get("products", []):
+                            try:
+                                if "id" in ai_product:
+                                    product = Product.objects.get(
+                                        id=ai_product["id"],
+                                        business=business,
+                                        is_active=True,
+                                        stock_quantity__gt=0
+                                    )
+                                else:
+                                    product = Product.objects.get(
+                                        name__iexact=ai_product["name"],
+                                        business=business,
+                                        is_active=True,
+                                        stock_quantity__gt=0
+                                    )
+
+                                validated_products.append({
+                                    "id": product.id,
+                                    "name": product.name,
+                                    "price": float(product.price),  # ✅ Decimal → float
+                                    "stock": product.stock_quantity,
+                                    "description": product.description or "",
+                                    "image": product.image.url if product.image else None,  # ✅ URL string
+                                    "url": reverse("pos_system:product_detail", args=[product.id]),
+                                })
+                            except Product.DoesNotExist:
+                                continue
+
+                        if validated_products:
+                            validated_businesses.append({
+                                "business_id": business.id,
+                                "business_name": business.name,
+                                "verified": business.is_verified,
+                                "category": business.category.name if business.category else "Uncategorized",
+                                "logo": business.logo.url if business.logo else None,  # ✅ URL string
+                                "products": validated_products,
+                            })
+
+                    except (Business.DoesNotExist, Business.MultipleObjectsReturned):
+                        continue
+
+                businesses = validated_businesses
+
+                # Build summary
+                if businesses:
+                    product_summaries = []
+                    for biz in businesses[:3]:
+                        for product in biz["products"][:1]:
+                            stock_status = (
+                                "Hurry, only a few left!" if product["stock"] <= 5 else f"In stock: {product['stock']}"
+                            )
+                            product_summaries.append(
+                                f"{product['name']} from {biz['business_name']} at ZMW {product['price']} ({stock_status})"
+                            )
+
+                    if product_summaries:
+                        if len(product_summaries) == 1:
+                            summary = f"I found {product_summaries[0]}. Would you like to view it?"
+                        else:
+                            summary = "Here are some options I found: " + "; ".join(product_summaries) + ". Which one do you prefer?"
+
+            except json.JSONDecodeError:
+                answer = markdown2.markdown(raw_answer)
+            except Exception as e:
+                answer = f"Error processing response: {str(e)}"
+
+            from pos_system.models import ChatLog
+            ChatLog.objects.create(
+                user=request.user if request.user.is_authenticated else None,
+                question=question,
+                answer=answer if answer else json.dumps(businesses),
+            )
+
+    return render(
+        request,
+        "ai_assistant.html",
+        {
+            "answer": answer,
+            "businesses": businesses,
+            "summary": summary,
+        },
+    )
+
+
+def product_fallback_view(request, product_name):
+    """Fallback view when AI suggests products that might not exist"""
+    products = Product.objects.filter(
+        name__icontains=product_name,
+        is_active=True,
+        stock_quantity__gt=0
+    ).select_related('business')[:10]
+
+    return render(request, 'pos_system/product_fallback.html', {
+        'products': products,
+        'search_term': product_name
+    })
 
 def marketplace_view(request):
     """Display marketplace with products in random order"""

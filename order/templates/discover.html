@@ -1013,8 +1013,38 @@
     <div class="header-top">
 <div class="location">
     <i class="fas fa-compass"></i>
-    <span>{% time_greeting %}</span>
+    <div class="time-info">
+        <span class="greeting" id="greeting">Good Day</span>
+        <span id="timezone-info"></span>
+    </div>
 </div>
+
+<script>
+function updateTimeGreeting() {
+    const now = new Date();
+    const hour = now.getHours();
+
+    // Calculate timezone offset
+    const timezoneOffset = -now.getTimezoneOffset() / 60;
+    const timezoneString = `GMT${timezoneOffset >= 0 ? '+' : ''}${timezoneOffset}`;
+
+    // Determine greeting based on time of day
+    let greeting = 'Good Evening';
+    if (hour < 12) {
+        greeting = 'Good Morning';
+    } else if (hour < 17) {
+        greeting = 'Good Afternoon';
+    }
+
+    // Update the DOM
+    document.getElementById('greeting').textContent = greeting;
+    document.getElementById('timezone-info').textContent = timezoneString;
+}
+
+// Update immediately and then every minute
+updateTimeGreeting();
+setInterval(updateTimeGreeting, 60000);
+</script>
         <div class="user-actions">
             <!-- Jobs Button -->
             <a href="{% url 'post_list' %}" class="notification-btn">
@@ -1919,48 +1949,6 @@ function initCarousel() {
     </main>
 <!-- home.html -->
 
-<a href="{% url 'chat' %}" class="chat-button">
-  <span class="star">✨</span> <span>Ai</span>
-</a>
-
-<style>
-:root {
-  --dark-bg: #121212;
-}
-
-.chat-button {
-  position: fixed;
-  bottom: 150px;
-  right: 20px;
-  color: white;
-  padding: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  text-align: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 60px;
-  height: 60px;
-  text-decoration: none;
-  font-size: 12px;
-  background: var(--dark-bg);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-}
-
-.chat-button:hover {
-  background: var(--dark-bg);
-  transform: scale(1.05);
-}
-</style>
-
-
-
-
 <!-- Bottom navigation -->
 <nav class="bottom-nav">
     <a href="{% url 'discover' %}" class="nav-item active">
@@ -1974,6 +1962,10 @@ function initCarousel() {
     <a href="{% url 'about' %}" class="nav-item">
         <i class="fas fa-info-circle"></i>
         <span>About</span>
+    </a>
+    <a href="{% url 'pos_system:ai_assistant' %}" class="nav-item">
+        <span class="star" style="font-size: 18px;">✨</span>
+        <span>AI</span>
     </a>
     {% if user.is_authenticated %}
         <a href="{% url 'profile' %}" class="nav-item" title="Profile">

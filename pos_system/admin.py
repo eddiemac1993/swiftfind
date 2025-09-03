@@ -8,7 +8,14 @@ from .models import RewardClaim
 from django.utils import timezone
 from .models import ProductView  # Add this import at the top
 
-# ... [your existing admin code] ...
+from .models import ChatLog
+
+@admin.register(ChatLog)
+class ChatLogAdmin(admin.ModelAdmin):
+    list_display = ("user", "question", "created_at")
+    search_fields = ("question", "answer")
+    list_filter = ("created_at",)
+
 
 @admin.register(ProductView)
 class ProductViewAdmin(admin.ModelAdmin):
