@@ -151,6 +151,9 @@ class ReferralAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
     actions = ['mark_as_paid', 'mark_as_unpaid', 'export_paid_referrals']
 
+    # Add this to make is_paid editable in the list view
+    list_editable = ('is_paid',)
+
     fieldsets = (
         (None, {
             'fields': ('referrer', 'referrer_phone', 'referrer_pending_amount', 'referred_user', 'referred_user_phone', 'referred_business')
@@ -185,7 +188,7 @@ class ReferralAdmin(admin.ModelAdmin):
 
         return format_html(
             '<strong style="color: #d9534f;">k{}</strong>',
-            "{:.2f}".format(pending_amount)  # Format the number separately
+            "{:.2f}".format(float(pending_amount))  # Fixed the formatting issue
         )
     referrer_pending_amount.short_description = 'Pending Amount'
 
@@ -252,62 +255,6 @@ class ReferralAdmin(admin.ModelAdmin):
         extra_context['top_referrers'] = top_referrers
 
         return super().changelist_view(request, extra_context=extra_context)
-
-    # Add custom URL for referrer detail view
-    def get_urls(self):
-        urls = super().get_urls()
-        custom_urls = [
-            path(
-                'referrer/<int:user_id>/',
-                self.admin_site.admin_view(self.referrer_detail_view),
-                name='%s_%s_referrer_detail' % (self.model._meta.app_label, self.model._meta.model_name),
-            ),
-        ]
-        return custom_urls + urls
-
-    def referrer_detail_view(self, request, user_id):
-        """
-        Custom view to show detailed referral information for a specific referrer
-        """
-        from django.shortcuts import render
-        from django.contrib.auth.models import User
-
-        try:
-            referrer = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            from django.contrib import messages
-            messages.error(request, "User not found")
-            return redirect('admin:directory_referral_changelist')
-
-        # Get all referrals for this user
-        referrals = Referral.objects.filter(referrer=referrer).select_related(
-            'referred_user__profile',
-            'referred_business'
-        )
-
-        # Calculate totals
-        paid_referrals = referrals.filter(is_paid=True)
-        pending_referrals = referrals.filter(is_paid=False)
-
-        total_paid = paid_referrals.aggregate(total=models.Sum('amount'))['total'] or 0
-        total_pending = pending_referrals.aggregate(total=models.Sum('amount'))['total'] or 0
-
-        context = {
-            'title': f'Referral Details for {referrer.username}',
-            'referrer': referrer,
-            'paid_referrals': paid_referrals,
-            'pending_referrals': pending_referrals,
-            'total_paid': total_paid,
-            'total_pending': total_pending,
-            'opts': self.model._meta,
-            'has_view_permission': self.has_view_permission(request),
-        }
-
-        return render(request, 'admin/directory/referral/referrer_detail.html', context)
-    def referrer(self, obj):
-        url = reverse('admin:directory_referral_referrer_detail', args=[obj.referrer.id])
-        return format_html('<a href="{}">{}</a>', url, obj.referrer.username)
-    referrer.short_description = 'Referrer'
 # ======================
 # MAIN MODEL ADMIN CLASSES
 # ======================

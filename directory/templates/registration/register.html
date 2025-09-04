@@ -700,7 +700,38 @@
         .dark-mode ::-ms-input-placeholder {
             color: var(--dark-light-text);
         }
+/* Terms checkbox styling */
+.terms-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 16px;
+}
 
+.terms-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-color);
+}
+
+.terms-checkbox label {
+    margin-bottom: 0;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.terms-checkbox a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.terms-checkbox a:hover {
+    text-decoration: underline;
+}
+
+.dark-mode .terms-checkbox a {
+    color: var(--primary-color);
+}
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .register-container {
@@ -866,6 +897,28 @@
                             <button type="button" class="suggestion-btn" data-suggestion="guest_{{ random_number }}">guest_{{ random_number }}</button>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="phone_number">Phone Number (Required)</label>
+                        <input type="tel" id="phone_number" name="phone_number"
+                               class="form-control {% if form.phone_number.errors %}is-invalid{% endif %}"
+                               value="{% if form.phone_number.value %}{{ form.phone_number.value }}{% endif %}"
+                               pattern="^\+?1?\d{9,15}$"
+                               placeholder="+1234567890"
+                               required>  <!-- 🔑 required -->
+                        {% if form.phone_number.errors %}
+                            <div class="field-error show" id="phone_number-error">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {% for error in form.phone_number.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="field-error" id="phone_number-error"></div>
+                        {% endif %}
+                        <small class="helptext">
+                            Enter with country code (e.g., +1 for US/Canada). Format: +9999999999
+                        </small>
+                    </div>
 
                     <div class="form-group">
                         <label for="email">Email</label>
@@ -885,6 +938,15 @@
                             <div class="field-error" id="email-error"></div>
                         {% endif %}
                     </div>
+                    <div class="form-group">
+    <div class="terms-checkbox">
+        <input type="checkbox" id="agree_terms" name="agree_terms" required>
+        <label for="agree_terms">
+            I agree to the <a href="{% url 'about' %}#terms-content" target="_blank">Terms & Conditions</a>
+        </label>
+    </div>
+    <div class="field-error" id="agree_terms-error"></div>
+</div>
                 </div>
 
                 <!-- Step 2: Password Creation -->
@@ -1138,8 +1200,20 @@
                     }
                 }
             });
+            // In the validateStep function, add this validation for step 0 (first step)
+            if (stepIndex === 0) {
+                const termsCheckbox = document.getElementById('agree_terms');
+                const termsErrorEl = document.getElementById('agree_terms-error');
 
-            // Special validation for password confirmation
+                if (!termsCheckbox.checked) {
+                    termsErrorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> You must agree to the Terms & Conditions';
+                    termsErrorEl.classList.add('show');
+                    isValid = false;
+                } else {
+                    termsErrorEl.classList.remove('show');
+                }
+            }
+                        // Special validation for password confirmation
             if (stepIndex === 2) {
                 const password1 = document.getElementById('password1').value;
                 const password2 = document.getElementById('password2').value;
@@ -1342,6 +1416,32 @@
     }); // End of DOMContentLoaded
 </script>
 <script>
+// Phone number validation
+document.getElementById('phone_number').addEventListener('blur', function() {
+    const phone = this.value;
+    const errorEl = document.getElementById('phone_number-error');
+
+    if (phone && !isValidPhoneNumber(phone)) {
+        errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter a valid phone number with country code';
+        errorEl.classList.add('show');
+        this.classList.add('is-invalid');
+        this.classList.remove('is-valid');
+    } else if (phone) {
+        errorEl.classList.remove('show');
+        this.classList.remove('is-invalid');
+        this.classList.add('is-valid');
+    } else {
+        errorEl.classList.remove('show');
+        this.classList.remove('is-invalid');
+        this.classList.remove('is-valid');
+    }
+});
+
+function isValidPhoneNumber(phone) {
+    // Simple validation for international phone numbers
+    const regex = /^\+[1-9]{1}[0-9]{3,14}$/;
+    return regex.test(phone.replace(/\s/g, ''));
+}
 // Email validation
 document.getElementById('email').addEventListener('blur', function() {
     const email = this.value;

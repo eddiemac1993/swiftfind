@@ -393,6 +393,9 @@ class SearchQuery(models.Model):
     def __str__(self):
         return f"{self.query} - {self.timestamp} (Count: {self.count})"
 
+from phonenumber_field.modelfields import PhoneNumberField
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     receive_message_emails = models.BooleanField(
@@ -407,8 +410,12 @@ class UserProfile(models.Model):
         default=True,
         verbose_name="Receive marketing emails"
     )
-    primary_business = models.ForeignKey(Business, on_delete=models.SET_NULL, null=True, blank=True, related_name='primary_employees')
-    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    primary_business = models.ForeignKey(
+        Business, on_delete=models.SET_NULL, null=True, blank=True, related_name='primary_employees'
+    )
+    phone_number = PhoneNumberField(
+        null=False, blank=False, region="US", unique=True
+    )
     address = models.CharField(max_length=255, blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
     bio = models.TextField(blank=True, null=True)
@@ -418,6 +425,7 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
+
 
 # Add this method to the User model
 User.add_to_class('get_profile', lambda user: UserProfile.objects.get_or_create(user=user)[0])

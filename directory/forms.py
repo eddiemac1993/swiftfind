@@ -199,11 +199,13 @@ class BusinessUpdateForm(forms.ModelForm):
 from django.core.exceptions import ValidationError
 from urllib.parse import urlparse
 
+import re
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from .models import UserProfile
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(
@@ -215,43 +217,63 @@ class UserRegistrationForm(UserCreationForm):
         help_text="We'll send you important account notifications to this email."
     )
 
+    phone_number = forms.CharField(
+        required=True,   # 🔑 now required
+        max_length=20,
+        widget=forms.TextInput(attrs={
+            'placeholder': '+1234567890',
+            'class': 'form-control'
+        }),
+        help_text="Enter your phone number with country code (e.g., +1234567890)"
+    )
+
     class Meta:
         model = User
-        fields = ['username', 'email', 'password1', 'password2']
+        fields = ['username', 'email', 'phone_number', 'password1', 'password2']
 
     def clean_email(self):
-        email = self.cleaned_data.get('email').lower().strip()  # Normalize email
-
-        # Validate email format
+        email = self.cleaned_data.get('email').lower().strip()
         try:
             validate_email(email)
         except ValidationError:
-            raise forms.ValidationError(
-                "Please enter a valid email address (e.g., user@example.com)."
-            )
+            raise forms.ValidationError("Please enter a valid email address (e.g., user@example.com).")
 
-        # Check for existing email (case-insensitive)
         if User.objects.filter(email__iexact=email).exists():
-            raise forms.ValidationError(
-                "This email is already registered. "
-                "Please try logging in or use a different email address."
-            )
-
+            raise forms.ValidationError("This email is already registered.")
         return email
 
     def clean_username(self):
         username = self.cleaned_data.get('username').strip()
         if User.objects.filter(username__iexact=username).exists():
-            raise forms.ValidationError(
-                "Username already taken. Please try a different one."
-            )
+            raise forms.ValidationError("Username already taken.")
         return username
+
+    def clean_phone_number(self):
+        phone_number = self.cleaned_data.get('phone_number', '').strip()
+        cleaned_phone = re.sub(r'[^\d+]', '', phone_number)
+
+        # Validation
+        if not re.match(r'^\+\d+$', cleaned_phone):
+            raise forms.ValidationError("Enter a valid phone number (e.g., +1234567890).")
+        if len(cleaned_phone) < 8:
+            raise forms.ValidationError("Phone number too short.")
+        if len(cleaned_phone) > 16:
+            raise forms.ValidationError("Phone number too long.")
+
+        # Check uniqueness
+        if UserProfile.objects.filter(phone_number=cleaned_phone).exists():
+            raise forms.ValidationError("This phone number is already registered.")
+
+        return cleaned_phone
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.email = self.cleaned_data['email'].lower()  # Ensure lowercase
+        user.email = self.cleaned_data['email'].lower()
         if commit:
             user.save()
+            profile, created = UserProfile.objects.get_or_create(user=user)
+            profile.phone_number = self.cleaned_data['phone_number']
+            profile.save()
         return user
 
 

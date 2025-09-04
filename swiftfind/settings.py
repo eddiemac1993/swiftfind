@@ -33,7 +33,7 @@ GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["swiftfindzm.com", "www.swiftfindzm.com", '*']
 
@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'django_user_agents',
     'cv_app',
     'django.contrib.sites',
+    'phonenumber_field',
 ]
 
 SITE_ID = 1
