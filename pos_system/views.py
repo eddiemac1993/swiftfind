@@ -238,6 +238,7 @@ def product_fallback_view(request, product_name):
         'products': products,
         'search_term': product_name
     })
+import random
 
 def marketplace_view(request):
     """Display marketplace with products in random order"""
@@ -249,7 +250,11 @@ def marketplace_view(request):
         stock_quantity__gt=0
     ).select_related('business', 'category').annotate(
         view_count=Count('views')
-    ).order_by(Random())  # Changed from .order_by('name') to random ordering
+    )
+
+    # Convert to list and shuffle for random ordering (more efficient than Random() for large datasets)
+    products_list = list(products)
+    random.shuffle(products_list)
 
     # Get all distinct categories that have products matching our filters
     categories = ProductCategory.objects.filter(
@@ -263,7 +268,7 @@ def marketplace_view(request):
     )
 
     context = {
-        'products': products,
+        'products': products_list,
         'categories': categories,
         'unique_businesses': unique_businesses,
         'all_businesses': True  # Flag to show business filter
@@ -990,6 +995,7 @@ def add_product(request):
             price = Decimal(request.POST.get('price', 0))
             cost_price = Decimal(request.POST.get('cost_price', 0))
             stock_quantity = int(request.POST.get('stock_quantity', 0))
+            unit = request.POST.get('unit', 'piece')  # 👈 Get unit from form
 
             product = Product(
                 business=business,
@@ -998,9 +1004,10 @@ def add_product(request):
                 price=price,
                 cost_price=cost_price,
                 stock_quantity=stock_quantity,
+                unit=unit,  # 👈 Add unit here
                 barcode=request.POST.get('barcode', '').strip(),
                 sku=request.POST.get('sku', '').strip(),
-                location=request.POST.get('location', '').strip(),  # Add this line
+                location=request.POST.get('location', '').strip(),
                 is_active=True
             )
 
@@ -1028,7 +1035,6 @@ def add_product(request):
 
     return render(request, 'pos_system/add_product.html', context)
 
-
 @login_required
 def edit_product(request, product_id):
     """Edit existing product"""
@@ -1047,9 +1053,10 @@ def edit_product(request, product_id):
             product.price = Decimal(request.POST.get('price', 0))
             product.cost_price = Decimal(request.POST.get('cost_price', 0))
             product.stock_quantity = int(request.POST.get('stock_quantity', 0))
+            product.unit = request.POST.get('unit', 'piece')  # 👈 Add unit update
             product.barcode = request.POST.get('barcode', '').strip()
             product.sku = request.POST.get('sku', '').strip()
-            product.location = request.POST.get('location', '').strip()  # Add this line
+            product.location = request.POST.get('location', '').strip()
             product.is_active = request.POST.get('is_active') == 'on'
 
             category_id = request.POST.get('category')

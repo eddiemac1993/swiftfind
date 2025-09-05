@@ -53,8 +53,22 @@
                     <input type="number" class="form-control" id="stock_quantity" name="stock_quantity" value="{{ product.stock_quantity }}" required>
                 </div>
             </div>
-
-            <div class="grid-3">
+<div class="form-group">
+    <label for="unit">Unit</label>
+    <select name="unit" id="unit" class="form-control" required>
+        <option value="piece" {% if product.unit == "piece" %}selected{% endif %}>Piece</option>
+        <option value="kg" {% if product.unit == "kg" %}selected{% endif %}>Kilogram</option>
+        <option value="g" {% if product.unit == "g" %}selected{% endif %}>Gram</option>
+        <option value="litre" {% if product.unit == "litre" %}selected{% endif %}>Litre</option>
+        <option value="ml" {% if product.unit == "ml" %}selected{% endif %}>Millilitre</option>
+        <option value="dozen" {% if product.unit == "dozen" %}selected{% endif %}>Dozen</option>
+        <option value="packet" {% if product.unit == "packet" %}selected{% endif %}>Packet</option>
+        <option value="pack" {% if product.unit == "pack" %}selected{% endif %}>Pack</option>
+        <option value="box" {% if product.unit == "box" %}selected{% endif %}>Box</option>
+    </select>
+</div>
+<div class="form-group">
+   <div class="grid-3">
                 <div class="form-group">
                     <label for="location">Location</label>
                     <input type="text" class="form-control" id="location" name="location"

@@ -77,55 +77,76 @@
         <div>{{ business.email|default:"" }}</div>
     </div>
 
-    <div class="receipt-info">
-        <div><strong>Receipt #:</strong> {{ sale.transaction_id }}</div>
-        <div><strong>Date:</strong> {{ sale.created_at|date:"d M Y H:i" }}</div>
-        <div><strong>Cashier:</strong> {{ sale.created_by.get_full_name|default:sale.created_by.username }}</div>
-    </div>
+<div class="receipt-header">
+    <div class="business-name">{{ business.name }}</div>
+    <div>{{ business.address|default:"" }}</div>
+    <div>{{ business.phone|default:"" }}</div>
+    <div>{{ business.email|default:"" }}</div>
+</div>
 
-    <table class="receipt-table">
-        <thead>
-            <tr>
-                <th>Item</th>
-                <th class="align-right">Qty</th>
-                <th class="align-right">Price</th>
-                <th class="align-right">Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in items %}
-            <tr>
-                <td>{{ item.product.name }}</td>
-                <td class="align-right">{{ item.quantity }}</td>
-                <td class="align-right">ZMW {{ item.unit_price|floatformat:2 }}</td>
-                <td class="align-right">ZMW {{ item.total_price|floatformat:2 }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="receipt-info">
+    <div><strong>Receipt #:</strong> {{ sale.transaction_id }}</div>
+    <div><strong>Date:</strong> {{ sale.created_at|date:"d M Y H:i" }}</div>
+    <div><strong>Cashier:</strong> {{ sale.created_by.get_full_name|default:sale.created_by.username }}</div>
+</div>
 
-    <div class="receipt-totals">
-        <div>
-            <span>Subtotal:</span>
-            <span>ZMW {{ sale.subtotal|floatformat:2 }}</span>
-        </div>
-        {% if sale.tax > 0 %}
-        <div>
-            <span>Tax:</span>
-            <span>ZMW {{ sale.tax|floatformat:2 }}</span>
-        </div>
-        {% endif %}
-        {% if sale.discount > 0 %}
-        <div>
-            <span>Discount:</span>
-            <span>ZMW {{ sale.discount|floatformat:2 }}</span>
-        </div>
-        {% endif %}
-        <div style="font-weight: bold;">
-            <span>Total:</span>
-            <span>ZMW {{ sale.total|floatformat:2 }}</span>
-        </div>
+<table class="receipt-table">
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th class="align-right">Qty</th>
+            <th class="align-right">Unit</th>
+            <th class="align-right">Price</th>
+            <th class="align-right">Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>
+                {% if item.product %}
+                    {{ item.product.name }}
+                {% else %}
+                    Deleted Product
+                {% endif %}
+            </td>
+            <td class="align-right">{{ item.quantity }}</td>
+            <td class="align-right">
+                {% if item.product %}
+                    {{ item.product.get_unit_display }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+            <td class="align-right">ZMW {{ item.unit_price|floatformat:2 }}</td>
+            <td class="align-right">ZMW {{ item.total_price|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="receipt-totals">
+    <div>
+        <span>Subtotal:</span>
+        <span>ZMW {{ sale.subtotal|floatformat:2 }}</span>
     </div>
+    {% if sale.tax > 0 %}
+    <div>
+        <span>Tax:</span>
+        <span>ZMW {{ sale.tax|floatformat:2 }}</span>
+    </div>
+    {% endif %}
+    {% if sale.discount > 0 %}
+    <div>
+        <span>Discount:</span>
+        <span>ZMW {{ sale.discount|floatformat:2 }}</span>
+    </div>
+    {% endif %}
+    <div style="font-weight: bold;">
+        <span>Total:</span>
+        <span>ZMW {{ sale.total|floatformat:2 }}</span>
+    </div>
+</div>
 
     <div class="receipt-footer">
         <div>Payment Method: {{ sale.get_payment_method_display }}</div>

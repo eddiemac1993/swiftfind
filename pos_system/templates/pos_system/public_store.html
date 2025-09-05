@@ -79,7 +79,6 @@
     /* Header */
     .store-header {
         background: white;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         position: sticky;
         top: 0;
         z-index: 1000;
@@ -1291,7 +1290,25 @@
     </div>
 </div>
     </header>
-
+ <!-- Store Info -->
+            <div class="store-info">
+                <div class="store-header">
+                    <img src="{{ business.logo.url }}" alt="{{ business.name }}" class="store-avatar">
+                    <div class="store-details">
+                        <h2>{{ business.name }}</h2>
+                        <div class="store-meta">
+                            <div class="store-meta-item">
+                                <i class="fas fa-phone"></i>
+                                <span>{{ business.phone_number }}</span>
+                            </div>
+                            <div class="store-meta-item">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>{{ business.address }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
     <!-- Breadcrumb -->
     <div class="breadcrumb-section">
         <div class="header-container">
@@ -1408,7 +1425,11 @@
     border-color: var(--primary-color);
     color: var(--primary-color);
 }
-
+.product-unit {
+    font-size: 0.8em;
+    color: #666;
+    margin-left: 2px;
+}
 .filter-option.active {
     background: rgba(255, 107, 0, 0.1);
     color: var(--primary-color);
@@ -1464,6 +1485,11 @@
     border-top: 1px solid var(--border-color);
     margin-top: 8px;
 }
+.product-unit {
+    font-size: 0.8em;
+    color: #666;
+    margin-left: 2px;
+}
 </style>
 
             {% if all_businesses %}
@@ -1493,94 +1519,78 @@
             <!-- Toolbar -->
 <div class="toolbar">
     <div class="results-info">
-        Showing {{ products|length }} products
+        Showing {{ products|length }} Items
     </div>
 </div>
 
-            <!-- Products Grid -->
-            <div class="products-container">
-                <div class="products-grid" id="products-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
-                    {% for product in products %}
+<div class="products-container">
+    <div class="products-grid" id="products-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+        {% for product in products %}
         <div class="product-card"
             data-product-id="{{ product.id }}"
             data-business-id="{{ product.business.id }}"
             data-category-id="{% if product.category %}{{ product.category.id }}{% endif %}"
             data-location="{{ product.location|default_if_none:'' }}"
             data-description="{{ product.description|truncatechars:200 }}"
+            data-unit="{{ product.unit }}"
+            data-unit-display="{{ product.get_unit_display }}"
             style="display: block !important; height: auto;">
-                        <div class="product-image">
-                            <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-product.png' %}{% endif %}" alt="{{ product.name }}">
-                            {% if product.category %}
-                            <div class="product-badges">
-                                 <span class="product-badge category">{{ product.category.name }}</span>
-                            </div>
-                            {% endif %}
-                            <div class="product-actions">
-                                <div class="product-action-btn product-favorite" data-product-id="{{ product.id }}">
-                                    <i class="far fa-heart"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-price">
-                                <span class="currency">ZMW</span> {{ product.price }}
-                                {% if product.old_price %}
-                                <span class="old-price">ZMW {{ product.old_price }}</span>
-                                {% endif %}
-                            </div>
-                            <div class="product-name">{{ product.name }}</div>
-                            {% if all_businesses %}
-                            <div class="product-business">
-                                <i class="fas fa-store-alt"></i>
-                                <span>{{ product.business.name }}</span>
-                            </div>
-                            {% endif %}
-                            <button class="add-to-cart-btn" data-product-id="{{ product.id }}">
-                                <i class="fas fa-cart-plus"></i>
-                                <span>Add to Cart</span>
-                            </button>
-                        </div>
-                            <div class="product-actions">
-           <a href="{% url 'pos_system:product_detail' product.id %}"
-   class="product-action-btn product-favorite"
-   title="View Details"
-   style="text-decoration: none;">
-    <i class="fas fa-eye"></i>
-</a>
-        <div class="product-action-btn product-share" data-product-id="{{ product.id }}">
-            <i class="fas fa-share-alt"></i>
+            <div class="product-image">
+                <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-product.png' %}{% endif %}" alt="{{ product.name }}">
+                {% if product.category %}
+                <div class="product-badges">
+                    <span class="product-badge category">{{ product.category.name }}</span>
+                </div>
+                {% endif %}
+                <div class="product-actions">
+                    <div class="product-action-btn product-favorite" data-product-id="{{ product.id }}">
+                        <i class="far fa-heart"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="product-info">
+                <div class="product-price">
+                    <span class="currency">ZMW</span> {{ product.price }}
+                    <span class="product-unit">/ {{ product.get_unit_display }}</span>
+                    {% if product.old_price %}
+                    <span class="old-price">ZMW {{ product.old_price }}</span>
+                    {% endif %}
+                </div>
+                <div class="product-name">{{ product.name }}</div>
+                {% if all_businesses %}
+                <div class="product-business">
+                    <i class="fas fa-store-alt"></i>
+                    <span>{{ product.business.name }}</span>
+                </div>
+                {% endif %}
+                <button class="add-to-cart-btn" data-product-id="{{ product.id }}">
+                    <i class="fas fa-cart-plus"></i>
+                    <span>Add to Cart</span>
+                </button>
+            </div>
+            <div class="product-actions">
+                <a href="{% url 'pos_system:product_detail' product.id %}"
+                   class="product-action-btn product-favorite"
+                   title="View Details"
+                   style="text-decoration: none;">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <div class="product-action-btn product-share" data-product-id="{{ product.id }}">
+                    <i class="fas fa-share-alt"></i>
+                </div>
+            </div>
         </div>
+        {% empty %}
+        <div class="no-products">
+            <i class="fas fa-box-open"></i>
+            <h3>No products available</h3>
+            <p>Check back later for new products</p>
+        </div>
+        {% endfor %}
     </div>
-                    </div>
-                    {% empty %}
-                    <div class="no-products">
-                        <i class="fas fa-box-open"></i>
-                        <h3>No products available</h3>
-                        <p>Check back later for new products</p>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
+</div>
 
-            <!-- Store Info -->
-            <div class="store-info">
-                <div class="store-header">
-                    <img src="{{ business.logo.url }}" alt="{{ business.name }}" class="store-avatar">
-                    <div class="store-details">
-                        <h2>{{ business.name }}</h2>
-                        <div class="store-meta">
-                            <div class="store-meta-item">
-                                <i class="fas fa-phone"></i>
-                                <span>{{ business.phone_number }}</span>
-                            </div>
-                            <div class="store-meta-item">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>{{ business.address }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
         </div>
     </div>
 
@@ -1640,7 +1650,7 @@
                 <span id="cart-subtotal">ZMW 0.00</span>
             </div>
             <div class="summary-row">
-                <span>Delivery</span>
+                <span>Service Fee</span>
                 <span id="cart-delivery">ZMW 0.00</span>
             </div>
             <div class="cart-total" id="cart-total">
@@ -2075,7 +2085,8 @@ function trackProductView(productId) {
 
 function generateShareCard(productData) {
     return new Promise((resolve, reject) => {
-        const cacheKey = `${productData.id}_${productData.image}_v8`;
+        // Add unit to cache key
+        const cacheKey = `${productData.id}_${productData.image}_${productData.unit}_v9`;
 
         if (state.shareCache[cacheKey]) {
             resolve(state.shareCache[cacheKey]);
@@ -2096,6 +2107,7 @@ function generateShareCard(productData) {
             fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
         }).appendTo('body');
 
+        // Update the share card HTML to include unit information
         $tempContainer.html(`
         <div class="enhanced-share-card" style="
             position: relative;
@@ -2174,7 +2186,7 @@ function generateShareCard(productData) {
                     </h3>
                 </div>
 
-                <!-- Price with stronger emphasis -->
+                <!-- Price with unit information -->
                 <div style="margin: 15px 0;">
                     <div style="
                         font-size: 24px;
@@ -2187,6 +2199,7 @@ function generateShareCard(productData) {
                         border-radius: 8px;
                     ">
                         ${productData.price}
+                        ${productData.unit ? `<span style="font-size: 16px; font-weight: 600;">/ ${productData.unit}</span>` : ''}
                     </div>
                 </div>
 
@@ -2414,7 +2427,10 @@ function generateShareCard(productData) {
                 <img src="${imageData}" class="product-image" alt="${productData.name}">
                 <div class="product-info">
                     <h1 class="product-title">${productData.name}</h1>
-                    <div class="product-price">${productData.price}</div>
+                    <div class="product-price">
+                        ${productData.price}
+                        ${productData.unit ? `<span class="product-unit">/ ${productData.unit}</span>` : ''}
+                    </div>
 
                     ${productData.location ? `<div class="business-info">
                         📍 ${productData.location}
@@ -2669,40 +2685,64 @@ function generateShareCard(productData) {
         });
     }
 
-    // Share button handlers
-    $('.product-share').click(function(e) {
-        e.stopPropagation();
-        const $card = $(this).closest('.product-card');
-        const productData = {
-            id: $card.data('product-id'),
-            name: $card.find('.product-name').text(),
-            price: $card.find('.product-price').text(),
-            image: $card.find('.product-image img').attr('src'),
-            business: $card.find('.product-business').text() || config.businessName,
-            phone: config.businessPhone,
-            url: `${window.location.origin}${window.location.pathname}?highlight=${$card.data('product-id')}`,
-            shareText: `Check out ${$card.find('.product-name').text()} for ${$card.find('.product-price').text()} at ${config.businessName}\n\nContact: ${config.businessPhone}\n\nView product: ${window.location.origin}${window.location.pathname}?highlight=${$card.data('product-id')}`,
-            location: $card.data('location')
-        };
-        handleShare(productData);
-    });
+// Share button handlers
+$('.product-share').click(function(e) {
+    e.stopPropagation();
+    const $card = $(this).closest('.product-card');
 
-    $('#quick-view-share').click(function(e) {
-        e.stopPropagation();
-        const $card = $(`.product-card[data-product-id="${$(this).data('product-id')}"]`);
-        const productData = {
-            id: $(this).data('product-id'),
-            name: $('#quick-view-title').text(),
-            price: $('#quick-view-price').text(),
-            image: $('#quick-view-img').attr('src'),
-            business: config.businessName,
-            phone: config.businessPhone,
-            url: `${window.location.origin}${window.location.pathname}?highlight=${$(this).data('product-id')}`,
-            shareText: `Check out ${$('#quick-view-title').text()} for ${$('#quick-view-price').text()} at ${config.businessName}\n\nContact: ${config.businessPhone}\n\nView product: ${window.location.origin}${window.location.pathname}?highlight=${$(this).data('product-id')}`,
-            location: $card.data('location')
-        };
-        handleShare(productData);
-    });
+    // Extract clean price (remove unit and old price spans)
+    const priceText = $card.find('.product-price').clone()
+        .children('.product-unit, .old-price').remove().end()
+        .text().trim();
+
+    // Extract clean unit
+    const unitText = $card.find('.product-unit').text().replace('/', '').trim();
+
+    const productData = {
+        id: $card.data('product-id'),
+        name: $card.find('.product-name').text(),
+        price: priceText,
+        unit: unitText,
+        image: $card.find('.product-image img').attr('src'),
+        business: $card.find('.product-business').text() || config.businessName,
+        phone: config.businessPhone,
+        url: `${window.location.origin}${window.location.pathname}?highlight=${$card.data('product-id')}`,
+        shareText: `Check out ${$card.find('.product-name').text()} for ZMW ${priceText} per ${unitText} at ${config.businessName}\n\nContact: ${config.businessPhone}\n\nView product: ${window.location.origin}${window.location.pathname}?highlight=${$card.data('product-id')}`,
+        location: $card.data('location')
+    };
+    handleShare(productData);
+});
+
+// Quick view share
+$('#quick-view-share').click(function(e) {
+    e.stopPropagation();
+    const productId = $(this).data('product-id');
+    const $card = $(`.product-card[data-product-id="${productId}"]`);
+
+    // Extract clean price (same logic as above)
+    const priceText = $('#quick-view-price').clone()
+        .children('.product-unit, .old-price').remove().end()
+        .text().trim();
+
+    // Extract clean unit
+    const unitText = $card.find('.product-unit').text().replace('/', '').trim();
+
+    const productData = {
+        id: productId,
+        name: $('#quick-view-title').text(),
+        price: priceText,
+        unit: unitText,
+        image: $('#quick-view-img').attr('src'),
+        business: config.businessName,
+        phone: config.businessPhone,
+        url: `${window.location.origin}${window.location.pathname}?highlight=${productId}`,
+        shareText: `Check out ${$('#quick-view-title').text()} for ZMW ${priceText} per ${unitText} at ${config.businessName}\n\nContact: ${config.businessPhone}\n\nView product: ${window.location.origin}${window.location.pathname}?highlight=${productId}`,
+        location: $card.data('location')
+    };
+    handleShare(productData);
+});
+
+
 
 $('#checkout-btn').click(function() {
     const customerName = $('#customer-name').val().trim();

@@ -693,7 +693,7 @@
                         <div class="price-section">
                             <div class="price-label">Price</div>
                             <div class="price-main">ZMW {{ product.price }}</div>
-                            <div class="price-range">Min. order: 1 piece</div>
+                            <div class="price-range">Min. order: Per {{ product.get_unit_display }}</div>
 
                             <div class="stock-info">
                                 {% if product.stock_quantity > 10 %}

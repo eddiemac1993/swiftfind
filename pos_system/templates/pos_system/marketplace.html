@@ -441,7 +441,7 @@
     transform: translateY(0);
     background-color: rgba(255, 107, 53, 0.15);
 }
-        
+
         /* Toast notification styles */
         .toast {
             position: fixed;
@@ -459,19 +459,19 @@
             transition: opacity 0.3s ease;
             z-index: 1000;
         }
-        
+
         .toast.show {
             opacity: 1;
         }
-        
+
         .toast.success {
             background: #4CAF50;
         }
-        
+
         .toast.warning {
             background: #FF9800;
         }
-        
+
         .toast i {
             font-size: 18px;
         }
@@ -591,7 +591,7 @@
                         </div>
 
                         <div class="flex items-center justify-between mb-3">
-                            <span class="price-tag text-lg font-bold">ZMW {{ product.price }}</span>
+                            <span class="price-tag text-lg font-bold">ZMW {{ product.price }} / {{ product.get_unit_display }}</span>
                             <div class="flex items-center">
                                 <span class="text-xs text-gray-500 mr-1">{{ product.view_count }}</span>
                                 <div class="product-action-btn product-view text-gray-500"
@@ -607,9 +607,9 @@
                             <a href="{% url 'business-detail' product.business.pk %}" class="business-name-link">
                                 <span class="business-badge">{{ product.business.name }}</span>
                             </a>
-                        
+
                             <!-- Enhanced Add to Cart button -->
-                            <a href="{% url 'business-store' pk=product.business.pk %}?highlight={{ product.id }}" 
+                            <a href="{% url 'business-store' pk=product.business.pk %}?highlight={{ product.id }}"
                                class="add-to-cart-button text-xs hover:bg-orange-50 ml-2 flex items-center gap-1 px-3 py-1.5 rounded-full border border-orange-200 transition-all"
                                title="Add to Cart">
                                 <span class="text-orange-600">Add to Cart</span>
@@ -727,13 +727,13 @@
             const selectedBusiness = businessFilter.value;
 
             productCards.forEach(card => {
-                const matchesSearch = searchTerm === '' || 
+                const matchesSearch = searchTerm === '' ||
                     card.querySelector('h3').textContent.toLowerCase().includes(searchTerm) ||
                     card.dataset.description.toLowerCase().includes(searchTerm);
-                
-                const matchesCategory = selectedCategory === 'all' || 
+
+                const matchesCategory = selectedCategory === 'all' ||
                     card.dataset.categoryId === selectedCategory;
-                
+
                 const matchesBusiness = selectedBusiness === 'all' ||
                     card.dataset.businessId === selectedBusiness;
 
@@ -744,7 +744,7 @@
         }
 
         function updateResultsCount() {
-            const visibleCount = Array.from(productCards).filter(card => 
+            const visibleCount = Array.from(productCards).filter(card =>
                 card.style.display !== 'none'
             ).length;
             resultsCount.textContent = `Showing ${visibleCount} products`;
@@ -758,7 +758,7 @@
 
         // Initialize
         updateResultsCount();
-        
+
         // Toast notification
         function showToast(message, type) {
             const toast = document.createElement('div');
@@ -768,11 +768,11 @@
                 <span>${message}</span>
             `;
             document.body.appendChild(toast);
-            
+
             setTimeout(() => {
                 toast.classList.add('show');
             }, 10);
-            
+
             setTimeout(() => {
                 toast.remove();
             }, 3000);
@@ -789,16 +789,16 @@
                 const productImage = this.dataset.productImage;
                 const productUrl = this.dataset.productUrl;
                 const businessLocation = this.dataset.businessLocation;
-                
+
                 // Show share modal
                 const shareModal = document.getElementById('shareModal');
                 shareModal.classList.add('show');
-                
+
                 // Handle share option clicks
                 document.querySelectorAll('.share-option').forEach(option => {
                     option.addEventListener('click', function() {
                         const method = this.dataset.shareMethod;
-                        
+
                         if (method === 'download') {
                             // Create a loading indicator
                             const loadingIndicator = document.createElement('div');
@@ -808,10 +808,10 @@
                                 <p>Preparing product card for download...</p>
                             `;
                             document.body.appendChild(loadingIndicator);
-                            
+
                             // Get the product card element
                             const productCard = document.querySelector(`.product-card[data-product-id="${productId}"]`);
-                            
+
                             // Use html2canvas to capture the card
                             html2canvas(productCard).then(canvas => {
                                 // Create download link
@@ -819,25 +819,25 @@
                                 link.download = `${productName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_product_card.png`;
                                 link.href = canvas.toDataURL('image/png');
                                 link.click();
-                                
+
                                 // Remove loading indicator
                                 loadingIndicator.remove();
-                                
+
                                 // Close share modal
                                 shareModal.classList.remove('show');
-                                
+
                                 // Show success message
                                 showToast('Product card downloaded!', 'success');
                             });
                         }
                     });
                 });
-                
+
                 // Close modal when clicking close button
                 document.querySelector('.share-modal-close').addEventListener('click', () => {
                     shareModal.classList.remove('show');
                 });
-                
+
                 // Close modal when clicking outside
                 shareModal.addEventListener('click', (e) => {
                     if (e.target === shareModal) {
@@ -846,7 +846,7 @@
                 });
             });
         });
-        
+
         // Close quick view modal
         document.querySelector('.modal-close').addEventListener('click', () => {
             document.getElementById('quickViewModal').classList.add('hidden');
