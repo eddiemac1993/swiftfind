@@ -977,9 +977,9 @@
         <a href="{% url 'referral_dashboard' %}" class="earnings-link">
             <i class="fas fa-external-link-alt mr-1"></i> View Details
         </a>
-<a href="{% url 'products-list' %}" class="notification-btn menu-item {% if unread_announcements_count > 0 %}highlight{% endif %}" title="My Products">
+<a href="{% url 'post_create' %}" class="notification-btn menu-item {% if unread_announcements_count > 0 %}highlight{% endif %}" title="My Products">
     <i class="fas fa-bullhorn"></i>
-    <span>Announcements</span>
+    <span>Create Post</span>
     {% if unread_announcements_count > 0 %}
         <span class="notification-badge">{{ unread_announcements_count }}</span>
     {% endif %}
@@ -999,7 +999,7 @@
                 <span>Create Quotations</span>
             </a>
             <!-- Add Products/Services Menu Item -->
-            <a href="{% url 'add-product' %}" class="menu-item">
+            <a href="{% url 'post_create' %}" class="menu-item">
                 <i class="fas fa-boxes"></i>
                 <span>Create Annoucements</span>
             </a>

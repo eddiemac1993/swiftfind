@@ -12,6 +12,7 @@ class CategoryChoices(Enum):
     SERVICE = 'service'
     RENT = 'rent'
     JOB = 'job'
+    EVENT = 'event'
 
     @classmethod
     def choices(cls):
