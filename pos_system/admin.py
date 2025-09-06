@@ -9,7 +9,38 @@ from django.utils import timezone
 from .models import ProductView  # Add this import at the top
 
 from .models import ChatLog
+from django.contrib import admin
+from .models import Order, OrderItem  # Import your models
+from django.contrib import admin
+from .models import Order, OrderItem
 
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0  # No empty extra forms
+    readonly_fields = ('product', 'quantity', 'price', 'get_subtotal_display')  # Use the method
+
+    # Optional: If you want to show subtotal in the inline
+    fields = ('product', 'quantity', 'price', 'get_subtotal_display')
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'customer', 'order_date', 'total_amount', 'status', 'payment_status')
+    list_filter = ('status', 'payment_status', 'order_date')
+    search_fields = ('customer__username', 'customer__email', 'id')
+    readonly_fields = ('order_date', 'last_updated')
+    inlines = [OrderItemInline]
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ('order', 'product_name', 'quantity', 'price', 'get_subtotal_display')
+    list_filter = ('order__status',)
+    search_fields = ('order__id', 'product_name')
+    readonly_fields = ('get_subtotal_display',)  # Make subtotal read-only
+
+    # If you want to show the calculated subtotal in list view
+    def get_subtotal_display(self, obj):
+        return f"ZMW {obj.subtotal():.2f}"
+    get_subtotal_display.short_description = 'Subtotal'
 @admin.register(ChatLog)
 class ChatLogAdmin(admin.ModelAdmin):
     list_display = ("user", "question", "created_at")

@@ -1631,17 +1631,28 @@ def create_order(request):
             }, status=400)
 
         with transaction.atomic():
-            # Create the order
-            order = Order.objects.create(
-                business_id=data['business_id'],
-                customer_name=data['customer_name'],
-                customer_phone=data['customer_phone'],
-                customer_notes=data.get('customer_notes', ''),
-                subtotal=Decimal(str(data.get('subtotal', 0))),
-                delivery_fee=Decimal(str(data.get('delivery_fee', 0))),
-                total=Decimal(str(data.get('total', 0))),
-                status='pending'
-            )
+            # Prepare order data
+            order_data = {
+                'business_id': data['business_id'],
+                'customer_name': data['customer_name'],
+                'customer_phone': data['customer_phone'],
+                'customer_notes': data.get('customer_notes', ''),
+                'subtotal': Decimal(str(data.get('subtotal', 0))),
+                'delivery_fee': Decimal(str(data.get('delivery_fee', 0))),
+                'total': Decimal(str(data.get('total', 0))),
+                'status': 'pending'
+            }
+
+            # 🔥 CRITICAL: Link to authenticated user if available
+            if request.user.is_authenticated:
+                order_data['customer'] = request.user
+                # Also set email from user account if not provided
+                if not data.get('customer_email'):
+                    order_data['customer_email'] = request.user.email
+            elif data.get('customer_email'):
+                order_data['customer_email'] = data['customer_email']
+
+            order = Order.objects.create(**order_data)
 
             # Create order items with product validation
             order_items = []
@@ -1764,14 +1775,27 @@ def customer_orders(request):
     """View for customer to see their orders"""
     print(f"Current user: {request.user}")  # Debug
     print(f"User email: {request.user.email}")  # Debug
-    print(f"User full name: {request.user.get_full_name()}")  # Debug
+    print(f"User first name: '{request.user.first_name}'")  # Debug
+    print(f"User last name: '{request.user.last_name}'")  # Debug
 
-    orders = Order.objects.filter(
-        Q(customer_name=request.user.get_full_name()) |
-        Q(customer_email=request.user.email)
-    ).order_by('-created_at')
+    # Get orders directly linked to user
+    direct_orders = Order.objects.filter(customer=request.user)
+
+    # Also try to find orders by email match (for orders created before linking was implemented)
+    email_orders = Order.objects.filter(
+        customer_email__iexact=request.user.email
+    ).exclude(customer=request.user)  # Exclude already linked orders
+
+    # Combine both querysets
+    orders = (direct_orders | email_orders).order_by('-created_at').distinct()
 
     print(f"Found orders count: {orders.count()}")  # Debug
+    print(f"Direct orders: {direct_orders.count()}")  # Debug
+    print(f"Email-matched orders: {email_orders.count()}")  # Debug
+
+    # Debug: print what orders were found
+    for order in orders:
+        print(f"Order {order.id}: Customer='{order.customer_name}', Email='{order.customer_email}', Linked User='{order.customer}'")
 
     # Mark orders as read when viewed by customer
     orders.filter(is_read=False).update(is_read=True)

@@ -357,6 +357,15 @@ class OrderItem(models.Model):
         decimal_places=2,
         validators=[MinValueValidator(0)]
     )
+    # Add this method to calculate subtotal
+    def subtotal(self):
+        return self.price * self.quantity
+    subtotal.short_description = 'Subtotal'
+
+    # Optional: Format the subtotal for display
+    def get_subtotal_display(self):
+        return f"ZMW {self.subtotal():.2f}"
+    get_subtotal_display.short_description = 'Subtotal'
 
 class ChatLog(models.Model):
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
