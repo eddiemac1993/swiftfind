@@ -53,16 +53,6 @@ from django.contrib.auth.decorators import login_required
 from .models import Business, BusinessPost
 from .forms import BusinessPostForm
 
-from django.http import JsonResponse
-from django.contrib.auth.models import User
-from .models import Business
-
-def check_email(request):
-    email = request.GET.get('email')
-    user_exists = User.objects.filter(email=email).exists()
-    business_exists = Business.objects.filter(email=email).exists()
-    return JsonResponse({'exists': user_exists or business_exists})
-
 @login_required
 def products_list(request):
     # Get all products from all businesses
@@ -788,9 +778,7 @@ from directory.models import Business  # Import your Business model if needed
 from django.contrib.auth import get_user_model
 User = get_user_model()
 def register(request):
-    registered_users = User.objects.filter(is_active=True).exclude(
-        username__in=['admin', 'staff']
-    ).order_by('username')[:100]
+    registered_users = User.objects.all().order_by('username')
 
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
@@ -819,6 +807,14 @@ def register(request):
 
             messages.success(request, "Registration successful! Please log in.")
             return redirect('login')
+        else:
+            # Check for specific validation errors to provide better messages
+            for field, errors in form.errors.items():
+                for error in errors:
+                    if 'email' in field.lower() and 'already' in error.lower():
+                        messages.error(request, "This email is already registered. Please use a different email or try logging in.")
+                    elif 'phone' in field.lower() and 'already' in error.lower():
+                        messages.error(request, "This phone number is already registered. Please use a different phone number.")
     else:
         form = UserRegistrationForm()
 
@@ -826,6 +822,20 @@ def register(request):
         'form': form,
         'registered_users': registered_users
     })
+
+from django.http import JsonResponse
+from django.contrib.auth.models import User
+from .models import UserProfile
+
+def check_email(request):
+    email = request.GET.get('email', '')
+    exists = User.objects.filter(email__iexact=email).exists()
+    return JsonResponse({'exists': exists})
+
+def check_phone(request):
+    phone = request.GET.get('phone', '')
+    exists = UserProfile.objects.filter(phone_number=phone).exists()
+    return JsonResponse({'exists': exists})
 
 @login_required
 def profile(request):

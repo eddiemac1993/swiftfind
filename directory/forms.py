@@ -252,9 +252,9 @@ class UserRegistrationForm(UserCreationForm):
         phone_number = self.cleaned_data.get('phone_number', '').strip()
         cleaned_phone = re.sub(r'[^\d+]', '', phone_number)
 
-        # Validation
-        if not re.match(r'^\+\d+$', cleaned_phone):
-            raise forms.ValidationError("Enter a valid phone number (e.g., +1234567890).")
+        # More flexible validation
+        if not re.match(r'^\+?\d+$', cleaned_phone):
+            raise forms.ValidationError("Enter a valid phone number (e.g., +1234567890 or 1234567890).")
         if len(cleaned_phone) < 8:
             raise forms.ValidationError("Phone number too short.")
         if len(cleaned_phone) > 16:
