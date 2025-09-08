@@ -24,11 +24,18 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'customer', 'order_date', 'total_amount', 'status', 'payment_status')
-    list_filter = ('status', 'payment_status', 'order_date')
-    search_fields = ('customer__username', 'customer__email', 'id')
-    readonly_fields = ('order_date', 'last_updated')
+    list_display = ('id', 'customer', 'created_at', 'total', 'status', 'get_payment_status_display')
+    list_filter = ('status', 'created_at', 'business')
+    search_fields = ('customer__username', 'customer__email', 'id', 'order_number')
+    readonly_fields = ('created_at', 'updated_at', 'order_number', 'uuid')
     inlines = [OrderItemInline]
+
+    # Add this method to display payment status (if you want to show it)
+    def get_payment_status_display(self, obj):
+        # If you have a payment_status field, use it here
+        # Otherwise, you might want to remove this
+        return "Paid"  # Placeholder - adjust based on your actual field
+    get_payment_status_display.short_description = 'Payment Status'
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):

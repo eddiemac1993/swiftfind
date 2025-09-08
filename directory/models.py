@@ -414,7 +414,7 @@ class UserProfile(models.Model):
         Business, on_delete=models.SET_NULL, null=True, blank=True, related_name='primary_employees'
     )
     phone_number = PhoneNumberField(
-        null=False, blank=False, region="US", unique=True
+        null=True, blank=False, region="US", unique=True
     )
     address = models.CharField(max_length=255, blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
