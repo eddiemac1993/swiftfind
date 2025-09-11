@@ -183,6 +183,11 @@ class Business(models.Model):
         help_text="Toggle to show/hide the store link in navigation"
     )
 
+    def clean(self):
+        super().clean()
+        if not self.logo:
+            raise ValidationError({'logo': "A business logo is required."})
+
     @property
     def is_verified(self):
         """Check if business is currently verified (both flag is true and date is in future)"""

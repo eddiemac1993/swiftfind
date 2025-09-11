@@ -5,7 +5,6 @@ from django.conf.urls.static import static
 from django.views.generic.base import RedirectView
 from django.contrib.auth import views as auth_views
 from pos_system.views import order_details
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('webpush/', include('webpush.urls')),
@@ -22,7 +21,7 @@ urlpatterns = [
     path('tracking/', include('tracking.urls')),
     path('messages/', include('messaging.urls')),
     path('cv/', include('cv_app.urls')),
-
+    path("analytics/", include("analytics.urls")),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/password_reset/',
         auth_views.PasswordResetView.as_view(

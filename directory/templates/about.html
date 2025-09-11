@@ -635,11 +635,6 @@
         <i class="fas fa-download"></i>
     </button>
 
-    <!-- Chat Button -->
-    <a href="{% url 'chat' %}" class="chat-button">
-        <span class="star">✨</span> <span>Ai</span>
-    </a>
-
     <!-- Header -->
     <header class="app-header">
         <div class="header-top">
@@ -847,7 +842,7 @@
     <p>Organizations listing on SwiftFind must:</p>
     <ul>
         <li>Provide complete, accurate, and truthful information about their services, location, and contact details</li>
-        <li>Clearly disclose all material terms of any offers or promotions</li>
+        <li>Clearly disclose all material and terms of any offers or promotions</li>
         <li>Maintain appropriate licenses and certifications required for their operations</li>
         <li>Respond to user inquiries and reviews in a professional manner</li>
         <li>Not engage in false advertising or deceptive marketing practices</li>
@@ -875,8 +870,10 @@
         <li>Your rights regarding your personal data</li>
         <li>Our use of cookies and tracking technologies</li>
         <li>Circumstances under which we may disclose information</li>
+        <li>Collection and verification of information for <strong>KYC (Know Your Customer)</strong> and compliance purposes</li>
     </ul>
-    <p>By using the Service, you consent to our collection and use of personal data in accordance with our Privacy Policy.</p>
+    <p>By using the Service, you consent to our collection and use of personal data, including for KYC verification, in accordance with our Privacy Policy.</p>
+
 
     <h4>7. Intellectual Property Rights</h4>
     <p>All content on the SwiftFind platform, including text, graphics, logos, and software, is the property of SwiftFind or its licensors and is protected by copyright and other intellectual property laws. You agree not to:</p>
@@ -895,7 +892,7 @@
         <li>Promptly update account information for changes</li>
         <li>Authorize SwiftFind to charge your payment method</li>
     </ul>
-    <p>All fees are non-refundable unless otherwise stated. SwiftFind reserves the right to change fees and payment terms with 30 days' notice.</p>
+    <p>All fees are non-refundable unless otherwise stated. SwiftFind reserves the right to change fees and payment terms at any time.</p>
 
     <h4>9. Limitation of Liability</h4>
     <p>To the maximum extent permitted by law, SwiftFind shall not be liable for:</p>
@@ -942,13 +939,12 @@
     <p>Any disputes arising from these Terms shall be resolved as follows:</p>
     <ul>
         <li>First through good faith negotiations between the parties</li>
-        <li>If unresolved, through binding arbitration in accordance with [Your Jurisdiction] law</li>
+        <li>If unresolved, through binding arbitration in accordance with Zambian law</li>
         <li>Each party shall bear its own arbitration costs</li>
-        <li>Claims must be brought within one year of the event giving rise to the claim</li>
     </ul>
 
     <h4>14. Governing Law</h4>
-    <p>These Terms shall be governed by and construed in accordance with the laws of [Your Jurisdiction], without regard to its conflict of law provisions. Any legal action shall be brought in the courts located in [Your Jurisdiction].</p>
+    <p>These Terms shall be governed by and construed in accordance with the laws of Zambian, without regard to its conflict of law provisions. Any legal action shall be brought in the courts located in [Your Jurisdiction].</p>
 
     <h4>15. General Provisions</h4>
     <ul>
@@ -988,6 +984,10 @@
             <i class="fas fa-info-circle"></i>
             <span>About</span>
         </a>
+            <a href="{% url 'pos_system:ai_assistant' %}" class="nav-item">
+        <span class="star" style="font-size: 18px;">✨</span>
+        <span>AI</span>
+    </a>
         {% if user.is_authenticated %}
             <a href="{% url 'profile' %}" class="nav-item" title="Profile">
                 <i class="fas fa-user"></i>

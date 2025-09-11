@@ -698,6 +698,10 @@
             <i class="fas fa-info-circle"></i>
             <span>About</span>
         </a>
+            <a href="{% url 'pos_system:ai_assistant' %}" class="nav-item">
+        <span class="star" style="font-size: 18px;">✨</span>
+        <span>AI</span>
+    </a>
         {% if user.is_authenticated %}
             <a href="{% url 'profile' %}" class="nav-item" title="Profile">
                 <i class="fas fa-user"></i>
