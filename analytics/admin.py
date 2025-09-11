@@ -18,6 +18,7 @@ import csv
 
 from .models import PageVisit
 from directory.models import Referral
+from ip2geotools.databases.noncommercial import DbIpCity
 
 User = get_user_model()
 
@@ -291,16 +292,17 @@ admin.site.register(AnalyticsDashboardLink, AnalyticsDashboardAdmin)
 # --- Enhanced PageVisit admin ---
 @admin.register(PageVisit)
 class PageVisitAdmin(admin.ModelAdmin):
+    # ------------------------
+    # LIST VIEW CONFIG
+    # ------------------------
     list_display = (
-        'visitor_info',
-        'path_display',
-        'device_type_display',
-        'browser_display',
-        'os_display',
-        'method_badge',
-        'ip_address',
-        'timestamp_short',
-        'is_authenticated_badge'
+        'visitor_info',       # Visitor
+        'path_display',       # Path
+        'method_badge',       # Method
+        'ip_address',         # IP address
+        'location_display',   # Country + City + Region
+        'timestamp_short',    # Timestamp
+        'is_authenticated_badge'  # Auth
     )
     list_filter = (
         'method',
@@ -336,11 +338,84 @@ class PageVisitAdmin(admin.ModelAdmin):
         }),
     )
 
+    # ------------------------
+    # GEOLOCATION
+    # ------------------------
+    def geo_info(self, obj):
+        """Full geolocation for detail page."""
+        if not obj.ip_address:
+            return "No IP address"
+
+        cache_key = f"geoip_{obj.ip_address}"
+        data = cache.get(cache_key)
+
+        if not data:
+            try:
+                response = DbIpCity.get(obj.ip_address, api_key="free")
+                data = {
+                    "city": response.city,
+                    "region": response.region,
+                    "country": response.country,
+                    "lat": response.latitude,
+                    "lon": response.longitude,
+                }
+                cache.set(cache_key, data, timeout=86400)
+            except Exception:
+                return "Location lookup failed"
+
+        return format_html(
+            "<strong>City:</strong> {}<br>"
+            "<strong>Region:</strong> {}<br>"
+            "<strong>Country:</strong> {} {}<br>"
+            "<strong>Lat:</strong> {}<br>"
+            "<strong>Lon:</strong> {}<br>"
+            '<a href="https://www.google.com/maps?q={},{}" target="_blank">🗺️ View on Map</a>',
+            data["city"], data["region"], data["country"],
+            country_flag(data["country"]),
+            data["lat"], data["lon"], data["lat"], data["lon"]
+        )
+    geo_info.short_description = "Geolocation"
+
+    def location_display(self, obj):
+        """Show country, city, region with Google Maps link and approximate note."""
+        if not obj.ip_address:
+            return "-"
+
+        cache_key = f"geoip_{obj.ip_address}"
+        data = cache.get(cache_key)
+
+        if not data:
+            try:
+                response = DbIpCity.get(obj.ip_address, api_key="free")
+                data = {
+                    "country": response.country,
+                    "city": response.city,
+                    "region": response.region,
+                    "lat": response.latitude,
+                    "lon": response.longitude,
+                }
+                cache.set(cache_key, data, timeout=86400)  # Cache for 24 hours
+            except Exception:
+                return "❓"
+
+        # Show a note that city info may be approximate
+        return format_html(
+            '<a href="https://www.google.com/maps?q={},{}" target="_blank">'
+            '{}<br><small>{}, {} (approx.)</small></a>',
+            data["lat"], data["lon"],
+            data["country"],
+            data["city"] or "-", data["region"] or "-"
+        )
+    location_display.short_description = "Location"
+
+
+    # ------------------------
+    # OTHER DISPLAY HELPERS
+    # ------------------------
     def path_display(self, obj):
         shortened = obj.path[:50] + '...' if len(obj.path) > 50 else obj.path
         return format_html('<code>{}</code>', shortened)
     path_display.short_description = 'Path'
-    path_display.admin_order_field = 'path'
 
     def method_badge(self, obj):
         colors = {
@@ -369,40 +444,9 @@ class PageVisitAdmin(admin.ModelAdmin):
     timestamp_short.short_description = 'Timestamp'
     timestamp_short.admin_order_field = 'timestamp'
 
-    def device_type_display(self, obj):
-        info = get_device_info_from_user_agent(obj.user_agent)
-        if info['is_bot']:
-            return format_html('<span style="color: #ff6b6b;">🤖 Bot</span>')
-        elif info['is_mobile']:
-            return format_html('<span style="color: #4ecdc4;">📱 Mobile</span>')
-        elif info['is_tablet']:
-            return format_html('<span style="color: #45aaf2;">⌨️ Tablet</span>')
-        elif info['is_pc']:
-            return format_html('<span style="color: #a55eea;">💻 Desktop</span>')
-        return format_html('<span>❓ Unknown</span>')
-    device_type_display.short_description = 'Device'
-
-    def browser_display(self, obj):
-        info = get_device_info_from_user_agent(obj.user_agent)
-        browser = info['browser']
-        colors = {'Chrome':'#feca57','Firefox':'#ff9ff3','Safari':'#1dd1a1','Edge':'#54a0ff','Opera':'#ff6b6b'}
-        emoji = {'Chrome':'🟡','Firefox':'🦊','Safari':'🟦','Edge':'🔵','Opera':'🔴'}
-        for b, color in colors.items():
-            if b in browser:
-                return format_html('<span style="color: {};">{} {}</span>', color, emoji.get(b, '🌐'), browser)
-        return format_html('<span>🌐 {}</span>', browser)
-    browser_display.short_description = 'Browser'
-
-    def os_display(self, obj):
-        info = get_device_info_from_user_agent(obj.user_agent)
-        os = info['os']
-        if 'Windows' in os: return format_html('<span style="color: #2e86de;">🪟 {}</span>', os)
-        elif 'Mac' in os or 'iOS' in os: return format_html('<span style="color: #26de81;">🍏 {}</span>', os)
-        elif 'Android' in os: return format_html('<span style="color: #10ac84;">🤖 {}</span>', os)
-        elif 'Linux' in os: return format_html('<span style="color: #f368e0;">🐧 {}</span>', os)
-        return format_html('<span>💻 {}</span>', os)
-    os_display.short_description = 'OS'
-
+    # ------------------------
+    # VISITOR & SESSION
+    # ------------------------
     def device_details(self, obj):
         info = get_device_info_from_user_agent(obj.user_agent)
         details = [
@@ -427,11 +471,6 @@ class PageVisitAdmin(admin.ModelAdmin):
         return "No session"
     session_info.short_description = 'Session Information'
 
-    def geo_info(self, obj):
-        # Placeholder for future geoIP integration
-        return "GeoIP data not configured"
-    geo_info.short_description = 'Geolocation'
-
     def visitor_info(self, obj):
         if obj.user:
             return format_html(
@@ -446,6 +485,9 @@ class PageVisitAdmin(admin.ModelAdmin):
         return format_html('<span style="color: #e74c3c;">👤 Unknown visitor</span>')
     visitor_info.short_description = 'Visitor'
 
+    # ------------------------
+    # QUERYSET & ACTIONS
+    # ------------------------
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.select_related('user', 'session').exclude(
@@ -470,12 +512,12 @@ class PageVisitAdmin(admin.ModelAdmin):
     export_as_csv.short_description = "Export selected as CSV"
 
     def mark_as_reviewed(self, request, queryset):
-        # Placeholder for future functionality
         self.message_user(request, f"{queryset.count()} visits marked as reviewed")
     mark_as_reviewed.short_description = "Mark as reviewed"
 
     def has_add_permission(self, request): return False
     def has_change_permission(self, request, obj=None): return False
+
 
 # --- Enhanced Session admin ---
 try:
