@@ -36,12 +36,89 @@ def start_conversation(request, business_id):
         conversation = Conversation.objects.create(business=business)
         conversation.participants.add(request.user, business.owner)
 
-    # Check for pending order in POST data
-    if request.method == 'POST' and 'pending_order' in request.POST:
-        request.session['pending_order'] = request.POST['pending_order']
-        request.session.modified = True
+    # Handle order submission via POST
+    if request.method == 'POST':
+        order_id = request.POST.get('order_id')
+        customer_notes = request.POST.get('customer_notes', '').strip()
+
+        if order_id:
+            try:
+                # Import your Order model (make sure to add the import at the top)
+                from pos_system.models import Order
+
+                # Get the order
+                order = Order.objects.get(id=order_id, customer=request.user)
+
+                # Mark order as submitted
+                order.status = 'submitted'
+                order.submitted_at = timezone.now()
+                order.save()
+
+                # Generate the order message automatically
+                message_content = generate_order_message(order, customer_notes)
+
+                # Create the message in the conversation
+                message = Message.objects.create(
+                    conversation=conversation,
+                    sender=request.user,
+                    content=message_content
+                )
+
+                # Create notification for the business owner
+                Notification.objects.create(
+                    user=business.owner,
+                    message=message,
+                    is_read=False
+                )
+
+                # Clear any pending order from session
+                if 'pending_order' in request.session:
+                    del request.session['pending_order']
+                    request.session.modified = True
+
+            except Order.DoesNotExist:
+                # Handle case where order doesn't exist or doesn't belong to user
+                pass
 
     return redirect('messaging:conversation_detail', conversation_id=conversation.id)
+
+from django.template.loader import render_to_string
+from django.utils import timezone
+
+def generate_order_message(order, customer_notes):
+    """Generate order confirmation message automatically"""
+    context = {
+        'order': order,
+        'business_name': order.business.name,
+        'customer_notes': customer_notes,
+        'current_date': timezone.now().strftime("%b %d, %Y %H:%M")
+    }
+
+    # Simple text version (you can make this more complex if needed)
+    message_lines = [
+        f"Hello {order.business.name},\n\n",
+        f"I would like to confirm my order #{order.id}:\n\n",
+        f"*Customer Name:* {order.customer_name}\n",
+        f"*Phone:* {order.customer_phone}\n\n",
+    ]
+
+    if customer_notes:
+        message_lines.append(f"*Additional Notes:* {customer_notes}\n\n")
+
+    message_lines.append("*Order Details:*\n")
+
+    for item in order.items.all():
+        item_total = item.quantity * item.price
+        message_lines.append(f"- {item.product_name} ({item.quantity} × ZMW {item.price:.2f}) = ZMW {item_total:.2f}\n")
+
+    message_lines.extend([
+        f"\n*Subtotal:* ZMW {order.subtotal:.2f}\n",
+        f"*Service Fee:* ZMW {order.delivery_fee:.2f}\n",
+        f"*Total:* ZMW {order.total:.2f}\n\n",
+        "Please confirm this order. Thank you!"
+    ])
+
+    return ''.join(message_lines)
 
 @login_required
 def conversation_list(request):
