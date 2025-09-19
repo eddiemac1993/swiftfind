@@ -2049,45 +2049,6 @@
                             <p>{{ business.phone_number }}</p>
                         </div>
                     </div>
-
-                    <div class="detail-item">
-                        <div class="detail-icon">
-                            <i class="fas fa-globe"></i>
-                        </div>
-                        <div class="detail-content">
-                            <h4>Website</h4>
-                            <p>
-                                {% if business.website %}
-                                    <a href="{{ business.website }}" target="_blank">{{ business.website }}</a>
-                                {% else %}
-                                    Not available
-                                {% endif %}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="detail-item">
-                        <div class="detail-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="detail-content">
-                            <h4>Hours</h4>
-                            <div class="hours-table">
-                                {% for hour in business.hours.all %}
-                                <div class="hours-row {% if hour.is_today %}today{% endif %}">
-                                    <span>{{ hour.get_day_display }}</span>
-                                    <span>
-                                        {% if hour.is_closed %}
-                                            Closed
-                                        {% else %}
-                                            {{ hour.opening_time|time:"g:i A" }} - {{ hour.closing_time|time:"g:i A" }}
-                                        {% endif %}
-                                    </span>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
