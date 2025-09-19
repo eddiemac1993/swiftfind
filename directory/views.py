@@ -47,11 +47,101 @@ from .forms import (
 from .utils import get_client_ip, generate_random_name
 from .auth_backends import BusinessAuthBackend
 
-from django.shortcuts import render, redirect, get_object_or_404
+# directory/views.py
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from .models import Business, BusinessPost
-from .forms import BusinessPostForm
+from django.contrib.auth.decorators import login_required, permission_required
+from django.utils import timezone
+from datetime import timedelta
+from .models import Business
+
+@permission_required('directory.can_verify', raise_exception=True)
+def update_business_verification(request, business_id):
+    business = get_object_or_404(Business, id=business_id)
+
+    if request.method == 'POST':
+        if 'verify_business' in request.POST:
+            verification_status = request.POST.get('verification_status')
+            verification_notes = request.POST.get('verification_notes', '')
+
+            # Update verification based on selection
+            if verification_status == 'unverified':
+                business.is_admin_added = False
+                business.verified_until = None
+            elif verification_status == '30_days':
+                business.is_admin_added = True
+                business.verified_until = timezone.now() + timedelta(days=30)
+            elif verification_status == '90_days':
+                business.is_admin_added = True
+                business.verified_until = timezone.now() + timedelta(days=90)
+            elif verification_status == 'permanent':
+                business.is_admin_added = True
+                business.verified_until = None
+
+            # Record who verified this business
+            business.verified_by = request.user
+            business.verification_date = timezone.now()
+            business.save()
+
+            messages.success(request, f"Business verification updated successfully.")
+
+        elif 'unverify_business' in request.POST:
+            business.is_admin_added = False
+            business.verified_until = None
+            business.verified_by = None
+            business.verification_date = None
+            business.save()
+
+            messages.success(request, "Business verification removed.")
+
+    return redirect('directory:business_profile', business_id=business.id)
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import permission_required
+from directory.models import Business
+from django.utils import timezone
+from datetime import timedelta
+# directory/views.py
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import permission_required
+from django.utils import timezone
+from datetime import timedelta
+from django.contrib import messages
+from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import permission_required
+from .models import Business
+
+@permission_required('directory.can_verify', raise_exception=True)
+def business_verification_dashboard(request):
+    businesses = Business.objects.all().order_by('verified_until')
+
+    if request.method == "POST":
+        business_id = request.POST.get('business_id')
+        business = Business.objects.get(id=business_id)
+
+        # Automatically verify for 30 days
+        business.is_admin_added = True
+        business.verified_until = timezone.now() + timedelta(days=30)
+        business.verified_by = request.user
+        business.verification_date = timezone.now()
+        business.save()
+
+        messages.success(request, f"{business.name} has been verified for 30 days.")
+        return redirect('business_verification_dashboard')
+
+    context = {'businesses': businesses}
+    return render(request, 'directory/business_verification_dashboard.html', context)
+
+
+@permission_required('directory.can_verify', raise_exception=True)
+def business_verification_list(request):
+    # Show all businesses except those already permanently verified (optional)
+    businesses = Business.objects.filter(is_admin_added=False) | Business.objects.filter(verified_until__lt=timezone.now())
+    businesses = businesses.order_by('-created_at')
+
+    context = {
+        'businesses': businesses,
+    }
+    return render(request, 'directory/business_verification_list.html', context)
 
 @login_required
 def products_list(request):

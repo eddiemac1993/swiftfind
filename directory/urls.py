@@ -5,6 +5,9 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('register/', views.register, name='register'),
     path('register', views.register, name='register_no_slash'),
+    path('verify/dashboard/', views.business_verification_dashboard, name='business_verification_dashboard'),
+    path('business/<int:business_id>/verify/', views.update_business_verification, name='update_business_verification'),
+    path('verify/businesses/', views.business_verification_list, name='business_verification_list'),
     path('profile/', views.profile, name='profile'),
     path('business/<int:pk>/', views.business_detail, name='business-detail'),
     path('business/<int:pk>/store/', views.business_detail, name='business-store'),

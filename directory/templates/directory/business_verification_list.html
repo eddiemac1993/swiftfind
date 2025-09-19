@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Businesses to Verify</h2>
+
+{% if businesses %}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Owner</th>
+            <th>City</th>
+            <th>Verification Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for business in businesses %}
+        <tr>
+            <td>{{ business.name }}</td>
+            <td>{{ business.owner.get_full_name }}</td>
+            <td>{{ business.city }}</td>
+            <td>
+                {% if business.is_admin_added %}
+                    Verified
+                    {% if business.verified_until %} (until {{ business.verified_until|date:"Y-m-d" }}){% endif %}
+                {% else %}
+                    Not Verified
+                {% endif %}
+            </td>
+            <td>
+                <a class="btn btn-primary btn-sm" href="{% url 'directory:update_business_verification' business.id %}">
+                    Verify
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No businesses available for verification.</p>
+{% endif %}
+{% endblock %}

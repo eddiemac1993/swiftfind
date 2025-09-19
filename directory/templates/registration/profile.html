@@ -889,6 +889,55 @@
 .earnings-link i {
     font-size: 12px;
 }
+.verification-status {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.not-verified {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #dc3545;
+    font-weight: 500;
+}
+
+.verification-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.verification-history {
+    margin-top: 20px;
+    padding: 16px;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: 8px;
+}
+
+.dark-mode .verification-history {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.verification-history h4 {
+    margin-bottom: 12px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.history-item {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dark-mode .history-item {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .sidebar {
@@ -1016,7 +1065,7 @@
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <div class="verified-badge-content ml-3">
-                    <p>Verified Organization</p>
+                    <p>Verified Business</p>
                     <p>{{ business.verification_days_left }} days remaining</p>
                 </div>
             </div>
@@ -1046,7 +1095,7 @@
             <main class="main-content">
                 <div class="content-header">
                     <h2 class="content-title">
-                        {% if has_business %}Edit Organization Information{% else %}Create Your Organization Profile{% endif %}
+                        {% if has_business %}Edit Business Information{% else %}Create Your Business Profile{% endif %}
                     </h2>
                 </div>
 
@@ -1204,6 +1253,31 @@
                                 </div>
                             </div>
                         </div>
+<!-- Add this section after the Business Details section in your template -->
+{% if perms.directory.can_verify %}
+<div class="form-section mt-4">
+    <div class="form-section-header d-flex justify-content-between align-items-center">
+        <h3><i class="fas fa-check-circle"></i> Business Verification</h3>
+        <a href="{% url 'business_verification_dashboard' %}" class="btn btn-outline-primary btn-sm">
+            View All Businesses
+        </a>
+    </div>
+
+    <form method="post" action="{% url 'update_business_verification' business.id %}">
+        {% csrf_token %}
+        <!-- existing dropdown and buttons -->
+    </form>
+
+    {% if business.is_admin_added %}
+    <p class="mt-2 text-info">
+        Verified by: {{ business.verified_by.get_full_name }} <br>
+        Verification date: {{ business.verification_date|date:"Y-m-d H:i" }} <br>
+        {% if business.verified_until %}Valid until: {{ business.verified_until|date:"Y-m-d H:i" }}{% else %}Permanent{% endif %}
+    </p>
+    {% endif %}
+</div>
+{% endif %}
+
 
                         <!-- Store Link Visibility Section -->
                         <div class="form-section">

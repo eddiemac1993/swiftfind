@@ -12,7 +12,16 @@ from django.utils import timezone
 from django_ckeditor_5.fields import CKEditor5Field
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
+from django.contrib.contenttypes.models import ContentType
 
+# You might want to run this in a data migration or in the shell
+def create_verification_permission():
+    content_type = ContentType.objects.get_for_model(Business)
+    Permission.objects.get_or_create(
+        codename='can_verify_business',
+        name='Can verify business',
+        content_type=content_type,
+    )
 
 class NewsFeed(models.Model):
     CATEGORY_CHOICES = [
@@ -182,6 +191,24 @@ class Business(models.Model):
         verbose_name="Show Store Link",
         help_text="Toggle to show/hide the store link in navigation"
     )
+    verified_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='verified_businesses',
+        verbose_name="Verified by"
+    )
+    verification_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Verification Date"
+    )
+
+    class Meta:
+        permissions = [
+            ("can_verify", "Can verify business"),
+        ]
 
     def clean(self):
         super().clean()
