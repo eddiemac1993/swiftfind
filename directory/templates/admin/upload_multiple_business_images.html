@@ -1,0 +1,47 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="content-main">
+    <h1>{{ title }}</h1>
+    <div class="upload-form">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-row">
+                {{ form.images.label_tag }}
+                {{ form.images }}
+                <div class="help">{{ form.images.help_text }}</div>
+            </div>
+            <div class="form-row">
+                {{ form.captions.label_tag }}
+                {{ form.captions }}
+                <div class="help">{{ form.captions.help_text }}</div>
+            </div>
+            <div class="submit-row">
+                <button type="submit" class="button"><i class="fas fa-upload"></i> Upload Images</button>
+                <a href="{% url 'admin:directory_businessimage_changelist' %}?business_id={{ business.id|default:'' }}" class="button"><i class="fas fa-times"></i> Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+.upload-form {
+    max-width: 800px;
+    margin: 20px 0;
+}
+.form-row {
+    margin-bottom: 20px;
+}
+.form-row input[type="file"] {
+    padding: 10px;
+}
+.help {
+    color: #666;
+    font-size: 12px;
+    margin-top: 5px;
+}
+</style>
+{% endblock %}

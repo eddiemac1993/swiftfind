@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ guest.name }}'s QR Code</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+        :root {
+            --primary-color: #3a6ea5;
+            --secondary-color: #004e98;
+            --accent-color: #ff6b6b;
+            --whatsapp-color: #25D366;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 10px;
+            --box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+
+        .card {
+            max-width: 600px;
+            margin: 40px auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .card-subtitle {
+            font-size: 16px;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        .qr-container {
+            padding: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+        }
+
+        .qr-frame {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            margin-bottom: 25px;
+            border: 1px solid #eaeaea;
+        }
+
+        .qr-code {
+            position: relative;
+        }
+
+        .qr-code img {
+            display: block;
+            max-width: 220px;
+            height: auto;
+        }
+
+        .qr-label {
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .qr-label:hover {
+            background: #ff5252;
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+        }
+
+        .qr-label:active {
+            transform: translateX(-50%) scale(0.98);
+        }
+
+        .scanning-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .scanning-overlay.active {
+            opacity: 1;
+        }
+
+        .scanning-text {
+            color: white;
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .scanning-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .instructions {
+            text-align: center;
+            color: #6c757d;
+            margin: 20px auto;
+            max-width: 400px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(58, 110, 165, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-whatsapp {
+            background-color: var(--whatsapp-color);
+            color: white;
+        }
+
+        .btn-whatsapp:hover {
+            background-color: #128C7E;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        }
+
+        .divider {
+            width: 40px;
+            height: 5px;
+            background: var(--accent-color);
+            margin: 30px auto;
+            border-radius: 5px;
+        }
+
+        .sharing-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .sharing-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 13px;
+            background: #f8f9fa;
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        /* Verification Modal Styles */
+        .verification-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+            position: relative;
+            animation: modalAppear 0.3s;
+        }
+
+        @keyframes modalAppear {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-title {
+            font-family: 'Playfair Display', serif;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: var(--accent-color);
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .modal-description {
+            margin-bottom: 20px;
+            font-size: 15px;
+            text-align: center;
+            color: var(--dark-color);
+        }
+
+        .security-code-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .security-code-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 8px rgba(58, 110, 165, 0.4);
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .modal-btn.cancel-btn {
+            background-color: #f1f1f1;
+            color: var(--dark-color);
+        }
+
+        .modal-btn.confirm-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-btn.cancel-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .modal-btn.confirm-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        @media (max-width: 640px) {
+            .card {
+                margin: 20px;
+                width: auto;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">{{ guest.name }}</div>
+            <div class="card-subtitle">Personal QR Invitation</div>
+        </div>
+
+        <div class="qr-container">
+            <div class="qr-frame">
+                <div class="qr-code">
+                    <img id="qr-image" src="data:image/png;base64,{{ qr_code }}" alt="QR Code for {{ guest.name }}">
+                    <div id="scanning-overlay" class="scanning-overlay">
+                        <div id="scanning-text" class="scanning-text">Scanning...</div>
+                        <div class="scanning-spinner"></div>
+                    </div>
+                </div>
+                <div id="scan-me-button" class="qr-label">SCAN ME</div>
+            </div>
+
+            <div class="instructions">
+                <p>Scan this unique QR code to view {{ guest.name }}'s personal invitation details. Each code is individually generated and linked to your guest information.</p>
+                <p><strong>Click the "SCAN ME" button to open the invitation directly on this device.</strong></p>
+            </div>
+
+            <div class="sharing-section">
+                <div class="sharing-title">Share this invitation</div>
+                <a href="https://wa.me/?text=Here's {{ guest.name }}'s invitation QR code: {{ request.build_absolute_uri }}" target="_blank" class="btn btn-whatsapp">
+                    <i class="fab fa-whatsapp"></i> Share via WhatsApp
+                </a>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="button-group">
+                <a href="{% url 'guest_invitation' guest.slug %}" class="btn btn-primary">
+                    <i class="fas fa-eye"></i> View Invitation
+                </a>
+                <a href="{% url 'guest_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>This QR code is uniquely generated for {{ guest.name }}</p>
+        </div>
+    </div>
+
+    <!-- Verification Modal -->
+    <div id="verificationModal" class="verification-modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Security Verification</h3>
+            <p class="modal-description">Please enter the security code to continue.</p>
+            <input type="password" id="securityCode" class="security-code-input" placeholder="Enter security code">
+            <p id="errorMessage" class="error-message">Incorrect security code. Please try again.</p>
+            <div class="modal-buttons">
+                <button id="cancelAction" class="modal-btn cancel-btn">Cancel</button>
+                <button id="confirmAction" class="modal-btn confirm-btn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const whatsappBtn = document.querySelector('.btn-whatsapp');
+            const currentUrl = window.location.href;
+            const guestName = "{{ guest.name }}";
+            const scanMeButton = document.getElementById('scan-me-button');
+            const scanningOverlay = document.getElementById('scanning-overlay');
+            const scanningText = document.getElementById('scanning-text');
+
+            // Update WhatsApp share link with current URL if not provided by template
+            if (whatsappBtn.href.includes('{{ request.build_absolute_uri }}')) {
+                whatsappBtn.href = `https://wa.me/?text=Here's ${guestName}'s invitation QR code: ${currentUrl}`;
+            }
+
+            // Get invitation URL from the View Invitation button
+            const invitationUrl = document.querySelector('.btn-primary').href;
+
+            // Add click event listener to the SCAN ME button
+            scanMeButton.addEventListener('click', function() {
+                // Show scanning overlay with "Scanning..." text
+                scanningOverlay.classList.add('active');
+                scanningText.textContent = "Scanning...";
+
+                // After 1.5 seconds, change text to "Please don't share QR code..."
+                setTimeout(function() {
+                    scanningText.textContent = "Please don't share QR code...";
+
+                    // After another 1.5 seconds, change text to "Opening camera..."
+                    setTimeout(function() {
+                        scanningText.textContent = "Opening camera...";
+
+                        // After another 1.5 seconds (total 4.5 seconds), redirect to the URL
+                        setTimeout(function() {
+                            // If we have an invitation URL from the template, use it
+                            if (invitationUrl) {
+                                window.location.href = invitationUrl;
+                            } else {
+                                // Otherwise, use a fallback URL (current URL or a specific endpoint)
+                                const fallbackUrl = "{% url 'guest_invitation' guest.slug %}";
+                                window.location.href = fallbackUrl;
+                            }
+                        }, 1500); // Final 1.5 seconds
+                    }, 1500); // Second 1.5 seconds
+                }, 1500); // First 1.5 seconds
+            });
+
+            // Security Verification for buttons
+            // Constants
+            const SECURITY_CODE = '12345';
+
+            // DOM Elements
+            const modal = document.getElementById('verificationModal');
+            const securityCodeInput = document.getElementById('securityCode');
+            const confirmBtn = document.getElementById('confirmAction');
+            const cancelBtn = document.getElementById('cancelAction');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Buttons that need verification
+            const backToListBtn = document.querySelector('.btn-secondary');
+            const whatsappShareBtn = document.querySelector('.btn-whatsapp');
+
+            let pendingAction = null;
+            let pendingUrl = '';
+
+            // Intercept Back to List button click
+            backToListBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                pendingAction = 'navigate';
+                pendingUrl = this.href;
+                openVerificationModal();
+            });
+
+            // Intercept WhatsApp Share button click
+            whatsappShareBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                pendingAction = 'share';
+                pendingUrl = this.href;
+                openVerificationModal();
+            });
+
+            // Function to open the verification modal
+            function openVerificationModal() {
+                modal.style.display = 'flex';
+                securityCodeInput.value = '';
+                errorMessage.style.display = 'none';
+                securityCodeInput.focus();
+            }
+
+            // Close modal when cancel button is clicked
+            cancelBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+                pendingAction = null;
+                pendingUrl = '';
+            });
+
+            // Verify security code and perform pending action
+            confirmBtn.addEventListener('click', function() {
+                verifyAndProceed();
+            });
+
+            // Function to verify code and proceed with action
+            function verifyAndProceed() {
+                const enteredCode = securityCodeInput.value.trim();
+
+                if (enteredCode === SECURITY_CODE) {
+                    modal.style.display = 'none';
+
+                    // Execute the pending action
+                    if (pendingAction === 'navigate') {
+                        window.location.href = pendingUrl;
+                    } else if (pendingAction === 'share') {
+                        window.open(pendingUrl, '_blank');
+                    }
+
+                    // Reset pending action
+                    pendingAction = null;
+                    pendingUrl = '';
+                } else {
+                    errorMessage.style.display = 'block';
+                    securityCodeInput.focus();
+                }
+            }
+
+            // Allow pressing Enter to confirm
+            securityCodeInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    verifyAndProceed();
+                }
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    pendingAction = null;
+                    pendingUrl = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

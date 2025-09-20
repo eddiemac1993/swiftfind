@@ -1,0 +1,473 @@
+{% extends 'chat/base.html' %}
+
+{% block content %}
+<style>
+  /* Chat container */
+  .chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 90vh; /* Full height of the viewport */
+    max-width: 800px; /* Limit the width of the chat */
+    margin: 0 auto; /* Center the chat */
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: var(--card-bg);
+    box-shadow: var(--shadow);
+  }
+
+  /* Chat header */
+  .chat-header {
+    padding: 16px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+  }
+
+  /* Chat messages area */
+  .chat-messages {
+    flex: 1; /* Take up remaining space */
+    padding: 16px;
+    overflow-y: auto; /* Enable vertical scrolling */
+    background-color: var(--card-bg);
+  }
+
+  /* Individual message styling */
+  .message {
+    margin-bottom: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    max-width: 70%; /* Limit message width */
+    word-wrap: break-word;
+    position: relative;
+    overflow: visible; /* Ensure the button is not clipped */
+    animation: fadeIn 0.5s ease;
+  }
+
+  /* Message from the user (current user) */
+  .message.user {
+    background-color: var(--primary-color); /* Blue background */
+    color: white;
+    margin-left: auto; /* Align to the right */
+    border-radius: 12px 12px 0 12px; /* Rounded corners on the right */
+  }
+
+  /* Message from others */
+  .message.other {
+    background-color: var(--background); /* Light gray background */
+    color: var(--text-primary);
+    margin-right: auto; /* Align to the left */
+    border-radius: 12px 12px 12px 0; /* Rounded corners on the left */
+  }
+
+  /* Timestamp for messages */
+  .message .timestamp {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  /* Delete button styling */
+  .delete-button {
+    background-color: #ff4d4d; /* Red background */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    transition: background-color 0.2s ease;
+  }
+
+  .delete-button:hover {
+    background-color: #ff1a1a; /* Darker red on hover */
+  }
+
+  /* Chat input area */
+  .chat-input {
+    align-items: stretch; /* Stretch children to fill height */
+    padding: 16px;
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+  }
+
+  /* Container for textarea and button */
+  .chat-input .input-group {
+    display: flex;
+    flex: 1; /* Take up all available space in the container */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden; /* Ensure the button stays within the rounded corners */
+    background-color: var(--card-bg);
+  }
+
+  /* Textarea for typing messages */
+  .chat-input textarea {
+    flex: 1; /* Take up remaining space */
+    padding: 12px;
+    border: none; /* Remove border */
+    resize: none; /* Disable resizing */
+    font-size: 1rem;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    transition: border-color 0.2s ease;
+    min-height: 50px; /* Ensure a minimum height */
+  }
+
+  .chat-input textarea:focus {
+    outline: none; /* Remove default focus outline */
+  }
+
+  /* Send button with icon */
+  .chat-input button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px; /* Adjust padding for better proportions */
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    white-space: nowrap; /* Prevent text wrapping */
+  }
+
+  .chat-input button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+  }
+
+  .chat-input button:active {
+    transform: translateY(0);
+  }
+
+  /* Icon inside the button */
+  .chat-input button i {
+    font-size: 1.25rem;
+  }
+
+  /* Scrollbar styling */
+  .chat-messages::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .chat-messages::-webkit-scrollbar-track {
+    background: var(--background);
+  }
+
+  .chat-messages::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+  }
+
+  .chat-messages::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+  }
+
+  /* Share button and dropdown */
+  .share-button {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+  }
+
+  .share-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+  }
+
+  .share-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: none; /* Hidden by default */
+    z-index: 1000;
+    background-color: var(--card-bg);
+  }
+
+  .share-dropdown a {
+    display: block;
+    padding: 8px 16px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: background-color 0.2s ease;
+  }
+
+  .share-dropdown a:hover {
+    background-color: var(--background);
+  }
+
+  .share-dropdown.active {
+    display: block;
+  }
+
+  /* Bottom Navigation Bar */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--card-bg);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0.5rem 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+
+  .bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    transition: color 0.2s ease;
+  }
+
+  .bottom-nav a i {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .bottom-nav a:hover {
+    color: var(--primary-color);
+  }
+
+  .bottom-nav a.active {
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .chat-container {
+      height: 85vh;
+    }
+
+    .chat-header {
+      font-size: 1rem;
+    }
+
+    .message {
+      max-width: 80%;
+    }
+
+    .bottom-nav a {
+      font-size: 0.75rem;
+    }
+
+    .bottom-nav a i {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<div class="chat-container">
+  <!-- Chat header -->
+  <div class="chat-header">
+    {{ room.name }}
+    <!-- Share button -->
+    <div class="share-button" id="share-button" aria-label="Share this room">
+      <i class="fas fa-share"></i> Share
+    </div>
+    <!-- Share dropdown -->
+    <div class="share-dropdown" id="share-dropdown">
+      <a href="#" id="share-facebook" aria-label="Share on Facebook">
+        <i class="fab fa-facebook"></i> Facebook
+      </a>
+      <a href="#" id="share-twitter" aria-label="Share on Twitter">
+        <i class="fab fa-twitter"></i> Twitter
+      </a>
+      <a href="#" id="share-linkedin" aria-label="Share on LinkedIn">
+        <i class="fab fa-linkedin"></i> LinkedIn
+      </a>
+      <a href="#" id="share-whatsapp" aria-label="Share on WhatsApp">
+        <i class="fab fa-whatsapp"></i> WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <!-- Chat messages -->
+  <div class="chat-messages" id="chat-messages">
+    {% if room.messages.all %}
+      {% for message in room.messages.all %}
+        <div class="message {% if message.user_name == 'You' %}user{% else %}other{% endif %}">
+          <strong>{{ message.user_name }}:</strong> {{ message.message }}
+          <span class="timestamp">{{ message.timestamp|date:"H:i" }}</span>
+          {% if message.user_name == 'You' %}
+            <button class="delete-button" data-message-id="{{ message.id }}" aria-label="Delete message">Delete</button>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <div id="no-results" style="text-align: center; color: var(--text-secondary);">
+        <p>No messages yet. Be the first to send one!</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Chat input form -->
+  <div class="chat-input">
+    <form id="chat-form" method="post" action="{% url 'send_message' room.id %}">
+      {% csrf_token %}
+      <div class="input-group">
+        <textarea name="message" id="message" rows="1" placeholder="Type your message..." required aria-label="Type your message"></textarea>
+        <button type="submit" aria-label="Send message">
+          <i class="fas fa-paper-plane"></i> <!-- Send icon -->
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Bottom Navigation Bar -->
+<nav class="bottom-nav" aria-label="Main Navigation">
+  <a href="{% url 'chat_room_list' %}" class="active" title="Chat Rooms">
+    <i class="fas fa-comments"></i>
+    <span>Chat</span>
+  </a>
+  <a href="{% url 'add-business' %}" title="Add Business">
+    <i class="fas fa-plus"></i>
+    <span>Add Business</span>
+  </a>
+  <a href="{% url 'create_paper' %}" title="Create Paper">
+    <i class="fas fa-file-alt"></i>
+    <span>Create Paper</span>
+  </a>
+  <a href="{% url 'about' %}" title="About">
+    <i class="fas fa-info-circle"></i>
+    <span>About</span>
+  </a>
+</nav>
+
+<script>
+  // Handle delete button clicks
+  document.querySelectorAll('.delete-button').forEach(button => {
+    button.addEventListener('click', function () {
+      const messageId = this.getAttribute('data-message-id');
+      fetch(`/delete_message/${messageId}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === 'success') {
+          this.closest('.message').remove(); // Remove the message from the DOM
+        } else {
+          alert('Failed to delete message: ' + data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    });
+  });
+
+  // Handle form submission
+  document.getElementById('chat-form').onsubmit = function (e) {
+    e.preventDefault();  // Prevent the form from submitting normally
+
+    const messageInput = document.getElementById('message');
+    const message = messageInput.value;
+
+    fetch("{% url 'send_message' room.id %}", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: `message=${encodeURIComponent(message)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === 'success') {
+        messageInput.value = '';  // Clear the input field
+
+        // Update the chat interface with the new message
+        const chatMessages = document.getElementById('chat-messages');
+        const newMessage = document.createElement('div');
+        newMessage.className = 'message user'; // Add 'user' class for current user
+        newMessage.innerHTML = `
+          <strong>You:</strong> ${message}
+          <span class="timestamp">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+        `;
+        chatMessages.appendChild(newMessage);
+
+        // Scroll to the bottom of the chat
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      } else {
+        console.error('Error:', data.message);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  };
+
+  // Handle share button click to toggle dropdown
+  const shareButton = document.getElementById('share-button');
+  const shareDropdown = document.getElementById('share-dropdown');
+
+  shareButton.addEventListener('click', function (e) {
+    e.preventDefault(); // Prevent default behavior
+    shareDropdown.classList.toggle('active'); // Toggle dropdown visibility
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function (e) {
+    if (!shareButton.contains(e.target) && !shareDropdown.contains(e.target)) {
+      shareDropdown.classList.remove('active');
+    }
+  });
+
+  // Handle social sharing links
+  const roomUrl = window.location.href; // Get the current URL
+  const shareText = `Join this chat room: ${roomUrl}`;
+
+  document.getElementById('share-facebook').addEventListener('click', function (e) {
+    e.preventDefault();
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(roomUrl)}`, '_blank');
+  });
+
+  document.getElementById('share-twitter').addEventListener('click', function (e) {
+    e.preventDefault();
+    window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(roomUrl)}&text=${encodeURIComponent(shareText)}`, '_blank');
+  });
+
+  document.getElementById('share-linkedin').addEventListener('click', function (e) {
+    e.preventDefault();
+    window.open(`https://www.linkedin.com/shareArticle?url=${encodeURIComponent(roomUrl)}&title=${encodeURIComponent("Join this chat room")}`, '_blank');
+  });
+
+  document.getElementById('share-whatsapp').addEventListener('click', function (e) {
+    e.preventDefault();
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+  });
+</script>
+{% endblock %}

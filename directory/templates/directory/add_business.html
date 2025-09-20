@@ -1,0 +1,1077 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07C160">
+    <meta name="description" content="Add Business - SwiftFind">
+    <title>Add Business - SwiftFind</title>
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "tdjt8dzlt8");
+    </script>
+    <style>
+        :root {
+            --primary-color: #FF6A00;
+            --primary-dark: #FF6A00;
+            --primary-light: #e6f7ef;
+            --secondary-color: #F8F8F8;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #EEE;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding-bottom: 72px;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        /* Header styles */
+        .app-header {
+            background-color: var(--white);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 6px 12px;
+            background-color: var(--primary-light);
+            border-radius: 20px;
+            color: var(--primary-dark);
+        }
+
+        .dark-mode .location {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        .location i {
+            margin-right: 5px;
+            color: var(--primary-color);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--secondary-color);
+        }
+
+        .dark-mode .theme-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-btn .dark-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .light-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .dark-icon {
+            display: block;
+            color: var(--dark-text);
+        }
+
+        /* Main container */
+        .container {
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 16px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-color);
+            position: relative;
+            padding-left: 16px;
+        }
+
+        .dark-mode .page-title {
+            color: var(--dark-text);
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 16px;
+            width: 40px;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .progress-steps:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--border-color);
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .dark-mode .progress-steps:before {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .dark-mode .step-number {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--dark-light-text);
+        }
+
+        .step.active .step-number {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background-color: var(--primary-dark);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: var(--light-text);
+            text-align: center;
+        }
+
+        .dark-mode .step-label {
+            color: var(--dark-light-text);
+        }
+
+        .step.active .step-label {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .step.completed .step-label {
+            color: var(--text-color);
+        }
+
+        .dark-mode .step.completed .step-label {
+            color: var(--dark-text);
+        }
+
+        /* Form Steps */
+        .form-step {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        /* Main content */
+        .main-content {
+            background-color: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .dark-mode .main-content {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .content-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .content-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* Alert messages */
+        .alert {
+            margin: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: rgba(7, 193, 96, 0.1);
+            color: var(--primary-dark);
+        }
+
+        .alert-error {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: #dc2626;
+        }
+
+        /* Form styles */
+        .profile-form {
+            padding: 24px;
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background-color: var(--white);
+            color: var(--text-color);
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .form-control {
+            background-color: var(--dark-surface);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--dark-text);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.1);
+        }
+
+        /* File upload styling */
+        .file-input-container {
+            margin-top: 8px;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 10px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-preview {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .image-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
+
+        .file-info {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-info-pdf {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .dark-mode .file-info-pdf {
+            background-color: rgba(220, 38, 38, 0.2);
+        }
+
+        /* Navigation Buttons */
+        .form-navigation {
+            display: flex;
+            gap: 16px;
+            justify-content: space-between;
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 15px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background: #ddd;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .dark-mode .btn-outline {
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--dark-text);
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Hide submit button until last step */
+        .btn-submit {
+            display: none;
+        }
+
+        /* Show submit button on last step */
+        .step-3 .btn-submit {
+            display: flex;
+        }
+
+        /* Hide next button on last step */
+        .step-3 .btn-next {
+            display: none;
+        }
+
+        /* Hide previous button on first step */
+        .step-1 .btn-prev {
+            visibility: hidden;
+        }
+
+        /* Error message styling */
+        .step-error {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .dark-mode .step-error {
+            color: #f87171;
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--white);
+            padding: 12px 0;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--light-text);
+            font-size: 12px;
+            font-weight: 500;
+            padding: 6px 16px;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Header with navigation -->
+    <header class="app-header">
+        <div class="header-top">
+            <div class="location">
+                <i class="fas fa-store"></i>
+                <span>Add Organization</span>
+            </div>
+            <div class="user-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
+                <div class="relative">
+                    <button id="dropdownToggle" class="flex items-center gap-2 focus:outline-none">
+                        {% if user.profile.profile_picture %}
+                            <img src="{{ user.profile.profile_picture.url }}" alt="Profile" class="w-8 h-8 rounded-full object-cover">
+                        {% else %}
+                            <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                <i class="fas fa-user text-gray-500"></i>
+                            </div>
+                        {% endif %}
+                        <span class="font-medium">{{ user.username }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">Add Your Business</h1>
+
+        <div class="main-content">
+            <div class="content-header">
+                <h2 class="content-title">Business Information</h2>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+                        <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% if form.errors %}
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Please fix the following errors:
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ field|title }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data" class="profile-form" id="business-form">
+                {% csrf_token %}
+
+                <!-- Progress Steps -->
+                <div class="progress-steps">
+                    <div class="step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Basic Info</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Contact Info</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Complete</div>
+                    </div>
+                </div>
+
+                <!-- Step 1: Business Details -->
+                <div class="form-step step-1 active">
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-building"></i> Organization Details
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Organization Logo</label>
+                                <div class="file-input-container">
+                                    <label for="logo-upload" class="file-input-label">
+                                        <i class="fas fa-upload mr-2"></i> Choose Logo
+                                    </label>
+                                    <input type="file"
+                                           id="logo-upload"
+                                           name="logo"
+                                           class="file-input"
+                                           accept="image/jpeg, image/png, image/gif">
+                                    <div class="file-preview">
+                                        <div class="text-gray-500 text-sm">No logo selected</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="name">Organization Name*</label>
+                                <input type="text"
+                                       id="name"
+                                       name="name"
+                                       class="form-control"
+                                       required>
+                                <div class="step-error" id="name-error"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="category">Category*</label>
+                                <select id="category"
+                                        name="category"
+                                        class="form-control"
+                                        required>
+                                    <option value="">Select a category</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="step-error" id="category-error"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Organization Description</label>
+                                <textarea id="description"
+                                          name="description"
+                                          class="form-control"
+                                          rows="4"
+                                          placeholder="Briefly describe your Organization, products, or services (50-300 characters)"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Contact Information -->
+                <div class="form-step step-2">
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-address-card"></i> Contact Information
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="email">Organization Email</label>
+                                <input type="email"
+                                       id="email"
+                                       name="email"
+                                       class="form-control"
+                                       placeholder="contact@yourbusiness.com">
+                                <div class="step-error" id="email-error"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone_number">Organization Phone*</label>
+                                <input type="tel"
+                                       id="phone_number"
+                                       name="phone_number"
+                                       class="form-control"
+                                       placeholder="e.g., +260 555 1234567"
+                                       required>
+                                <div class="step-error" id="phone_number-error"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="city">City*</label>
+                                <input type="text"
+                                       id="city"
+                                       name="city"
+                                       class="form-control"
+                                       placeholder="e.g., New York"
+                                       required>
+                                <div class="step-error" id="city-error"></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="address">Organization Address*</label>
+                                <input type="text"
+                                       id="address"
+                                       name="address"
+                                       class="form-control"
+                                       placeholder="123 Main Street, Suite 101"
+                                       required>
+                                <div class="step-error" id="address-error"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Review and Submit -->
+                <div class="form-step step-3">
+                    <div class="form-section">
+                        <h3 class="section-title">
+                            <i class="fas fa-check-circle"></i> Review Your Information
+                        </h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <h4 class="font-medium mb-4">Organization Details</h4>
+                                <div id="review-name" class="mb-2"></div>
+                                <div id="review-category" class="mb-2"></div>
+                                <div id="review-description" class="mb-4"></div>
+
+                                <h4 class="font-medium mb-4">Contact Information</h4>
+                                <div id="review-email" class="mb-2"></div>
+                                <div id="review-phone" class="mb-2"></div>
+                                <div id="review-city" class="mb-2"></div>
+                                <div id="review-address" class="mb-4"></div>
+
+                                <div class="alert alert-success">
+                                    <i class="fas fa-info-circle"></i>
+                                    Please review your information before submitting. You can go back to make changes.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-navigation">
+                    <button type="button" class="btn btn-outline btn-prev">
+                        <i class="fas fa-arrow-left mr-2"></i> Previous
+                    </button>
+                    <button type="button" class="btn btn-primary btn-next">
+                        Next <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-submit">
+                        <i class="fas fa-save mr-2"></i> Create Organization
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'newsfeed-list' %}" class="nav-item">
+            <i class="fas fa-sync"></i>
+            <span>Update</span>
+        </a>
+        <a href="{% url 'about' %}" class="nav-item">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
+        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item active" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item active" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
+    </nav>
+
+    <script>
+        // Theme toggle
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+        });
+
+        // Dropdown menu toggle
+        document.getElementById('dropdownToggle').addEventListener('click', function(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('dropdownMenu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', function() {
+            document.getElementById('dropdownMenu').style.display = 'none';
+        });
+
+        // Logo upload preview
+        document.getElementById('logo-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Please upload an image file (JPEG, PNG, GIF)');
+                    this.value = '';
+                    return;
+                }
+
+                // Validate file size (2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Image size exceeds 2MB limit');
+                    this.value = '';
+                    return;
+                }
+
+                // Preview image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewContainer = document.querySelector('.file-preview');
+                    previewContainer.innerHTML = `
+                        <img src="${e.target.result}" class="image-preview">
+                        <div class="file-info">${file.name}</div>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Multi-step form functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('business-form');
+            const steps = document.querySelectorAll('.form-step');
+            const progressSteps = document.querySelectorAll('.progress-steps .step');
+            const nextBtn = document.querySelector('.btn-next');
+            const prevBtn = document.querySelector('.btn-prev');
+            const submitBtn = document.querySelector('.btn-submit');
+            let currentStep = 0;
+
+            // Initialize form
+            function showStep(stepIndex) {
+                // Hide all steps
+                steps.forEach(step => step.classList.remove('active'));
+                progressSteps.forEach(step => step.classList.remove('active', 'completed'));
+
+                // Show current step
+                steps[stepIndex].classList.add('active');
+
+                // Update progress steps
+                progressSteps[stepIndex].classList.add('active');
+
+                // Mark previous steps as completed
+                for (let i = 0; i < stepIndex; i++) {
+                    progressSteps[i].classList.add('completed');
+                }
+
+                // Update button visibility
+                if (stepIndex === 0) {
+                    prevBtn.style.visibility = 'hidden';
+                } else {
+                    prevBtn.style.visibility = 'visible';
+                }
+
+                if (stepIndex === steps.length - 1) {
+                    nextBtn.style.display = 'none';
+                    submitBtn.style.display = 'flex';
+                    updateReviewSection();
+                } else {
+                    nextBtn.style.display = 'flex';
+                    submitBtn.style.display = 'none';
+                }
+
+                currentStep = stepIndex;
+            }
+
+            // Validate current step before proceeding
+            function validateStep(stepIndex) {
+                let isValid = true;
+                const step = steps[stepIndex];
+
+                // Hide all error messages
+                document.querySelectorAll('.step-error').forEach(el => {
+                    el.style.display = 'none';
+                });
+
+                // Step 1 validation
+                if (stepIndex === 0) {
+                    const name = document.getElementById('name').value.trim();
+                    const category = document.getElementById('category').value;
+
+                    if (!name) {
+                        document.getElementById('name-error').textContent = 'Business name is required';
+                        document.getElementById('name-error').style.display = 'block';
+                        isValid = false;
+                    }
+
+                    if (!category) {
+                        document.getElementById('category-error').textContent = 'Category is required';
+                        document.getElementById('category-error').style.display = 'block';
+                        isValid = false;
+                    }
+                }
+
+                // Step 2 validation
+                if (stepIndex === 1) {
+                    const phone = document.getElementById('phone_number').value.trim();
+                    const city = document.getElementById('city').value.trim();
+                    const address = document.getElementById('address').value.trim();
+
+                    if (!phone) {
+                        document.getElementById('phone_number-error').textContent = 'Phone number is required';
+                        document.getElementById('phone_number-error').style.display = 'block';
+                        isValid = false;
+                    }
+
+                    if (!city) {
+                        document.getElementById('city-error').textContent = 'City is required';
+                        document.getElementById('city-error').style.display = 'block';
+                        isValid = false;
+                    }
+
+                    if (!address) {
+                        document.getElementById('address-error').textContent = 'Address is required';
+                        document.getElementById('address-error').style.display = 'block';
+                        isValid = false;
+                    }
+
+                    // Optional email validation
+                    const email = document.getElementById('email').value.trim();
+                    if (email && !isValidEmail(email)) {
+                        document.getElementById('email-error').textContent = 'Enter a valid email address';
+                        document.getElementById('email-error').style.display = 'block';
+                        isValid = false;
+                    }
+                }
+
+                return isValid;
+            }
+
+            function isValidEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+            // Update review section with entered values
+            function updateReviewSection() {
+                document.getElementById('review-name').innerHTML = `
+                    <strong>Business Name:</strong> ${document.getElementById('name').value || 'Not provided'}
+                `;
+
+                const categorySelect = document.getElementById('category');
+                const categoryText = categorySelect.options[categorySelect.selectedIndex].text;
+                document.getElementById('review-category').innerHTML = `
+                    <strong>Category:</strong> ${categoryText || 'Not selected'}
+                `;
+
+                document.getElementById('review-description').innerHTML = `
+                    <strong>Description:</strong> ${document.getElementById('description').value || 'Not provided'}
+                `;
+
+                document.getElementById('review-email').innerHTML = `
+                    <strong>Email:</strong> ${document.getElementById('email').value || 'Not provided'}
+                `;
+
+                document.getElementById('review-phone').innerHTML = `
+                    <strong>Phone:</strong> ${document.getElementById('phone_number').value || 'Not provided'}
+                `;
+
+                document.getElementById('review-city').innerHTML = `
+                    <strong>City:</strong> ${document.getElementById('city').value || 'Not provided'}
+                `;
+
+                document.getElementById('review-address').innerHTML = `
+                    <strong>Address:</strong> ${document.getElementById('address').value || 'Not provided'}
+                `;
+            }
+
+            // Next button click handler
+            nextBtn.addEventListener('click', function() {
+                if (validateStep(currentStep)) {
+                    showStep(currentStep + 1);
+                }
+            });
+
+            // Previous button click handler
+            prevBtn.addEventListener('click', function() {
+                showStep(currentStep - 1);
+            });
+
+            // Form submission handler
+            form.addEventListener('submit', function(e) {
+                // Validate all steps before submission
+                let allValid = true;
+                for (let i = 0; i < steps.length; i++) {
+                    if (!validateStep(i)) {
+                        allValid = false;
+                        showStep(i); // Show the first invalid step
+                        break;
+                    }
+                }
+
+                if (!allValid) {
+                    e.preventDefault();
+                    return;
+                }
+
+                // Show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Creating Business...';
+            });
+
+            // Initialize first step
+            showStep(0);
+        });
+    </script>
+</body>
+</html>

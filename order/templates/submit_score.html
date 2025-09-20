@@ -1,0 +1,892 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07C160">
+    <meta name="description" content="Submit Score - SwiftFind">
+    <title>Submit Score - SwiftFind</title>
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #07C160;
+            --primary-dark: #05a54e;
+            --primary-light: #e6f7ef;
+            --secondary-color: #F8F8F8;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #EEE;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --danger-color: #ff4d4f;
+            --success-color: #52c41a;
+            --warning-color: #faad14;
+            --info-color: #1890ff;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding-bottom: 72px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        /* Header styling */
+        .app-header {
+            padding: 12px 16px;
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .location {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary-color);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            padding: 4px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .dark-mode .theme-btn {
+            color: var(--dark-text);
+        }
+
+        .theme-btn:hover {
+            background-color: var(--primary-light);
+        }
+
+        .dark-mode .theme-btn:hover {
+            background-color: rgba(7, 193, 96, 0.1);
+        }
+
+        .dark-icon {
+            display: none;
+        }
+
+        .dark-mode .dark-icon {
+            display: inline;
+        }
+
+        .dark-mode .light-icon {
+            display: none;
+        }
+
+        /* Score container */
+        .score-container {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 20px auto;
+            max-width: 600px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .score-container {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .score-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--info-color));
+            border-radius: 16px 16px 0 0;
+        }
+
+        /* Score card */
+        .score-card {
+            position: relative;
+            background: linear-gradient(120deg, var(--primary-light), rgba(24, 144, 255, 0.1));
+            border-radius: 14px;
+            padding: 20px;
+            margin: 20px 0 30px;
+            text-align: center;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(7, 193, 96, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .score-card {
+            background: linear-gradient(120deg, rgba(7, 193, 96, 0.15), rgba(24, 144, 255, 0.15));
+            box-shadow: 0 8px 24px rgba(7, 193, 96, 0.2);
+        }
+
+        .score-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px rgba(7, 193, 96, 0.2);
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .dark-mode .score-label {
+            color: var(--primary-color);
+        }
+
+        .score-display {
+            font-size: 3.5rem;
+            font-weight: 800;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin: 10px 0;
+            position: relative;
+            display: inline-block;
+        }
+
+        .positive-score {
+            color: var(--primary-color);
+        }
+
+        .negative-score {
+            color: var(--danger-color);
+        }
+
+        .score-context {
+            font-size: 0.9rem;
+            color: var(--light-text);
+            margin-top: 10px;
+        }
+
+        .dark-mode .score-context {
+            color: var(--dark-light-text);
+        }
+
+        /* Score icons */
+        .score-icons {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            opacity: 0.1;
+            overflow: hidden;
+        }
+
+        .score-icon {
+            position: absolute;
+            font-size: 3rem;
+            color: var(--primary-color);
+        }
+
+        .score-icon:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            transform: rotate(-15deg);
+        }
+
+        .score-icon:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            transform: rotate(25deg);
+            font-size: 2rem;
+        }
+
+        .score-icon:nth-child(3) {
+            bottom: 15%;
+            left: 20%;
+            transform: rotate(10deg);
+            font-size: 2.5rem;
+        }
+
+        /* Form styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+            transition: color 0.3s ease;
+        }
+
+        .dark-mode .form-label {
+            color: var(--dark-text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: var(--white);
+            color: var(--text-color);
+        }
+
+        .dark-mode .form-control {
+            background-color: var(--dark-bg);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--dark-text);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .dark-mode .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.3);
+        }
+
+        .form-control::placeholder {
+            color: var(--light-text);
+        }
+
+        .dark-mode .form-control::placeholder {
+            color: var(--dark-light-text);
+        }
+
+        /* Button styling */
+        .button-container {
+            display: flex;
+            gap: 16px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            text-align: center;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 10px rgba(7, 193, 96, 0.2);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(7, 193, 96, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .dark-mode .btn-secondary {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            border-color: var(--dark-bg);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .dark-mode .btn-secondary:hover {
+            background-color: var(--dark-bg);
+        }
+
+        .errorlist {
+            color: var(--danger-color);
+            margin-top: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .errorlist li::before {
+            content: "⚠️ ";
+        }
+
+        /* Achievement banner */
+        .achievement-banner {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+        }
+
+        .achievement-icon {
+            background-color: rgba(255, 255, 255, 0.9);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #FFA500;
+            flex-shrink: 0;
+        }
+
+        .achievement-text {
+            flex: 1;
+        }
+
+        .achievement-title {
+            font-weight: 700;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .achievement-desc {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--white);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            padding: 12px 0 8px;
+            border-radius: 20px 20px 0 0;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            z-index: 100;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--light-text);
+            text-decoration: none;
+            font-size: 0.8rem;
+            gap: 4px;
+            transition: color 0.2s ease;
+        }
+
+        .dark-mode .nav-item {
+            color: var(--dark-light-text);
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        /* Confetti animation */
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100%) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(1000%) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f0f;
+            opacity: 0.7;
+            animation: confetti-fall 5s ease-in-out forwards;
+        }
+
+        /* Share buttons */
+        .share-section {
+            margin-top: 24px;
+            text-align: center;
+        }
+
+        .share-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--light-text);
+            margin-bottom: 12px;
+        }
+
+        .dark-mode .share-title {
+            color: var(--dark-light-text);
+        }
+
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .share-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+        }
+
+        .share-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .share-button.facebook {
+            background-color: #3b5998;
+        }
+
+        .share-button.twitter {
+            background-color: #1da1f2;
+        }
+
+        .share-button.whatsapp {
+            background-color: #25d366;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--white);
+            color: var(--text-color);
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+        }
+
+        .dark-mode .toast {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+            pointer-events: auto;
+        }
+
+        .toast-success {
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .toast-error {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .toast-icon {
+            font-size: 1.2rem;
+        }
+
+        .toast-success .toast-icon {
+            color: var(--primary-color);
+        }
+
+        .toast-error .toast-icon {
+            color: var(--danger-color);
+        }
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        .dark-mode .btn-secondary {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .float {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Confetti container for animations -->
+    <div class="confetti-container" id="confetti-container"></div>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle toast-icon"></i>
+        <span id="toast-message">Score submitted successfully!</span>
+    </div>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-top">
+            <div class="location">
+                <i class="fas fa-trophy"></i>
+                <span>Your Quiz Results</span>
+            </div>
+            <div class="user-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-4">
+        <div class="score-container">
+            <h1 class="text-2xl font-bold mb-4 text-center">Congratulations!</h1>
+            <p class="text-center text-gray-500 mb-4">Here's how you did in the Bible Quiz</p>
+            
+            <div class="score-card">
+                <div class="score-icons">
+                    <i class="fas fa-trophy score-icon"></i>
+                    <i class="fas fa-star score-icon"></i>
+                    <i class="fas fa-medal score-icon"></i>
+                </div>
+                <div class="score-label">Your Score</div>
+                <div class="score-display {% if score < 0 %}negative-score{% else %}positive-score{% endif %}">
+                    K {{ score|floatformat:2 }}
+                </div>
+                <div class="score-context">
+                    {% if score > 10 %}
+                    Amazing! You're in the top 10% of players
+                    {% elif score > 5 %}
+                    Great job! You're doing well
+                    {% elif score > 0 %}
+                    Good effort! Keep practicing
+                    {% else %}
+                    Don't worry, you'll do better next time
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if score > 5 %}
+            <div class="achievement-banner">
+                <div class="achievement-icon">
+                    <i class="fas fa-award"></i>
+                </div>
+                <div class="achievement-text">
+                    <div class="achievement-title">Achievement Unlocked!</div>
+                    <div class="achievement-desc">Scripture Scholar: Score over 5 points in a quiz</div>
+                </div>
+            </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Save Score</button>
+                <a href="{% url 'quiz' %}" class="btn btn-secondary">Play Again</a>
+            </form>
+
+            <div class="share-section">
+                <p class="share-title">SHARE YOUR SCORE</p>
+                <div class="share-buttons">
+                    <a href="#" class="share-button facebook" onclick="shareScore('facebook')">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="share-button twitter" onclick="shareScore('twitter')">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="share-button whatsapp" onclick="shareScore('whatsapp')">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'home' %}" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'games_hub' %}" class="nav-item active">
+            <i class="fas fa-gamepad"></i>
+            <span>Games</span>
+        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
+    </nav>
+
+    <script>
+        // Theme toggle
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+        });
+
+        // Add form-control class to all inputs
+        document.querySelectorAll('form input').forEach(input => {
+            input.classList.add('form-control');
+            input.placeholder = input.name === 'username' ? 'Enter your name to save score' : '';
+        });
+
+        // Confetti animation
+        function createConfetti() {
+            const container = document.getElementById('confetti-container');
+            const colors = ['#07C160', '#1890ff', '#FFD700', '#FF4D4F', '#722ED1', '#13C2C2', '#FA8C16'];
+            
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    
+                    // Random position, color, size and delay
+                    const size = Math.random() * 8 + 6;
+                    const left = Math.random() * 100;
+                    const delay = Math.random() * 3;
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const duration = Math.random() * 3 + 3;
+                    
+                    confetti.style.left = `${left}%`;
+                    confetti.style.width = `${size}px`;
+                    confetti.style.height = `${size}px`;
+                    confetti.style.backgroundColor = color;
+                    confetti.style.animationDelay = `${delay}s`;
+                    confetti.style.animationDuration = `${duration}s`;
+                    
+                    // Use different shapes
+                    if (Math.random() > 0.5) {
+                        confetti.style.borderRadius = '50%';
+                    } else {
+                        confetti.style.borderRadius = '0';
+                        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    }
+                    
+                    container.appendChild(confetti);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, (delay + duration) * 1000);
+                }, Math.random() * 500);
+            }
+        }
+
+        // Show confetti for positive scores
+        const score = {{ score }};
+        if (score > 0) {
+            setTimeout(createConfetti, 500);
+        }
+
+        // Form submission
+        document.getElementById('score-form').addEventListener('submit', function(e) {
+            // Only show visual feedback, don't prevent form submission
+            showToast("Score submitted successfully!", true);
+        });
+
+        // Toast notification function
+        function showToast(message, isSuccess = true) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = toast.querySelector('.toast-icon');
+            
+            // Set message and styling
+            toastMessage.textContent = message;
+            toast.className = `toast ${isSuccess ? 'toast-success show' : 'toast-error show'}`;
+            toastIcon.className = `fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'} toast-icon`;
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Share functionality
+        function shareScore(platform) {
+            const score = '{{ score|floatformat:2 }}';
+            const text = `I scored K ${score} in the Bible Quiz on SwiftFind! Can you beat my score?`;
+            const url = window.location.origin + '{% url "quiz" %}';
+            
+            let shareUrl = '';
+            
+            switch(platform) {
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
+                    break;
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+                    break;
+                case 'whatsapp':
+                    shareUrl = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
+                    break;
+            }
+            
+            if (shareUrl) {
+                window.open(shareUrl, '_blank');
+                showToast("Sharing your score!", true);
+            }
+        }
+
+        // Add pulse animation to button
+        document.querySelector('.btn-primary').classList.add('pulse');
+    </script>
+</body>
+</html>

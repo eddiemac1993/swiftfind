@@ -1,0 +1,151 @@
+{% extends 'pos_system/base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="section-title">
+    <i class="fas fa-cog"></i>
+    Admin Dashboard
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-number">ZMW {{ today_total|floatformat:2 }}</span>
+        <div class="stat-label">Today's Sales</div>
+    </div>
+
+    <div class="stat-card">
+        <span class="stat-number">{{ today_transactions }}</span>
+        <div class="stat-label">Today's Transactions</div>
+    </div>
+
+    <div class="stat-card">
+        <span class="stat-number">ZMW {{ week_total|floatformat:2 }}</span>
+        <div class="stat-label">This Week's Sales</div>
+    </div>
+
+    <div class="stat-card">
+        <span class="stat-number">ZMW {{ month_total|floatformat:2 }}</span>
+        <div class="stat-label">This Month's Sales</div>
+    </div>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-boxes"></i>
+            Inventory Summary
+        </div>
+        <div class="card-body">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number">{{ total }}</span>
+                    <div class="stat-label">Total Products</div>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-number" style="color: var(--warning);">{{ low_stock }}</span>
+                    <div class="stat-label">Low Stock</div>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-number" style="color: var(--danger);">{{ out_of_stock }}</span>
+                    <div class="stat-label">Out of Stock</div>
+                </div>
+            </div>
+
+            {% if low_stock_products %}
+                <h4 style="margin-top: 20px; color: var(--warning);">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Low Stock Products
+                </h4>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Stock</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in low_stock_products %}
+                            <tr>
+                                <td>{{ product.name }}</td>
+                                <td>{{ product.stock_quantity }}</td>
+                                <td>ZMW {{ product.price|floatformat:2 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="{% url 'pos_system:inventory' %}" class="btn btn-warning" style="margin-top: 10px;">
+                    <i class="fas fa-boxes"></i>
+                    Manage Inventory
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-chart-line"></i>
+            Sales Performance
+        </div>
+        <div class="card-body">
+            <div style="text-align: center; padding: 40px 20px; color: var(--gray);">
+                <i class="fas fa-chart-pie" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+                <p>Sales charts coming soon</p>
+                <p>Check back later for visual sales data</p>
+            </div>
+
+            <div class="stats-grid" style="margin-top: 20px;">
+                <div class="stat-card">
+                    <span class="stat-number">{{ week_transactions }}</span>
+                    <div class="stat-label">Weekly Transactions</div>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-number">{{ month_transactions }}</span>
+                    <div class="stat-label">Monthly Transactions</div>
+                </div>
+            </div>
+
+            <a href="{% url 'pos_system:sales_report' %}" class="btn btn-primary" style="margin-top: 20px; width: 100%;">
+                <i class="fas fa-file-alt"></i>
+                View Detailed Sales Report
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-tools"></i>
+        System Management
+    </div>
+    <div class="card-body">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <a href="{% url 'pos_system:category_list' %}" class="btn btn-secondary">
+                <i class="fas fa-tags"></i>
+                Manage Categories
+            </a>
+
+            <a href="{% url 'pos_system:inventory' %}" class="btn btn-secondary">
+                <i class="fas fa-boxes"></i>
+                Manage Products
+            </a>
+
+            <a href="{% url 'pos_system:reports' %}" class="btn btn-secondary">
+                <i class="fas fa-chart-bar"></i>
+                View Reports
+            </a>
+
+            <button class="btn btn-secondary">
+                <i class="fas fa-cog"></i>
+                System Settings
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

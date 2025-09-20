@@ -1,0 +1,18 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools %}
+    {% if request.GET.business_id %}
+    <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+        <a href="upload_multiple/?business_id={{ request.GET.business_id }}" class="button">
+            <i class="fas fa-upload"></i> Upload Multiple
+        </a>
+        <a href="{% url 'admin:directory_business_change' request.GET.business_id %}" class="button">
+            <i class="fas fa-arrow-left"></i> Back to Business
+        </a>
+        <a href="add/?business_id={{ request.GET.business_id }}" class="button">
+            <i class="fas fa-plus"></i> Add Single Image
+        </a>
+    </div>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "pos_system/base.html" %}
+
+{% block title %}Reports - {{ business.name }}{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'pos_system:dashboard' %}">Dashboard</a> &raquo; Reports
+</div>
+
+<div class="section-title">
+    <i class="fas fa-chart-bar"></i>
+    Reports Dashboard
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-number">ZMW {{ sales_stats.total_sales|default:"0"|floatformat:2 }}</span>
+        <span class="stat-label">Total Sales (30 Days)</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">{{ sales_stats.total_transactions|default:"0" }}</span>
+        <span class="stat-label">Transactions</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">ZMW {{ sales_stats.avg_sale|default:"0"|floatformat:2 }}</span>
+        <span class="stat-label">Average Sale</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">{{ product_stats.total_products|default:"0" }}</span>
+        <span class="stat-label">Total Products</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-file-alt"></i> Report Types
+    </div>
+    <div class="card-body">
+        <div class="grid-3">
+            {% for report in report_types %}
+            <a href="{% url report.url %}" class="btn btn-secondary">
+                <i class="fas fa-chevron-right"></i> {{ report.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

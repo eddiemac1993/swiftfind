@@ -1,0 +1,47 @@
+{% extends 'pos_system/base.html' %}
+
+{% block title %}Add Category{% endblock %}
+
+{% block content %}
+<div class="section-title">
+    <i class="fas fa-tag"></i>
+    Add New Category
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Category Name*</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    Save Category
+                </button>
+                <a href="{% url 'pos_system:category_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-info-circle"></i>
+        Tips
+    </div>
+    <div class="card-body">
+        <ul style="padding-left: 20px;">
+            <li>Keep category names simple and descriptive</li>
+            <li>Use broad categories that can group multiple products</li>
+            <li>Avoid creating too many similar categories</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

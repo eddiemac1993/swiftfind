@@ -1,0 +1,498 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FF6A00">
+    <meta name="description" content="Create Post - SwiftFind">
+    <title>Create Post | SwiftFind</title>
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #FF6A00;
+            --primary-dark: #E05D00;
+            --primary-light: #FFF0E6;
+            --secondary-color: #F5F5F5;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #E0E0E0;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --dark-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding-bottom: 80px;
+            font-family: 'Roboto', Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .form-card {
+            background-color: var(--white);
+            border-radius: 4px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .dark-mode .form-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+            border-color: #333;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dark-mode .section-title {
+            color: var(--dark-text);
+            border-bottom-color: #333;
+        }
+
+        .app-header {
+            background-color: var(--white);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 12px 15px;
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .location {
+            font-weight: 500;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .location i {
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            color: var(--light-text);
+            font-size: 16px;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .theme-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .dark-mode .theme-btn:hover {
+            background-color: #333;
+        }
+
+        .light-icon {
+            display: inline-block;
+        }
+
+        .dark-icon {
+            display: none;
+        }
+
+        .dark-mode .light-icon {
+            display: none;
+        }
+
+        .dark-mode .dark-icon {
+            display: inline-block;
+            color: var(--dark-text);
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--white);
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 0;
+            flex: 1;
+            text-decoration: none;
+            color: var(--light-text);
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 12px;
+        }
+
+        .dark-mode .nav-item {
+            color: var(--dark-light-text);
+        }
+
+        .nav-item i {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        /* Form styling */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 400;
+            margin-bottom: 6px;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .dark-mode .form-group label {
+            color: var(--dark-text);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            font-size: 14px;
+            background-color: var(--white);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .form-group input,
+        .dark-mode .form-group textarea,
+        .dark-mode .form-group select {
+            background-color: var(--dark-surface);
+            border-color: #333;
+            color: var(--dark-text);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 1px rgba(255, 106, 0, 0.2);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .action-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 3px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+        }
+
+        .action-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .dark-mode .error-message {
+            color: #fc8181;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .dark-mode .back-link {
+            color: #ff8c4d;
+        }
+
+        /* Install button */
+        .install-button {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .form-card {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Install Button -->
+    <button id="install-button" class="install-button fixed bottom-20 right-4 z-50 bg-orange-500 text-white rounded-full shadow hover:bg-orange-600 transition-all" style="display: none;" aria-label="Install app">
+        <i class="fas fa-download"></i>
+    </button>
+
+    <header class="app-header">
+        <div class="header-top">
+            <div class="location">
+                <i class="fas fa-edit"></i>
+                <span>Create Post</span>
+            </div>
+            <div class="user-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="container mx-auto px-3 py-3 max-w-4xl">
+        <!-- Form Card -->
+        <div class="form-card">
+            <h3 class="section-title">
+                <i class="fas fa-info-circle mr-2 text-orange-600 dark:text-orange-400"></i>
+                Post Details
+            </h3>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <!-- Display form errors -->
+                {% if form.errors %}
+                    <div class="bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded mb-4 dark:bg-red-900 dark:border-red-800 dark:text-red-200">
+                        <p class="font-medium">Please correct the errors below.</p>
+                    </div>
+                {% endif %}
+
+                <!-- Title Field -->
+                <div class="form-group">
+                    <label for="id_title">Title</label>
+                    <input type="text" id="id_title" name="title" value="{{ form.title.value|default:'' }}" required placeholder="Enter a descriptive title">
+                    {% if form.title.errors %}
+                        <div class="error-message">{{ form.title.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Description Field -->
+                <div class="form-group">
+                    <label for="id_description">Description</label>
+                    <textarea id="id_description" name="description" required placeholder="Provide a detailed description">{{ form.description.value|default:'' }}</textarea>
+                    {% if form.description.errors %}
+                        <div class="error-message">{{ form.description.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Category Field -->
+                <div class="form-group">
+                    <label for="id_category">Category</label>
+                    <select id="id_category" name="category" required>
+                        <option value="">Select a category</option>
+                        {% for value, label in form.category.field.choices %}
+                            <option value="{{ value }}" {% if form.category.value == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if form.category.errors %}
+                        <div class="error-message">{{ form.category.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Contact Information Card -->
+            <div class="form-card">
+                <h3 class="section-title">
+                    <i class="fas fa-address-card mr-2 text-orange-600 dark:text-orange-400"></i>
+                    Contact Information
+                </h3>
+
+                <!-- Phone Number Field -->
+                <div class="form-group">
+                    <label for="id_phone_number">Phone Number</label>
+                    <input type="text" id="id_phone_number" name="phone_number" value="{{ form.phone_number.value|default:'' }}" pattern="[0-9]{10}" placeholder="Enter a 10-digit phone number">
+                    {% if form.phone_number.errors %}
+                        <div class="error-message">{{ form.phone_number.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Location Field -->
+                <div class="form-group">
+                    <label for="id_location">Location</label>
+                    <input type="text" id="id_location" name="location" value="{{ form.location.value|default:'' }}" placeholder="Enter the location (optional)">
+                    {% if form.location.errors %}
+                        <div class="error-message">{{ form.location.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Price Range Field -->
+                <div class="form-group">
+                    <label for="id_price_range">Price Range</label>
+                    <input type="text" id="id_price_range" name="price_range" value="{{ form.price_range.value|default:'' }}" placeholder="Enter the price range (optional)">
+                    {% if form.price_range.errors %}
+                        <div class="error-message">{{ form.price_range.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="action-button mt-4">
+                    <i class="fas fa-paper-plane mr-2"></i> Create Post
+                </button>
+
+                <!-- Back Link -->
+                <a href="{% url 'post_list' %}" class="back-link">
+                    <i class="fas fa-arrow-left mr-1"></i> Back to Posts
+                </a>
+            </form>
+        </div>
+    </main>
+
+    <!-- Bottom navigation -->
+<!-- Bottom navigation -->
+<nav class="bottom-nav">
+    <a href="{% url 'discover' %}" class="nav-item active">
+        <i class="fas fa-compass"></i>
+        <span>Discover</span>
+    </a>
+    <a href="{% url 'pos_system:marketplace' %}" class="nav-item">  <!-- Add this line -->
+        <i class="fas fa-store"></i>
+        <span>Store</span>
+    </a>
+    <a href="{% url 'about' %}" class="nav-item">
+        <i class="fas fa-info-circle"></i>
+        <span>About</span>
+    </a>
+    <a href="{% url 'pos_system:ai_assistant' %}" class="nav-item">
+        <span class="star" style="font-size: 18px;">✨</span>
+        <span>AI</span>
+    </a>
+    {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+            <i class="fas fa-user"></i>
+            <span>Me</span>
+        </a>
+    {% else %}
+        <a href="{% url 'login' %}" class="nav-item" title="Login">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Login</span>
+        </a>
+    {% endif %}
+</nav>
+
+    <script>
+        // Theme toggle
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+        });
+
+        // PWA installation
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-button').style.display = 'block';
+        });
+
+        document.getElementById('install-button').addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User ${outcome} the install prompt`);
+            deferredPrompt = null;
+            document.getElementById('install-button').style.display = 'none';
+        });
+
+        window.addEventListener('appinstalled', () => {
+            document.getElementById('install-button').style.display = 'none';
+        });
+    </script>
+</body>
+</html>

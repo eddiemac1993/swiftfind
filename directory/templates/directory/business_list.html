@@ -1,0 +1,857 @@
+{% load static %}
+{% load jcustom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Alkebulan">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business List - SwiftFind</title>
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "tdjt8dzlt8");
+    </script>
+    <style>
+        /* Global Variables */
+        :root {
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --accent-gradient: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .dark-mode {
+            --background: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5), 0 2px 4px -2px rgb(0 0 0 / 0.5);
+        }
+        /* Global Styles */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--background);
+            margin: 0;
+            padding: 2rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        h1, h2, h3 {
+            margin: 0;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Hero Section */
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    color: white;
+    padding: 6rem 2rem;
+    text-align: center;
+    border-radius: 1rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.1); /* Subtle overlay for better text contrast */
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    animation: fadeInDown 1s ease;
+}
+
+.hero p {
+    font-size: 1.25rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 2rem;
+    animation: fadeInUp 1s ease;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background-color: white;
+    color: var(--primary-color);
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: fadeInUp 1.5s ease;
+}
+
+.cta-button:hover {
+    background-color: var(--primary-hover);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cta-button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+        /* Search and Filter Form */
+        .search-form {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            padding: 1.5rem;
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow);
+        }
+
+        .search-form input,
+        .search-form select {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: var(--text-primary);
+            background-color: var(--background);
+            transition: all 0.2s ease;
+        }
+
+        .search-form input:focus,
+        .search-form select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-form button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .search-form button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Business List */
+        .business-list {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .business-item {
+            position: relative;
+            display: flex;
+            max-width: 800px;
+            min-width: 280px;
+            height: 150px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin: 20px auto;
+            position: relative; /* Ensure absolute positioning works */
+        }
+
+        .business-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+.business-logo {
+    width: 120px;
+    min-width: 120px;
+    height: 150px;
+}
+
+        .business-logo img {
+            width: 120px;
+            height: 150px;
+            object-fit: cover;
+        }
+
+.business-details {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0; /* Allows content to shrink below min-content width */
+}
+
+.business-details h2 a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.business-details p {
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin: 4px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Heart Icon Styles */
+.heart-icon {
+    position: absolute;
+    top: 10px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
+    color: red; /* Heart icon color */
+    font-size: 1.2em; /* Adjust size as needed */
+    z-index: 1; /* Ensure it appears above other elements */
+}
+
+/* Verified Tick Styles */
+.admin-tick {
+    position: absolute;
+    top: 10px; /* Adjust as needed */
+    right: 40px; /* Move it left to make space for the heart icon */
+    color: green; /* Verified tick color */
+    font-size: 0.8em; /* Adjust size as needed */
+    z-index: 1; /* Ensure it appears above other elements */
+}
+
+.business-rating {
+    margin-top: 4px;
+}
+
+.stars {
+    color: #f6ad55;
+    font-size: 14px;
+    letter-spacing: 2px;
+}
+
+.review-count {
+    color: #718096;
+    font-size: 10px;
+    margin-left: 8px;
+}
+.comment-count {
+    color: #718096; /* Same as review count */
+    font-size: 10px; /* Same as review count */
+    margin-left: 8px; /* Adjust spacing as needed */
+}
+.fas {
+    margin-right: 4px;
+    font-size: 12px;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px;
+    color: #4a5568;
+    font-size: 1.1rem;
+    background: #f7fafc;
+    border-radius: 8px;
+}
+        /* Install Paper Button */
+        .install-paper-button {
+          position: fixed;
+          bottom: 4rem;
+          right: 2rem;
+          width: auto;
+          height: 3.5rem;
+          padding: 0 1.5rem;
+          background-color: var(--primary-color);
+          color: white;
+          border-radius: 50px;
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: var(--shadow);
+          transition: background-color 0.2s ease, transform 0.2s ease;
+          z-index: 1000;
+          font-size: 1rem;
+          font-weight: 500;
+          border: none;
+          cursor: pointer;
+        }
+
+        .install-paper-button:hover {
+          background-color: var(--primary-hover);
+          transform: scale(1.05);
+        }
+
+        .install-paper-button:active {
+          transform: scale(0.95);
+        }
+
+/* Advertisement Styles */
+.advertisement {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    text-align: center;
+    padding: 1rem;
+}
+
+.advertisement a {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.ad-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.ad-text {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+.business-item {
+    cursor: pointer; /* Change cursor to pointer to indicate it's clickable */
+    /* Add any other styles you need */
+}
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0.5rem 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .bottom-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
+        }
+
+        .bottom-nav a i {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .bottom-nav a:hover {
+            color: var(--primary-color);
+        }
+
+        .bottom-nav a.active {
+            color: var(--primary-color);
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 3rem;
+            height: 3rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+    .hero {
+        padding: 4rem 1rem;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .cta-button {
+        padding: 0.5rem 1.5rem;
+        font-size: 0.875rem;
+    }
+
+    .business-logo {
+        min-width: 90px;
+        height: 150px;
+    }
+
+    .business-details {
+        padding: 8px;
+    }
+
+    .business-details h2 {
+        font-size: 10px;
+    }
+
+    .business-details p {
+        font-size: 10px;
+    }
+
+    .stars {
+        font-size: 10px;
+    }
+
+    .review-count {
+        font-size: 10px;
+    }
+}
+/* Remove default link styling for business-item-link */
+.business-item-link {
+    text-decoration: none; /* Remove underline */
+    color: inherit; /* Inherit text color from parent */
+}
+
+.business-item-link:hover {
+    text-decoration: none; /* Ensure no underline on hover */
+    color: inherit; /* Ensure no color change on hover */
+}
+.business-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+            .search-form {
+                padding: 1rem;
+            }
+
+            .search-form input,
+            .search-form select,
+            .search-form button {
+                width: 100%;
+            }
+
+            .theme-toggle {
+                bottom: 1rem;
+                left: 1rem;
+            }
+        }
+
+        /* Pagination Controls */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .pagination a {
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .pagination a:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .pagination .current {
+            padding: 0.5rem 1rem;
+            background-color: var(--background);
+            color: var(--text-primary);
+            border-radius: 0.5rem;
+        }
+/* Business Count Text */
+.business-count {
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    display: inline-block;
+    animation: fadeInUp 1s ease;
+}
+/* Newsfeed Card Styles */
+.newsfeed-section {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 1rem;
+    background-color: var(--card-bg);
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow);
+}
+
+.newsfeed-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.newsfeed-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.newsfeed-section li {
+    margin-bottom: 1rem;
+    position: relative; /* Ensure the child elements can be positioned absolutely */
+    padding-right: 120px;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.category-display {
+    position: absolute;
+    right: 1rem; /* Adjust the distance from the right edge */
+    top: 50%; /* Center vertically */
+    transform: translateY(-50%); /* Center vertically */
+    margin: 0; /* Remove default margin */
+    color: var(--text-secondary); /* Match the existing text color */
+    font-size: 0.875rem; /* Match the existing font size */
+}
+.newsfeed-section li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.newsfeed-section li a {
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+.newsfeed-section li h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.newsfeed-section li p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Responsive Design for Newsfeed */
+@media (max-width: 768px) {
+    .newsfeed-section {
+        padding: 0.5rem;
+    }
+
+    .newsfeed-section h2 {
+        font-size: 1.25rem;
+    }
+
+    .newsfeed-section li h3 {
+        font-size: 1rem;
+    }
+
+    .newsfeed-section li p {
+        font-size: 0.75rem;
+    }
+}
+/* Animation for Fade In */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+    </style>
+</head>
+<body>
+    <!-- Install PWA Button -->
+    <button id="install-button" class="install-paper-button" style="display: none;">
+        <i class="fas fa-download"></i>
+    </button>
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Discover Local Businesses</h1>
+        <p>Find the best businesses in your area. Search by name, category, or location.</p>
+        <div class="business-count">
+            Showing {{ businesses_count }} businesses.
+        </div>
+
+    </div>
+    <!-- Add "Alkebulan" in the bottom-right corner -->
+        <div class="absolute bottom-2 right-6 text-white text-sm opacity-80">
+            Alkebulan: Garden of Eden
+        </div>
+</section>
+    <!-- Search and Filter Form -->
+    <form method="get" action="." class="search-form">
+        <input type="text" name="q" placeholder="Search For Anything" value="{{ query|default:'' }}">
+        <select name="category">
+            <option value="">All Categories</option>
+            {% for category in categories %}
+                <option value="{{ category.name }}" {% if selected_category == category.name %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <select id="sort-by" name="sort_by" class="sort-by-dropdown">
+            <option value="">Sort By</option>
+            <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Rating (Highest to Lowest)</option>
+            <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Name (A-Z)</option>
+            <option value="reviews" {% if sort_by == 'reviews' %}selected{% endif %}>Most Reviewed</option>
+            <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest</option>
+        </select>
+        <button type="submit">Search</button>
+    </form>
+
+<!-- Business List -->
+<!-- Business List -->
+<div class="business-list">
+    {% if page_obj.object_list %}
+        {% for item in page_obj %}
+            {% if item.0 == 'business' %}
+                <!-- Display Business -->
+                <a href="{% url 'business-detail' item.1.pk %}" class="business-item-link">
+                    <div class="business-item">
+                        <div class="business-logo">
+                            <img src="{{ item.1.logo.url }}" alt="{{ item.1.name }} Logo" loading="lazy">
+                        </div>
+                        <div class="business-details">
+                            <h2>{{ item.1.name }}</h2>
+                            {% if item.1.is_admin_added %}
+                                <span class="admin-tick">
+                                    <i class="fa-solid fa-circle-check"></i> Verified
+                                </span>
+                            {% endif %}
+                            {% if user.is_authenticated and item.1.owner == user %}
+                                <span class="heart-icon">
+                                    <i class="fa-solid fa-heart"></i>
+                                </span>
+                            {% endif %}
+                            <p><strong>City:</strong> <i class="fas fa-map-marker-alt"></i> {{ item.1.city|capfirst }}</p>
+                            <p><strong>Category:</strong> <i class="fas fa-tag"></i> {{ item.1.category.name }}</p>
+                            <div class="business-rating">
+                                <span class="stars">
+                                    {% for i in "12345" %}
+                                        {% if i|add:0 <= item.1.rating %}
+                                            ★
+                                        {% else %}
+                                            ☆
+                                        {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <span class="review-count">({{ item.1.reviews.count }} reviews)</span>
+                                <span class="comment-count">
+                                    <i class="fas fa-comments"></i> {{ item.1.comment_count }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+            {% elif item.0 == 'advertisement' %}
+                <!-- Display Advertisement -->
+                <div class="advertisement">
+                    <a href="{{ item.1.link }}" target="_blank">
+                        <img src="{{ item.1.image.url }}" alt="{{ item.1.title }}" class="ad-image">
+                    </a>
+                    <p class="ad-text">{{ item.1.small_text }}</p>
+                </div>
+
+            {% elif item.0 == 'newsfeed' %}
+                <!-- Display Newsfeed -->
+                <div class="newsfeed-section">
+                    <h2>Latest {{ item.1.get_category_display }}</h2>
+                    <ul>
+                        <li>
+                            <a href="{{ item.1.get_absolute_url }}">
+                                <h3>{{ item.1.title }}</h3>
+                                <p class="category-display">{{ item.1.get_category_display }}</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <p class="no-results">Search for '<strong>{{ query }}</strong>' not found.</p>
+    {% endif %}
+</div>
+<br>
+<hr>
+<br>
+    <!-- Dark Mode Toggle -->
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+
+<!-- Bottom Navigation Bar -->
+<nav class="bottom-nav">
+    <a href="{% url 'post_list' %}" title="Posts">
+        <i class="fas fa-list"></i>
+        <span>Findit</span>
+    </a>
+    <a href="{% url 'home' %}" title="View Orders">
+        <i class="fas fa-shopping-cart"></i>
+        <span>Orders</span>
+    </a>
+
+    {% if not user.is_authenticated %}
+        <a href="{% url 'add-business' %}" title="Add Business">
+            <i class="fas fa-plus"></i>
+            <span>Business</span>
+        </a>
+    {% endif %}
+
+    <a href="{% url 'about' %}" title="About">
+        <i class="fas fa-info-circle"></i>
+        <span>About</span>
+    </a>
+    {% if request.user.is_superuser %}
+    <a href="{% url 'create_paper' %}" title="About">
+        <i class="fa-solid fa-newspaper"></i>
+        <span>Paper</span>
+    </a>
+    {% endif %}
+    {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}" title="Profile">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </a>
+    {% else %}
+        <a href="{% url 'login' %}" title="Login">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Login</span>
+        </a>
+    {% endif %}
+
+    {% if request.user.is_superuser %}
+        <a href="{% url 'add_guest' %}" class="fixed top-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700 transition">
+            Invitation Card
+        </a>
+    {% endif %}
+</nav>
+
+
+        <script>
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        // Check local storage for dark mode preference
+        const isDarkMode = localStorage.getItem('darkMode') === 'true';
+        if (isDarkMode) {
+            body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            themeToggle.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('darkMode', isDark);
+        });
+
+        // PWA Install Prompt
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (event) => {
+            event.preventDefault();
+            deferredPrompt = event;
+            document.getElementById('install-button').style.display = 'block';
+        });
+
+        document.getElementById('install-button').addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User installed Swift Find');
+                    } else {
+                        console.log('User dismissed the install prompt');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        });
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('{% static 'js/serviceworker.js' %}')
+                .then((registration) => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                })
+                .catch((error) => {
+                    console.log('ServiceWorker registration failed: ', error);
+                });
+        }
+    </script>
+</body>
+</html>

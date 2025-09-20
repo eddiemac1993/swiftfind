@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .receipt { width: 100%; max-width: 300px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; }
+        .header { text-align: center; }
+        .details { margin-top: 20px; }
+        .details p { margin: 5px 0; }
+        .footer { text-align: center; margin-top: 20px; }
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="receipt">
+        <div class="header">
+            <h2>POS System</h2>
+            <p>Receipt</p>
+        </div>
+        <div class="details">
+            <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+            <p><strong>Date:</strong> {{ order.order_date }}</p>
+            <h3>Items:</h3>
+            <ul>
+                {% for sale in sales %}
+                    <li>
+                        <strong>{{ sale.product.name }}</strong> - 
+                        {{ sale.quantity }} x K{{ sale.product.price }} = K{{ sale.total_price }}
+                    </li>
+                {% endfor %}
+            </ul>
+            <p><strong>Total Amount:</strong> K{{ order.total_amount }}</p>
+        </div>
+        <a href="{% url 'receipt_pdf' order.id %}" target="_blank">Download PDF</a>
+        <div class="footer">
+            <p>Thank you for your purchase!</p>
+            <a href="{% url 'product_list' %}">Back to Product List</a>
+        </div>
+    </div>
+</body>
+</html>

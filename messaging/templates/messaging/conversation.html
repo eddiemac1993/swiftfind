@@ -1,0 +1,934 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#FF6A00">
+    <title>{{ conversation.business.name }} - SwiftFind</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "tdjt8dzlt8");
+    </script>
+    <style>
+        :root {
+            --primary-color: #FF6A00;
+            --primary-light: #FF8C33;
+            --primary-dark: #E05D00;
+            --secondary-color: #F8F8F8;
+            --text-color: #333333;
+            --light-text: #777777;
+            --border-color: #E0E0E0;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #F0F0F0;
+            --dark-light-text: #AAAAAA;
+            --dark-border: #333333;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --dark-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --dark-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --dark-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            padding-bottom: 80px;
+            transition: var(--transition);
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        /* Header styles */
+        .app-header {
+            background-color: var(--white);
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow-sm);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .conversation-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .back-button {
+            color: var(--text-color);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .back-button:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .back-button {
+            color: var(--dark-text);
+        }
+
+        .dark-mode .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .conversation-info {
+            min-width: 0;
+        }
+
+        .conversation-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: var(--transition);
+        }
+
+        .dark-mode .conversation-title {
+            color: var(--dark-text);
+        }
+
+        .conversation-status {
+            font-size: 0.75rem;
+            color: var(--light-text);
+            margin-top: 2px;
+        }
+
+        .dark-mode .conversation-status {
+            color: var(--dark-light-text);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        .action-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .action-btn {
+            color: var(--dark-text);
+        }
+
+        .dark-mode .action-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-btn .dark-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .light-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .dark-icon {
+            display: block;
+        }
+
+        /* Main content container */
+        .app-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 9px;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 136px); /* Adjust based on header and bottom nav heights */
+        }
+
+        /* Messages container - fixed height */
+        .messages-container {
+            padding: 0; /* Remove padding here, add to inner elements */
+            flex: 1;
+            min-height: 300px;
+            margin: 16px 0;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Hide any overflow from the container */
+        }
+
+        .dark-mode .messages-container {
+            box-shadow: var(--dark-shadow-sm);
+        }
+
+        /* Scrollable messages area */
+        .messages-scrollable {
+            flex: 1;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+            padding: 16px;
+            padding-right: 8px; /* Space for scrollbar */
+        }
+
+        /* Message styles */
+        .message {
+            margin-bottom: 16px;
+            max-width: 85%;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        .message.sent {
+            margin-left: auto;
+            align-items: flex-end;
+        }
+
+        .message.received {
+            margin-right: auto;
+            align-items: flex-start;
+        }
+
+        .message-bubble {
+            display: inline-block;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+            word-wrap: break-word;
+            line-height: 1.4;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .message.sent .message-bubble {
+            background-color: var(--primary-color);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.sent .message-bubble:first-child {
+            border-top-right-radius: 4px;
+        }
+
+        .message.received .message-bubble {
+            background-color: var(--border-color);
+            color: var(--text-color);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.received .message-bubble:first-child {
+            border-top-left-radius: 4px;
+        }
+
+        .dark-mode .message.received .message-bubble {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: var(--dark-text);
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            margin-top: 4px;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .dark-mode .message-time {
+            color: var(--dark-light-text);
+        }
+
+        .message.sent .message-time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .message-status {
+            font-size: 0.6rem;
+        }
+
+        /* Message form */
+        .message-form-container {
+            position: sticky;
+            bottom: 80px;
+            padding: 12px 0;
+            transition: var(--transition);
+        }
+
+        .dark-mode .message-form-container {
+            background-color: var(--dark-bg);
+        }
+
+        .message-form {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .message-input-container {
+            flex-grow: 1;
+            position: relative;
+        }
+
+        .message-input {
+            width: 100%;
+            padding: 12px 48px 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            outline: none;
+            font-size: 0.95rem;
+            background-color: var(--white);
+            color: var(--text-color);
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .dark-mode .message-input {
+            background-color: var(--dark-surface);
+            border-color: var(--dark-border);
+            color: var(--dark-text);
+            box-shadow: var(--dark-shadow-sm);
+        }
+
+        .message-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 106, 0, 0.2);
+        }
+
+        .input-actions {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-action-btn {
+            background: none;
+            border: none;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .dark-mode .input-action-btn {
+            color: var(--dark-light-text);
+        }
+
+        .input-action-btn:hover {
+            color: var(--primary-color);
+        }
+
+        .send-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+        }
+
+        .send-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .send-button:active {
+            transform: translateY(0);
+        }
+
+        .send-button i {
+            font-size: 1rem;
+        }
+
+        /* Empty state */
+        .empty-messages {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--light-text);
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .dark-mode .empty-messages {
+            color: var(--dark-light-text);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .empty-title {
+            color: var(--dark-text);
+        }
+
+        .empty-description {
+            font-size: 0.9rem;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--white);
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--light-text);
+            font-size: 10px;
+            font-weight: 500;
+            position: relative;
+            padding: 4px 12px;
+            border-radius: 12px;
+            transition: var(--transition);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+            transition: var(--transition);
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active i {
+            transform: translateY(-3px);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5px;
+            height: 5px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 12px;
+            margin-bottom: 16px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .typing-indicator.active {
+            opacity: 1;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--light-text);
+            border-radius: 50%;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .dark-mode .typing-dot {
+            background-color: var(--dark-light-text);
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-4px); }
+        }
+
+        /* Date separator */
+        .date-separator {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: var(--light-text);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .dark-mode .date-separator {
+            color: var(--dark-light-text);
+        }
+
+        .date-separator::before,
+        .date-separator::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 0 12px;
+        }
+
+        .dark-mode .date-separator::before,
+        .dark-mode .date-separator::after {
+            background-color: var(--dark-border);
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .app-header {
+                padding: 16px 24px;
+            }
+
+            .messages-container {
+                margin: 24px 0;
+            }
+
+            .messages-scrollable {
+                padding: 24px;
+            }
+
+            .message-form-container {
+                padding: 16px 0;
+            }
+
+            .bottom-nav {
+                padding: 12px 0;
+            }
+
+            .nav-item {
+                font-size: 11px;
+                padding: 4px 16px;
+            }
+
+            .nav-item i {
+                font-size: 22px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .app-header {
+                padding: 16px 32px;
+            }
+
+            .messages-scrollable {
+                padding: 32px;
+            }
+
+            .message {
+                max-width: 70%;
+            }
+        }
+
+        /* Animation for new messages */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message:last-child {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 10px;
+        }
+
+        .dark-mode ::-webkit-scrollbar-thumb {
+            background: var(--dark-border);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--light-text);
+        }
+
+        .dark-mode ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-light-text);
+        }
+    </style>
+</head>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="conversation-header">
+                <a href="{% url 'messaging:conversation_list' %}" class="back-button" aria-label="Back to conversations">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div class="conversation-info">
+                    <h1 class="conversation-title" title="{{ conversation.business.name }}">{{ display_name }}</h1>
+                    <div class="conversation-status">
+                        <span id="connection-status">Online</span>
+                        <span id="typing-status" class="typing-status"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="user-actions">
+                <button class="action-btn" aria-label="Search conversation">
+                <button id="theme-toggle" class="action-btn theme-btn" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main">
+        <div class="messages-container" id="messages-container">
+            <div class="messages-scrollable">
+                {% if messages %}
+                    {% for message in messages %}
+                    {% ifchanged message.timestamp.date %}
+                    <div class="date-separator">
+                        {{ message.timestamp|date:"F j, Y" }}
+                    </div>
+                    {% endifchanged %}
+                    <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+                        <div class="message-bubble">
+                            <p>{{ message.content }}</p>
+                        </div>
+                        <div class="message-time">
+                            {{ message.timestamp|time:"g:i A" }}
+                            {% if message.sender == request.user %}
+                            <span class="message-status">
+                                <i class="fas fa-check"></i>
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-messages">
+                        <div class="empty-icon">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <h3 class="empty-title">No messages yet</h3>
+                        <p class="empty-description">Start the conversation with {{ conversation.business.name }}</p>
+                    </div>
+                {% endif %}
+
+                <!-- Typing indicator -->
+                <div class="typing-indicator" id="typing-indicator">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+        </div>
+
+<div class="message-form-container">
+    {% if request.session.pending_order %}
+    <div class="alert alert-info" style="
+        background-color: rgba(23, 162, 184, 0.1);
+        color: #17a2b8;
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        border: 1px solid rgba(23, 162, 184, 0.2);
+    ">
+        <p style="margin: 0; font-size: 0.9rem;">
+            <i class="fas fa-info-circle"></i> Your order details are ready to send. Please review below.
+        </p>
+    </div>
+    {% endif %}
+
+    <form method="post" class="message-form">
+        {% csrf_token %}
+        <div class="message-input-container">
+            <textarea name="content" placeholder="Type your message..."
+                   class="message-input" required id="message-input" style="
+                   height: auto;
+                   min-height: 48px;
+                   resize: none;
+                   padding: 12px 16px;
+                   line-height: 1.4;
+            ">{% if request.session.pending_order %}{{ request.session.pending_order }}{% endif %}</textarea>
+            <div class="input-actions">
+                <button type="button" class="input-action-btn" aria-label="Attach file">
+                    <i class="fas fa-paperclip"></i>
+                </button>
+                <button type="button" class="input-action-btn" aria-label="Send photo">
+                    <i class="fas fa-camera"></i>
+                </button>
+            </div>
+        </div>
+        <button type="submit" class="send-button" aria-label="Send message">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </form>
+</div>
+
+<script>
+// Auto-expand textarea and focus it
+const messageInput = document.getElementById('message-input');
+
+function adjustTextareaHeight() {
+    messageInput.style.height = 'auto';
+    messageInput.style.height = (messageInput.scrollHeight) + 'px';
+}
+
+messageInput.addEventListener('input', adjustTextareaHeight);
+
+// Initial adjustment if there's content
+if (messageInput.value) {
+    adjustTextareaHeight();
+    messageInput.focus();
+}
+
+// Clear the pending order after sending
+document.querySelector('.message-form').addEventListener('submit', function() {
+    fetch("{% url 'messaging:clear_pending_order' %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    });
+});
+</script>
+    </main>
+
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'pos_system:marketplace' %}" class="nav-item">
+            <i class="fas fa-store"></i>
+            <span>Store</span>
+        </a>
+        <a href="{% url 'messaging:conversation_list' %}" class="nav-item active">
+            <i class="fas fa-comments"></i>
+            <span>Messages</span>
+        </a>
+                    <a href="{% url 'pos_system:ai_assistant' %}" class="nav-item">
+        <span class="star" style="font-size: 18px;">✨</span>
+        <span>AI</span>
+    </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
+    </nav>
+
+    <script>
+        // Theme Toggle
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+
+            // Update meta theme-color
+            const themeColor = isDark ? '#121212' : '#FF6A00';
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', themeColor);
+        });
+
+        // Auto-scroll to bottom of messages
+        const messagesScrollable = document.querySelector('.messages-scrollable');
+        function scrollToBottom() {
+            messagesScrollable.scrollTop = messagesScrollable.scrollHeight;
+        }
+
+        // Initial scroll to bottom
+        scrollToBottom();
+
+        // Update the MutationObserver to watch the scrollable container
+        const observer = new MutationObserver(function(mutations) {
+            scrollToBottom();
+        });
+
+        observer.observe(messagesScrollable, {
+            childList: true,
+            subtree: true
+        });
+
+        // Focus message input on load
+        document.getElementById('message-input').focus();
+
+        // Typing indicator simulation (for demo purposes)
+        let typingTimeout;
+        const messageInput = document.getElementById('message-input');
+        const typingIndicator = document.getElementById('typing-indicator');
+
+        messageInput.addEventListener('input', function() {
+            // In a real app, you would send a "user is typing" event to the server
+            simulateTypingIndicator();
+        });
+
+        function simulateTypingIndicator() {
+            // Show typing indicator
+            typingIndicator.classList.add('active');
+            document.getElementById('typing-status').textContent = ' is typing...';
+
+            // Clear any existing timeout
+            clearTimeout(typingTimeout);
+
+            // Hide after 2 seconds of inactivity
+            typingTimeout = setTimeout(function() {
+                typingIndicator.classList.remove('active');
+                document.getElementById('typing-status').textContent = '';
+            }, 2000);
+        }
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('{% static "service-worker.js" %}')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+
+        // Connection status simulation
+        function updateConnectionStatus() {
+            const statusElement = document.getElementById('connection-status');
+            const isOnline = navigator.onLine;
+
+            if (isOnline) {
+                statusElement.textContent = 'Online';
+                statusElement.style.color = '';
+            } else {
+                statusElement.textContent = 'Offline';
+                statusElement.style.color = '#FF5252';
+            }
+        }
+
+        window.addEventListener('online', updateConnectionStatus);
+        window.addEventListener('offline', updateConnectionStatus);
+        updateConnectionStatus();
+
+        // Add smooth transitions when page loads
+        document.body.style.opacity = '0';
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                document.body.style.transition = 'opacity 0.3s ease';
+                document.body.style.opacity = '1';
+            }, 50);
+        });
+    </script>
+</body>
+</html>

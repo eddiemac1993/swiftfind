@@ -1,0 +1,1553 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta name="theme-color" content="#07C160">
+    <meta name="description" content="Register - Distribution Platform">
+    <title>Register - Distribution Platform</title>
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "tdjt8dzlt8");
+    </script>
+    <style>
+        .select2-container--default .select2-selection--single {
+            height: 48px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 46px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 26px;
+        }
+        .dark-mode .select2-container--default .select2-selection--single {
+            background-color: var(--dark-surface);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        :root {
+            --primary-color: #FF6A00;
+            --primary-dark: #FF6A00;
+            --primary-light: #e6f7ef;
+            --secondary-color: #F8F8F8;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #EEE;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --error-color: #dc2626;
+            --error-bg: rgba(220, 38, 38, 0.1);
+            --success-color: #07C160;
+            --success-bg: rgba(7, 193, 96, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding-bottom: 72px;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        /* Header styles */
+        .app-header {
+            background-color: var(--white);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .dark-mode .header-title {
+            color: var(--dark-text);
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--secondary-color);
+        }
+
+        .dark-mode .theme-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-btn .dark-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .light-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .dark-icon {
+            display: block;
+            color: var(--dark-text);
+        }
+
+        /* Registration container with bubble background */
+        .register-container {
+            position: relative;
+            overflow: hidden;
+            padding: 24px 16px;
+            max-width: 450px;
+            margin: 20px auto;
+        }
+
+        .register-bg-decor {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.15;
+            animation: float 15s infinite linear;
+        }
+
+        .bubble-1 {
+            width: 200px;
+            height: 200px;
+            background: var(--primary-color);
+            top: -50px;
+            left: -50px;
+            animation-delay: 0s;
+        }
+
+        .bubble-2 {
+            width: 300px;
+            height: 300px;
+            background: #6a00ff;
+            bottom: -100px;
+            right: -100px;
+            animation-delay: 2s;
+        }
+
+        .bubble-3 {
+            width: 150px;
+            height: 150px;
+            background: #00b4ff;
+            top: 30%;
+            right: -50px;
+            animation-delay: 4s;
+        }
+
+        .bubble-4 {
+            width: 250px;
+            height: 250px;
+            background: #07C160;
+            bottom: -50px;
+            left: 30%;
+            animation-delay: 6s;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg);
+            }
+            100% {
+                transform: translateY(0) rotate(360deg);
+            }
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .register-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .dark-mode .register-header h2 {
+            color: var(--dark-text);
+        }
+
+        .register-header p {
+            color: var(--light-text);
+            font-size: 14px;
+        }
+
+        .dark-mode .register-header p {
+            color: var(--dark-light-text);
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .progress-steps:before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--border-color);
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .dark-mode .progress-steps:before {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--border-color);
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .dark-mode .step-number {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--dark-light-text);
+        }
+
+        .step.active .step-number {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .step.completed .step-number {
+            background-color: var(--primary-dark);
+            color: white;
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: var(--light-text);
+            text-align: center;
+        }
+
+        .dark-mode .step-label {
+            color: var(--dark-light-text);
+        }
+
+        .step.active .step-label {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .step.completed .step-label {
+            color: var(--text-color);
+        }
+
+        .dark-mode .step.completed .step-label {
+            color: var(--dark-text);
+        }
+
+        /* Form Steps */
+        .form-step {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .dark-mode .form-group label {
+            color: var(--dark-text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--white);
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .dark-mode .form-control {
+            background-color: var(--dark-surface);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--dark-text);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 106, 0, 0.2);
+        }
+
+        .dark-mode .form-control:focus {
+            box-shadow: 0 0 0 2px rgba(255, 106, 0, 0.3);
+        }
+
+        /* Validation states */
+        .is-invalid {
+            border-color: var(--error-color) !important;
+            box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2) !important;
+        }
+
+        .dark-mode .is-invalid {
+            border-color: #f87171 !important;
+            box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.3) !important;
+        }
+
+        .is-valid {
+            border-color: var(--success-color) !important;
+            box-shadow: 0 0 0 2px rgba(7, 193, 96, 0.2) !important;
+        }
+
+        .dark-mode .is-valid {
+            box-shadow: 0 0 0 2px rgba(7, 193, 96, 0.3) !important;
+        }
+
+        /* Error messages */
+        .error-message {
+            color: var(--error-color);
+            background: var(--error-bg);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 3px solid var(--error-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .error-message i {
+            font-size: 16px;
+        }
+
+        .field-error {
+            color: var(--error-color);
+            font-size: 13px;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background-color: var(--error-bg);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            transition: opacity 0.3s, height 0.3s, margin-top 0.3s;
+        }
+
+        .field-error.show {
+            opacity: 1;
+            height: auto;
+            margin-top: 8px;
+        }
+
+        .field-error i {
+            font-size: 14px;
+        }
+
+        .dark-mode .field-error {
+            background-color: rgba(220, 38, 38, 0.2);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--light-text);
+        }
+
+        .dark-mode .toggle-password {
+            color: var(--dark-light-text);
+        }
+
+        /* Navigation Buttons */
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+        }
+
+        .btn-prev, .btn-next {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-prev {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--light-text);
+        }
+
+        .dark-mode .btn-prev {
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--dark-light-text);
+        }
+
+        .btn-prev:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .btn-prev:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-next {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+
+        .btn-next:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 106, 0, 0.3);
+        }
+
+        /* Hide previous button on first step */
+        .step-1 .btn-prev {
+            visibility: hidden;
+        }
+
+        /* Change next button to submit on last step */
+        .step-3 .btn-next {
+            display: none;
+        }
+        .login-prompt a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .btn-submit {
+            display: none;
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 106, 0, 0.3);
+        }
+
+        .step-3 .btn-submit {
+            display: block;
+        }
+
+        .additional-info {
+            margin-top: 20px;
+            padding: 12px;
+            background-color: var(--primary-light);
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .dark-mode .additional-info {
+            background-color: rgba(255, 106, 0, 0.1);
+        }
+
+        /* Help Text */
+        .helptext {
+            display: block;
+            font-size: 13px;
+            color: var(--light-text);
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+
+        .dark-mode .helptext {
+            color: var(--dark-light-text);
+        }
+
+        .helptext ul {
+            margin-top: 6px;
+            padding-left: 18px;
+        }
+
+        .helptext li {
+            margin-bottom: 4px;
+            position: relative;
+        }
+
+        .helptext li:before {
+            content: "•";
+            color: var(--primary-color);
+            position: absolute;
+            left: -14px;
+        }
+
+        /* Username suggestions */
+        .username-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .suggestion-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            color: var(--light-text);
+            transition: all 0.2s;
+        }
+
+        .dark-mode .suggestion-btn {
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--dark-light-text);
+        }
+
+        .suggestion-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--white);
+            padding: 12px 0;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--light-text);
+            font-size: 11px;
+            font-weight: 500;
+            position: relative;
+            padding: 6px 12px;
+        }
+
+        .dark-mode .nav-item {
+            color: var(--dark-light-text);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active i {
+            transform: translateY(-2px);
+        }
+
+        /* Placeholder styling */
+        ::placeholder {
+            color: var(--light-text);
+            opacity: 1;
+        }
+
+        .dark-mode ::placeholder {
+            color: var(--dark-light-text);
+        }
+
+        :-ms-input-placeholder {
+            color: var(--light-text);
+        }
+
+        .dark-mode :-ms-input-placeholder {
+            color: var(--dark-light-text);
+        }
+
+        ::-ms-input-placeholder {
+            color: var(--light-text);
+        }
+
+        .dark-mode ::-ms-input-placeholder {
+            color: var(--dark-light-text);
+        }
+
+        /* Terms checkbox styling */
+        .terms-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 16px;
+        }
+/* Alert Messages */
+#form-messages {
+    margin-bottom: 20px;
+}
+
+.alert-message {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.alert-message.error {
+    background-color: var(--error-bg);
+    color: var(--error-color);
+    border-left: 3px solid var(--error-color);
+}
+
+.alert-message.success {
+    background-color: var(--success-bg);
+    color: var(--success-color);
+    border-left: 3px solid var(--success-color);
+}
+
+.alert-message.warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+    border-left: 3px solid #ffc107;
+}
+
+.alert-message.info {
+    background-color: rgba(23, 162, 184, 0.1);
+    color: #17a2b8;
+    border-left: 3px solid #17a2b8;
+}
+
+.close-message {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: auto;
+    color: inherit;
+    opacity: 0.7;
+}
+
+.close-message:hover {
+    opacity: 1;
+}
+
+/* Dark mode adjustments */
+.dark-mode .alert-message.error {
+    background-color: rgba(220, 38, 38, 0.2);
+}
+
+.dark-mode .alert-message.success {
+    background-color: rgba(7, 193, 96, 0.2);
+}
+
+.dark-mode .alert-message.warning {
+    background-color: rgba(255, 193, 7, 0.2);
+}
+
+.dark-mode .alert-message.info {
+    background-color: rgba(23, 162, 184, 0.2);
+}
+.registration-help {
+    margin-top: 15px;
+    padding: 12px;
+    background-color: rgba(255, 106, 0, 0.1);
+    border-radius: 8px;
+}
+
+.dark-mode .registration-help {
+    background-color: rgba(255, 106, 0, 0.15);
+}
+
+.help-note {
+    margin: 0;
+    font-size: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.help-note i {
+    color: var(--primary-color);
+    margin-top: 2px;
+}
+
+.help-note a {
+    color: var(--primary-color);
+    font-weight: 500;
+    text-decoration: underline;
+}
+        .terms-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+        }
+
+        .terms-checkbox label {
+            margin-bottom: 0;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .terms-checkbox a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .terms-checkbox a:hover {
+            text-decoration: underline;
+        }
+
+        .dark-mode .terms-checkbox a {
+            color: var(--primary-color);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .register-container {
+                padding: 16px;
+                margin: 0 auto;
+            }
+
+            .register-card {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .register-header h2 {
+                font-size: 20px;
+            }
+
+            .register-header p {
+                font-size: 13px;
+            }
+
+            .form-control {
+                padding: 12px 14px;
+                font-size: 15px;
+            }
+
+            .btn-submit, .btn-next, .btn-prev {
+                padding: 14px;
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .nav-item {
+                padding: 6px 8px;
+                font-size: 10px;
+            }
+
+            .nav-item i {
+                font-size: 18px;
+            }
+        }
+
+        /* Prevent zooming on mobile input focus */
+        @media (max-width: 480px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+        }
+
+        /* Loading spinner */
+        .fa-spinner {
+            margin-right: 8px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-title">Register Account</div>
+        <button id="theme-toggle" class="theme-btn">
+            <i class="fas fa-moon light-icon"></i>
+            <i class="fas fa-sun dark-icon"></i>
+        </button>
+    </header>
+
+    <!-- Registration Container -->
+    <div class="register-container">
+        <!-- Background decorative elements -->
+        <div class="register-bg-decor">
+            <div class="bubble bubble-1"></div>
+            <div class="bubble bubble-2"></div>
+            <div class="bubble bubble-3"></div>
+            <div class="bubble bubble-4"></div>
+        </div>
+
+        <div class="register-card">
+            <div class="register-header">
+                <h2>Create Your Account</h2>
+                <p>Complete these quick steps to get started</p>
+            </div>
+<!-- Messages/Alerts -->
+{% if messages %}
+<div id="form-messages">
+    {% for message in messages %}
+    <div class="alert-message {% if message.tags %}{{ message.tags }}{% endif %}">
+        <i class="fas
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}fa-exclamation-circle
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}fa-check-circle
+            {% elif message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}fa-exclamation-triangle
+            {% else %}fa-info-circle{% endif %}">
+        </i>
+        <span>{{ message }}</span>
+        <button type="button" class="close-message" aria-label="Close">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+            <!-- Progress Steps -->
+            <div class="progress-steps">
+                <div class="step active" data-step="1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Basic Info</div>
+                </div>
+                <div class="step" data-step="2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Password</div>
+                </div>
+                <div class="step" data-step="3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Confirm</div>
+                </div>
+            </div>
+
+            <!-- Form Error Messages -->
+            {% if form.errors %}
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'register' %}" id="registration-form">
+                {% csrf_token %}
+
+                <!-- Step 1: Basic Information -->
+                <div class="form-step step-1 active">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username"
+                               class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                               required
+                               value="{% if form.username.value %}{{ form.username.value }}{% endif %}"
+                               minlength="4" maxlength="150"
+                               pattern="[a-zA-Z0-9@.+-_]+"
+                               placeholder="e.g., gamefan2023 or user_name">
+                        {% if form.username.errors %}
+                            <div class="field-error show" id="username-error">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {% for error in form.username.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="field-error" id="username-error"></div>
+                        {% endif %}
+                        <small class="helptext">
+                            <ul>
+                                <li>4-150 characters</li>
+                                <li>Letters (a-z, A-Z)</li>
+                                <li>Digits (0-9)</li>
+                                <li>Special characters: @ . + - _</li>
+                                <li><strong>No spaces allowed</strong> - we'll convert them to underscores</li>
+                            </ul>
+                        </small>
+                        <div class="username-suggestions">
+                            <button type="button" class="suggestion-btn" data-suggestion="user_{{ random_number }}">user_{{ random_number }}</button>
+                            <button type="button" class="suggestion-btn" data-suggestion="member_{{ current_year }}">member_{{ current_year }}</button>
+                            <button type="button" class="suggestion-btn" data-suggestion="guest_{{ random_number }}">guest_{{ random_number }}</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone_number">Phone Number (Required)</label>
+                        <input type="tel" id="phone_number" name="phone_number"
+                               class="form-control {% if form.phone_number.errors %}is-invalid{% endif %}"
+                               value="{% if form.phone_number.value %}{{ form.phone_number.value }}{% endif %}"
+                               pattern="^\+?1?\d{9,15}$"
+                               placeholder="+1234567890"
+                               required>
+                        {% if form.phone_number.errors %}
+                            <div class="field-error show" id="phone_number-error">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {% for error in form.phone_number.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="field-error" id="phone_number-error"></div>
+                        {% endif %}
+                        <small class="helptext">
+                            Enter with country code (e.g., +1 for US/Canada). Format: +9999999999
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email"
+                               class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+                               required
+                               value="{% if form.email.value %}{{ form.email.value }}{% endif %}"
+                               placeholder="your.email@example.com">
+                        {% if form.email.errors %}
+                            <div class="field-error show" id="email-error">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {% for error in form.email.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="field-error" id="email-error"></div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="referrer">Were you referred by someone? (optional)</label>
+                        <select name="referrer" id="referrer" class="form-control">
+                            <option value="">-- Type to search for a user --</option>
+                            {% for user in registered_users %}
+                                <option value="{{ user.username }}"
+                                    {% if request.GET.ref == user.username %}selected{% endif %}>
+                                    {{ user.username }}
+                                    {% if user.first_name or user.last_name %}
+                                        - {{ user.first_name }} {{ user.last_name }}
+                                    {% elif user.email %}
+                                        - {{ user.email }}
+                                    {% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <small class="helptext">
+                            Select a user who referred you to our platform. They'll receive A reward when you create your first business.
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="terms-checkbox">
+                            <input type="checkbox" id="agree_terms" name="agree_terms" required>
+                            <label for="agree_terms">
+                                I agree to the <a href="{% url 'about' %}#terms-content" target="_blank">Terms & Conditions</a>
+                            </label>
+                        </div>
+                        <div class="field-error" id="agree_terms-error"></div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Password Creation -->
+                <div class="form-step step-2">
+                    <div class="form-group">
+                        <label for="password1">Create Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="password1" name="password1"
+                                   class="form-control {% if form.password1.errors %}is-invalid{% endif %}"
+                                   required
+                                   minlength="8"
+                                   placeholder="At least 8 characters">
+                            <button type="button" class="toggle-password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        {% if form.password1.errors %}
+                            <div class="field-error show" id="password1-error">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {% for error in form.password1.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="field-error" id="password1-error"></div>
+                        {% endif %}
+                        <small class="helptext">
+                            <ul>
+                                <li>At least 8 characters</li>
+                                <li>Not too similar to personal info</li>
+                                <li>Not entirely numeric</li>
+                            </ul>
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Step 3: Password Confirmation -->
+                <div class="form-step step-3">
+                    <div class="form-group">
+                        <label for="password2">Confirm Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="password2" name="password2"
+                                   class="form-control {% if form.password2.errors %}is-invalid{% endif %}"
+                                   required
+                                   minlength="8"
+                                   placeholder="Re-enter your password">
+                            <button type="button" class="toggle-password">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        {% if form.password2.errors %}
+                            <div class="field-error show" id="password2-error">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {% for error in form.password2.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="field-error" id="password2-error"></div>
+                        {% endif %}
+                    </div>
+
+<div class="additional-info">
+    <p>Want to register your business? You can add your business details after signing up in your profile settings.</p>
+
+    <div class="registration-help">
+        <p class="help-note">
+            <i class="fas fa-info-circle"></i>
+            If registration isn't working, your email or phone number might already be registered.
+        </p>
+    </div>
+</div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="form-navigation">
+                    <button type="button" class="btn-prev">Previous</button>
+                    <button type="button" class="btn-next">Next</button>
+                    <button type="submit" class="btn-submit">Create Account</button>
+                </div>
+            </form>
+
+            <div class="login-prompt">
+                Already have an account? <a href="{% url 'login' %}" class="secure-link">Sign in</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'pos_system:marketplace' %}" class="nav-item">
+            <i class="fas fa-store"></i>
+            <span>Store</span>
+        </a>
+        <a href="{% url 'about' %}" class="nav-item">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
+        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item active" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item active" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
+    </nav>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    console.log("Registration script loaded");
+
+    // Generate random number for username suggestions
+    const random_number = Math.floor(Math.random() * 1000) + 1;
+    const current_year = new Date().getFullYear();
+    console.log("Random number:", random_number, "Current year:", current_year);
+
+    // Update suggestion buttons with random numbers
+    document.querySelectorAll('.suggestion-btn').forEach(btn => {
+        const suggestion = btn.getAttribute('data-suggestion');
+        btn.setAttribute('data-suggestion', suggestion);
+        btn.textContent = suggestion;
+        console.log("Suggestion button:", suggestion);
+    });
+
+    // Toggle dark mode
+    document.getElementById('theme-toggle').addEventListener('click', function() {
+        console.log("Theme toggle clicked");
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}; Secure; SameSite=Lax`;
+
+        // Update Select2 theme
+        if ($('#referrer').hasClass('select2-hidden-accessible')) {
+            $('#referrer').select2({
+                theme: isDark ? 'dark' : 'default'
+            });
+        }
+    });
+
+    // Multi-step form functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("DOM fully loaded");
+
+        const form = document.getElementById('registration-form');
+        const steps = document.querySelectorAll('.form-step');
+        const progressSteps = document.querySelectorAll('.progress-steps .step');
+        const nextBtn = document.querySelector('.btn-next');
+        const prevBtn = document.querySelector('.btn-prev');
+        const submitBtn = document.querySelector('.btn-submit');
+        let currentStep = 0;
+        const totalSteps = 3;
+
+        // Initialize form
+        function showStep(stepIndex) {
+            console.log("Showing step:", stepIndex);
+            steps.forEach(step => step.classList.remove('active'));
+            progressSteps.forEach(step => step.classList.remove('active', 'completed'));
+
+            steps[stepIndex].classList.add('active');
+            progressSteps[stepIndex].classList.add('active');
+
+            for (let i = 0; i < stepIndex; i++) {
+                progressSteps[i].classList.add('completed');
+            }
+
+            if (stepIndex === 0) {
+                prevBtn.style.visibility = 'hidden';
+            } else {
+                prevBtn.style.visibility = 'visible';
+            }
+
+            if (stepIndex === totalSteps - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'block';
+                submitBtn.style.display = 'none';
+            }
+
+            currentStep = stepIndex;
+        }
+
+        // Validate current step before proceeding
+        function validateStep(stepIndex) {
+            console.log("Validating step:", stepIndex);
+            let isValid = true;
+            const step = steps[stepIndex];
+            const inputs = step.querySelectorAll('input[required], select[required]');
+
+            // Validate each input
+            for (const input of inputs) {
+                const errorEl = document.getElementById(input.id + '-error');
+
+                if (!input.value.trim() && input.required) {
+                    showError(input, errorEl, 'This field is required');
+                    isValid = false;
+                } else if (input.id === 'email' && !isValidEmail(input.value)) {
+                    showError(input, errorEl, 'Enter a valid email address');
+                    isValid = false;
+                } else if (input.id === 'phone_number' && !isValidPhoneNumber(input.value)) {
+                    showError(input, errorEl, 'Please enter a valid phone number with country code');
+                    isValid = false;
+                } else if (input.id === 'username' && !isValidUsername(input.value)) {
+                    showError(input, errorEl, 'Only letters, numbers and @/./+/-/_ allowed');
+                    isValid = false;
+                } else if (input.id === 'password1' && input.value.length < 8) {
+                    showError(input, errorEl, 'Password must be at least 8 characters');
+                    isValid = false;
+                } else {
+                    clearError(input, errorEl);
+                }
+            }
+
+            // Special validation for terms agreement on step 0
+            if (stepIndex === 0) {
+                const termsCheckbox = document.getElementById('agree_terms');
+                const termsErrorEl = document.getElementById('agree_terms-error');
+
+                if (!termsCheckbox.checked) {
+                    termsErrorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> You must agree to the Terms & Conditions';
+                    termsErrorEl.classList.add('show');
+                    isValid = false;
+                } else {
+                    termsErrorEl.classList.remove('show');
+                }
+            }
+
+            // Special validation for password confirmation on step 2
+            if (stepIndex === 2) {
+                const password1 = document.getElementById('password1').value;
+                const password2 = document.getElementById('password2').value;
+                const errorEl = document.getElementById('password2-error');
+
+                if (password1 !== password2) {
+                    showError(document.getElementById('password2'), errorEl, 'Passwords do not match');
+                    isValid = false;
+                } else {
+                    clearError(document.getElementById('password2'), errorEl);
+                }
+            }
+
+            return isValid;
+        }
+
+        function showError(input, errorEl, message) {
+            if (errorEl) {
+                errorEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + message;
+                errorEl.classList.add('show');
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+            }
+        }
+
+        function clearError(input, errorEl) {
+            if (errorEl) {
+                errorEl.classList.remove('show');
+                input.classList.remove('is-invalid');
+                if (input.value.trim().length > 0) {
+                    input.classList.add('is-valid');
+                }
+            }
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function isValidUsername(username) {
+            return /^[a-zA-Z0-9@.+-_]+$/.test(username);
+        }
+
+        function isValidPhoneNumber(phone) {
+            // More flexible phone number validation
+            const regex = /^[+]?[0-9\s\-\(\)]{8,20}$/;
+            return regex.test(phone);
+        }
+
+        // Next button click handler
+        nextBtn.addEventListener('click', function() {
+            console.log("Next button clicked");
+            if (validateStep(currentStep)) {
+                showStep(currentStep + 1);
+            }
+        });
+
+        // Previous button click handler
+        prevBtn.addEventListener('click', function() {
+            console.log("Previous button clicked");
+            showStep(currentStep - 1);
+        });
+
+        // Form submission handler - just show loading, let server handle validation
+        form.addEventListener('submit', function(e) {
+            console.log("Form submission started");
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner"></i> Creating Account...';
+
+            // Let the form submit normally - server will handle validation
+            console.log("Allowing form to submit to server");
+        });
+
+        // Initialize first step
+        showStep(0);
+
+        // Password visibility toggle
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function() {
+                const input = this.parentElement.querySelector('input');
+                const icon = this.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            });
+        });
+
+        // Username input handling - auto-replace spaces with underscores
+        document.getElementById('username').addEventListener('input', function() {
+            if (/\s/.test(this.value)) {
+                this.value = this.value.replace(/\s+/g, '_');
+            }
+
+            const username = this.value;
+            const errorEl = document.getElementById('username-error');
+
+            if (username.length > 0) {
+                if (username.length < 4) {
+                    showError(this, errorEl, 'Username must be at least 4 characters');
+                } else if (!isValidUsername(username)) {
+                    showError(this, errorEl, 'Only letters, numbers and @/./+/-/_ allowed');
+                } else {
+                    clearError(this, errorEl);
+                }
+            } else {
+                clearError(this, errorEl);
+            }
+        });
+
+        // Username suggestion buttons
+        document.querySelectorAll('.suggestion-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const suggestion = this.getAttribute('data-suggestion');
+                const usernameInput = document.getElementById('username');
+                usernameInput.value = suggestion;
+                usernameInput.dispatchEvent(new Event('input'));
+            });
+        });
+
+        // Show server errors on relevant steps
+        const errorFields = document.querySelectorAll('.field-error.show');
+        if (errorFields.length > 0) {
+            let errorStep = 0;
+            const firstError = errorFields[0];
+            const errorInput = document.getElementById(firstError.id.replace('-error', ''));
+
+            if (errorInput) {
+                if (['password1', 'password2'].includes(errorInput.id)) {
+                    errorStep = errorInput.id === 'password1' ? 1 : 2;
+                } else if (errorInput.id === 'email' || errorInput.id === 'username' || errorInput.id === 'phone_number') {
+                    errorStep = 0;
+                }
+            }
+
+            showStep(errorStep);
+        }
+
+        // Initialize Select2 for referrer dropdown
+        $(document).ready(function() {
+            console.log("Initializing Select2");
+            $('#referrer').select2({
+                placeholder: "Type to search users...",
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $('.step-1'),
+                theme: document.body.classList.contains('dark-mode') ? 'dark' : 'default',
+                minimumInputLength: 1
+            });
+
+            // Pre-select if ref parameter exists in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const refParam = urlParams.get('ref');
+            if (refParam) {
+                $('#referrer').val(refParam).trigger('change');
+            }
+        });
+
+        // Basic format validation on blur
+        document.getElementById('email').addEventListener('blur', function() {
+            const email = this.value;
+            const errorEl = document.getElementById('email-error');
+
+            if (!email) {
+                clearError(this, errorEl);
+                return;
+            }
+
+            if (!isValidEmail(email)) {
+                showError(this, errorEl, 'Please enter a valid email address');
+            } else {
+                clearError(this, errorEl);
+            }
+        });
+
+        // Phone number format validation on blur
+        document.getElementById('phone_number').addEventListener('blur', function() {
+            const phone = this.value;
+            const errorEl = document.getElementById('phone_number-error');
+
+            if (!phone) {
+                clearError(this, errorEl);
+                return;
+            }
+
+            if (!isValidPhoneNumber(phone)) {
+                showError(this, errorEl, 'Please enter a valid phone number with country code');
+            } else {
+                clearError(this, errorEl);
+            }
+        });
+
+        // Remove AJAX validation for now to fix 404 errors
+        // We'll rely on server-side validation instead
+        console.log("AJAX validation disabled to prevent 404 errors");
+
+        // Close message functionality
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('close-message') ||
+                e.target.parentElement.classList.contains('close-message')) {
+                const message = e.target.closest('.alert-message');
+                if (message) {
+                    message.style.opacity = '0';
+                    message.style.height = '0';
+                    message.style.margin = '0';
+                    message.style.padding = '0';
+                    setTimeout(() => message.remove(), 300);
+                }
+            }
+        });
+
+        // Auto-close messages after 5 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.alert-message').forEach(message => {
+                message.style.opacity = '0';
+                setTimeout(() => message.remove(), 300);
+            });
+        }, 5000);
+    });
+</script>
+</body>
+</html>

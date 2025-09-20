@@ -1,0 +1,3037 @@
+{% load static %}
+{% load whatsapp_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07C160">
+    <title>{{ business.name }} - Business Details</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "tdjt8dzlt8");
+    </script>
+    <style>
+        :root {
+            --primary-color: #FF6A00;
+            --primary-dark: #FF6A00;
+            --primary-light: #e6f7ef;
+            --primary-extra-light: #f5fdf9;
+            --secondary-color: #F8F8F8;
+            --text-color: #1a1a1a;
+            --light-text: #666;
+            --lighter-text: #999;
+            --border-color: #e0e0e0;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-surface-light: #2a2a2a;
+            --dark-text: #f0f0f0;
+            --dark-light-text: #b0b0b0;
+            --dark-lighter-text: #808080;
+            --dark-border-color: #333;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.12);
+            --dark-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            --dark-shadow-md: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding-bottom: 80px;
+            line-height: 1.6;
+        }
+
+        .dark-mode {
+  background-color: #121212;
+  color: #f5f5f5;
+}
+.dark-mode .card {
+  background-color: #1e1e1e;
+  border-color: #333;
+}
+.dark-mode .text-muted {
+  color: #aaa !important;
+}
+/* Add this to your CSS */
+.action-button .distance {
+    font-size: 0.8em;
+    margin-left: 8px;
+    opacity: 0.9;
+    font-weight: normal;
+}
+
+.action-button:hover .distance {
+    opacity: 1;
+}
+        /* Accessibility */
+        .skip-link {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            background: var(--primary-color);
+            color: white;
+            padding: 8px;
+            z-index: 100;
+            border-radius: 4px;
+        }
+
+        .skip-link:focus {
+            left: 10px;
+            top: 10px;
+        }
+
+
+
+        /* Header */
+        .app-header {
+            background-color: var(--white);
+            padding: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 14px;
+            background-color: var(--primary-light);
+            border-radius: 20px;
+            color: var(--primary-dark);
+            transition: all 0.2s ease;
+        }
+
+        .location:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .location {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        .location i {
+            margin-right: 6px;
+            color: var(--primary-color);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-actions i {
+            font-size: 20px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .user-actions i {
+            color: var(--dark-text);
+        }
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            }
+
+            .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            }
+        .theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--secondary-color);
+            transition: all 0.2s ease;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .dark-mode .theme-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-btn .dark-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .light-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .dark-icon {
+            display: block;
+            color: var(--dark-text);
+        }
+
+        /* Business Hero Section */
+        .business-hero {
+            height: 400px;
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            }
+
+            .business-hero-overlay {
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+            }
+
+        .dark-mode .business-hero {
+            box-shadow: var(--dark-shadow-md);
+        }
+
+        .business-hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7);
+            loading: lazy;
+            transition: transform 0.5s ease;
+        }
+
+        .business-hero:hover .business-hero-image {
+            transform: scale(1.02);
+        }
+
+        .business-hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 24px;
+            color: white;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+        }
+
+        .business-badges {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .business-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(4px);
+            background-color: rgba(0,0,0,0.2);
+        }
+
+        .business-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            line-height: 1.3;
+        }
+
+        .business-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        .business-rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #FFD700;
+            font-weight: 600;
+        }
+
+        .business-review-count {
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+        }
+
+        .business-category {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            background-color: rgba(7, 193, 96, 0.9);
+            color: white;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .dark-mode .business-category {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        /* Image Gallery */
+        .image-gallery {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .image-gallery {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 300px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+        }
+        .loading-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@media (max-width: 768px) {
+  .business-hero {
+    height: 300px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .business-details-grid {
+    grid-template-columns: 1fr;
+  }
+}
+        .main-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            loading: lazy;
+            transition: transform 0.5s ease;
+        }
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.form-control {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px 16px;
+  transition: all 0.3s;
+}
+
+.form-control:focus {
+  border-color: #07C160;
+  box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.2);
+}
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.thumbnail-container {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.thumbnail {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 2px solid transparent;
+}
+
+.thumbnail:hover {
+  transform: scale(1.1);
+  border-color: #07C160;
+}
+.icon {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+        .main-image:hover img {
+            transform: scale(1.03);
+        }
+
+        .thumbnail-container {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--border-color);
+        }
+
+        .thumbnail-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .thumbnail-container::-webkit-scrollbar-track {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .dark-mode .thumbnail-container::-webkit-scrollbar-track {
+            background: var(--dark-border-color);
+        }
+
+        .thumbnail-container::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        .thumbnail {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            border: 2px solid transparent;
+        }
+
+        .thumbnail:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow);
+            border-color: var(--primary-color);
+        }
+
+        .thumbnail.active {
+            border-color: var(--primary-color);
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            loading: lazy;
+        }
+
+        /* Business Info Container */
+        .business-info-container {
+            margin: 0 16px 20px;
+        }
+
+        .business-info-card {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .business-info-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .business-description {
+            margin: 16px 0;
+            line-height: 1.7;
+            color: var(--text-color);
+        }
+
+        .dark-mode .business-description {
+            color: var(--dark-text);
+        }
+
+        .business-details-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background-color: var(--primary-extra-light);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .detail-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .detail-item {
+            background-color: var(--dark-surface-light);
+        }
+
+        .detail-icon {
+            color: var(--primary-color);
+            font-size: 20px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .detail-content {
+            flex: 1;
+        }
+
+        .detail-content h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .detail-content h4 {
+            color: var(--dark-text);
+        }
+
+        .detail-content p {
+            font-size: 14px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .detail-content p {
+            color: var(--dark-light-text);
+        }
+
+        .detail-content a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .detail-content a:hover {
+            text-decoration: underline;
+        }
+
+        /* Hours Table */
+        .hours-table {
+            margin-top: 8px;
+        }
+
+        .hours-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dark-mode .hours-row {
+            border-bottom-color: var(--dark-border-color);
+        }
+
+        .hours-row.today {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .hours-row:last-child {
+            border-bottom: none;
+        }
+
+        /* Map Container */
+        .map-container {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .map-container {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        #business-map {
+            height: 280px;
+            border-radius: 12px;
+            margin-top: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .dark-mode #business-map {
+            box-shadow: var(--dark-shadow);
+            border-color: var(--dark-border-color);
+        }
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.delete-btn:active {
+    transform: translateY(0);
+}
+
+.dark-mode .delete-btn {
+    background-color: rgba(231, 76, 60, 0.8);
+}
+
+.dark-mode .delete-btn:hover {
+    background-color: rgba(192, 57, 43, 0.9);
+}
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin: 20px 16px;
+            flex-wrap: wrap;
+        }
+
+        .action-button {
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.action-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+        .action-button:active {
+            transform: translateY(0);
+        }
+
+        .primary-action {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .primary-action:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .secondary-action {
+            background-color: var(--white);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .dark-mode .secondary-action {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            border-color: var(--dark-border-color);
+        }
+
+        .secondary-action:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            border-color: var(--primary-color);
+        }
+
+        .dark-mode .secondary-action:hover {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* Document Section */
+        .business-document-section {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .business-document-section {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .document-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .dark-mode .document-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .document-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .document-icon {
+            font-size: 36px;
+            color: #e74c3c;
+        }
+
+        .document-meta {
+            flex: 1;
+        }
+
+        .document-title {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .document-title {
+            color: var(--dark-text);
+        }
+
+        .document-details {
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .document-details {
+            color: var(--dark-light-text);
+        }
+
+        .document-details i {
+            margin-right: 6px;
+            color: var(--primary-color);
+        }
+
+        .document-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .document-action {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .view-action {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            border: 1px solid var(--primary-color);
+        }
+
+        .dark-mode .view-action {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .download-action {
+            background-color: var(--white);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .dark-mode .download-action {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            border-color: var(--dark-border-color);
+        }
+
+        .replace-action {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .document-action:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* No Document State */
+        .no-document-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 24px 16px;
+            margin-top: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            border: 2px dashed var(--border-color);
+        }
+
+        .dark-mode .no-document-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+            border-color: var(--dark-border-color);
+        }
+
+        .no-document-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .no-document-icon {
+            font-size: 36px;
+            color: var(--primary-color);
+            opacity: 0.7;
+        }
+
+        .no-document-card p {
+            color: var(--light-text);
+            margin-bottom: 16px;
+            font-size: 15px;
+        }
+
+        .dark-mode .no-document-card p {
+            color: var(--dark-light-text);
+        }
+
+        .upload-document-btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 15px;
+        }
+
+        .upload-document-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* Reviews Section */
+        .reviews-section {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .reviews-section {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+.action-button .distance {
+    font-size: 0.8em;
+    margin-left: 8px;
+    opacity: 0.9;
+    font-weight: normal;
+}
+
+.action-button:hover .distance {
+    opacity: 1;
+}
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dark-mode .section-title {
+            color: var(--dark-text);
+        }
+
+        .section-title i {
+            color: var(--primary-color);
+        }
+
+        .review-card {
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 16px;
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+        .dark-mode .review-card {
+            border-bottom-color: var(--dark-border-color);
+        }
+
+        .review-card:last-child {
+            border-bottom: none;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .review-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dark-mode .user-avatar {
+            background-color: rgba(7, 193, 96, 0.2);
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 15px;
+        }
+
+        .dark-mode .user-name {
+            color: var(--dark-text);
+        }
+
+        .review-date {
+            font-size: 13px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .review-date {
+            color: var(--dark-light-text);
+        }
+
+        .review-rating {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 16px;
+            letter-spacing: 1px;
+        }
+
+        .review-content {
+            color: var(--text-color);
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .dark-mode .review-content {
+            color: var(--dark-text);
+        }
+
+        /* Review Form */
+        .review-form {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .review-form {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 15px;
+        }
+
+        .dark-mode .form-label {
+            color: var(--dark-text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--white);
+            color: var(--text-color);
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(7, 193, 96, 0.2);
+        }
+
+        .dark-mode .form-control {
+            background-color: var(--dark-surface);
+            border-color: var(--dark-border-color);
+            color: var(--dark-text);
+        }
+
+        .dark-mode .form-control:focus {
+            box-shadow: 0 0 0 2px rgba(7, 193, 96, 0.3);
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .star {
+            font-size: 28px;
+            color: #ddd;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .star:hover {
+            transform: scale(1.1);
+        }
+
+        .star.active {
+            color: var(--primary-color);
+            text-shadow: 0 2px 4px rgba(7, 193, 96, 0.3);
+        }
+
+        .char-counter {
+            font-size: 13px;
+            color: var(--light-text);
+            text-align: right;
+            margin-top: 6px;
+        }
+
+        .dark-mode .char-counter {
+            color: var(--dark-light-text);
+        }
+
+        .submit-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .submit-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+        }
+
+        /* Related Businesses */
+        .related-businesses {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .related-businesses {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .related-business-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: 1px solid var(--border-color);
+        }
+
+        .related-business-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+        }
+
+        .dark-mode .related-business-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+            border-color: var(--dark-border-color);
+        }
+
+        .dark-mode .related-business-card:hover {
+            border-color: var(--primary-color);
+        }
+
+        .related-business-image {
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            object-fit: cover;
+            loading: lazy;
+            flex-shrink: 0;
+        }
+
+        .related-business-info {
+            flex: 1;
+        }
+
+        .related-business-name {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-color);
+            font-size: 15px;
+            line-height: 1.3;
+        }
+
+        .dark-mode .related-business-name {
+            color: var(--dark-text);
+        }
+
+        .related-business-rating {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary-color);
+            font-size: 14px;
+        }
+
+        .related-business-arrow {
+            color: var(--light-text);
+            font-size: 14px;
+        }
+
+        .dark-mode .related-business-arrow {
+            color: var(--dark-light-text);
+        }
+
+        /* Social Sharing */
+        .social-sharing {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .social-sharing {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .social-button {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .social-button:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .facebook {
+            background-color: #3b5998;
+        }
+
+        .whatsapp {
+            background-color: #25D366;
+        }
+
+        .sms {
+            background-color: #07C160;
+        }
+
+        .twitter {
+            background-color: #1DA1F2;
+        }
+
+        .copy-link {
+            background-color: var(--white);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .dark-mode .copy-link {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            border-color: var(--dark-border-color);
+        }
+.distance-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background-color: var(--primary-extra-light);
+    border-radius: 8px;
+    margin-top: 8px;
+    font-size: 14px;
+    color: var(--light-text);
+}
+
+.dark-mode .distance-info {
+    background-color: var(--dark-surface-light);
+    color: var(--dark-light-text);
+}
+
+.distance-info i {
+    color: var(--primary-color);
+}
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--white);
+            padding: 12px 0 10px;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--light-text);
+            font-size: 12px;
+            font-weight: 500;
+            position: relative;
+            padding: 6px 12px;
+            transition: all 0.3s ease;
+            flex: 1;
+            max-width: 25%;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active i {
+            transform: translateY(-2px);
+        }
+
+        .nav-item .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: 8px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .formatted-text {
+            line-height: 1.7;
+            margin-bottom: 1.5em;
+            white-space: pre-line;
+        }
+
+        .formatted-text p {
+            margin-bottom: 1em;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+
+        .pagination-button {
+            padding: 8px 14px;
+            border-radius: 8px;
+            background-color: var(--white);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .dark-mode .pagination-button {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            border-color: var(--dark-border-color);
+        }
+
+        .pagination-button:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            border-color: var(--primary-color);
+        }
+
+        .dark-mode .pagination-button:hover {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .pagination-button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+/* Full Image Modal Styles */
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    overflow: auto;
+    animation: fadeIn 0.3s;
+    touch-action: manipulation; /* Important for mobile touch events */
+}
+
+.modal-image-content {
+    margin: auto;
+    display: block;
+    width: auto;
+    max-width: 95%;
+    max-height: 80vh;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%); /* For older mobile browsers */
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 15px; /* Smaller right position for mobile */
+    color: #f1f1f1;
+    font-size: 30px; /* Smaller close button for mobile */
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+    z-index: 2;
+    padding: 5px; /* Easier to tap on mobile */
+}
+
+.modal-caption {
+    position: fixed; /* Changed from absolute to fixed */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: white;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    width: 100%;
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+    .modal-image-content {
+        max-width: 100%;
+        max-height: 70vh;
+    }
+
+    .close-modal {
+        top: 10px;
+        right: 10px;
+        font-size: 25px;
+    }
+}
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .dark-mode .modal-content {
+            background-color: var(--dark-surface);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--light-text);
+        }
+
+        .dark-mode .modal-close {
+            color: var(--dark-light-text);
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .modal-title {
+            color: var(--dark-text);
+        }
+
+        .modal-body {
+            margin-bottom: 24px;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .dark-mode .modal-body {
+            color: var(--dark-text);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn-primary {
+            background-color: var(--primary-color);
+            color: white;            border: none;
+        }
+
+        .modal-btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .modal-btn-secondary {
+            background-color: var(--white);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .dark-mode .modal-btn-secondary {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            border-color: var(--dark-border-color);
+        }
+
+        .modal-btn-secondary:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            border-color: var(--primary-color);
+        }
+
+        .dark-mode .modal-btn-secondary:hover {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--white);
+            color: var(--text-color);
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .dark-mode .toast {
+            background-color: var(--dark-surface);
+            color: var(--dark-text);
+            box-shadow: var(--dark-shadow-md);
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .toast-icon {
+            color: var(--primary-color);
+            font-size: 20px;
+        }
+
+        .toast-message {
+            font-size: 14px;
+        }
+
+        /* Products & Services Section */
+        .business-posts-section {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 0 16px 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .business-posts-section {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .post-form-card {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .post-form-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .form-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .form-title {
+            color: var(--dark-text);
+        }
+
+        .post-form .form-group {
+            margin-bottom: 16px;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        .post-card {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+        .dark-mode .post-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+            border-color: var(--dark-border-color);
+        }
+
+        .post-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+        }
+
+        .post-image-container {
+  height: 200px;
+  overflow: hidden;
+}
+
+.post-image {
+  transition: transform 0.5s ease;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+        .post-card:hover .post-image {
+            transform: scale(1.05);
+        }
+
+        .post-content {
+            padding: 16px;
+        }
+
+        .post-badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .post-type-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .dark-mode .post-type-badge {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        .featured-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .post-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .post-title {
+            color: var(--dark-text);
+        }
+
+        .post-text {
+            color: var(--text-color);
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .dark-mode .post-text {
+            color: var(--dark-text);
+        }
+
+        .post-price {
+            font-size: 16px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+
+        .post-meta {
+            font-size: 13px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .post-meta {
+            color: var(--dark-light-text);
+        }
+
+        .no-posts-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 24px 16px;
+            text-align: center;
+            border: 2px dashed var(--border-color);
+        }
+
+        .dark-mode .no-posts-card {
+            background-color: var(--dark-surface);
+            border-color: var(--dark-border-color);
+        }
+
+        .no-posts-icon {
+            font-size: 36px;
+            color: var(--primary-color);
+            opacity: 0.7;
+            margin-bottom: 12px;
+        }
+
+        /* Form Checkbox */
+        .form-checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .form-checkbox-label {
+            color: var(--dark-text);
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 768px) {
+            .posts-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .business-posts-section {
+                max-width: 1200px;
+                margin: 0 auto 24px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .posts-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Responsive Layout */
+        @media (min-width: 768px) {
+            .business-hero {
+                height: 350px;
+                margin: 0 auto 24px;
+                max-width: 1200px;
+            }
+
+            .business-info-container {
+                display: grid;
+                grid-template-columns: 2fr 1fr;
+                gap: 24px;
+                max-width: 1200px;
+                margin: 0 auto 24px;
+            }
+
+            .business-info-card {
+                grid-column: 1;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                grid-column: 2;
+                grid-row: 1;
+                margin: 0;
+                position: sticky;
+                top: 80px;
+                align-self: start;
+            }
+
+            .reviews-section,
+            .review-form,
+            .related-businesses,
+            .social-sharing,
+            .image-gallery,
+            .map-container,
+            .business-document-section {
+                max-width: 1200px;
+                margin: 0 auto 24px;
+            }
+
+            .business-details-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .business-hero {
+                height: 400px;
+            }
+
+            .business-details-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .related-businesses {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 16px;
+            }
+
+            .related-business-card {
+                margin-bottom: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .business-hero {
+                height: 220px;
+            }
+
+            .business-name {
+                font-size: 22px;
+            }
+
+            .business-meta {
+                gap: 10px;
+                font-size: 14px;
+            }
+
+            .action-button {
+                min-width: 100%;
+            }
+
+            .document-actions {
+                flex-direction: column;
+            }
+
+            .document-action {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Skip to Content Link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-top">
+            <a href="{% url 'discover' %}" class="location">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main" id="main-content">
+        <!-- Business Hero Section -->
+        <section class="business-hero">
+            <img src="{{ business.logo.url }}" alt="{{ business.name }}" class="business-hero-image" loading="lazy">
+            <div class="business-hero-overlay">
+                <div class="business-badges">
+                    {% if business.is_featured %}
+                    <div class="business-badge featured-badge">
+                        <i class="fas fa-star"></i>
+                        <span>Featured</span>
+                    </div>
+                    {% endif %}
+                    {% if business.is_admin_added %}
+                    <div class="business-badge verified-badge">
+                        <i class="fas fa-circle-check"></i>
+                        <span>Verified</span>
+                    </div>
+                    {% endif %}
+                    {% if user.is_authenticated and business.owner == user %}
+                    <div class="business-badge owner-badge">
+                        <i class="fas fa-heart"></i>
+                        <span>Yours</span>
+                    </div>
+                    {% endif %}
+                </div>
+                <h1 class="business-name">{{ business.name }}</h1>
+                <div class="business-meta">
+                    <div class="business-rating">
+    <span class="stars">
+        {% with ''|center:business_stats.average_rating as range %}
+            {% for _ in range %}★{% endfor %}
+        {% endwith %}
+        {% with ''|center:5 as range %}
+            {% for _ in range %}
+                {% if forloop.counter > business_stats.average_rating %}☆{% endif %}
+            {% endfor %}
+        {% endwith %}
+    </span>
+    <span>{{ business_stats.average_rating|floatformat:1 }}</span>
+</div>
+<span class="business-review-count">{{ business_stats.review_count }} reviews</span><span class="business-category">
+
+                        {{ business.category.name }}
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Business Info Container -->
+        <div class="business-info-container">
+            <div class="business-info-card">
+                <h2 class="section-title">
+                    <i class="fas fa-info-circle"></i>
+                    About
+                </h2>
+                <p class="business-description formatted-text">
+                    {{ business.description|safe }}
+                </p>
+
+                <div class="business-details-grid">
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="detail-content">
+                            <h4>Address</h4>
+                            <p>{{ business.address }}, {{ business.city }}</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-item">
+                        <div class="detail-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="detail-content">
+                            <h4>Phone</h4>
+                            <p>{{ business.phone_number }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="action-button primary-action" aria-label="Call {{ business.name }}" id="call-button">
+                    <i class="fas fa-phone-alt"></i>
+                    Call Now
+                </button>
+          <a href="{% url 'messaging:start_conversation' business.id %}"
+   class="action-button secondary-action"
+   aria-label="Contact Supplier"
+   id="contact-supplier-button">
+    <i class="fas fa-envelope"></i>
+    Contact Supplier
+</a>
+<button class="action-button secondary-action" aria-label="Get directions to {{ business.name }}" id="directions-button">
+    <i class="fas fa-directions"></i>
+    Get Directions
+    <span class="distance" id="distance-display"></span>
+</button>
+                {% if business.website %}
+                <button class="action-button secondary-action" aria-label="Visit {{ business.name }} website" id="website-button">
+                    <i class="fas fa-globe"></i>
+                    Visit Website
+                </button>
+                {% endif %}
+                {% if user.is_authenticated and business.owner == user %}
+                <button class="action-button secondary-action" aria-label="Edit business" id="edit-button">
+                    <i class="fas fa-edit"></i>
+                    Edit Business
+                </button>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Document Section -->
+        <div class="business-document-section">
+            <h2 class="section-title">
+                <i class="fas fa-file-pdf"></i>
+                Company Profile
+            </h2>
+
+            {% if business.company_profile %}
+            <div class="document-card">
+                <div class="document-header">
+                    <i class="fas fa-file-pdf document-icon"></i>
+                    <div class="document-meta">
+                        <h3 class="document-title">Business Profile Document</h3>
+                        <div class="document-details">
+                            <span><i class="fas fa-calendar-alt"></i> {{ business.updated_at|date:"M d, Y" }}</span>
+                            <span><i class="fas fa-file-alt"></i> PDF</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="document-actions">
+                    <a href="{{ business.company_profile.url }}"
+                       target="_blank"
+                       class="document-action view-action">
+                        <i class="fas fa-eye"></i> View Document
+                    </a>
+                    <a href="{{ business.company_profile.url }}"
+                       download
+                       class="document-action download-action">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                    {% if user.is_authenticated and business.owner == user %}
+                        <a href="{% url 'profile' %}" class="document-action replace-action">
+                            <i class="fas fa-sync-alt"></i> Replace
+                        </a>
+                    {% endif %}
+
+                </div>
+            </div>
+            {% else %}
+            <div class="no-document-card">
+                <div class="no-document-content">
+                    <i class="fas fa-file-upload no-document-icon"></i>
+                    <p>No company profile document has been uploaded yet.</p>
+                    {% if user.is_authenticated and business.owner == user %}
+                        <a href="{% url 'profile' %}" class="upload-document-btn" id="upload-document">
+                            <i class="fas fa-upload"></i> Upload Document
+                        </a>
+                    {% endif %}
+
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Social Sharing -->
+        <div class="social-sharing">
+            <h2 class="section-title">
+                <i class="fas fa-share-alt"></i>
+                Share this Organization
+            </h2>
+            <div class="social-buttons">
+                <!-- Facebook Share Button -->
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}"
+                   target="_blank"
+                   class="social-button facebook"
+                   aria-label="Share on Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+
+                <!-- WhatsApp Share Button -->
+                <a href="https://wa.me/?text=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
+                   target="_blank"
+                   class="social-button whatsapp"
+                   aria-label="Share on WhatsApp">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+
+                <!-- Twitter Share Button -->
+                <a href="https://twitter.com/intent/tweet?text=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
+                   target="_blank"
+                   class="social-button twitter"
+                   aria-label="Share on Twitter">
+                    <i class="fab fa-twitter"></i>
+                </a>
+
+                <!-- SMS Share Button -->
+                <a href="sms:?body=Check%20out%20this%20business:%20{{ request.build_absolute_uri }}"
+                   class="social-button sms"
+                   aria-label="Share via SMS">
+                    <i class="fas fa-comment-alt"></i>
+                </a>
+
+                <!-- Copy Link Button -->
+                <button class="social-button copy-link" id="copy-link-button" aria-label="Copy link">
+                    <i class="fas fa-link"></i>
+                </button>
+            </div>
+        </div>
+
+{% if business.show_store_link %}
+<!-- Store Section with Product Gallery -->
+<div class="store-section">
+    <h2 class="section-title">
+        <i class="fas fa-store"></i>
+        Our Products
+    </h2>
+
+    <div class="products-gallery">
+        {% with products=business.pos_system_products.all|slice:":6" %}
+            {% if products %}
+                <div class="products-grid">
+                    {% for product in products %}
+                    <div class="product-card">
+                        <a href="{% url 'business-store' pk=business.pk %}#product-{{ product.id }}">
+                            <div class="product-image-container">
+                                <img src="{{ product.image.url|default:'/static/images/default-product.jpg' }}"
+                                     alt="{{ product.name }}"
+                                     class="product-image"
+                                     loading="lazy">
+                                {% if product.stock_status == 'out_of_stock' %}
+                                <div class="out-of-stock-badge">Out of Stock</div>
+                                {% elif product.stock_status == 'low_stock' %}
+                                <div class="low-stock-badge">Low Stock</div>
+                                {% endif %}
+                            </div>
+                            <div class="product-info">
+                                <h3 class="product-name">{{ product.name|truncatechars:30 }}</h3>
+                                <p class="product-price">K {{ product.price }}</p>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="store-actions">
+            <a href="{% url 'business-store' pk=business.pk %}" class="view-all-button">
+                <i class="fas fa-shopping-cart"></i>
+                View All Products
+            </a>
+
+            {% if is_owner_or_admin %}
+            <p class="store-admin-note">
+                <small>
+                    <i class="fas fa-info-circle"></i>
+                    You can manage your products from your <a href="{% url 'profile' %}">profile page</a>
+                </small>
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.store-section {
+    background-color: var(--white);
+    border-radius: 16px;
+    padding: 20px;
+    margin: 0 16px 20px;
+    box-shadow: var(--shadow);
+}
+
+.dark-mode .store-section {
+    background-color: var(--dark-surface);
+    box-shadow: var(--dark-shadow);
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.product-card {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: var(--white);
+}
+
+.dark-mode .product-card {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border-color);
+}
+
+.product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-color);
+}
+
+.product-image-container {
+    position: relative;
+    height: 120px;
+    overflow: hidden;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.out-of-stock-badge,
+.low-stock-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.out-of-stock-badge {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.low-stock-badge {
+    background-color: #f39c12;
+    color: white;
+}
+
+.product-info {
+    padding: 12px;
+}
+
+.product-name {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-color);
+    line-height: 1.3;
+}
+
+.dark-mode .product-name {
+    color: var(--dark-text);
+}
+
+.product-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.store-actions {
+    text-align: center;
+}
+
+.view-all-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-bottom: 12px;
+}
+
+.view-all-button:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.store-admin-note {
+    color: var(--light-text);
+    margin: 0;
+}
+
+.dark-mode .store-admin-note {
+    color: var(--dark-light-text);
+}
+
+.store-admin-note a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.store-admin-note a:hover {
+    text-decoration: underline;
+}
+
+@media (min-width: 768px) {
+    .products-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .products-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+</style>
+{% endif %}
+
+<!-- Reviews Section -->
+<div class="reviews-section">
+    <h2 class="section-title">
+        <i class="fas fa-star"></i>
+        Reviews
+        <span class="business-review-count"> - {{ business.review_count }}</span>
+    </h2>
+
+    {% for review in reviews %}
+    <div class="review-card">
+        <div class="review-header">
+            <div class="review-user">
+                <div class="user-avatar">
+                    {% if review.user %}
+                        {{ review.user.username|first|upper }}
+                    {% else %}
+                        A
+                    {% endif %}
+                </div>
+                <div>
+                    <div class="user-name">
+                        {% if review.user %}
+                            {{ review.user.username }}
+                        {% else %}
+                            Anonymous
+                        {% endif %}
+                    </div>
+                    <div class="review-date">{{ review.created_at|date:"F j, Y" }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="review-rating">
+            {% for i in "12345" %}
+                {% if i|add:0 <= review.rating %}
+                    ★
+                {% else %}
+                    ☆
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% if review.comment %}
+        <p class="review-content">{{ review.comment }}</p>
+        {% endif %}
+    </div>
+    {% empty %}
+    <p>No reviews yet. Be the first to review!</p>
+    {% endfor %}
+
+    <!-- Pagination -->
+    {% if reviews.has_other_pages %}
+    <div class="pagination">
+        {% if reviews.has_previous %}
+        <a href="?page={{ reviews.previous_page_number }}" class="pagination-button">Previous</a>
+        {% endif %}
+
+        {% for num in reviews.paginator.page_range %}
+            {% if reviews.number == num %}
+            <span class="pagination-button active">{{ num }}</span>
+            {% else %}
+            <a href="?page={{ num }}" class="pagination-button">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if reviews.has_next %}
+        <a href="?page={{ reviews.next_page_number }}" class="pagination-button">Next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<!-- Review Form -->
+<div class="review-form">
+    <h2 class="section-title">
+        <i class="fas fa-edit"></i>
+        Write a Review
+    </h2>
+
+    <form method="post" action="{% url 'business-detail' pk=business.pk %}">
+        {% csrf_token %}
+        <input type="hidden" name="submit_review" value="1">
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label class="form-label">Your Rating</label>
+            <div class="rating-stars" id="rating-stars">
+                <span class="star" data-value="1">☆</span>
+                <span class="star" data-value="2">☆</span>
+                <span class="star" data-value="3">☆</span>
+                <span class="star" data-value="4">☆</span>
+                <span class="star" data-value="5">☆</span>
+            </div>
+            <input type="hidden" name="rating" id="rating-input" required>
+        </div>
+
+        <div class="form-group">
+            <label for="comment" class="form-label">Your Review (optional)</label>
+            <textarea name="comment" id="comment" class="form-control" rows="4"
+                      placeholder="Share your experience..." maxlength="500"></textarea>
+        </div>
+
+        <button type="submit" class="submit-button">Submit Review</button>
+    </form>
+</div>
+<script>
+    // Rating Stars
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating-input');
+
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const value = parseInt(this.getAttribute('data-value'));
+            ratingInput.value = value;
+
+            // Update star display
+            stars.forEach((s, index) => {
+                if (index < value) {
+                    s.textContent = '★';
+                    s.classList.add('active');
+                } else {
+                    s.textContent = '☆';
+                    s.classList.remove('active');
+                }
+            });
+        });
+    });
+});
+</script>
+        <!-- Related Businesses -->
+        {% if related_businesses %}
+        <div class="related-businesses">
+            <h2 class="section-title">
+                <i class="fas fa-store"></i>
+                Similar Businesses
+            </h2>
+
+            {% for related_business in related_businesses %}
+            <a href="{% url 'business-detail' related_business.pk %}" class="related-business-card">
+                <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }}" class="related-business-image" loading="lazy">
+                <div class="related-business-info">
+                    <h3 class="related-business-name">{{ related_business.name }}</h3>
+                    <div class="related-business-rating">
+                        <span>
+                            {% for i in "12345" %}
+                                {% if i|add:0 <= related_business.average_rating %}
+                                    ★
+                                {% else %}
+                                    ☆
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        <span>{{ related_business.average_rating|floatformat:1 }}</span>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right related-business-arrow"></i>
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+
+    </main>
+    <!-- Document Upload Modal -->
+    <div class="modal" id="document-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">&times;</button>
+            <h3 class="modal-title">Upload Company Profile</h3>
+            <div class="modal-body">
+                <p>Please upload a PDF document containing your company profile. The file should be less than 5MB.</p>
+                <form id="document-upload-form" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="document-file" class="form-label">Select PDF File</label>
+                        <input type="file" id="document-file" name="company_profile" accept=".pdf" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" id="cancel-upload">Cancel</button>
+                <button class="modal-btn modal-btn-primary" id="confirm-upload">Upload</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast-notification">
+        <i class="fas fa-check-circle toast-icon"></i>
+        <span class="toast-message" id="toast-message">Link copied to clipboard!</span>
+    </div>
+
+    <script>
+    // Document ready handler
+    document.addEventListener('DOMContentLoaded', function() {
+        // Theme Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+
+                if (window.map) {
+                    updateMapTheme(isDark ? 'dark' : 'light');
+                }
+            });
+        }
+
+        // Rating Stars
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('rating-input');
+
+        if (stars.length && ratingInput) {
+            stars.forEach(star => {
+                // Click event
+                star.addEventListener('click', function() {
+                    const value = parseInt(this.getAttribute('data-value'));
+                    ratingInput.value = value;
+                    updateStars(value);
+                });
+
+                // Hover events
+                star.addEventListener('mouseover', function() {
+                    const hoverValue = parseInt(this.getAttribute('data-value'));
+                    updateStars(hoverValue, false);
+                });
+
+                star.addEventListener('mouseout', function() {
+                    const currentValue = parseInt(ratingInput.value) || 0;
+                    updateStars(currentValue);
+                });
+            });
+
+            function updateStars(value, persist = true) {
+                stars.forEach((s, index) => {
+                    if (index < value) {
+                        s.textContent = '★';
+                        if (persist) s.classList.add('active');
+                    } else {
+                        s.textContent = '☆';
+                        if (persist) s.classList.remove('active');
+                    }
+                });
+            }
+        }
+
+        // Action Buttons Functionality
+        const callButton = document.getElementById('call-button');
+        if (callButton) {
+            callButton.addEventListener('click', function() {
+                window.location.href = `tel:{{ business.phone_number }}`;
+            });
+        }
+
+        const directionsButton = document.getElementById('directions-button');
+        if (directionsButton) {
+            directionsButton.addEventListener('click', function() {
+                const address = '{{ business.address|default:"" }}';
+                const city = '{{ business.city|default:"" }}';
+
+                if (!address || !city) {
+                    alert('Address information is not available for this business.');
+                    return;
+                }
+
+                const fullAddress = encodeURIComponent(`${address.trim()}, ${city.trim()}`);
+                window.open(`https://www.google.com/maps/dir/?api=1&destination=${fullAddress}`, '_blank');
+            });
+        }
+
+        {% if business.website %}
+        const websiteButton = document.getElementById('website-button');
+        if (websiteButton) {
+            websiteButton.addEventListener('click', function() {
+                window.open('{{ business.website }}', '_blank');
+            });
+        }
+        {% endif %}
+
+        {% if user.is_authenticated and business.owner == user %}
+        const editButton = document.getElementById('edit-button');
+        if (editButton) {
+            editButton.addEventListener('click', function() {
+                window.location.href = "{% url 'profile' %}";
+            });
+        }
+        {% endif %}
+
+        // Character counter for review text
+        const reviewTextarea = document.getElementById('comment');
+        if (reviewTextarea) {
+            const charCounter = document.createElement('div');
+            charCounter.className = 'char-counter';
+            charCounter.textContent = '500 characters remaining';
+            reviewTextarea.parentNode.insertBefore(charCounter, reviewTextarea.nextSibling);
+
+            reviewTextarea.addEventListener('input', function() {
+                const remaining = 500 - this.value.length;
+                charCounter.textContent = `${remaining} characters remaining`;
+                charCounter.style.color = remaining < 50 ? 'var(--primary-color)' : 'var(--light-text)';
+            });
+        }
+
+        // Document Upload Modal
+        const documentModal = document.getElementById('document-modal');
+        if (documentModal) {
+            const modalCloseBtn = document.getElementById('modal-close');
+            const cancelUploadBtn = document.getElementById('cancel-upload');
+            const confirmUploadBtn = document.getElementById('confirm-upload');
+            const documentUploadForm = document.getElementById('document-upload-form');
+
+            // Show modal triggers
+            const showModal = function() {
+                documentModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden'; // Prevent scrolling
+            };
+
+            const hideModal = function() {
+                documentModal.style.display = 'none';
+                document.body.style.overflow = ''; // Re-enable scrolling
+            };
+
+            const uploadDocumentBtn = document.getElementById('upload-document');
+            const replaceDocumentBtn = document.getElementById('replace-document');
+
+            if (uploadDocumentBtn) uploadDocumentBtn.addEventListener('click', showModal);
+            if (replaceDocumentBtn) replaceDocumentBtn.addEventListener('click', showModal);
+            if (modalCloseBtn) modalCloseBtn.addEventListener('click', hideModal);
+            if (cancelUploadBtn) cancelUploadBtn.addEventListener('click', hideModal);
+
+            if (confirmUploadBtn && documentUploadForm) {
+                confirmUploadBtn.addEventListener('click', function() {
+                    const fileInput = document.getElementById('document-file');
+                    if (fileInput && fileInput.files.length > 0) {
+                        documentUploadForm.submit();
+                    } else {
+                        alert('Please select a PDF file to upload.');
+                    }
+                });
+            }
+
+            // Close modal when clicking outside
+            documentModal.addEventListener('click', function(event) {
+                if (event.target === documentModal) {
+                    hideModal();
+                }
+            });
+        }
+
+        // Copy Link Functionality
+        const copyLinkBtn = document.getElementById('copy-link-button');
+        if (copyLinkBtn) {
+            copyLinkBtn.addEventListener('click', function() {
+                const url = window.location.href;
+
+                navigator.clipboard.writeText(url).then(function() {
+                    showToast('Link copied to clipboard!');
+                }).catch(function() {
+                    // Fallback for browsers that don't support clipboard API
+                    const textarea = document.createElement('textarea');
+                    textarea.value = url;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    showToast('Link copied to clipboard!');
+                });
+            });
+        }
+
+        // Toast Notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast show';
+            toast.innerHTML = `
+                <i class="fas fa-check-circle toast-icon"></i>
+                <span class="toast-message">${message}</span>
+            `;
+            document.body.appendChild(toast);
+
+            setTimeout(function() {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Map Integration
+        {% if business.latitude and business.longitude %}
+        function initMap() {
+            const mapElement = document.getElementById('business-map');
+            if (!mapElement) return;
+
+            const isDark = document.body.classList.contains('dark-mode');
+            const businessCoords = [{{ business.latitude }}, {{ business.longitude }}];
+
+            const map = L.map(mapElement).setView(businessCoords, 15);
+            window.map = map;
+
+            // Add tile layer based on theme
+            updateMapTheme(isDark ? 'dark' : 'light');
+
+            // Add marker
+            L.marker(businessCoords).addTo(map)
+                .bindPopup('<b>{{ business.name }}</b><br>{{ business.address }}');
+        }
+
+        function updateMapTheme(theme) {
+            if (!window.map) return;
+
+            // Clear existing layers
+            window.map.eachLayer(layer => {
+                if (layer instanceof L.TileLayer) window.map.removeLayer(layer);
+            });
+
+            // Add new tile layer
+            const tileLayer = theme === 'dark' ?
+                'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' :
+                'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+            const attribution = theme === 'dark' ?
+                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>' :
+                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+            L.tileLayer(tileLayer, { attribution }).addTo(window.map);
+        }
+
+        function loadLeaflet() {
+            if (!document.getElementById('business-map')) return;
+
+            // Check if Leaflet is already loaded
+            if (typeof L !== 'undefined') {
+                initMap();
+                return;
+            }
+
+            // Load CSS
+            const leafletCSS = document.createElement('link');
+            leafletCSS.rel = 'stylesheet';
+            leafletCSS.href = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
+            leafletCSS.integrity = 'sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==';
+            leafletCSS.crossOrigin = '';
+            document.head.appendChild(leafletCSS);
+
+            // Load JS
+            const leafletJS = document.createElement('script');
+            leafletJS.src = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js';
+            leafletJS.integrity = 'sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==';
+            leafletJS.crossOrigin = '';
+            leafletJS.onload = initMap;
+            document.head.appendChild(leafletJS);
+        }
+
+        loadLeaflet();
+        {% endif %}
+
+        // Interactive elements hover effects
+        document.querySelectorAll('.interactive').forEach(el => {
+            el.addEventListener('mouseenter', () => el.style.transform = 'scale(1.02)');
+            el.addEventListener('mouseleave', () => el.style.transform = 'scale(1)');
+        });
+
+        // Store link toggle
+        const storeLinkToggle = document.getElementById('{{ business_form.show_store_link.id_for_label }}');
+        if (storeLinkToggle) {
+            storeLinkToggle.addEventListener('change', function() {
+                const toggleText = this.nextElementSibling.querySelector('span');
+                if (toggleText) {
+                    toggleText.textContent = this.checked ? 'Link is visible' : 'Link is hidden';
+                }
+            });
+        }
+
+        // Lazy load images with Intersection Observer
+        if ('IntersectionObserver' in window) {
+            const lazyImages = Array.from(document.querySelectorAll('img[loading="lazy"]'));
+
+            if (lazyImages.length) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src || img.src;
+                            observer.unobserve(img);
+                        }
+                    });
+                });
+
+                lazyImages.forEach(img => {
+                    img.dataset.src = img.src;
+                    img.src = '';
+                    observer.observe(img);
+                });
+            }
+        }
+
+        // Image modal functionality
+        const imageModal = document.getElementById('image-modal');
+        if (imageModal) {
+            const modalImg = document.getElementById('modal-image');
+            const modalCaption = document.getElementById('modal-caption');
+            const closeModal = document.querySelector('.close-modal');
+
+            // Add click handlers to all gallery images
+            document.querySelectorAll('.thumbnail, .main-image img').forEach(img => {
+                img.addEventListener('click', function() {
+                    imageModal.style.display = 'block';
+                    modalImg.src = this.src;
+                    modalCaption.textContent = this.alt || '';
+                });
+            });
+
+            // Close modal
+            if (closeModal) {
+                closeModal.addEventListener('click', () => imageModal.style.display = 'none');
+            }
+
+            // Close when clicking outside image
+            imageModal.addEventListener('click', function(e) {
+                if (e.target === imageModal) {
+                    imageModal.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+<script>
+// Function to calculate distance between two coordinates in km
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a =
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c; // Distance in km
+}
+
+// Function to format distance for display
+function formatDistance(distance) {
+    if (distance < 1) {
+        return Math.round(distance * 1000) + 'm';
+    } else {
+        return distance.toFixed(1) + 'km';
+    }
+}
+
+// Get user location and calculate distance
+function getUserLocationAndCalculateDistance() {
+    if (!navigator.geolocation) {
+        console.log("Geolocation is not supported by this browser");
+        return;
+    }
+
+    const directionsButton = document.getElementById('directions-button');
+    if (!directionsButton) return;
+
+    // Add loading state
+    const originalText = directionsButton.innerHTML;
+    directionsButton.innerHTML = '<i class="fas fa-directions"></i> Getting distance...';
+    directionsButton.disabled = true;
+
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            // User coordinates
+            const userLat = position.coords.latitude;
+            const userLng = position.coords.longitude;
+
+            // Business coordinates
+            const businessLat = {{ business.latitude }};
+            const businessLng = {{ business.longitude }};
+
+            // Calculate distance
+            const distance = calculateDistance(
+                userLat, userLng,
+                businessLat, businessLng
+            );
+
+            // Update button text with distance
+            directionsButton.innerHTML = `
+                <i class="fas fa-directions"></i>
+                Get Directions
+                <span class="distance">(${formatDistance(distance)} away)</span>
+            `;
+            directionsButton.disabled = false;
+
+            // Update click handler to include user's location
+            directionsButton.onclick = function() {
+                window.open(
+                    `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${businessLat},${businessLng}`,
+                    '_blank'
+                );
+            };
+        },
+        function(error) {
+            console.log("Error getting location: ", error);
+            // Restore original button if location access is denied
+            directionsButton.innerHTML = originalText;
+            directionsButton.disabled = false;
+
+            // Fallback to basic directions without user location
+            directionsButton.onclick = function() {
+                const address = encodeURIComponent('{{ business.address }}, {{ business.city }}');
+                window.open(`https://www.google.com/maps/dir/?api=1&destination=${address}`);
+            };
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+        }
+    );
+}
+
+// Call this when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Only try to get distance if we have business coordinates
+    {% if business.latitude and business.longitude %}
+    getUserLocationAndCalculateDistance();
+    {% endif %}
+});
+</script>
+<!-- Full Image Modal -->
+<div class="image-modal" id="image-modal">
+    <span class="close-modal">&times;</span>
+    <img class="modal-image-content" id="modal-image">
+    <div class="modal-caption" id="modal-caption"></div>
+</div>
+</body>
+</html>

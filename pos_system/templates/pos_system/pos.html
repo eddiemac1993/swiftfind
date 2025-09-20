@@ -1,0 +1,1067 @@
+{% extends 'pos_system/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    /* POS-specific styles that extend base.css */
+    .pos-container {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 20px;
+        height: calc(100vh - 150px);
+    }
+
+    .products-section {
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+
+    .cart-section {
+        background: #f8f9fa;
+        border-left: 1px solid #e9ecef;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Product grid styles */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+
+    .product-card {
+        background: var(--white);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        cursor: pointer;
+        border: 1px solid #eee;
+        position: relative;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        border-color: var(--primary);
+    }
+
+    .product-image {
+        height: 120px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    .product-image::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 40px;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.5), transparent);
+    }
+
+    .product-details {
+        padding: 12px;
+    }
+
+    .product-name {
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: var(--dark);
+        font-size: 15px;
+    }
+
+    .product-price {
+        color: var(--primary);
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .product-stock {
+        color: var(--success);
+        font-size: 11px;
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+    }
+
+    .product-stock.warning {
+        color: var(--warning);
+    }
+
+    .product-stock.danger {
+        color: var(--danger);
+    }
+
+    .product-category {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 3px 8px;
+        border-radius: 10px;
+        font-size: 10px;
+        text-transform: uppercase;
+    }
+
+    /* Cart styles */
+    .cart-title {
+        font-size: 18px;
+        margin-bottom: 12px;
+        color: var(--secondary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .cart-items {
+        flex-grow: 1;
+        overflow-y: auto;
+        margin-bottom: 10px;
+    }
+
+    .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+
+    .cart-item-info {
+        flex-grow: 1;
+    }
+
+    .cart-item-name {
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .cart-item-price {
+        font-size: 12px;
+        color: var(--gray);
+    }
+
+    .quantity-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .qty-btn {
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 22px;
+        height: 22px;
+        cursor: pointer;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: var(--transition);
+    }
+
+    .qty-btn:hover {
+        background: var(--primary-dark);
+    }
+
+    .cart-total {
+        background: var(--secondary);
+        color: white;
+        padding: 12px;
+        border-radius: 8px;
+        margin: 12px 0;
+        text-align: center;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .checkout-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, var(--success) 0%, #2ecc71 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .checkout-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+    }
+
+    .checkout-btn:disabled {
+        background: var(--light-gray);
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .empty-cart {
+        text-align: center;
+        color: var(--gray);
+        padding: 30px 0;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .empty-cart i {
+        font-size: 40px;
+        margin-bottom: 10px;
+        color: var(--light-gray);
+    }
+
+    .category-filter {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+
+    .category-btn {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 12px;
+        background: #eee;
+        border: none;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+
+    .category-btn:hover, .category-btn.active {
+        background: var(--primary);
+        color: white;
+    }
+
+    /* Receipt Styles */
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        .receipt, .receipt * {
+            visibility: visible;
+        }
+        .receipt {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            max-width: 100%;
+            box-shadow: none;
+            border: none;
+            margin: 0;
+            padding: 10px;
+            font-size: 14px;
+        }
+        .no-print {
+            display: none !important;
+        }
+    }
+
+    .receipt {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+        font-family: 'Courier New', monospace;
+        margin-top: 15px;
+        display: none;
+        width: 100%;
+    }
+
+    .receipt-header {
+        text-align: center;
+        margin-bottom: 10px;
+        border-bottom: 1px dashed #000;
+        padding-bottom: 10px;
+    }
+
+    .receipt-header h3 {
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+
+    .receipt-header p {
+        margin: 3px 0;
+        font-size: 12px;
+    }
+
+    .receipt-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+        font-size: 14px;
+    }
+
+    .receipt-total {
+        font-weight: bold;
+        border-top: 1px dashed #000;
+        padding-top: 10px;
+        margin-top: 10px;
+        text-align: right;
+    }
+
+    .receipt-footer {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 12px;
+    }
+
+    .receipt-divider {
+        border-top: 1px dashed #000;
+        margin: 8px 0;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+        .pos-container {
+            grid-template-columns: 1fr;
+            height: auto;
+        }
+
+        .cart-section {
+            border-left: none;
+            border-top: 1px solid #e9ecef;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+    }
+
+    @media (max-width: 480px) {
+        .products-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pos-container">
+    <div class="products-section">
+        <div class="card">
+            <div class="card-body">
+                <!-- Category Filter -->
+                <div class="category-filter">
+                    <button class="category-btn active" data-category="all">All</button>
+                    {% for category in categories %}
+                    <button class="category-btn" data-category="{{ category.id }}">{{ category.name }}</button>
+                    {% endfor %}
+                </div>
+
+                <!-- Product Grid -->
+                <div class="products-grid" id="products-grid">
+                    {% for product in initial_products %}
+                    <div class="product-card" data-product-id="{{ product.id }}">
+                        <div class="product-image"
+                             style="background-image: url('{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-product.png' %}{% endif %}')">
+                            <span class="product-category">{{ product.category.name|default:"Uncategorized" }}</span>
+                        </div>
+                        <div class="product-details">
+                            <div class="product-name">{{ product.name }}</div>
+                            <div class="product-price">ZMW {{ product.price }}</div>
+                            <div class="product-stock {{ product.get_stock_status_class }}">
+                                <i class="fas fa-{{ product.get_stock_icon }}"></i>
+                                {{ product.stock_quantity }} in stock
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center text-muted">
+                        No products available
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cart-section">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4>Shopping Cart</h4>
+            </div>
+            <div class="card-body">
+                <div class="cart-items" id="cart-items">
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-basket"></i>
+                        <p>Your cart is empty</p>
+                    </div>
+                </div>
+
+                <div class="cart-total" id="cart-total">Total: ZMW 0.00</div>
+
+                <div class="form-group">
+                    <label for="payment-method">Payment Method</label>
+                    <select id="payment-method" class="form-control">
+                        <option value="cash">Cash</option>
+                        <option value="card">Card</option>
+                        <option value="mobile_money">Mobile Money</option>
+                        <option value="bank_transfer">Bank Transfer</option>
+                    </select>
+                </div>
+
+                <button id="complete-sale" class="checkout-btn" disabled>
+                    <i class="fas fa-check-circle"></i> Complete Sale
+                </button>
+            </div>
+        </div>
+
+        <div class="receipt" id="receipt">
+            <div class="receipt-header">
+                <h3>{{ business.name }}</h3>
+                <p>{{ business.address|default:"Address not specified" }}</p>
+                <p>{{ business.phone_number|default:"Phone not specified" }}</p>
+                <p id="receipt-date"></p>
+                <p>Receipt #<span id="receipt-number">001</span></p>
+                <div class="receipt-divider"></div>
+            </div>
+            <div id="receipt-items">
+                <!-- Receipt items will be added here -->
+            </div>
+            <div class="receipt-divider"></div>
+            <div class="receipt-total" id="receipt-total">
+                Total: $0.00
+            </div>
+            <div class="receipt-footer">
+                <p>Thank you for your business!</p>
+                <p>VAT No: {{ business.vat_number|default:"Not specified" }}</p>
+            </div>
+            <div class="no-print" style="text-align: center; margin-top: 10px;">
+                <button class="btn btn-primary" id="print-receipt-btn">
+                    <i class="fas fa-print"></i> Print Receipt
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Auto-close Django messages after 5 seconds
+    setTimeout(() => {
+        $('.alert').alert('close');
+    }, 5000);
+    // Define all URLs using Django's URL template tags
+    const urls = {
+        searchProducts: "{% url 'pos_system:search_products' %}",
+        addToCart: "{% url 'pos_system:add_to_cart' %}",
+        removeFromCart: "{% url 'pos_system:remove_from_cart' %}",
+        updateCartItem: "{% url 'pos_system:update_cart_item' %}",
+        processSale: "{% url 'pos_system:process_sale' %}",
+        getCart: "{% url 'pos_system:get_cart' %}",
+        csrfToken: "{{ csrf_token }}"
+    };
+
+    // Initialize cart on page load
+    function initializeCart() {
+        $.ajax({
+            url: urls.getCart,
+            method: 'GET',
+            success: function(data) {
+                if (data.success) {
+                    updateCartUI(data);
+                }
+            }
+        });
+    }
+
+    // Call initializeCart when page loads
+    initializeCart();
+
+    // Product card click handler
+    $(document).on('click', '.product-card', function() {
+        const productId = $(this).data('product-id');
+        addToCart(productId);
+    });
+
+    // Update your addToCart function
+    function addToCart(productId, quantity = 1) {
+        $.ajax({
+            url: urls.addToCart,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                product_id: productId,
+                quantity: quantity
+            }),
+            headers: {
+                'X-CSRFToken': urls.csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(data) {
+                if (data.success) {
+                    // First, check if the cart is currently showing the empty state
+                    if ($('#cart-items .empty-cart').length > 0) {
+                        $('#cart-items').empty(); // Remove the empty cart message
+                    }
+
+                    // Check if this product is already in the cart UI
+                    const existingItem = $(`.cart-item[data-product-id="${productId}"]`);
+
+                    if (existingItem.length > 0) {
+                        // Update the existing item's quantity
+                        const quantitySpan = existingItem.find('span');
+                        const currentQty = parseInt(quantitySpan.text());
+                        quantitySpan.text(currentQty + quantity);
+
+                        // Update the price display
+                        const priceDisplay = existingItem.find('.cart-item-price');
+                        const price = parseFloat(priceDisplay.text().replace('ZMW ', '').split(' × ')[0]);
+                        priceDisplay.text(`ZMW ${price} × ${currentQty + quantity}`);
+                    } else {
+                        // Add new item to cart UI
+                        const productCard = $(`.product-card[data-product-id="${productId}"]`);
+                        const productName = productCard.find('.product-name').text();
+                        const productPrice = productCard.find('.product-price').text().replace('ZMW ', '');
+
+                        const newItem = `
+                            <div class="cart-item" data-product-id="${productId}">
+                                <div class="cart-item-info">
+                                    <div class="cart-item-name">${productName}</div>
+                                    <div class="cart-item-price">ZMW ${productPrice} × ${quantity}</div>
+                                </div>
+                                <div class="quantity-controls">
+                                    <button class="qty-btn decrease-qty">-</button>
+                                    <span>${quantity}</span>
+                                    <button class="qty-btn increase-qty">+</button>
+                                </div>
+                            </div>
+                        `;
+                        $('#cart-items').append(newItem);
+                    }
+
+                    // Update the total (you might want to get this from the server response)
+                    const currentTotalText = $('#cart-total').text();
+                    let currentTotal = 0;
+                    if (currentTotalText !== 'Total: ZMW 0.00') {
+                        currentTotal = parseFloat(currentTotalText.replace('Total: ZMW ', ''));
+                    }
+                    const itemPrice = parseFloat($(`.product-card[data-product-id="${productId}"] .product-price`).text().replace('ZMW ', ''));
+                    const newTotal = currentTotal + (itemPrice * quantity);
+                    $('#cart-total').text(`Total: ZMW ${newTotal.toFixed(2)}`);
+
+                    // Enable checkout button if it's disabled
+                    $('#complete-sale').prop('disabled', false);
+
+                    showToast(data.message, 'success');
+                } else {
+                    showToast(data.message, 'danger');
+                }
+            },
+            error: function(xhr) {
+                const errorMsg = xhr.responseJSON?.message || 'Failed to add to cart';
+                showToast(errorMsg, 'danger');
+            }
+        });
+    }
+
+    // Update cart UI - handles both full refreshes and partial updates
+    function updateCartUI(data, isFullRefresh = true) {
+        const cartItemsContainer = $('#cart-items');
+        const cartTotalContainer = $('#cart-total');
+        const checkoutBtn = $('#complete-sale');
+
+        if (isFullRefresh) {
+            // Clear existing items for full refresh
+            cartItemsContainer.empty();
+
+            if (data.cart && Object.keys(data.cart).length > 0) {
+                // Add each item to the cart UI
+                for (const [productId, item] of Object.entries(data.cart)) {
+                    const cartItem = `
+                        <div class="cart-item" data-product-id="${productId}">
+                            <div class="cart-item-info">
+                                <div class="cart-item-name">${item.name}</div>
+                                <div class="cart-item-price">ZMW ${item.price} × ${item.quantity}</div>
+                            </div>
+                            <div class="quantity-controls">
+                                <button class="qty-btn decrease-qty">-</button>
+                                <span>${item.quantity}</span>
+                                <button class="qty-btn increase-qty">+</button>
+                            </div>
+                        </div>
+                    `;
+                    cartItemsContainer.append(cartItem);
+                }
+
+                // Update total
+                const total = data.cart_total ? data.cart_total : calculateCartTotal(data.cart);
+                cartTotalContainer.text(`Total: ZMW ${parseFloat(total).toFixed(2)}`);
+
+                // Enable checkout button
+                checkoutBtn.prop('disabled', false);
+            } else {
+                // Show empty cart message
+                cartItemsContainer.html(`
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-basket"></i>
+                        <p>Your cart is empty</p>
+                    </div>
+                `);
+
+                // Reset total and disable checkout
+                cartTotalContainer.text('Total: ZMW 0.00');
+                checkoutBtn.prop('disabled', true);
+            }
+        } else {
+            // For partial updates, we assume the data contains just the updated item
+            // This would be used when you want to update just one item in the cart
+            // without refreshing the entire cart
+            // (Implementation would depend on your specific needs)
+        }
+    }
+
+    // Helper function to calculate cart total
+    function calculateCartTotal(cart) {
+        let total = 0;
+        for (const item of Object.values(cart)) {
+            total += parseFloat(item.price) * item.quantity;
+        }
+        return total.toFixed(2);
+    }
+
+    // Quantity controls
+    $(document).on('click', '.increase-qty, .decrease-qty', function() {
+        const item = $(this).closest('.cart-item');
+        const productId = item.data('product-id');
+        const isIncrease = $(this).hasClass('increase-qty');
+
+        // Get current quantity
+        const quantitySpan = item.find('span');
+        let currentQty = parseInt(quantitySpan.text());
+
+        // Calculate new quantity
+        const newQty = isIncrease ? currentQty + 1 : currentQty - 1;
+
+        if (newQty < 1) {
+            // If quantity would be 0, remove the item instead
+            removeFromCart(productId);
+            return;
+        }
+
+        // Update cart via AJAX
+        updateCartItem(productId, newQty);
+    });
+
+    // Update cart item quantity
+    function updateCartItem(productId, quantity) {
+        $.ajax({
+            url: urls.updateCartItem,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                product_id: productId,
+                quantity: quantity
+            }),
+            headers: {
+                'X-CSRFToken': urls.csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(data) {
+                if (data.success) {
+                    updateCartUI(data);
+                } else {
+                    showToast(data.message || 'Error updating quantity', 'danger');
+                }
+            },
+            error: function(xhr) {
+                showToast('Error updating quantity: ' + (xhr.responseJSON?.message || 'Unknown error'), 'danger');
+            }
+        });
+    }
+
+    // Remove from cart
+    function removeFromCart(productId) {
+        $.ajax({
+            url: urls.removeFromCart,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                product_id: productId
+            }),
+            headers: {
+                'X-CSRFToken': urls.csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(data) {
+                if (data.success) {
+                    updateCartUI(data);
+                    showToast('Item removed from cart', 'success');
+                } else {
+                    showToast(data.message || 'Error removing item', 'danger');
+                }
+            },
+            error: function(xhr) {
+                showToast('Error removing item: ' + (xhr.responseJSON?.message || 'Unknown error'), 'danger');
+            }
+        });
+    }
+
+    // Complete sale
+    $('#complete-sale').click(function() {
+        const paymentMethod = $('#payment-method').val();
+
+        $.ajax({
+            url: urls.processSale,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                payment_method: paymentMethod
+            }),
+            headers: {
+                'X-CSRFToken': urls.csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(data) {
+                if (data.success) {
+                    // Generate receipt
+                    generateReceipt(data.transaction_id, data.sale_id);
+                    showToast('Sale completed successfully!', 'success');
+
+                    // Clear cart UI
+                    updateCartUI({
+                        cart: {},
+                        cart_total: 0
+                    });
+                } else {
+                    showToast(data.message || 'Error completing sale', 'danger');
+                }
+            },
+            error: function(xhr) {
+                showToast('Error completing sale: ' + (xhr.responseJSON?.message || 'Unknown error'), 'danger');
+            }
+        });
+    });
+
+    // Generate receipt
+    // Generate receipt with improved error handling
+    function generateReceipt(transactionId, saleId) {
+        $.ajax({
+            url: "{% url 'pos_system:sale_detail' 0 %}".replace('0', saleId),
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(data) {
+                if (data.success) {
+                    try {
+                        const now = new Date();
+                        const receiptDate = now.toLocaleString('en-US');
+
+                        $('#receipt-number').text(data.sale.transaction_id);
+                        $('#receipt-date').text(data.sale.created_at);
+
+                        // Clear existing items
+                        $('#receipt-items').empty();
+
+                        // Add items to receipt
+                        $('#receipt-items').append(`
+                            <div class="receipt-item">
+                                <div><strong>Item</strong></div>
+                                <div><strong>Total</strong></div>
+                            </div>
+                            <div class="receipt-divider"></div>
+                        `);
+
+                        data.items.forEach(item => {
+                            $('#receipt-items').append(`
+                                <div class="receipt-item">
+                                    <div>${item.product.name} x ${item.quantity}</div>
+                                    <div>ZMW ${item.total_price}</div>
+                                </div>
+                            `);
+                        });
+
+                        // Update totals
+                        $('#receipt-total').html(`
+                            <div class="receipt-item">
+                                <div>Subtotal:</div>
+                                <div>ZMW ${data.sale.subtotal}</div>
+                            </div>
+                            <div class="receipt-item">
+                                <div>Tax:</div>
+                                <div>ZMW ${data.sale.tax}</div>
+                            </div>
+                            <div class="receipt-item">
+                                <div>Discount:</div>
+                                <div>ZMW ${data.sale.discount}</div>
+                            </div>
+                            <div class="receipt-item">
+                                <div><strong>Total:</strong></div>
+                                <div><strong>ZMW ${data.sale.total}</strong></div>
+                            </div>
+                        `);
+
+                        // Show the receipt
+                        $('#receipt').show();
+                    } catch (e) {
+                        console.error('Error rendering receipt:', e);
+                        showToast('Error rendering receipt details. Please try again.', 'danger');
+                        // Show a simplified receipt with just the transaction ID
+                        $('#receipt-items').html(`
+                            <div class="receipt-item">
+                                <div>Transaction completed successfully</div>
+                            </div>
+                            <div class="receipt-divider"></div>
+                            <div class="receipt-item">
+                                <div>Reference:</div>
+                                <div>${transactionId}</div>
+                            </div>
+                        `);
+                        $('#receipt').show();
+                    }
+                } else {
+                    showToast(data.message || 'Error generating receipt', 'danger');
+                    // Show a simplified receipt with just the transaction ID
+                    $('#receipt-items').html(`
+                        <div class="receipt-item">
+                            <div>Transaction completed successfully</div>
+                        </div>
+                        <div class="receipt-divider"></div>
+                        <div class="receipt-item">
+                            <div>Reference:</div>
+                            <div>${transactionId}</div>
+                        </div>
+                    `);
+                    $('#receipt').show();
+                }
+            },
+            error: function(xhr) {
+                console.error('Receipt generation error:', xhr);
+                let errorMsg = 'Error generating receipt details';
+
+                if (xhr.responseJSON) {
+                    if (xhr.responseJSON.error_type === 'business_error') {
+                        errorMsg = xhr.responseJSON.message;
+                    } else if (xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+                }
+
+                showToast(errorMsg, 'danger');
+
+                // Show a minimal receipt with just the transaction ID
+                $('#receipt-items').html(`
+                    <div class="receipt-item">
+                        <div>Transaction completed successfully</div>
+                    </div>
+                    <div class="receipt-divider"></div>
+                    <div class="receipt-item">
+                        <div>Reference:</div>
+                        <div>${transactionId}</div>
+                    </div>
+                `);
+                $('#receipt').show();
+            }
+        });
+    }
+
+    // Print receipt
+$('#print-receipt-btn').click(function(e) {
+    e.preventDefault();
+
+    // Get the receipt element
+    const receipt = document.getElementById('receipt');
+
+    // Create a new window
+    const printWindow = window.open('', '_blank');
+
+    // Write the receipt content with enhanced styling
+    printWindow.document.write('<html><head><title>Receipt</title>');
+    printWindow.document.write('<style>');
+    printWindow.document.write(`
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap');
+
+        body {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            color: #333;
+            background-color: #fff;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .receipt {
+            width: 80mm;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 15px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed #e0e0e0;
+        }
+
+        .receipt-header h1 {
+            font-size: 18px;
+            margin: 0;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .receipt-header p {
+            margin: 5px 0 0;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .receipt-body {
+            margin: 15px 0;
+        }
+
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dotted #eee;
+        }
+
+        .receipt-item:last-child {
+            border-bottom: none;
+        }
+
+        .receipt-item-name {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .receipt-item-price {
+            font-weight: 500;
+        }
+
+        .receipt-total {
+            font-weight: bold;
+            border-top: 2px dashed #2c3e50;
+            margin-top: 15px;
+            padding-top: 10px;
+            text-align: right;
+            font-size: 16px;
+        }
+
+        .receipt-footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px dashed #e0e0e0;
+            font-size: 11px;
+            color: #95a5a6;
+        }
+
+        .thank-you {
+            text-align: center;
+            margin-top: 15px;
+            font-style: italic;
+            color: #3498db;
+        }
+
+        @media print {
+            body {
+                padding: 0;
+            }
+            .receipt {
+                box-shadow: none;
+            }
+        }
+    `);
+    printWindow.document.write('</style>');
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(receipt.innerHTML);
+    printWindow.document.write('</body></html>');
+
+    printWindow.document.close();
+
+    // Wait for content to load before printing
+    printWindow.onload = function() {
+        setTimeout(function() {
+            printWindow.print();
+        }, 200);
+    };
+});
+
+    // Toast notification
+function showToast(message, type = 'info') {
+    const typeMap = {
+        'success': 'success',
+        'error': 'danger',
+        'warning': 'warning',
+        'info': 'info',
+        'danger': 'danger'
+    };
+    const alertClass = typeMap[type] || 'info';
+
+    const iconMap = {
+        'success': 'check-circle',
+        'danger': 'exclamation-circle',
+        'warning': 'exclamation-triangle',
+        'info': 'info-circle'
+    };
+    const icon = iconMap[alertClass] || 'info-circle';
+
+    const toast = $(`
+        <div class="alert alert-${alertClass} alert-dismissible fade show" role="alert">
+            <i class="fas fa-${icon} me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `);
+
+    let container = $('#message-container');
+    if (container.length === 0) {
+        container = $('<div id="message-container" style="position: fixed; top: 20px; right: 20px; z-index: 1000; max-width: 400px;"></div>');
+        $('body').append(container);
+    }
+
+    container.append(toast);
+
+    // Initialize Bootstrap's dismiss functionality
+    var closeButton = toast.find('.btn-close');
+    closeButton.on('click', function() {
+        toast.alert('close');
+    });
+
+    setTimeout(() => {
+        toast.alert('close');
+    }, 5000);
+}
+});
+</script>
+{% endblock %}

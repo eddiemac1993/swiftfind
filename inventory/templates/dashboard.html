@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1>Farm Management Dashboard</h1>
+{{ user.username }}
+    <div class="dashboard-statistics">
+        <div class="stat-card">
+            <h3>Animals</h3>
+            <p>{{ animal_count }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Equipment</h3>
+            <p>{{ equipment_count }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Stock Items</h3>
+            <p>{{ stock_item_count }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Employees</h3>
+            <p>{{ employee_count }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Employee Attendance</h3>
+            <p>{{ employee_attendance_count }}</p>
+        </div>
+    </div>
+
+    <div class="dashboard-actions">
+        <a href="{% url 'add_animal' %}" class="btn">Add Animal</a>
+        <a href="{% url 'manage_equipment' %}" class="btn">Manage Equipment</a>
+        <a href="{% url 'stock_management' %}" class="btn">Manage Stock</a>
+        <a href="{% url 'manage_employees' %}" class="btn">Manage Employees</a>
+    </div>
+</div>
+
+<style>
+    .dashboard-container {
+        padding: 20px;
+    }
+
+    .dashboard-statistics {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .stat-card {
+        background: #f0f0f0;
+        padding: 15px;
+        width: 200px;
+        text-align: center;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card h3 {
+        margin-bottom: 10px;
+    }
+
+    .stat-card p {
+        font-size: 2em;
+        margin: 0;
+    }
+
+    .dashboard-actions {
+        margin-top: 30px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+        background-color: #45a049;
+    }
+</style>
+{% endblock %}

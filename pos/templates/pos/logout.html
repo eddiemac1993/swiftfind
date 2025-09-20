@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="logout-container">
+    <h1>You have been logged out</h1>
+    <p>Thank you for visiting. We hope to see you again soon!</p>
+    <a href="{% url 'login' %}" class="btn btn-primary">Login Again</a>
+</div>
+
+<style>
+    .logout-container {
+        max-width: 600px;
+        margin: 50px auto;
+        text-align: center;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .logout-container h1 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+    .logout-container p {
+        margin-bottom: 20px;
+        color: #666;
+    }
+    .logout-container .btn {
+        text-decoration: none;
+        padding: 10px 20px;
+        color: #fff;
+        background-color: #007bff;
+        border: none;
+        border-radius: 5px;
+    }
+    .logout-container .btn:hover {
+        background-color: #0056b3;
+    }
+</style>
+{% endblock %}

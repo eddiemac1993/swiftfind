@@ -1,0 +1,44 @@
+{
+  "id": "/",
+  "short_name": "SwiftFind",
+  "name": "Business Directory",
+  "description": "Find and review local businesses in your area.",
+  "icons": [
+    {
+      "src": "/static/images/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/static/images/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay"],
+  "scope": "/",
+  "theme_color": "#000000",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "orientation": "portrait",
+  "screenshots": [
+    {
+      "src": "/static/images/screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/images/screenshot2.png",
+      "sizes": "1920x1080",
+      "type": "image/png"
+    }
+  ],
+  "dir": "ltr",
+  "lang": "en",
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+  "categories": ["business", "directory", "local services", "reviews"]
+}

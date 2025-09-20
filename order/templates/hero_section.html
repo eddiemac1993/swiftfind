@@ -1,0 +1,13 @@
+<!-- templates/hero_section.html -->
+<div class="bg-gradient-to-r from-primary-600 to-primary-500 text-white rounded-xl p-8 shadow-lg relative overflow-hidden">
+    <div class="absolute right-0 bottom-0 opacity-10">
+        <i class="fas {{ category_icon }} text-9xl"></i>
+    </div>
+    <div class="relative z-10">
+        <h1 class="text-3xl md:text-4xl font-bold mb-2">{{ category_title }}</h1>
+        <p class="text-primary-100 mb-6 max-w-xl">{{ category_description }}</p>
+        <a href="#featured-items" class="inline-flex items-center bg-white text-primary-600 px-6 py-3 rounded-lg font-medium hover:bg-primary-50 transition">
+            Order Now <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+    </div>
+</div>

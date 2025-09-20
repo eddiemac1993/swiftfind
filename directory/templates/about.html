@@ -1,0 +1,1085 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07C160">
+    <meta name="description" content="About SwiftFind">
+    <title>About SwiftFind</title>
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "tdjt8dzlt8");
+    </script>
+    <style>
+        :root {
+            --primary-color: #FF6A00;
+            --primary-dark: #FF6A00;
+            --primary-light: #e6f7ef;
+            --secondary-color: #F8F8F8;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #EEE;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding-bottom: 72px;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        /* Header styles */
+        .app-header {
+            background-color: var(--white);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 6px 12px;
+            background-color: var(--primary-light);
+            border-radius: 20px;
+            color: var(--primary-dark);
+        }
+
+        .dark-mode .location {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        .location i {
+            margin-right: 5px;
+            color: var(--primary-color);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-actions i {
+            font-size: 20px;
+            color: var(--text-color);
+        }
+
+        .dark-mode .user-actions i {
+            color: var(--dark-text);
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--secondary-color);
+        }
+
+        .dark-mode .theme-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-btn .dark-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .light-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .dark-icon {
+            display: block;
+            color: var(--dark-text);
+        }
+
+        /* Main content styles */
+        .app-main {
+            padding: 16px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Hero Section */
+        .about-hero {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 24px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .about-hero {
+            box-shadow: var(--dark-shadow);
+        }
+
+        .about-hero h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .about-hero p {
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        /* Section Container */
+        .section-container {
+            background-color: var(--white);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .section-container {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mission-statement {
+            margin-bottom: 16px;
+            line-height: 1.6;
+            color: var(--text-color);
+        }
+
+        .dark-mode .mission-statement {
+            color: var(--dark-text);
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .feature-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .dark-mode .feature-card {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 24px;
+            color: var(--primary-color);
+            background-color: var(--primary-light);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .dark-mode .feature-icon {
+            background-color: rgba(7, 193, 96, 0.2);
+        }
+
+        .feature-content h3 {
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .dark-mode .feature-content h3 {
+            color: var(--dark-text);
+        }
+
+        .feature-content p {
+            color: var(--light-text);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .dark-mode .feature-content p {
+            color: var(--dark-light-text);
+        }
+
+        /* Benefits List */
+        .benefits-list {
+            margin-top: 16px;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 16px;
+        }
+
+        .benefit-icon {
+            font-size: 20px;
+            color: var(--primary-color);
+            background-color: var(--primary-light);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .dark-mode .benefit-icon {
+            background-color: rgba(7, 193, 96, 0.2);
+        }
+
+        .benefit-item h4 {
+            margin-bottom: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .dark-mode .benefit-item h4 {
+            color: var(--dark-text);
+        }
+
+        .benefit-item p {
+            color: var(--light-text);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .dark-mode .benefit-item p {
+            color: var(--dark-light-text);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            margin: 30px 0;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .cta-section {
+            box-shadow: var(--dark-shadow);
+        }
+
+        .cta-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .cta-section p {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: white;
+            color: var(--primary-color);
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Terms Section */
+        .terms-section {
+            margin-top: 30px;
+        }
+
+        .terms-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background-color: var(--white);
+            border-radius: 16px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+        }
+
+        .dark-mode .terms-toggle {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .terms-toggle h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .terms-toggle i {
+            transition: transform 0.3s ease;
+            color: var(--primary-color);
+        }
+
+        .terms-toggle.active i {
+            transform: rotate(180deg);
+        }
+
+        .terms-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            /* Add these properties for better scrolling */
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) var(--secondary-color);
+        }
+
+        .terms-content.show {
+            max-height: 5000px; /* Increased from 2000px */
+            overflow-y: auto; /* Add scrolling if content exceeds viewport height */
+        }
+
+        .terms-text {
+            padding: 20px;
+            background-color: var(--white);
+            border-radius: 0 0 16px 16px;
+            box-shadow: var(--shadow);
+            margin-top: 2px;
+        }
+
+        .dark-mode .terms-text {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .terms-text h4 {
+            margin: 20px 0 10px;
+            color: var(--primary-color);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .terms-text p, .terms-text ul {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: var(--text-color);
+        }
+
+        .dark-mode .terms-text p,
+        .dark-mode .terms-text ul {
+            color: var(--dark-text);
+        }
+
+        .terms-text ul {
+            padding-left: 20px;
+        }
+
+        .terms-text li {
+            margin-bottom: 8px;
+            color: var(--light-text);
+        }
+
+        .dark-mode .terms-text li {
+            color: var(--dark-light-text);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--white);
+            padding: 12px 0 8px;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--light-text);
+            font-size: 12px;
+            font-weight: 500;
+            position: relative;
+            padding: 6px 16px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--light-text);
+            font-size: 12px;
+            font-weight: 500;
+            padding: 6px 16px;
+            position: relative;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+        }
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active i {
+            transform: translateY(-2px);
+        }
+
+        /* Install Button */
+        #install-button {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode #install-button {
+            background-color: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Chat button */
+        .chat-button {
+            position: fixed;
+            bottom: 150px;
+            right: 20px;
+            color: white;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            text-decoration: none;
+            font-size: 12px;
+            background: var(--dark-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .chat-button:hover {
+            background: var(--dark-bg);
+            transform: scale(1.05);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .about-hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .about-hero p {
+                font-size: 1rem;
+            }
+    .terms-content.show {
+        max-height: 3000px; /* Slightly smaller max-height for mobile */
+    }
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-section h2 {
+                font-size: 1.3rem;
+            }
+
+            .cta-section p {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Install Button -->
+    <button id="install-button" class="install-button" style="display: none;" aria-label="Install app">
+        <i class="fas fa-download"></i>
+    </button>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-top">
+            <a href="{% url 'discover' %}" class="location">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back</span>
+            </a>
+            <div class="user-actions">
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main">
+        <!-- Hero Section -->
+        <section class="about-hero">
+            <div class="about-hero-content">
+                <h1>About SwiftFind</h1>
+                <p>Your trusted partner in connecting locals with Businesses and services in their area.</p>
+            </div>
+        </section>
+
+        <!-- Mission Section -->
+        <section class="section-container">
+            <h2 class="section-title">
+                <i class="fas fa-bullseye"></i>
+                Our Mission
+            </h2>
+            <p class="mission-statement">
+                At SwiftFind, we are dedicated to simplifying how people discover and interact with local Businesses.
+                Our mission is to empower communities by providing a seamless platform where users can find, review,
+                and engage with Businesses, while enabling Businesses to showcase their offerings and connect with community members.
+            </p>
+            <p class="mission-statement">
+                We believe in fostering strong local communities and creating meaningful connections between Businesses
+                and the people they serve. SwiftFind is designed to make local discovery effortless, transparent, and rewarding.
+            </p>
+        </section>
+
+        <!-- What We Offer Section -->
+        <section class="section-container">
+            <h2 class="section-title">
+                <i class="fas fa-gift"></i>
+                What We Offer
+            </h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-search-location"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Local Businesse Discovery</h3>
+                        <p>Easily find Businesses in your area with advanced search and filtering options.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Businesse Listings</h3>
+                        <p>Businesses can create detailed profiles showcasing services, contact information, and operating hours.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Offers & Listings</h3>
+                        <p>Post and discover job opportunities, services, rentals, and items for sale.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Document Management</h3>
+                        <p>Generate professional quotations, invoices, receipts, and delivery notes.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>User Reviews</h3>
+                        <p>Share experiences and read reviews to make informed decisions.</p>
+                    </div>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Seamless Communication</h3>
+                        <p>Connect with organizations through our messaging system for inquiries and support.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Partner With Us Section -->
+        <section class="section-container">
+            <h2 class="section-title">
+                <i class="fas fa-handshake"></i>
+                Why Partner With Us?
+            </h2>
+            <div class="benefits-list">
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <h4>Increased Visibility</h4>
+                        <p>Reach thousands of potential community members in your local area.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <h4>Verified Profiles</h4>
+                        <p>Build trust with community members through verified Businesse profiles.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div>
+                        <h4>Exclusive Offers</h4>
+                        <p>Promote special deals and services to attract more community engagement.</p>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <div class="benefit-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div>
+                        <h4>Analytics Dashboard</h4>
+                        <p>Track your performance and community engagement with our tools.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+<section class="cta-section">
+    <h2>Ready to Join?</h2>
+    <p>Sign up today and start growing your Businesse's reach with SwiftFind.</p>
+    <a href="mailto:swiftfindzm@gmail.com?subject=Partnership Inquiry&body=Hi, I'm interested in becoming a partner with SwiftFind!" class="cta-button">Become a Partner</a>
+</section>
+
+        <!-- Terms & Conditions Section -->
+        <section class="section-container terms-section">
+            <div class="terms-toggle" onclick="toggleTerms()">
+                <h3>Terms & Conditions</h3>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="terms-content" id="terms-content">
+<div class="terms-text">
+    <h4>1. Acceptance of Terms</h4>
+    <p>By accessing, browsing, or using the SwiftFind platform ("Service"), I acknowledge that I have read, understood, and agree to be bound by these Terms and Conditions ("Terms"). These Terms constitute a legally binding agreement between you and SwiftFind. If I do not agree to these Terms in their entirety, I must immediately discontinue all use of the Service.</p>
+
+    <h4>2. Account Registration and Security</h4>
+    <p>To access certain features of the Service, you may be required to create an account. You agree to:</p>
+    <ul>
+        <li>Provide accurate, current, and complete information during registration</li>
+        <li>Maintain and promptly update your account information</li>
+        <li>Maintain the confidentiality of your password and account</li>
+        <li>Be responsible for all activities that occur under your account</li>
+        <li>Notify SwiftFind immediately of any unauthorized use of your account</li>
+        <li>Use your real identity (pseudonyms or false identities are prohibited)</li>
+    </ul>
+
+    <h4>3. User Responsibilities and Conduct</h4>
+    <p>As a user of SwiftFind, you agree to:</p>
+    <ul>
+        <li>Comply with all applicable laws and regulations</li>
+        <li>Not use the Service for any illegal or unauthorized purpose</li>
+        <li>Not harass, abuse, threaten, or intimidate other users</li>
+        <li>Not upload or transmit viruses or any malicious code</li>
+        <li>Not attempt to gain unauthorized access to the Service or its systems</li>
+        <li>Not engage in any activity that interferes with or disrupts the Service</li>
+        <li>Not use the Service to collect or harvest personal information</li>
+        <li>Not create multiple accounts for deceptive or fraudulent purposes</li>
+    </ul>
+
+    <h4>4. Organization Listings and Content</h4>
+    <p>Organizations listing on SwiftFind must:</p>
+    <ul>
+        <li>Provide complete, accurate, and truthful information about their services, location, and contact details</li>
+        <li>Clearly disclose all material and terms of any offers or promotions</li>
+        <li>Maintain appropriate licenses and certifications required for their operations</li>
+        <li>Respond to user inquiries and reviews in a professional manner</li>
+        <li>Not engage in false advertising or deceptive marketing practices</li>
+        <li>Not post content that infringes on intellectual property rights</li>
+        <li>Not discriminate against any users based on race, religion, gender, or other protected characteristics</li>
+    </ul>
+    <p>SwiftFind reserves the right to verify organization information and may remove or suspend any listing that violates these terms or is reported to be fraudulent or misleading.</p>
+
+    <h4>5. Reviews and User-Generated Content</h4>
+    <p>Users may post reviews, comments, and other content ("User Content") as long as it:</p>
+    <ul>
+        <li>Is based on first-hand experiences with the organization</li>
+        <li>Is truthful and not misleading</li>
+        <li>Does not contain hate speech, threats, or harassment</li>
+        <li>Does not contain confidential information</li>
+        <li>Does not violate any third-party rights</li>
+    </ul>
+    <p>By posting User Content, you grant SwiftFind a perpetual, irrevocable license to use, modify, and display such content. SwiftFind may remove any User Content that violates these guidelines without notice.</p>
+
+    <h4>6. Privacy and Data Protection</h4>
+    <p>Your use of SwiftFind is governed by our Privacy Policy, which outlines:</p>
+    <ul>
+        <li>What personal data we collect and how we use it</li>
+        <li>How we protect your personal information</li>
+        <li>Your rights regarding your personal data</li>
+        <li>Our use of cookies and tracking technologies</li>
+        <li>Circumstances under which we may disclose information</li>
+        <li>Collection and verification of information for <strong>KYC (Know Your Customer)</strong> and compliance purposes</li>
+    </ul>
+    <p>By using the Service, you consent to our collection and use of personal data, including for KYC verification, in accordance with our Privacy Policy.</p>
+
+
+    <h4>7. Intellectual Property Rights</h4>
+    <p>All content on the SwiftFind platform, including text, graphics, logos, and software, is the property of SwiftFind or its licensors and is protected by copyright and other intellectual property laws. You agree not to:</p>
+    <ul>
+        <li>Reproduce, duplicate, copy, or resell any part of the Service</li>
+        <li>Use any data mining, robots, or similar data gathering tools</li>
+        <li>Create derivative works based on the Service</li>
+        <li>Remove any copyright or proprietary notices</li>
+    </ul>
+
+    <h4>8. Payments and Fees</h4>
+    <p>Certain features of the Service may require payment of fees. You agree to:</p>
+    <ul>
+        <li>Pay all applicable fees as described on the Service</li>
+        <li>Provide accurate billing and payment information</li>
+        <li>Promptly update account information for changes</li>
+        <li>Authorize SwiftFind to charge your payment method</li>
+    </ul>
+    <p>All fees are non-refundable unless otherwise stated. SwiftFind reserves the right to change fees and payment terms at any time.</p>
+
+    <h4>9. Limitation of Liability</h4>
+    <p>To the maximum extent permitted by law, SwiftFind shall not be liable for:</p>
+    <ul>
+        <li>Any indirect, incidental, or consequential damages</li>
+        <li>Loss of profits, data, or business opportunities</li>
+        <li>The quality, safety, or legality of services provided by listed organizations</li>
+        <li>The accuracy or completeness of organization listings</li>
+        <li>Any user interactions or transactions</li>
+        <li>Unauthorized access to or alteration of your transmissions</li>
+    </ul>
+    <p>SwiftFind's total liability for any claim related to the Service shall not exceed the amount you paid (if any) to use the Service in the 12 months preceding the claim.</p>
+
+    <h4>10. Indemnification</h4>
+    <p>You agree to indemnify and hold harmless SwiftFind, its affiliates, officers, and employees from any claims, damages, or expenses (including attorneys' fees) arising from:</p>
+    <ul>
+        <li>Your use of or inability to use the Service</li>
+        <li>Your violation of these Terms</li>
+        <li>Your violation of any rights of another party</li>
+        <li>Your User Content</li>
+        <li>Your interactions with any organizations or other users</li>
+    </ul>
+
+    <h4>11. Service Modifications and Availability</h4>
+    <p>SwiftFind reserves the right to:</p>
+    <ul>
+        <li>Modify or discontinue the Service at any time</li>
+        <li>Change Service features or functionality</li>
+        <li>Impose limits on certain features or restrict access</li>
+    </ul>
+    <p>We will provide reasonable notice of any material changes that adversely affect your use of the Service.</p>
+
+    <h4>12. Termination</h4>
+    <p>SwiftFind may terminate or suspend your access to the Service:</p>
+    <ul>
+        <li>For violation of these Terms</li>
+        <li>For fraudulent or illegal activity</li>
+        <li>For creating risk or legal exposure</li>
+        <li>For prolonged inactivity</li>
+    </ul>
+    <p>You may terminate your account at any time by contacting us. Certain provisions will survive termination, including those regarding intellectual property, warranties, limitations of liability, and indemnification.</p>
+
+    <h4>13. Dispute Resolution</h4>
+    <p>Any disputes arising from these Terms shall be resolved as follows:</p>
+    <ul>
+        <li>First through good faith negotiations between the parties</li>
+        <li>If unresolved, through binding arbitration in accordance with Zambian law</li>
+        <li>Each party shall bear its own arbitration costs</li>
+    </ul>
+
+    <h4>14. Governing Law</h4>
+    <p>These Terms shall be governed by and construed in accordance with the laws of Zambian, without regard to its conflict of law provisions. Any legal action shall be brought in the courts located in [Your Jurisdiction].</p>
+
+    <h4>15. General Provisions</h4>
+    <ul>
+        <li>These Terms constitute the entire agreement between you and SwiftFind</li>
+        <li>If any provision is found invalid, the remaining provisions remain in effect</li>
+        <li>Our failure to enforce any right does not waive that right</li>
+        <li>You may not assign your rights under these Terms without our consent</li>
+        <li>We may assign our rights without restriction</li>
+    </ul>
+
+    <h4>16. Changes to Terms</h4>
+    <p>We may modify these Terms at any time. We will notify you of material changes through the Service or by email. Your continued use after changes constitutes acceptance. We recommend reviewing the Terms periodically.</p>
+
+    <p>For questions about these Terms, please contact us at :</p>
+          <p>
+                <strong>Email:</strong>
+                <a href="mailto:swiftfindzm@gmail.com?subject=Partnership Inquiry&body=Hi, I'm interested in becoming a partner with SwiftFind!" class="cta-button">swiftfindzm@gmail.com</a>
+            </p>
+    <p>Last updated: July 2025</p>
+</div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Bottom navigation -->
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'pos_system:marketplace' %}" class="nav-item">
+            <i class="fas fa-store"></i>
+            <span>Store</span>
+        </a>
+        <a href="{% url 'about' %}" class="nav-item active">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
+        </a>
+            <a href="{% url 'pos_system:ai_assistant' %}" class="nav-item">
+        <span class="star" style="font-size: 18px;">✨</span>
+        <span>AI</span>
+    </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
+    </nav>
+
+    <script>
+        // Theme Toggle
+        document.getElementById('theme-toggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+        });
+
+        // Terms & Conditions toggle
+        function toggleTerms() {
+            const termsContent = document.getElementById('terms-content');
+            const termsToggle = document.querySelector('.terms-toggle');
+
+            termsContent.classList.toggle('show');
+            termsToggle.classList.toggle('active');
+        }
+
+        // Initialize terms section based on screen size
+        function initTerms() {
+            const termsContent = document.getElementById('terms-content');
+            if (window.innerWidth >= 768) {
+                termsContent.classList.add('show');
+                document.querySelector('.terms-toggle').classList.add('active');
+            } else {
+                termsContent.classList.remove('show');
+                document.querySelector('.terms-toggle').classList.remove('active');
+            }
+        }
+
+        // PWA Installation
+        let deferredPrompt;
+        const installButton = document.getElementById('install-button');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installButton.style.display = 'flex';
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response: ${outcome}`);
+            deferredPrompt = null;
+            installButton.style.display = 'none';
+        });
+
+        window.addEventListener('appinstalled', () => {
+            installButton.style.display = 'none';
+            deferredPrompt = null;
+            console.log('PWA was installed');
+        });
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('{% static "service-worker.js" %}')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', initTerms);
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initTerms);
+    </script>
+</body>
+</html>

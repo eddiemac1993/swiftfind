@@ -1,0 +1,203 @@
+{% extends 'pos_system/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .receipt-container {
+        max-width: 600px;
+        margin: 20px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    
+    .receipt-header {
+        text-align: center;
+        margin-bottom: 20px;
+        border-bottom: 1px dashed #ccc;
+        padding-bottom: 15px;
+    }
+    
+    .receipt-header h2 {
+        margin-bottom: 5px;
+        color: #333;
+    }
+    
+    .business-info {
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: #555;
+    }
+    
+    .receipt-meta {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+    
+    .receipt-items {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    
+    .receipt-items th {
+        text-align: left;
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+        background-color: #f5f5f5;
+    }
+    
+    .receipt-items td {
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .receipt-totals {
+        margin-left: auto;
+        width: 300px;
+        border-top: 1px dashed #ccc;
+        padding-top: 10px;
+    }
+    
+    .receipt-total-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+    
+    .receipt-total-row.total {
+        font-weight: bold;
+        font-size: 1.1em;
+        border-top: 1px solid #ddd;
+        padding-top: 5px;
+        margin-top: 5px;
+    }
+    
+    .receipt-footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 12px;
+        color: #777;
+        border-top: 1px dashed #ccc;
+        padding-top: 15px;
+    }
+    
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        .receipt-container, .receipt-container * {
+            visibility: visible;
+        }
+        .receipt-container {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            box-shadow: none;
+            border: none;
+            margin: 0;
+            padding: 15px;
+        }
+        .no-print {
+            display: none !important;
+        }
+    }
+    
+    .action-buttons {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="receipt-container">
+    <div class="receipt-header">
+        <h2>{{ business.name }}</h2>
+        <div class="business-info">
+            {% if business.address %}<div>{{ business.address }}</div>{% endif %}
+            {% if business.phone_number %}<div>Phone: {{ business.phone_number }}</div>{% endif %}
+            {% if business.email %}<div>Email: {{ business.email }}</div>{% endif %}
+        </div>
+    </div>
+    
+    <div class="receipt-meta">
+        <div>Receipt #: {{ sale.transaction_id }}</div>
+        <div>Date: {{ sale.created_at|date:"F j, Y H:i" }}</div>
+    </div>
+    
+    <table class="receipt-items">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>ZMW {{ item.unit_price }}</td>
+                <td>ZMW {{ item.total_price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="receipt-totals">
+        <div class="receipt-total-row">
+            <span>Subtotal:</span>
+            <span>ZMW {{ sale.subtotal }}</span>
+        </div>
+        {% if sale.tax > 0 %}
+        <div class="receipt-total-row">
+            <span>Tax:</span>
+            <span>ZMW {{ sale.tax }}</span>
+        </div>
+        {% endif %}
+        {% if sale.discount > 0 %}
+        <div class="receipt-total-row">
+            <span>Discount:</span>
+            <span>- ZMW {{ sale.discount }}</span>
+        </div>
+        {% endif %}
+        <div class="receipt-total-row total">
+            <span>Total:</span>
+            <span>ZMW {{ sale.total }}</span>
+        </div>
+    </div>
+    
+    <div class="receipt-footer">
+        <p>Thank you for your business!</p>
+        {% if business.vat_number %}<p>VAT No: {{ business.vat_number }}</p>{% endif %}
+        <p>Payment Method: {{ sale.get_payment_method_display }}</p>
+    </div>
+    
+    <div class="action-buttons no-print">
+        <button onclick="window.print()" class="btn btn-primary">
+            <i class="fas fa-print"></i> Print Receipt
+        </button>
+        <a href="{% url 'pos_system:pos' %}" class="btn btn-secondary">
+            <i class="fas fa-cash-register"></i> New Sale
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Auto-print option (uncomment if you want receipts to auto-print)
+    // window.print();
+});
+</script>
+{% endblock %}

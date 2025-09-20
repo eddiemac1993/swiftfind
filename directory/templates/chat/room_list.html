@@ -1,0 +1,349 @@
+{% extends 'chat/base.html' %}
+
+{% block content %}
+<style>
+  /* Chat Rooms Container */
+  .chat-rooms-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+
+  /* Chat Rooms Header */
+  .chat-rooms-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    color: white;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .chat-rooms-header h1 {
+    font-size: 2rem;
+    margin: 0;
+    color: white;
+  }
+
+  .chat-rooms-header p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0.5rem 0 1rem;
+  }
+
+  .chat-rooms-header .header-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .chat-rooms-header .header-actions a {
+    background-color: white;
+    color: var(--primary-color);
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+  }
+
+  .chat-rooms-header .header-actions a:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Search Bar */
+  .search-bar {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .search-bar i {
+    margin-right: 0.5rem;
+    color: var(--text-secondary);
+  }
+
+  .search-bar input {
+    width: 100%;
+    max-width: 500px;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, width 0.2s ease;
+  }
+
+  .search-bar input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.1);
+    width: 100%;
+    max-width: 550px;
+  }
+
+  /* Chat Rooms List */
+  .chat-rooms-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .chat-room-item {
+    background-color: var(--card-bg);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .chat-room-item:hover {
+    transform: scale(1.02);
+    background-color: var(--card-bg-hover);
+  }
+
+  .chat-room-item .room-info {
+    flex: 1;
+  }
+
+  .chat-room-item h3 {
+    font-size: 1.25rem;
+    margin: 0;
+    color: var(--text-primary);
+  }
+
+  .chat-room-item p {
+    margin: 0.5rem 0 0;
+    color: var(--text-secondary);
+    font-size: 1rem;
+  }
+
+  .chat-room-item .join-button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+  }
+
+  .chat-room-item .join-button:hover {
+    background-color: var(--primary-hover);
+  }
+
+  /* Empty State */
+  #no-results {
+    display: none;
+    text-align: center;
+    color: var(--text-secondary);
+    margin-top: 2rem;
+  }
+
+  /* Loading Spinner */
+  #loading-spinner {
+    display: none;
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  #loading-spinner i {
+    font-size: 2rem;
+    color: var(--primary-color);
+  }
+
+  /* Bottom Navigation Bar */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--card-bg);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0.5rem 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+
+  .bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    transition: color 0.2s ease;
+    position: relative;
+  }
+
+  .bottom-nav a i {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .bottom-nav a:hover {
+    color: var(--primary-color);
+  }
+
+  .bottom-nav a.active {
+    color: var(--primary-color);
+    font-weight: 600;
+  }
+
+  .notification-badge {
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 0.75rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: 50%;
+    position: absolute;
+    top: -0.5rem;
+    right: -0.5rem;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .chat-rooms-container {
+      padding: 0.5rem;
+    }
+
+    .chat-rooms-header h1 {
+      font-size: 1.5rem;
+    }
+
+    .chat-rooms-header p {
+      font-size: 0.875rem;
+    }
+
+    .chat-room-item {
+      flex-direction: column;
+    }
+
+    .chat-room-item .join-button {
+      margin-top: 1rem;
+      width: 100%;
+      text-align: center;
+    }
+
+    .bottom-nav {
+      padding: 0.5rem;
+    }
+
+    .bottom-nav a {
+      font-size: 0.75rem;
+    }
+
+    .bottom-nav a i {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<div class="chat-rooms-container">
+  <!-- Chat Rooms Header -->
+  <header class="chat-rooms-header" aria-labelledby="chat-rooms-title">
+    <h1 id="chat-rooms-title">Chat Rooms</h1>
+    <hr>
+    <p>Join or create a chat room to start conversations with others.</p>
+    <div class="header-actions">
+      <a href="{% url 'create_chat_room' %}" class="create-room-button" aria-label="Create New Room">Create New Room</a>
+    </div>
+  </header>
+
+  <!-- Search Bar -->
+  <div class="search-bar" role="search">
+    <input type="text" id="search-room" placeholder="Search for rooms..." oninput="filterRooms()" aria-label="Search for chat rooms">
+  </div>
+
+  <!-- Loading Spinner -->
+  <div id="loading-spinner">
+    <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+    <p>Loading rooms...</p>
+  </div>
+
+  <!-- Chat Rooms List -->
+  <ul class="chat-rooms-list" aria-labelledby="chat-rooms-title">
+    {% for room in rooms %}
+      <li class="chat-room-item">
+        <div class="room-info">
+          <h3>{{ room.name }}</h3>
+          <p>{{ room.description }}</p>
+          <small>Created on: {{ room.created_at|date:"F j, Y H:i" }}</small>
+        </div>
+        <a href="{% url 'chat_room_detail' room.id %}" class="join-button" aria-label="Join {{ room.name }}">Enter</a>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <!-- Empty State -->
+  <div id="no-results">
+    <p>No rooms found. Try a different search term or <a href="{% url 'create_chat_room' %}">create a new room</a>.</p>
+  </div>
+</div>
+
+<!-- Bottom Navigation Bar -->
+<nav class="bottom-nav" aria-label="Main Navigation">
+  <a href="{% url 'chat_room_list' %}" class="active" title="Chat Rooms" aria-label="Chat Rooms">
+    <i class="fas fa-comments"></i>
+    <span>Chat</span>
+  </a>
+  <a href="{% url 'add-business' %}" title="Add Business" aria-label="Add Business">
+    <i class="fas fa-plus"></i>
+    <span>Add Business</span>
+  </a>
+  <a href="{% url 'create_paper' %}" title="Create Paper" aria-label="Create Paper">
+    <i class="fas fa-file-alt"></i>
+    <span>Create Paper</span>
+  </a>
+  <a href="{% url 'about' %}" title="About" aria-label="About">
+    <i class="fas fa-info-circle"></i>
+    <span>About</span>
+  </a>
+</nav>
+
+<script>
+  function filterRooms() {
+    const searchQuery = document.getElementById('search-room').value.toLowerCase();
+    const rooms = document.querySelectorAll('.chat-room-item');
+    let visibleRooms = 0;
+
+    rooms.forEach(room => {
+      const roomName = room.querySelector('h3').textContent.toLowerCase();
+      const roomDescription = room.querySelector('p').textContent.toLowerCase();
+
+      if (roomName.includes(searchQuery) || roomDescription.includes(searchQuery)) {
+        room.style.display = 'flex';
+        visibleRooms++;
+      } else {
+        room.style.display = 'none';
+      }
+    });
+
+    const noResults = document.getElementById('no-results');
+    if (visibleRooms === 0) {
+      noResults.style.display = 'block';
+    } else {
+      noResults.style.display = 'none';
+    }
+  }
+
+  // Simulate loading state (replace with actual data fetching logic)
+  document.getElementById('loading-spinner').style.display = 'block';
+  setTimeout(() => {
+    document.getElementById('loading-spinner').style.display = 'none';
+  }, 2000);
+</script>
+{% endblock %}

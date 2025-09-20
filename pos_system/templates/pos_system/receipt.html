@@ -1,0 +1,174 @@
+<!-- pos_system/templates/pos_system/receipt.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt #{{ sale.transaction_id }} - {{ business.name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 300px;
+            margin: 0 auto;
+            padding: 10px;
+            font-size: 14px;
+        }
+        .receipt-header {
+            text-align: center;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #000;
+            padding-bottom: 10px;
+        }
+        .business-name {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .receipt-info {
+            margin: 15px 0;
+            border-bottom: 1px dashed #000;
+            padding-bottom: 10px;
+        }
+        .receipt-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        .receipt-table th {
+            text-align: left;
+            border-bottom: 1px dashed #000;
+            padding: 5px 0;
+        }
+        .receipt-table td {
+            padding: 5px 0;
+        }
+        .receipt-table .align-right {
+            text-align: right;
+        }
+        .receipt-totals {
+            margin-top: 15px;
+            border-top: 1px dashed #000;
+            padding-top: 10px;
+        }
+        .receipt-totals div {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .receipt-footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+        }
+        @media print {
+            body {
+                max-width: 100%;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="receipt-header">
+        <div class="business-name">{{ business.name }}</div>
+        <div>{{ business.address|default:"" }}</div>
+        <div>{{ business.phone|default:"" }}</div>
+        <div>{{ business.email|default:"" }}</div>
+    </div>
+
+<div class="receipt-header">
+    <div class="business-name">{{ business.name }}</div>
+    <div>{{ business.address|default:"" }}</div>
+    <div>{{ business.phone|default:"" }}</div>
+    <div>{{ business.email|default:"" }}</div>
+</div>
+
+<div class="receipt-info">
+    <div><strong>Receipt #:</strong> {{ sale.transaction_id }}</div>
+    <div><strong>Date:</strong> {{ sale.created_at|date:"d M Y H:i" }}</div>
+    <div><strong>Cashier:</strong> {{ sale.created_by.get_full_name|default:sale.created_by.username }}</div>
+</div>
+
+<table class="receipt-table">
+    <thead>
+        <tr>
+            <th>Item</th>
+            <th class="align-right">Qty</th>
+            <th class="align-right">Unit</th>
+            <th class="align-right">Price</th>
+            <th class="align-right">Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>
+                {% if item.product %}
+                    {{ item.product.name }}
+                {% else %}
+                    Deleted Product
+                {% endif %}
+            </td>
+            <td class="align-right">{{ item.quantity }}</td>
+            <td class="align-right">
+                {% if item.product %}
+                    {{ item.product.get_unit_display }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+            <td class="align-right">ZMW {{ item.unit_price|floatformat:2 }}</td>
+            <td class="align-right">ZMW {{ item.total_price|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="receipt-totals">
+    <div>
+        <span>Subtotal:</span>
+        <span>ZMW {{ sale.subtotal|floatformat:2 }}</span>
+    </div>
+    {% if sale.tax > 0 %}
+    <div>
+        <span>Tax:</span>
+        <span>ZMW {{ sale.tax|floatformat:2 }}</span>
+    </div>
+    {% endif %}
+    {% if sale.discount > 0 %}
+    <div>
+        <span>Discount:</span>
+        <span>ZMW {{ sale.discount|floatformat:2 }}</span>
+    </div>
+    {% endif %}
+    <div style="font-weight: bold;">
+        <span>Total:</span>
+        <span>ZMW {{ sale.total|floatformat:2 }}</span>
+    </div>
+</div>
+
+    <div class="receipt-footer">
+        <div>Payment Method: {{ sale.get_payment_method_display }}</div>
+        {% if sale.notes %}
+        <div style="margin-top: 10px;">
+            <strong>Notes:</strong> {{ sale.notes }}
+        </div>
+        {% endif %}
+        <div style="margin-top: 20px;">Thank you for your business!</div>
+        <div class="no-print" style="margin-top: 20px;">
+            <button onclick="window.print()" style="padding: 5px 10px; margin-right: 10px;">Print Receipt</button>
+            <button onclick="window.close()" style="padding: 5px 10px;">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Auto-print the receipt when opened
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        };
+    </script>
+</body>
+</html>

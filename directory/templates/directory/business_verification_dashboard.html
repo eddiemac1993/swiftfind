@@ -1,0 +1,1056 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Verification Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "tdjt8dzlt8");
+    </script>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success-color: #059669;
+            --success-hover: #047857;
+            --danger-color: #dc2626;
+            --warning-color: #d97706;
+            --white: #ffffff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --dark-surface: #1e293b;
+            --light-text: #64748b;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header Improvements */
+        .header {
+            background: linear-gradient(135deg, var(--white) 0%, #f8fafc 100%);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-title {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+
+        /* Enhanced Status Badges */
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .status-verified {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: var(--success-color);
+            border: 1px solid #a7f3d0;
+        }
+
+        .status-notverified {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: var(--danger-color);
+            border: 1px solid #fecaca;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            color: var(--warning-color);
+            border: 1px solid #fde68a;
+        }
+
+        /* Enhanced Buttons */
+        .btn {
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-transform: none;
+            font-size: 0.875rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        .btn-verify {
+            background: linear-gradient(135deg, var(--success-color) 0%, #10b981 100%);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-verify:hover {
+            background: linear-gradient(135deg, var(--success-hover) 0%, var(--success-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-verified {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #3b82f6 100%);
+            color: white;
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn-details {
+            background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-200) 100%);
+            color: var(--gray-700);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-details:hover {
+            background: linear-gradient(135deg, var(--gray-200) 0%, var(--gray-300) 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Enhanced Table */
+        .table-container {
+            background: var(--white);
+            border-radius: 1rem;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .table-header th {
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .table-row {
+            transition: all 0.2s ease;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .table-row:hover {
+            background: linear-gradient(135deg, #fafbff 0%, #f0f7ff 100%);
+        }
+
+        .table-row td {
+            padding: 1.25rem 1.5rem;
+            vertical-align: middle;
+        }
+
+        /* Enhanced Cards */
+        .card {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, #3b82f6 100%);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            font-weight: 700;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            color: var(--gray-800);
+        }
+
+        .card-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem 0;
+        }
+
+        .card-label {
+            font-weight: 500;
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+
+        /* Enhanced Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background: var(--white);
+            padding: 1rem 0 calc(1rem + env(safe-area-inset-bottom));
+            box-shadow: 0 -4px 25px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            border-top: 1px solid var(--gray-200);
+            backdrop-filter: blur(20px);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--light-text);
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            position: relative;
+            transition: all 0.3s ease;
+            border-radius: 0.75rem;
+            min-width: 60px;
+        }
+
+        .nav-item i {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+        }
+
+        .nav-item.active i {
+            transform: scale(1.1);
+        }
+
+        /* Message Alerts */
+        .alert {
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            border: 1px solid;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .alert-info {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+            border-color: #93c5fd;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: #065f46;
+            border-color: #a7f3d0;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: #991b1b;
+            border-color: #fecaca;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading State */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Search and Filter */
+        .search-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--gray-300);
+            background: var(--white);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            font-size: 0.875rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--gray-300);
+            background: var(--white);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            background: var(--gray-100);
+        }
+
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--gray-800);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-600);
+        }
+
+        /* Responsive Improvements */
+        @media (max-width: 768px) {
+            .desktop-table { display: none; }
+            .mobile-cards { display: block; }
+
+            .header-title {
+                font-size: 1.25rem;
+            }
+
+            body {
+                padding-bottom: 100px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .desktop-table { display: block; }
+            .mobile-cards { display: none; }
+
+            body {
+                padding-bottom: 0;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .bottom-nav,
+            .btn,
+            .search-container,
+            .filter-container {
+                display: none;
+            }
+
+            body {
+                background: white;
+                padding-bottom: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header sticky top-0 z-50 p-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                <i class="fas fa-shield-alt text-white text-sm"></i>
+            </div>
+            <h1 class="header-title">Business Verification Dashboard</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 text-sm text-gray-600">
+                <i class="fas fa-clock"></i>
+                <span id="current-time"></span>
+            </div>
+            <button id="help-btn" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                <i class="fas fa-question text-gray-600"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow p-4 max-w-7xl mx-auto w-full">
+        <!-- Messages -->
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}{% if 'error' in message.tags %}alert-error{% else %}alert-{{ message.tags }}{% endif %}{% else %}alert-info{% endif %}">
+                <i class="fas fa-{% if message.tags %}{% if 'error' in message.tags %}exclamation-circle{% elif 'success' in message.tags %}check-circle{% else %}info-circle{% endif %}{% else %}info-circle{% endif %}"></i>
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+
+        <!-- Search and Filter -->
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="search-input" class="search-input" placeholder="Search businesses by name or location...">
+        </div>
+
+        <div class="filter-container">
+            <button class="filter-btn active" data-filter="all">All Businesses</button>
+            <button class="filter-btn" data-filter="verified">Verified</button>
+            <button class="filter-btn" data-filter="pending">Pending</button>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white rounded-xl p-6 shadow-md border border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Total Businesses</p>
+                        <p class="text-2xl font-bold text-gray-900" id="total-count">{{ businesses|length }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-building text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-md border border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Verified</p>
+                        <p class="text-2xl font-bold text-green-600" id="verified-count">
+                            {% with verified_count=0 %}
+                                {% for business in businesses %}
+                                    {% if business.is_admin_added %}
+                                        {% with verified_count=verified_count|add:1 %}{% endwith %}
+                                    {% endif %}
+                                {% endfor %}
+                                {{ verified_count }}
+                            {% endwith %}
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-6 shadow-md border border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Pending</p>
+                        <p class="text-2xl font-bold text-orange-600" id="pending-count">
+                            {% with pending_count=0 %}
+                                {% for business in businesses %}
+                                    {% if not business.is_admin_added %}
+                                        {% with pending_count=pending_count|add:1 %}{% endwith %}
+                                    {% endif %}
+                                {% endfor %}
+                                {{ pending_count }}
+                            {% endwith %}
+                        </p>
+                    </div>
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-clock text-orange-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Desktop Table -->
+        <div class="desktop-table">
+            <div class="table-container">
+                <table class="w-full">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="text-left">Business Name</th>
+                            <th class="text-left">Location</th>
+                            <th class="text-left">Verification Status</th>
+                            <th class="text-left">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="business-table-body">
+                        {% for business in businesses %}
+                        <tr class="table-row business-item" data-status="{% if business.is_admin_added %}verified{% else %}pending{% endif %}" data-name="{{ business.name|lower }}" data-location="{{ business.city|lower }}">
+                            <td>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-store text-gray-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-gray-900">{{ business.name }}</p>
+                                        <p class="text-sm text-gray-500">ID: #{{ business.id }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-map-marker-alt text-gray-400"></i>
+                                    <span class="text-gray-700">{{ business.city }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if business.is_admin_added %}
+                                    <span class="status-badge status-verified">
+                                        <i class="fas fa-check-circle"></i>
+                                        Verified until {{ business.verified_until|date:"M d, Y" }}
+                                    </span>
+                                {% else %}
+                                    <span class="status-badge status-notverified">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        Not Verified
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="flex gap-2">
+                                    {% if business.is_admin_added %}
+                                        <button class="btn btn-verified" disabled>
+                                            <i class="fas fa-shield-check"></i>
+                                            Verified
+                                        </button>
+                                    {% else %}
+                                        <form method="post" class="inline-block">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="business_id" value="{{ business.id }}">
+                                            <button type="submit" class="btn btn-verify">
+                                                <i class="fas fa-check"></i>
+                                                Verify
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                    <button class="btn btn-details view-details" data-business-id="{{ business.id }}">
+                                        <i class="fas fa-eye"></i>
+                                        Details
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-12">
+                                <div class="flex flex-col items-center gap-4">
+                                    <i class="fas fa-inbox text-gray-300 text-4xl"></i>
+                                    <p class="text-gray-500">No businesses found</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Mobile Cards -->
+        <div class="mobile-cards" id="mobile-cards-container">
+            {% for business in businesses %}
+            <div class="card business-item" data-status="{% if business.is_admin_added %}verified{% else %}pending{% endif %}" data-name="{{ business.name|lower }}" data-location="{{ business.city|lower }}">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-store text-gray-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="card-header mb-1">{{ business.name }}</h3>
+                            <p class="text-sm text-gray-500">ID: #{{ business.id }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-row">
+                    <span class="card-label">
+                        <i class="fas fa-map-marker-alt mr-2"></i>Location
+                    </span>
+                    <span class="font-medium">{{ business.city }}</span>
+                </div>
+
+                <div class="card-row">
+                    <span class="card-label">
+                        <i class="fas fa-shield-alt mr-2"></i>Status
+                    </span>
+                    {% if business.is_admin_added %}
+                        <span class="status-badge status-verified">
+                            <i class="fas fa-check-circle"></i>
+                            Verified until {{ business.verified_until|date:"M d, Y" }}
+                        </span>
+                    {% else %}
+                        <span class="status-badge status-notverified">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Not Verified
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-gray-100 flex gap-2">
+                    {% if business.is_admin_added %}
+                        <button class="btn btn-verified flex-1" disabled>
+                            <i class="fas fa-shield-check"></i>
+                            Verified
+                        </button>
+                    {% else %}
+                        <form method="post" class="flex-1">
+                            {% csrf_token %}
+                            <input type="hidden" name="business_id" value="{{ business.id }}">
+                            <button type="submit" class="btn btn-verify w-full">
+                                <i class="fas fa-check"></i>
+                                Verify
+                            </button>
+                        </form>
+                    {% endif %}
+                    <button class="btn btn-details view-details flex-1" data-business-id="{{ business.id }}">
+                        <i class="fas fa-eye"></i>
+                        Details
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-12">
+                <div class="flex flex-col items-center gap-4">
+                    <i class="fas fa-inbox text-gray-300 text-4xl"></i>
+                    <p class="text-gray-500">No businesses found</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <!-- Business Details Modal -->
+    <div id="business-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Business Details</h2>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div id="modal-body">
+                <!-- Content will be loaded via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Help & Information</h2>
+                <button class="modal-close" id="help-modal-close">&times;</button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-2">Verification Process</h3>
+                    <p class="text-gray-600 text-sm">Verify businesses by clicking the "Verify" button next to pending businesses. Once verified, businesses will be marked with a verified status.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-2">Search & Filter</h3>
+                    <p class="text-gray-600 text-sm">Use the search bar to find businesses by name or location. Filter businesses by status using the filter buttons.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-2">Status Indicators</h3>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="status-badge status-verified">Verified</span>
+                        <span class="text-sm text-gray-600">- Business has been verified</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="status-badge status-notverified">Not Verified</span>
+                        <span class="text-sm text-gray-600">- Business needs verification</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'pos_system:marketplace' %}" class="nav-item">
+            <i class="fas fa-store"></i>
+            <span>Store</span>
+        </a>
+        <a href="{% url 'about' %}" class="nav-item active">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
+        </a>
+        <a href="{% url 'pos_system:ai_assistant' %}" class="nav-item">
+            <span class="text-lg">✨</span>
+            <span>AI</span>
+        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
+    </nav>
+
+    <script>
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            const timeElement = document.getElementById('current-time');
+            if (timeElement) {
+                timeElement.textContent = timeString;
+            }
+        }
+
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Enhanced form submission with loading state
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const button = form.querySelector('button[type="submit"]');
+                if (button) {
+                    button.classList.add('loading');
+                    button.disabled = true;
+                    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                }
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('search-input');
+        const businessItems = document.querySelectorAll('.business-item');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+
+            businessItems.forEach(item => {
+                const name = item.getAttribute('data-name');
+                const location = item.getAttribute('data-location');
+
+                if (name.includes(searchTerm) || location.includes(searchTerm)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            updateCounts();
+        });
+
+        // Filter functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const filter = this.getAttribute('data-filter');
+
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+
+                // Filter items
+                businessItems.forEach(item => {
+                    const status = item.getAttribute('data-status');
+
+                    if (filter === 'all' || filter === status) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                updateCounts();
+            });
+        });
+
+        // Update counts based on visible items
+        function updateCounts() {
+            const visibleItems = document.querySelectorAll('.business-item:not([style*="display: none"])');
+            const verifiedCount = document.querySelectorAll('.business-item:not([style*="display: none"])[data-status="verified"]').length;
+            const pendingCount = document.querySelectorAll('.business-item:not([style*="display: none"])[data-status="pending"]').length;
+
+            document.getElementById('total-count').textContent = visibleItems.length;
+            document.getElementById('verified-count').textContent = verifiedCount;
+            document.getElementById('pending-count').textContent = pendingCount;
+        }
+
+        // Modal functionality
+        const modal = document.getElementById('business-modal');
+        const helpModal = document.getElementById('help-modal');
+        const modalClose = document.getElementById('modal-close');
+        const helpModalClose = document.getElementById('help-modal-close');
+        const viewDetailsButtons = document.querySelectorAll('.view-details');
+        const helpButton = document.getElementById('help-btn');
+
+        function openModal() {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function openHelpModal() {
+            helpModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeHelpModal() {
+            helpModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        modalClose.addEventListener('click', closeModal);
+        helpModalClose.addEventListener('click', closeHelpModal);
+        helpButton.addEventListener('click', openHelpModal);
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+            if (event.target === helpModal) {
+                closeHelpModal();
+            }
+        });
+
+        // View details functionality
+        viewDetailsButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const businessId = this.getAttribute('data-business-id');
+
+                // In a real application, you would fetch this data from the server
+                // For this example, we'll use a mock response
+                const modalBody = document.getElementById('modal-body');
+                modalBody.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-store text-gray-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-lg">Business #${businessId}</h3>
+                                <p class="text-gray-500">Detailed information</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Business Name</p>
+                                <p class="font-medium">Sample Business ${businessId}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Location</p>
+                                <p class="font-medium">Sample City</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Category</p>
+                                <p class="font-medium">Retail</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Owner</p>
+                                <p class="font-medium">John Doe</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <p class="text-sm text-gray-500 mb-2">Description</p>
+                            <p class="text-gray-700">This is a sample business description. In a real application, this would be fetched from the database.</p>
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-200">
+                            <p class="text-sm text-gray-500 mb-2">Verification History</p>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    <p class="text-sm">Registered on Jan 15, 2023</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                    <p class="text-sm">Last updated on Mar 22, 2023</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                openModal();
+            });
+        });
+
+        // Initialize counts on page load
+        updateCounts();
+    </script>
+</body>
+</html>

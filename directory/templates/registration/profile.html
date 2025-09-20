@@ -1,0 +1,1650 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07C160">
+    <meta name="description" content="Business Profile - SwiftFind">
+    <title>Profile - SwiftFind</title>
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js" defer></script>
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "tdjt8dzlt8");
+    </script>
+    <style>
+        :root {
+            --primary-color: #FF6A00;
+            --primary-dark: #FF6A00;
+            --primary-light: #e6f7ef;
+            --secondary-color: #F8F8F8;
+            --text-color: #333;
+            --light-text: #999;
+            --border-color: #EEE;
+            --white: #FFFFFF;
+            --black: #1A1A1A;
+            --dark-bg: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text: #E0E0E0;
+            --dark-light-text: #A0A0A0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        body {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            padding-bottom: 72px;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        /* Header styles */
+        .app-header {
+            background-color: var(--white);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .dark-mode .app-header {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 6px 12px;
+            background-color: var(--primary-light);
+            border-radius: 20px;
+            color: var(--primary-dark);
+        }
+
+        .dark-mode .location {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        .location i {
+            margin-right: 5px;
+            color: var(--primary-color);
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .theme-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--secondary-color);
+        }
+
+        .dark-mode .theme-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-btn .dark-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .light-icon {
+            display: none;
+        }
+
+        .dark-mode .theme-btn .dark-icon {
+            display: block;
+            color: var(--dark-text);
+        }
+
+        /* Main container */
+        .container {
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 16px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-color);
+            position: relative;
+            padding-left: 16px;
+        }
+
+        .dark-mode .page-title {
+            color: var(--dark-text);
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 16px;
+            width: 40px;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+        }
+
+        /* Profile layout */
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .profile-layout {
+                grid-template-columns: 240px 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background-color: var(--white);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .dark-mode .sidebar {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .sidebar-user {
+            padding: 24px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dark-mode .sidebar-user {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 16px;
+            border: 3px solid var(--primary-color);
+            position: relative;
+            display: block;
+        }
+
+        .upload-button {
+            position: absolute;
+            top: 50%;
+            right: -16px;
+            transform: translateY(-50%);
+            background: var(--primary-color);
+            color: white;
+            border: 2px solid var(--white);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+
+        .upload-button:hover {
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .sidebar-user .relative {
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        /* Form sections */
+        .form-section {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .form-section {
+            background-color: var(--dark-surface);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dark-mode .form-section-header {
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            font-size: 16px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .section-progress {
+            font-size: 12px;
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        .dark-mode .section-progress {
+            background-color: rgba(7, 193, 96, 0.2);
+            color: var(--primary-color);
+        }
+
+        /* Toggle switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .toggle-label {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+            background-color: #ccc;
+            border-radius: 34px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .dark-mode .toggle-label {
+            background-color: #4b5563;
+        }
+
+        .toggle-label:after {
+            content: "";
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: var(--primary-color);
+        }
+
+        .toggle-checkbox:checked + .toggle-label:after {
+            transform: translateX(24px);
+        }
+
+        .toggle-checkbox:focus + .toggle-label {
+            box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.3);
+        }
+
+        .toggle-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-color);
+            transition: color 0.3s ease;
+        }
+
+        .dark-mode .toggle-text {
+            color: var(--dark-text);
+        }
+
+        /* Sidebar menu */
+        .sidebar-menu {
+            padding: 16px 0;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .dark-mode .menu-item {
+            color: var(--dark-text);
+        }
+
+        .menu-item i {
+            width: 24px;
+            margin-right: 12px;
+            text-align: center;
+            color: var(--light-text);
+        }
+
+        .menu-item.active {
+            background-color: rgba(7, 193, 96, 0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+
+        .menu-item.active i {
+            color: var(--primary-color);
+        }
+
+        .menu-item:hover:not(.active) {
+            background-color: rgba(7, 193, 96, 0.05);
+        }
+
+        /* Main content */
+        .main-content {
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .dark-mode .main-content {
+            background-color: var(--dark-surface);
+            box-shadow: var(--dark-shadow);
+        }
+
+        .content-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .content-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* Alert messages */
+        .alert {
+            margin: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: rgba(7, 193, 96, 0.1);
+            color: var(--primary-dark);
+        }
+
+        .alert-error {
+            background-color: rgba(220, 38, 38, 0.1);
+            color: #dc2626;
+        }
+
+        /* File upload styling */
+        .file-input-container {
+            margin-top: 8px;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 10px 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-preview {
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .image-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
+
+        .file-info {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-info-pdf {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .dark-mode .file-info-pdf {
+            background-color: rgba(220, 38, 38, 0.2);
+        }
+
+        /* File drop zone */
+        .file-drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .file-drop-zone.active {
+            border-color: var(--primary-color);
+            background-color: rgba(7, 193, 96, 0.05);
+        }
+
+        .dark-mode .file-drop-zone {
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .dark-mode .file-drop-zone.active {
+            background-color: rgba(7, 193, 96, 0.1);
+        }
+
+        /* Form styles */
+        .profile-form {
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group label .required {
+            color: #dc2626;
+            margin-left: 4px;
+        }
+
+        .form-group .help-text {
+            font-size: 12px;
+            color: var(--light-text);
+            margin-top: 4px;
+        }
+
+        .dark-mode .form-group .help-text {
+            color: var(--dark-light-text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background-color: var(--white);
+            color: var(--text-color);
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .form-control {
+            background-color: var(--dark-surface);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: var(--dark-text);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 15px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background: #ddd;
+        }
+
+        /* Subscription promo styles */
+        .subscription-promo {
+            background-color: rgba(220, 53, 69, 0.1);
+            border-radius: 12px;
+            margin: 8px;
+            padding: 12px;
+            color: #dc3545;
+            border-left: 3px solid #dc3545;
+        }
+
+        .dark-mode .subscription-promo {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: #ff6b6b;
+        }
+
+        .promo-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .promo-header i {
+            font-size: 18px;
+        }
+
+        .promo-details p {
+            font-size: 13px;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #07C160;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .whatsapp-btn:hover {
+            background-color: #05a54e;
+        }
+
+        .whatsapp-btn i {
+            margin-right: 6px;
+            font-size: 16px;
+        }
+
+        /* Verification badge */
+        .verified-badge {
+            color: var(--primary-color);
+            font-weight: 500;
+            background-color: rgba(7, 193, 96, 0.1);
+            border-radius: 8px;
+            margin: 8px;
+            padding: 12px;
+            border-left: 3px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+        }
+
+        .dark-mode .verified-badge {
+            background-color: rgba(7, 193, 96, 0.2);
+        }
+
+        .verified-badge i {
+            flex-shrink: 0;
+            margin-right: 12px;
+        }
+
+        .verified-badge-content p:first-child {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .verified-badge-content p:last-child {
+            font-size: 12px;
+        }
+
+        /* Bottom navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--white);
+            padding: 12px 0;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--light-text);
+            font-size: 12px;
+            font-weight: 500;
+            padding: 6px 16px;
+            position: relative;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+        }
+
+        /* CKEditor 5 custom styling */
+        .ck-editor__editable {
+            min-height: 200px;
+            border-radius: 12px !important;
+            border: 1px solid var(--border-color) !important;
+            transition: all 0.3s ease;
+        }
+
+        .dark-mode .ck-editor__editable {
+            background: var(--dark-surface) !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+            color: var(--dark-text) !important;
+        }
+
+        .ck.ck-editor {
+            transition: all 0.3s ease;
+        }
+/* Earnings Card Styles */
+.earnings-card {
+    background-color: rgba(255, 106, 0, 0.05);
+    border-left: 3px solid var(--primary-color);
+    border-radius: 0 8px 8px 0;
+    padding: 16px;
+    margin: 0 8px 16px 8px;
+}
+
+.dark-mode .earnings-card {
+    background-color: rgba(255, 106, 0, 0.1);
+}
+
+.earnings-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.earnings-label {
+    color: var(--light-text);
+}
+
+.dark-mode .earnings-label {
+    color: var(--dark-light-text);
+}
+
+.earnings-amount {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.earnings-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.earnings-link:hover {
+    text-decoration: underline;
+}
+/* Notification Button Styles */
+.notification-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+.dark-mode .notification-btn {
+    color: var(--dark-text);
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #FF6A00;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.notification-btn:hover {
+    color: var(--primary-color);
+}
+
+.notification-btn:hover i {
+    color: var(--primary-color);
+}
+
+/* If you want to make it stand out more */
+.notification-btn.highlight {
+    background-color: rgba(255, 106, 0, 0.1);
+    border-left: 3px solid var(--primary-color);
+}
+
+.notification-btn.highlight i {
+    color: var(--primary-color);
+}
+
+.dark-mode .notification-btn.highlight {
+    background-color: rgba(255, 106, 0, 0.2);
+}
+.earnings-link i {
+    font-size: 12px;
+}
+.verification-status {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.not-verified {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #dc3545;
+    font-weight: 500;
+}
+
+.verification-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.verification-history {
+    margin-top: 20px;
+    padding: 16px;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: 8px;
+}
+
+.dark-mode .verification-history {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.verification-history h4 {
+    margin-bottom: 12px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.history-item {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dark-mode .history-item {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: static;
+                margin-bottom: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Header with navigation -->
+    <header class="app-header">
+        <div class="header-top">
+            <div class="location">
+                <i class="fas fa-store"></i>
+                <span>Profile</span>
+            </div>
+            <div class="user-actions">
+                <button id="theme-toggle" class="theme-btn" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
+                <div class="relative">
+                    <button id="dropdownToggle" class="flex items-center gap-2 focus:outline-none" aria-label="User menu">
+                        {% if business.logo %}
+                            <img src="{{ business.logo.url }}" loading="lazy" alt="Profile" class="w-8 h-8 rounded-full object-cover">
+                        {% else %}
+                            <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                <i class="fas fa-user text-gray-500"></i>
+                            </div>
+                        {% endif %}
+                        <span class="font-medium">{{ user.username }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1 class="page-title">My Organization Profile</h1>
+
+        <div class="profile-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+    <div class="sidebar-user">
+        <div class="relative inline-block">
+            {% if business.logo %}
+                <img src="{{ business.logo.url }}" loading="lazy" alt="Business Logo" class="sidebar-avatar relative">
+            {% else %}
+                <div class="sidebar-avatar bg-gray-200 flex items-center justify-center relative">
+                    <i class="fas fa-building text-gray-500 text-3xl"></i>
+                </div>
+            {% endif %}
+            <label for="logo-upload" class="upload-button" aria-label="Upload Logo">
+                <i class="fas fa-camera"></i>
+            </label>
+        </div>
+        <h2>{{ business.name|default:user.username }}</h2>
+        <p>Organization Owner</p>
+    </div>
+
+    <div class="sidebar-menu">
+<!-- Add Referral Earnings Card at the top -->
+    <div class="earnings-card">
+        <div class="earnings-row">
+            <span class="earnings-label">Total Earned:</span>
+            <span class="earnings-amount">K{{ referral_stats.total_earned|floatformat:2 }}</span>
+        </div>
+        <div class="earnings-row">
+            <span class="earnings-label">Paid Out:</span>
+            <span class="earnings-amount">K{{ referral_stats.total_paid|floatformat:2 }}</span>
+        </div>
+        <div class="earnings-row">
+            <span class="earnings-label">Pending:</span>
+            <span class="earnings-amount">K{{ referral_stats.pending_payment|floatformat:2 }}</span>
+        </div>
+        <a href="{% url 'referral_dashboard' %}" class="earnings-link">
+            <i class="fas fa-external-link-alt mr-1"></i> View Details
+        </a>
+<a href="{% url 'post_create' %}" class="notification-btn menu-item {% if unread_announcements_count > 0 %}highlight{% endif %}" title="My Products">
+    <i class="fas fa-bullhorn"></i>
+    <span>Create Post</span>
+    {% if unread_announcements_count > 0 %}
+        <span class="notification-badge">{{ unread_announcements_count }}</span>
+    {% endif %}
+</a>
+    </div>
+        {% if business.is_verified %}
+            <a href="#" class="menu-item active">
+                <i class="fas fa-user-circle"></i>
+                <span>Organization Profile</span>
+            </a>
+            <a href="{% url 'pos_system:dashboard' %}" class="menu-item">
+                <i class="fas fa-cash-register"></i>
+                <span>Add Products and Services</span>
+            </a>
+            <a href="{% url 'create_paper' %}" class="menu-item">
+                <i class="fas fa-file-invoice"></i>
+                <span>Create Quotations</span>
+            </a>
+            <!-- Add Products/Services Menu Item -->
+            <a href="{% url 'post_create' %}" class="menu-item">
+                <i class="fas fa-boxes"></i>
+                <span>Create Annoucements</span>
+            </a>
+            <a href="{% url 'pos_system:product_analytics' %}" class="menu-item">
+            <i class="fas fa-chart-line"></i>
+            <span>Analytics</span>
+        </a>
+            <a href="{% url 'referral_dashboard' %}" class="menu-item">
+        <i class="fas fa-hand-holding-usd"></i>
+        <span>Referrals</span>
+    </a>
+            <div class="menu-item verified-badge">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="verified-badge-content ml-3">
+                    <p>Verified Business</p>
+                    <p>{{ business.verification_days_left }} days remaining</p>
+                </div>
+            </div>
+
+        {% else %}
+            <a href="#" class="menu-item active">
+                <i class="fas fa-user-circle"></i>
+                <span>Business Profile</span>
+            </a>
+            <div class="subscription-promo">
+                <div class="promo-header">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Subscribe to unlock features</span>
+                </div>
+                <div class="promo-details">
+                    <a href="https://wa.me/260772447190?text=I%20want%20my%20account%20verified%20for%20{{ business.name }}"
+                       class="whatsapp-btn">
+                        <i class="fab fa-whatsapp"></i> Contact Us
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <div class="content-header">
+                    <h2 class="content-title">
+                        {% if has_business %}Edit Business Information{% else %}Create Your Business Profile{% endif %}
+                    </h2>
+                </div>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+                            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if not has_business %}
+                    <!-- Add Business CTA Section -->
+                    <div class="form-section" style="text-align: center; padding: 40px 20px;">
+                        <div style="max-width: 500px; margin: 0 auto;">
+                            <i class="fas fa-store" style="font-size: 48px; color: var(--primary-color); margin-bottom: 20px;"></i>
+                            <h3 style="font-size: 20px; margin-bottom: 15px;">You haven't created a Organization profile yet</h3>
+                            <p style="margin-bottom: 25px; color: var(--light-text);">
+                                Add your Organization to get listed in our directory and access all Organization features.
+                            </p>
+                            <a href="{% url 'add-business' %}" class="btn btn-primary" style="padding: 12px 30px; font-size: 16px;">
+                                <i class="fas fa-plus mr-2"></i> Add Your Organization
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <form method="post" enctype="multipart/form-data" class="profile-form">
+                        {% csrf_token %}
+
+                        <!-- Account Information Section -->
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3 class="section-title">
+                                    <i class="fas fa-user-circle"></i> Account Information
+                                </h3>
+                                <span class="section-progress">1</span>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="{{ user_form.username.id_for_label }}">
+                                        Username
+                                        {% if user_form.username.field.required %}<span class="required">*</span>{% endif %}
+                                    </label>
+                                    <input type="text"
+       id="{{ user_form.username.id_for_label }}"
+       name="{{ user_form.username.name }}"
+       value="{{ user_form.username.value }}"
+       class="form-control"
+       readonly
+       aria-describedby="help-{{ user_form.username.id_for_label }}">
+                                    <small id="help-{{ user_form.username.id_for_label }}" class="help-text text-muted">
+    Can only be changed by request to the SwiftFind.
+</small>
+
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ user_form.email.id_for_label }}">
+                                        Email
+                                        {% if user_form.email.field.required %}<span class="required">*</span>{% endif %}
+                                    </label>
+                                    <input type="email"
+                                           id="{{ user_form.email.id_for_label }}"
+                                           name="{{ user_form.email.name }}"
+                                           value="{{ user_form.email.value }}"
+                                           class="form-control"
+                                           aria-describedby="help-{{ user_form.email.id_for_label }}">
+                                    {% if user_form.email.help_text %}
+                                        <small id="help-{{ user_form.email.id_for_label }}" class="help-text">
+                                            {{ user_form.email.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Business Details Section -->
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3 class="section-title">
+                                    <i class="fas fa-building"></i> Organization Details
+                                </h3>
+                                <span class="section-progress">2</span>
+                            </div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Business Logo</label>
+                                    <div class="file-drop-zone"
+                                         ondragover="event.preventDefault(); this.classList.add('active');"
+                                         ondragleave="this.classList.remove('active');"
+                                         ondrop="handleFileDrop(event, 'logo-upload')">
+                                        <p>Drag & drop your logo here</p>
+                                        <p class="help-text">or</p>
+                                        <label for="logo-upload" class="file-input-label mt-2 inline-block">
+                                            <i class="fas fa-upload mr-2"></i> Select File
+                                        </label>
+                                        <small class="help-text block mt-2">
+                                            Recommended: 500×500 px, JPG/PNG (max 2MB)
+                                        </small>
+                                    </div>
+                                    <input type="file"
+                                           id="logo-upload"
+                                           name="{{ business_form.logo.name }}"
+                                           class="file-input"
+                                           accept="image/jpeg, image/png, image/gif">
+
+                                    <div class="file-preview">
+                                        {% if business_form.instance.logo %}
+                                            <img src="{{ business_form.instance.logo.url }}" alt="Current logo" class="image-preview">
+                                            <div class="file-info">
+                                                {{ business_form.instance.logo.name|truncatechars:30 }}
+                                            </div>
+                                        {% else %}
+                                            <div class="text-gray-500 text-sm">No logo uploaded</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ business_form.name.id_for_label }}">
+                                        Business Name
+                                        {% if business_form.name.field.required %}<span class="required">*</span>{% endif %}
+                                    </label>
+                                    <input type="text"
+                                           id="{{ business_form.name.id_for_label }}"
+                                           name="{{ business_form.name.name }}"
+                                           value="{{ business_form.name.value|default:'' }}"
+                                           class="form-control"
+                                           aria-describedby="help-{{ business_form.name.id_for_label }}">
+                                    {% if business_form.name.help_text %}
+                                        <small id="help-{{ business_form.name.id_for_label }}" class="help-text">
+                                            {{ business_form.name.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ business_form.category.id_for_label }}">
+                                        Category
+                                        {% if business_form.category.field.required %}<span class="required">*</span>{% endif %}
+                                    </label>
+                                    <select id="{{ business_form.category.id_for_label }}"
+                                            name="{{ business_form.category.name }}"
+                                            class="form-control"
+                                            aria-describedby="help-{{ business_form.category.id_for_label }}">
+                                        {% for value, label in business_form.category.field.choices %}
+                                            <option value="{{ value }}" {% if business_form.category.value == value %}selected{% endif %}>
+                                                {{ label }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    {% if business_form.category.help_text %}
+                                        <small id="help-{{ business_form.category.id_for_label }}" class="help-text">
+                                            {{ business_form.category.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+<!-- Add this section after the Business Details section in your template -->
+{% if perms.directory.can_verify %}
+<div class="form-section mt-4">
+    <div class="form-section-header d-flex justify-content-between align-items-center">
+        <h3><i class="fas fa-check-circle"></i> Business Verification</h3>
+        <a href="{% url 'business_verification_dashboard' %}" class="btn btn-outline-primary btn-sm">
+            View All Businesses
+        </a>
+    </div>
+
+    <form method="post" action="{% url 'update_business_verification' business.id %}">
+        {% csrf_token %}
+        <!-- existing dropdown and buttons -->
+    </form>
+
+    {% if business.is_admin_added %}
+    <p class="mt-2 text-info">
+        Verified by: {{ business.verified_by.get_full_name }} <br>
+        Verification date: {{ business.verification_date|date:"Y-m-d H:i" }} <br>
+        {% if business.verified_until %}Valid until: {{ business.verified_until|date:"Y-m-d H:i" }}{% else %}Permanent{% endif %}
+    </p>
+    {% endif %}
+</div>
+{% endif %}
+
+
+                        <!-- Store Link Visibility Section -->
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3 class="section-title">
+                                    <i class="fas fa-store"></i> Store Link Visibility
+                                </h3>
+                                <span class="section-progress">3</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ business_form.show_store_link.id_for_label }}">Show Store Link in Navigation</label>
+                                <div class="toggle-container">
+                                    <input type="checkbox"
+                                           id="{{ business_form.show_store_link.id_for_label }}"
+                                           name="{{ business_form.show_store_link.name }}"
+                                           class="toggle-checkbox"
+                                           {% if business_form.show_store_link.value %}checked{% endif %}>
+                                    <label for="{{ business_form.show_store_link.id_for_label }}" class="toggle-label"></label>
+                                    <span class="toggle-text">
+                                        {% if business_form.show_store_link.value %}Link is visible{% else %}Link is hidden{% endif %}
+                                    </span>
+                                </div>
+                                {% if business_form.show_store_link.help_text %}
+                                    <small id="help-{{ business_form.show_store_link.id_for_label }}" class="help-text">
+                                        {{ business_form.show_store_link.help_text }}
+                                    </small>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Contact Information Section -->
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3 class="section-title">
+                                    <i class="fas fa-address-card"></i> Contact Information
+                                </h3>
+                                <span class="section-progress">4</span>
+                            </div>
+                            <div class="form-grid">
+                                                                <div class="form-group">
+                                    <label for="{{ business_form.email.id_for_label }}">
+                                        Business Email
+                                        {% if business_form.email.field.required %}<span class="required">*</span>{% endif %}
+                                    </label>
+                                    <input type="email"
+                                           id="{{ business_form.email.id_for_label }}"
+                                           name="{{ business_form.email.name }}"
+                                           value="{{ business_form.email.value|default:'' }}"
+                                           class="form-control"
+                                           aria-describedby="help-{{ business_form.email.id_for_label }}">
+                                    {% if business_form.email.help_text %}
+                                        <small id="help-{{ business_form.email.id_for_label }}" class="help-text">
+                                            {{ business_form.email.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ business_form.phone_number.id_for_label }}">
+                                        Business Phone
+                                        {% if business_form.phone_number.field.required %}<span class="required">*</span>{% endif %}
+                                    </label>
+                                    <input type="tel"
+                                           id="{{ business_form.phone_number.id_for_label }}"
+                                           name="{{ business_form.phone_number.name }}"
+                                           value="{{ business_form.phone_number.value|default:'' }}"
+                                           class="form-control"
+                                           aria-describedby="help-{{ business_form.phone_number.id_for_label }}">
+                                    {% if business_form.phone_number.help_text %}
+                                        <small id="help-{{ business_form.phone_number.id_for_label }}" class="help-text">
+                                            {{ business_form.phone_number.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                                <div class="form-group">
+                                    <label for="{{ business_form.city.id_for_label }}">
+                                        City
+                                        {% if business_form.city.field.required %}<span class="required">*</span>{% endif %}
+                                    </label>
+                                    <input type="text"
+                                           id="{{ business_form.city.id_for_label }}"
+                                           name="{{ business_form.city.name }}"
+                                           value="{{ business_form.city.value|default:'' }}"
+                                           class="form-control"
+                                           aria-describedby="help-{{ business_form.city.id_for_label }}">
+                                    {% if business_form.city.help_text %}
+                                        <small id="help-{{ business_form.city.id_for_label }}" class="help-text">
+                                            {{ business_form.city.help_text }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Business Description Section -->
+                        <div class="form-section">
+                            <div class="form-section-header">
+                                <h3 class="section-title">
+                                    <i class="fas fa-align-left"></i> Business Description
+                                </h3>
+                                <span class="section-progress">5</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="{{ business_form.description.id_for_label }}">
+                                    Description
+                                    {% if business_form.description.field.required %}<span class="required">*</span>{% endif %}
+                                </label>
+                                <textarea
+                                    id="{{ business_form.description.id_for_label }}"
+                                    name="{{ business_form.description.name }}"
+                                    class="form-control"
+                                    aria-describedby="help-{{ business_form.description.id_for_label }}"
+                                >{{ business_form.description.value|default:'' }}</textarea>
+                                {% if business_form.description.help_text %}
+                                    <small id="help-{{ business_form.description.id_for_label }}" class="help-text">
+                                        {{ business_form.description.help_text }}
+                                    </small>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Company Profile Section -->
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-file-pdf"></i> Organization Profile Document
+                            </h3>
+                            <div class="form-group">
+                                <label>Upload PDF Profile (Max 5MB)</label>
+                                <div class="file-drop-zone"
+                                     ondragover="event.preventDefault(); this.classList.add('active');"
+                                     ondragleave="this.classList.remove('active');"
+                                     ondrop="handleFileDrop(event, 'pdf-upload')">
+                                    <p>Drag & drop your PDF here</p>
+                                    <p class="help-text">or</p>
+                                    <label for="pdf-upload" class="file-input-label mt-2 inline-block">
+                                        <i class="fas fa-file-upload mr-2"></i> Select File
+                                    </label>
+                                    <small class="help-text block mt-2">
+                                        PDF format only (max 5MB)
+                                    </small>
+                                </div>
+                                <input type="file"
+                                       id="pdf-upload"
+                                       name="{{ business_form.company_profile.name }}"
+                                       class="file-input"
+                                       accept=".pdf">
+
+                                {% if business_form.instance.company_profile %}
+                                    <div class="file-preview mt-3">
+                                        <i class="fas fa-file-pdf text-red-500 text-2xl"></i>
+                                        <div class="file-info file-info-pdf">
+                                            {{ business_form.instance.company_profile.name|truncatechars:40 }}
+                                        </div>
+                                    </div>
+                                    <a href="{{ business_form.instance.company_profile.url }}"
+                                       target="_blank"
+                                       class="text-primary-500 hover:underline mt-2 inline-block">
+                                        <i class="fas fa-eye mr-1"></i> View Current PDF
+                                    </a>
+                                {% else %}
+                                    <div class="text-gray-500 text-sm mt-2">No PDF uploaded</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Form Actions -->
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary" id="submit-btn">
+                                <i class="fas fa-save mr-2"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'pos_system:marketplace' %}" class="nav-item">
+            <i class="fas fa-store"></i>
+            <span>Store</span>
+        </a>
+        <a href="{% url 'about' %}" class="nav-item {% if request.path == '/about/' %}active{% endif %}">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
+        </a>
+            <a href="{% url 'pos_system:ai_assistant' %}" class="nav-item">
+        <span class="star" style="font-size: 18px;">✨</span>
+        <span>AI</span>
+    </a>
+        <form id="logoutForm" method="post" action="{% url 'logout' %}" class="nav-item">
+            {% csrf_token %}
+            <button type="submit" style="background: none; border: none; color: inherit; cursor: pointer; display: flex; flex-direction: column; align-items: center;">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </form>
+    </nav>
+
+    <script>
+        // Handle file drops
+        function handleFileDrop(event, elementId) {
+            event.preventDefault();
+            event.stopPropagation();
+            const dropZone = event.currentTarget;
+            dropZone.classList.remove('active');
+
+            const fileInput = document.getElementById(elementId);
+            if (fileInput && event.dataTransfer.files.length > 0) {
+                fileInput.files = event.dataTransfer.files;
+
+                // Trigger change event to update preview
+                const changeEvent = new Event('change');
+                fileInput.dispatchEvent(changeEvent);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme toggle
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function() {
+                    document.body.classList.toggle('dark-mode');
+                    const isDark = document.body.classList.contains('dark-mode');
+                    document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+
+                    // Refresh CKEditor to apply dark mode
+                    if (window.ClassicEditor && ClassicEditor.instances) {
+                        Object.values(ClassicEditor.instances).forEach(editor => {
+                            editor.editing.view.change(writer => {
+                                writer.setStyle(
+                                    'background-color',
+                                    isDark ? 'var(--dark-surface)' : 'white',
+                                    editor.editing.view.document.getRoot()
+                                );
+                            });
+                        });
+                    }
+                });
+            }
+
+            // Toggle switch functionality
+            const toggleSwitch = document.getElementById('{{ business_form.show_store_link.id_for_label }}');
+            if (toggleSwitch) {
+                toggleSwitch.addEventListener('change', function() {
+                    const toggleText = document.querySelector('.toggle-text');
+                    if (toggleText) {
+                        toggleText.textContent = this.checked ? 'Link is visible' : 'Link is hidden';
+                    }
+                });
+            }
+
+            // Logo upload preview
+            const logoUpload = document.getElementById('logo-upload');
+            if (logoUpload) {
+                logoUpload.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        // Validate file type
+                        const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                        if (!validTypes.includes(file.type)) {
+                            alert('Please upload an image file (JPEG, PNG, GIF)');
+                            this.value = '';
+                            return;
+                        }
+
+                        // Validate file size (2MB)
+                        if (file.size > 2 * 1024 * 1024) {
+                            alert('Image size exceeds 2MB limit');
+                            this.value = '';
+                            return;
+                        }
+
+                        // Preview image
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const previewContainer = document.querySelector('.file-preview');
+                            if (previewContainer) {
+                                previewContainer.innerHTML = `
+                                    <img src="${e.target.result}" class="image-preview">
+                                    <div class="file-info">${file.name}</div>
+                                `;
+                            }
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            // PDF upload preview
+            const pdfUpload = document.getElementById('pdf-upload');
+            if (pdfUpload) {
+                pdfUpload.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        // Validate file type
+                        if (!file.type.includes('pdf') && !file.name.toLowerCase().endsWith('.pdf')) {
+                            alert('Please upload a PDF file');
+                            this.value = '';
+                            return;
+                        }
+
+                        // Validate file size (5MB)
+                        if (file.size > 5 * 1024 * 1024) {
+                            alert('File size exceeds 5MB limit');
+                            this.value = '';
+                            return;
+                        }
+
+                        // Show file info
+                        const previewContainer = document.querySelector('.file-preview');
+                        if (!previewContainer) {
+                            const container = document.createElement('div');
+                            container.className = 'file-preview mt-3';
+                            container.innerHTML = `
+                                <i class="fas fa-file-pdf text-red-500 text-2xl"></i>
+                                <div class="file-info file-info-pdf">${file.name}</div>
+                            `;
+                            this.parentNode.appendChild(container);
+                        } else {
+                            previewContainer.innerHTML = `
+                                <i class="fas fa-file-pdf text-red-500 text-2xl"></i>
+                                <div class="file-info file-info-pdf">${file.name}</div>
+                            `;
+                        }
+                    }
+                });
+            }
+
+            // Form submission loading state
+            const profileForm = document.querySelector('.profile-form');
+            if (profileForm) {
+                profileForm.addEventListener('submit', function(e) {
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Saving...';
+                    }
+                });
+            }
+
+            // Initialize CKEditor
+            if (typeof ClassicEditor !== 'undefined') {
+                ClassicEditor
+                    .create(document.querySelector('#{{ business_form.description.id_for_label }}'), {
+                        toolbar: [
+                            'heading', '|',
+                            'bold', 'italic', 'link', 'bulletedList', 'numberedList',
+                            'blockQuote', 'undo', 'redo'
+                        ]
+                    })
+                    .catch(error => {
+                        console.error('CKEditor error:', error);
+                    });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+{% extends "pos_system/base.html" %}
+
+{% block title %}Product Performance - {{ business.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Product Link Styles */
+    .product-link {
+        color: #2c3e50;
+        text-decoration: none;
+        position: relative;
+        padding-bottom: 2px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .product-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: #e74c3c;
+        transition: width 0.3s ease;
+    }
+
+    .product-link:hover {
+        color: #e74c3c;
+    }
+
+    .product-link:hover::after {
+        width: 100%;
+    }
+
+    /* Table Enhancements */
+    .performance-table th {
+        background-color: #f8f9fa;
+        position: sticky;
+        top: 0;
+    }
+
+    .performance-table tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .product-link {
+            font-size: 14px;
+        }
+        
+        .table-responsive {
+            border: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="breadcrumb">
+    <a href="{% url 'pos_system:dashboard' %}">Dashboard</a> &raquo; 
+    <a href="{% url 'pos_system:reports' %}">Reports</a> &raquo; 
+    Product Performance
+</div>
+
+<div class="section-title">
+    <i class="fas fa-chart-line"></i>
+    Product Performance Report
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-filter"></i> Filter Options
+    </div>
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-5">
+                <label for="start_date" class="form-label">Start Date</label>
+                <input type="date" class="form-control" id="start_date" name="start_date" 
+                       value="{{ request.GET.start_date }}">
+            </div>
+            <div class="col-md-5">
+                <label for="end_date" class="form-label">End Date</label>
+                <input type="date" class="form-control" id="end_date" name="end_date" 
+                       value="{{ request.GET.end_date }}">
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-filter"></i> Apply
+                </button>
+                <a href="{% url 'pos_system:product_performance_report' %}" class="btn btn-secondary">
+                    <i class="fas fa-sync-alt"></i> Reset
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <i class="fas fa-trophy"></i> Top Performing Products
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table performance-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-end">Units Sold</th>
+                                <th class="text-end">Revenue (ZMW)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in top_products %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'pos_system:edit_product' product.product__id %}" class="product-link">
+                                        {{ product.product__name }}
+                                    </a>
+                                </td>
+                                <td class="text-end">{{ product.total_sold }}</td>
+                                <td class="text-end">ZMW {{ product.total_revenue|floatformat:2 }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No top performing products found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <i class="fas fa-exclamation-triangle"></i> Low Performing Products
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table performance-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Product</th>
+                                <th class="text-end">Units Sold</th>
+                                <th class="text-end">Revenue (ZMW)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in bottom_products %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'pos_system:edit_product' product.product__id %}" class="product-link">
+                                        {{ product.product__name }}
+                                    </a>
+                                </td>
+                                <td class="text-end">{{ product.total_sold }}</td>
+                                <td class="text-end">ZMW {{ product.total_revenue|floatformat:2 }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No low performing products found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-chart-pie"></i> Performance Summary
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <canvas id="topProductsChart" height="300"></canvas>
+            </div>
+            <div class="col-md-6">
+                <canvas id="bottomProductsChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Top Products Chart
+    const topCtx = document.getElementById('topProductsChart').getContext('2d');
+    new Chart(topCtx, {
+        type: 'bar',
+        data: {
+            labels: [{% for product in top_products %}'{{ product.product__name|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Revenue (ZMW)',
+                data: [{% for product in top_products %}{{ product.total_revenue }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                borderColor: 'rgba(40, 167, 69, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Top Products by Revenue (ZMW)'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'ZMW ' + context.raw.toLocaleString();
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'ZMW ' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Bottom Products Chart
+    const bottomCtx = document.getElementById('bottomProductsChart').getContext('2d');
+    new Chart(bottomCtx, {
+        type: 'bar',
+        data: {
+            labels: [{% for product in bottom_products %}'{{ product.product__name|escapejs }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Revenue (ZMW)',
+                data: [{% for product in bottom_products %}{{ product.total_revenue }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                backgroundColor: 'rgba(255, 193, 7, 0.7)',
+                borderColor: 'rgba(255, 193, 7, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Low Products by Revenue (ZMW)'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'ZMW ' + context.raw.toLocaleString();
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'ZMW ' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "admin/change_form.html" %}
+
+{% block after_field_sets %}
+<div class="form-row">
+    <label for="names">Add Multiple Categories:</label>
+    <textarea name="names" id="names" rows="10" cols="40"></textarea>
+    <p class="help">Enter one category per line.</p>
+</div>
+{{ block.super }}
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Task{% endblock %}
+{% block header_title %}Confirm Delete{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-header">
+            <h2>Confirm Delete</h2>
+        </div>
+        <div class="card-body">
+            <p>Are you sure you want to delete the task "{{ task.title }}"?</p>
+        </div>
+        <div class="card-footer">
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+                <a href="{% url 'task_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+{% endblock %}

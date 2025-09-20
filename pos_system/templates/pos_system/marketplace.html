@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products Marketplace</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Required libraries for share feature -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "tdjt8dzlt8");
+    </script>
+    <style>
+        .product-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #ff6b35;
+        }
+
+        /* Alibaba-style gradient */
+        .alibaba-gradient {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+        }
+
+        /* Search bar styling */
+        .search-container {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-box {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 60px 16px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            outline: none;
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ff6b35;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: #e55a2b;
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        /* Filter tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding: 0 1rem;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+
+        .filter-tab:hover, .filter-tab.active {
+            background: #ff6b35;
+            color: white;
+            border-color: #ff6b35;
+        }
+
+        /* Bottom Navigation Styles */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background-color: white;
+            padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #6b7280;
+            font-size: 0.75rem;
+            padding: 5px 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item i {
+            font-size: 1.25rem;
+            margin-bottom: 2px;
+        }
+
+        .nav-item.active {
+            color: #ff6b35;
+        }
+
+        .nav-item:hover {
+            color: #ff6b35;
+        }
+
+        /* Add padding to main content to prevent overlap with bottom nav */
+        .main-content {
+            padding-bottom: 70px;
+        }
+
+        /* Price styling */
+        .price-tag {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        /* Business badge */
+        .business-badge {
+            background: rgba(255, 107, 53, 0.1);
+            color: #ff6b35;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Location badge */
+        .location-badge {
+            background: rgba(107, 114, 128, 0.1);
+            color: #6b7280;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        /* View store button */
+        .view-store-btn {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            width: 100%;
+        }
+
+        .view-store-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+        }
+
+        /* Categories section */
+        .categories-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .search-container {
+                padding: 1.5rem 1rem;
+            }
+
+            .filter-tabs {
+                padding: 0 0.5rem;
+            }
+
+            .product-card {
+                margin-bottom: 1rem;
+            }
+        }
+
+        /* Highlight animation */
+        @keyframes highlightPulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 107, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 0, 0); }
+        }
+
+        .highlighted-product {
+            animation: highlightPulse 2s;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Quick View Modal Styles */
+        #quickViewModal {
+            transition: opacity 0.3s ease;
+            display: none;
+        }
+
+        #quickViewModal.show {
+            display: block;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            z-index: 1001;
+        }
+
+        .modal-content {
+            padding: 20px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1002;
+        }
+
+        /* Star rating */
+        .stars {
+            color: #fbbf24;
+        }
+
+        .empty-star {
+            color: #d1d5db;
+        }
+
+        /* Focus styles */
+        button:focus, input:focus, select:focus {
+            outline: 2px solid #ff6b35;
+            outline-offset: 2px;
+        }
+
+        .product-card:focus-within {
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.5);
+        }
+
+        /* Share button styles */
+        .share-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background: #f3f4f6;
+        }
+
+        /* Share modal styles */
+        .share-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .share-modal.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .share-modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .share-modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .share-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .share-option:hover {
+            background: #f5f5f5;
+        }
+
+        .share-option i {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .whatsapp { color: #25D366; }
+        .facebook { color: #1877F2; }
+        .twitter { color: #1DA1F2; }
+        .link { color: #ff6b35; }
+        .download { color: #6b7280; }
+
+        .share-option-label {
+            font-size: 12px;
+            color: #4b5563;
+        }
+
+        /* Loading indicator */
+        #share-loading-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            z-index: 10000;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #share-loading-indicator .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #FF6B00;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Add to cart button styles */
+/* Add to Cart button styles */
+.add-to-cart-button {
+    transition: all 0.2s ease;
+    background-color: rgba(255, 107, 53, 0.05);
+}
+
+.add-to-cart-button:hover {
+    background-color: rgba(255, 107, 53, 0.1);
+    border-color: #ff6b35;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(255, 107, 53, 0.1);
+}
+
+.add-to-cart-button:active {
+    transform: translateY(0);
+    background-color: rgba(255, 107, 53, 0.15);
+}
+
+        /* Toast notification styles */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: #4CAF50;
+        }
+
+        .toast.warning {
+            background: #FF9800;
+        }
+
+        .toast i {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Search Hero Section -->
+    <div class="search-container">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-6">
+                <h1 class="text-white text-3xl font-bold mb-2">Find Products from Trusted Suppliers</h1>
+                <p class="text-white text-opacity-90">Discover quality products from verified businesses</p>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search for products, suppliers, or categories..."
+                       class="search-input">
+                <button class="search-btn" id="search-button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 main-content">
+        <!-- Filter Categories -->
+        <div class="categories-section">
+            <h3 class="text-lg font-semibold mb-4 text-gray-800">Filter by Category & Business</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Category Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    <select id="category-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        <option value="all">All Categories</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Business Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Business</label>
+                    <select id="business-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                        <option value="all">All Businesses</option>
+                        {% for business in unique_businesses %}
+                        <option value="{{ business.id }}">{{ business.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">Products</h2>
+                <span class="text-sm text-gray-600" id="results-count">Showing all products</span>
+            </div>
+
+            <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                {% for product in products %}
+                {% if product.business.show_store_link %}
+                <div class="product-card bg-white rounded-lg overflow-hidden"
+                     data-product-id="{{ product.id }}"
+                     data-business-id="{{ product.business.id }}"
+                     data-category-id="{% if product.category %}{{ product.category.id }}{% endif %}"
+                     data-location="{{ product.location|default_if_none:'' }}"
+                     data-description="{{ product.description|default_if_none:'' }}"
+                     data-business-name="{{ product.business.name }}"
+                     tabindex="0">
+
+                    <!-- Product Image with link to product detail -->
+                    <a href="{% url 'pos_system:product_detail' product.id %}" class="product-image-link">
+                        <div class="relative h-48 overflow-hidden group">
+                            <img src="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/300x300?text=No+Image{% endif %}"
+                                 alt="{{ product.name }}"
+                                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                 loading="lazy">
+
+                            <!-- Business Logo Badge with link to business store -->
+                            <a href="{% url 'business-store' pk=product.business.pk %}" class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white p-1 shadow-md clickable">
+                                <img src="{{ product.business.logo.url }}" alt="{{ product.business.name }}"
+                                     class="w-full h-full object-cover rounded-full">
+                            </a>
+                        </div>
+                    </a>
+
+                    <!-- Product Info -->
+                    <div class="p-4">
+                        <!-- Product name with link to product detail -->
+                        <a href="{% url 'pos_system:product_detail' product.id %}" class="clickable">
+                            <h3 class="text-base font-medium text-gray-800 mb-2 line-clamp-2">{{ product.name }}</h3>
+                        </a>
+
+                        <div class="business-meta mb-3">
+                            <div class="business-rating flex items-center">
+                                <span class="stars">
+                                    {% with ''|center:product.business.average_rating as range %}
+                                        {% for _ in range %}★{% endfor %}
+                                    {% endwith %}
+                                    {% with ''|center:5 as range %}
+                                        {% for _ in range %}
+                                            {% if forloop.counter > product.business.average_rating %}<span class="empty-star">☆</span>{% endif %}
+                                        {% endfor %}
+                                    {% endwith %}
+                                </span>
+                                <span class="ml-1 text-sm">{{ product.business.average_rating|floatformat:1 }}</span>
+                            </div>
+                            <span class="business-review-count text-sm text-gray-500">{{ product.business.review_count }} reviews</span>
+                            {% if product.business.category %}
+                            <span class="business-category text-sm text-gray-500">
+                                <i class="fas fa-tag"></i>
+                                {{ product.business.category.name }}
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="price-tag text-lg font-bold">ZMW {{ product.price }} / {{ product.unit }}</span>
+                            <div class="flex items-center">
+                                <span class="text-xs text-gray-500 mr-1">{{ product.view_count }}</span>
+                                <div class="product-action-btn product-view text-gray-500"
+                                     title="View Count"
+                                     onclick="event.stopPropagation();">
+                                    <i class="fas fa-eye"></i><span>Views</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 mb-3">
+                            <!-- Business name with link to business store -->
+                            <a href="{% url 'business-detail' product.business.pk %}" class="business-name-link">
+                                <span class="business-badge">{{ product.business.name }}</span>
+                            </a>
+
+                            <!-- Enhanced Add to Cart button -->
+                            <a href="{% url 'business-store' pk=product.business.pk %}?highlight={{ product.id }}"
+                               class="add-to-cart-button text-xs hover:bg-orange-50 ml-2 flex items-center gap-1 px-3 py-1.5 rounded-full border border-orange-200 transition-all"
+                               title="Add to Cart">
+                                <span class="text-orange-600">Add to Cart</span>
+                                <i class="fas fa-cart-plus text-orange-500"></i>
+                            </a>
+                        </div>
+
+                        {% if product.location %}
+                        <div class="flex items-center gap-2 mb-4">
+                            <i class="fas fa-map-marker-alt text-gray-400 text-xs"></i>
+                            <span class="location-badge">{{ product.location }}</span>
+                        </div>
+                        {% endif %}
+
+                        <div class="flex gap-2 mt-3">
+                            <a href="{% url 'messaging:start_conversation' product.business.id %}"
+                               class="view-store-btn flex-1">
+                                Contact Supplier
+                            </a>
+                            <button class="share-btn bg-gray-100 hover:bg-gray-200 text-gray-800 p-2 rounded-lg transition-colors"
+                                    data-product-id="{{ product.id }}"
+                                    data-product-name="{{ product.name }}"
+                                    data-product-price="ZMW {{ product.price }}"
+                                    data-business-name="{{ product.business.name }}"
+                                    data-product-image="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/300x300?text=No+Image{% endif %}"
+                                    data-product-url="{% url 'business-store' pk=product.business.pk %}?highlight={{ product.id }}"
+                                    data-business-location="{{ product.location|default_if_none:'' }}">
+                                <i class="fas fa-download download"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% empty %}
+                <div class="col-span-full text-center py-16">
+                    <div class="max-w-md mx-auto">
+                        <i class="fas fa-box-open text-6xl text-gray-300 mb-6"></i>
+                        <h3 class="text-2xl font-semibold text-gray-700 mb-2">No products found</h3>
+                        <p class="text-gray-500 mb-6">Try adjusting your search or filters to find what you're looking for</p>
+                        <button class="bg-orange-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-orange-600 transition-colors">
+                            Browse All Categories
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick View Modal -->
+    <div id="quickViewModal" class="hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-container">
+            <button class="modal-close" aria-label="Close modal">&times;</button>
+            <div id="quickViewContent" class="modal-content">
+                <!-- Content will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="shareModal" class="share-modal">
+        <div class="share-modal-content">
+            <button class="share-modal-close" aria-label="Close modal">&times;</button>
+            <h3 class="text-lg font-semibold mb-4">Download Product Card</h3>
+            <div class="share-options">
+                    <div class="share-option download" data-share-method="download">
+                    <i class="fas fa-download download"></i>
+                    <span class="share-option-label">Download</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'pos_system:marketplace' %}" class="nav-item active">
+            <i class="fas fa-store"></i>
+            <span>Store</span>
+        </a>
+        <a href="{% url 'about' %}" class="nav-item">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
+        </a>
+            <a href="{% url 'pos_system:ai_assistant' %}" class="nav-item">
+        <span class="star" style="font-size: 18px;">✨</span>
+        <span>AI</span>
+    </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
+    </nav>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ===== SEARCH/FILTER FUNCTIONALITY =====
+        const searchInput = document.getElementById('search-input');
+        const searchButton = document.getElementById('search-button');
+        const categoryFilter = document.getElementById('category-filter');
+        const businessFilter = document.getElementById('business-filter');
+        const productCards = document.querySelectorAll('.product-card');
+        const resultsCount = document.getElementById('results-count');
+
+        function filterProducts() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedCategory = categoryFilter.value;
+            const selectedBusiness = businessFilter.value;
+
+            productCards.forEach(card => {
+                const matchesSearch = searchTerm === '' ||
+                    card.querySelector('h3').textContent.toLowerCase().includes(searchTerm) ||
+                    card.dataset.description.toLowerCase().includes(searchTerm);
+
+                const matchesCategory = selectedCategory === 'all' ||
+                    card.dataset.categoryId === selectedCategory;
+
+                const matchesBusiness = selectedBusiness === 'all' ||
+                    card.dataset.businessId === selectedBusiness;
+
+                card.style.display = matchesSearch && matchesCategory && matchesBusiness ? 'block' : 'none';
+            });
+
+            updateResultsCount();
+        }
+
+        function updateResultsCount() {
+            const visibleCount = Array.from(productCards).filter(card =>
+                card.style.display !== 'none'
+            ).length;
+            resultsCount.textContent = `Showing ${visibleCount} products`;
+        }
+
+        // Event listeners
+        searchInput.addEventListener('input', filterProducts);
+        searchButton.addEventListener('click', filterProducts);
+        categoryFilter.addEventListener('change', filterProducts);
+        businessFilter.addEventListener('change', filterProducts);
+
+        // Initialize
+        updateResultsCount();
+
+        // Toast notification
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Handle share button clicks
+        document.querySelectorAll('.share-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const productId = this.dataset.productId;
+                const productName = this.dataset.productName;
+                const productPrice = this.dataset.productPrice;
+                const businessName = this.dataset.businessName;
+                const productImage = this.dataset.productImage;
+                const productUrl = this.dataset.productUrl;
+                const businessLocation = this.dataset.businessLocation;
+
+                // Show share modal
+                const shareModal = document.getElementById('shareModal');
+                shareModal.classList.add('show');
+
+                // Handle share option clicks
+                document.querySelectorAll('.share-option').forEach(option => {
+                    option.addEventListener('click', function() {
+                        const method = this.dataset.shareMethod;
+
+                        if (method === 'download') {
+                            // Create a loading indicator
+                            const loadingIndicator = document.createElement('div');
+                            loadingIndicator.id = 'share-loading-indicator';
+                            loadingIndicator.innerHTML = `
+                                <div class="spinner"></div>
+                                <p>Preparing product card for download...</p>
+                            `;
+                            document.body.appendChild(loadingIndicator);
+
+                            // Get the product card element
+                            const productCard = document.querySelector(`.product-card[data-product-id="${productId}"]`);
+
+                            // Use html2canvas to capture the card
+                            html2canvas(productCard).then(canvas => {
+                                // Create download link
+                                const link = document.createElement('a');
+                                link.download = `${productName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_product_card.png`;
+                                link.href = canvas.toDataURL('image/png');
+                                link.click();
+
+                                // Remove loading indicator
+                                loadingIndicator.remove();
+
+                                // Close share modal
+                                shareModal.classList.remove('show');
+
+                                // Show success message
+                                showToast('Product card downloaded!', 'success');
+                            });
+                        }
+                    });
+                });
+
+                // Close modal when clicking close button
+                document.querySelector('.share-modal-close').addEventListener('click', () => {
+                    shareModal.classList.remove('show');
+                });
+
+                // Close modal when clicking outside
+                shareModal.addEventListener('click', (e) => {
+                    if (e.target === shareModal) {
+                        shareModal.classList.remove('show');
+                    }
+                });
+            });
+        });
+
+        // Close quick view modal
+        document.querySelector('.modal-close').addEventListener('click', () => {
+            document.getElementById('quickViewModal').classList.add('hidden');
+        });
+    });
+    </script>
+</body>
+</html>

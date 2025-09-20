@@ -1,0 +1,355 @@
+{% load pcustom_filters %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwiftFind Quotation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        }
+        body {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            padding: 10px;
+            line-height: 1.4;
+            font-size: 12px;
+        }
+        .quotation-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            margin-bottom: 20px;
+        }
+        .company-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2a5885;
+        }
+        .tagline {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 3px;
+        }
+        .doc-info {
+            text-align: right;
+        }
+        .doc-id {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .doc-date {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+.watermark {
+    position: fixed; /* Always visible */
+    opacity: 0.1; /* More visible */
+    font-size: 150px; /* Larger size */
+    font-weight: 1000; /* Bolder text */
+    color: rgba(0, 0, 0, 0.15); /* Higher contrast */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 9999; /* Ensure it's on top */
+}
+
+        .quote-title {
+            background-color: #2a5885;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .client-details, .quote-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #2a5885;
+        }
+        .client-details div, .quote-details div {
+            flex: 1;
+        }
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2a5885;
+            margin-bottom: 5px;
+        }
+        .quote-details p, .client-details p {
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .items-table th {
+            background-color: #2a5885;
+            color: white;
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .items-table th:first-child {
+            border-top-left-radius: 8px;
+        }
+        .items-table th:last-child {
+            border-top-right-radius: 8px;
+            text-align: right;
+        }
+        .items-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .items-table tr:last-child td {
+            border-bottom: none;
+        }
+        .items-table td:nth-child(2) {
+            text-align: center;
+        }
+        .items-table td:last-child {
+            text-align: right;
+            font-weight: 600;
+        }
+        .items-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .total-amount {
+            text-align: right;
+            font-size: 16px;
+            font-weight: 700;
+            margin: 15px 0;
+            padding: 10px 0;
+            border-top: 2px solid #ecf0f1;
+            color: #2a5885;
+        }
+        .payment-terms {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    position: relative;
+    border-left: 4px solid #2a5885;
+}
+
+.payment-columns {
+    display: flex;
+    gap: 20px; /* Adjust the gap between columns */
+    margin-bottom: 15px;
+}
+
+.payment-column {
+    flex: 1; /* Each column takes equal space */
+}
+
+.payment-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0; /* Remove margin to fit better */
+}
+
+.payment-table th, .payment-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    font-size: 12px; /* Smaller font size for better fit */
+}
+
+.payment-table th {
+    background-color: #f2f2f2;
+    font-weight: 600;
+}
+
+.terms-conditions {
+    margin-top: 15px;
+    font-size: 10px;
+    color: #7f8c8d;
+}
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #7f8c8d;
+            border-top: 1px solid #ecf0f1;
+            padding-top: 10px;
+        }
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .signature-box {
+            width: 45%;
+        }
+        .signature-line {
+            border-bottom: 1px solid #2c3e50;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+        }
+        .thank-you {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #2a5885;
+            padding: 10px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+        }
+
+        .terms-conditions {
+            margin-top: 20px;
+            font-size: 10px;
+            color: #7f8c8d;
+        }
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .quotation-container {
+                box-shadow: none;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quotation-container">
+        <div class="watermark">SWIFTFIND</div>
+        <div class="header">
+            <div class="logo-container">
+                <div>
+                    <div class="company-name">SwiftFind</div>
+                    <div class="tagline">Finding Solutions, Delivering Excellence</div>
+                </div>
+            </div>
+            <div class="doc-info">
+                <div class="doc-id">QUOTATION </div>
+                <div class="doc-date"><p><strong>Quotation Type:</strong> Standard</p></div>
+                {% if cart.referred_by %}
+                <div class="doc-date"><p><strong>Referred By:</strong> {{ cart.referred_by }}</p></div>
+            {% endif %}
+            <p>Billing Address: {{ cart.billing_address }}</p>
+            </div>
+        </div>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Quantity & Unit Price</th>
+                    <th>Total (K)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart.cartitem_set.all %}
+                <tr>
+                    <td>
+                        <strong>{{ item.item.name }}</strong>
+                        {% if item.item.description %}
+                        <div style="font-size: 10px; color: #7f8c8d; margin-top: 5px;">
+                            {{ item.item.description|truncatechars:45 }}
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td>{{ item.quantity }} x K {{ item.item.selling_price|intcomma }}</td>
+                    <td>K {{ item.total_price|intcomma }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p class="total-amount">Total Amount: K {{ cart.total_amount|intcomma }}</p>
+
+<div class="payment-terms">
+    <h2>Payment Terms & Conditions</h2>
+    <div class="payment-columns">
+        <div class="payment-column">
+            <table class="payment-table">
+                <tr>
+                    <th>Payment Type</th>
+                    <th>Amount (K)</th>
+                    <th>Due Date</th>
+                </tr>
+                <tr>
+                    <td>Initial Deposit</td>
+                    <td>K {{ cart.total_amount|multiply:0.7|intcomma }}</td>
+                    <td>Immediate</td>
+                </tr>
+                <tr>
+                    <td>Transport Fee</td>
+                    <td>K {{ cart.total_amount|multiply:0.3|intcomma }}</td>
+                    <td>Prior to Delivery</td>
+                </tr>
+            </table>
+        </div>
+        <div class="payment-column">
+            <p><strong>Payment Methods:</strong> Bank Transfer, Mobile Money, Cash</p>
+            <p><strong>Bank Details:</strong> SwiftFind Ltd, Account #: 12345678, Branch Code: 123456, Bank Name: First National Bank</p>
+            <p><strong>Mobile Money:</strong> +260 97 1234567 (Please include Quotation # as reference)</p>
+        </div>
+    </div>
+    <div class="terms-conditions">
+        <p><strong>Terms and Conditions:</strong></p>
+        <ul style="list-style-type: disc; margin-left: 15px;">
+            <li>This quotation is valid for 30 days from the date of issue.</li>
+            <li>Prices are subject to change without prior notice after validity period.</li>
+            <li>Delivery timeframe: 3-5 business days after receipt of deposit.</li>
+            <li>All items remain the property of SwiftFind until full payment is received.</li>
+            <li>Warranty information is provided separately for each product.</li>
+        </ul>
+    </div>
+</div>
+
+
+        <div class="signature-section">
+            <div class="signature-box">
+                <p>Authorized By:</p>
+                <div class="signature-line"></div>
+                <p>SwiftFind Representative</p>
+            </div>
+            <div class="signature-box">
+                <p>Accepted By:</p>
+                <div class="signature-line"></div>
+                <p>Client Signature</p>
+            </div>
+        </div>
+
+        <div class="thank-you">
+            Thank You for Your Business!
+        </div>
+
+        <div class="footer">
+            <p>© 2025 SwiftFind Ltd. All Rights Reserved.</p>
+            <p>Questions? Contact our customer service team at support@swiftfind.com or call +260 97 1234567</p>
+        </div>
+    </div>
+</body>
+</html>

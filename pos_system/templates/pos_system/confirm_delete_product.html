@@ -1,0 +1,23 @@
+{% extends 'pos_system/base.html' %}
+
+{% block title %}Delete Product{% endblock %}
+
+{% block content %}
+<div class="section-title">
+    <i class="fas fa-trash-alt"></i>
+    Delete Product
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <p>Are you sure you want to delete the product <strong>{{ product.name }}</strong>?</p>
+        <p>This action cannot be undone.</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a href="{% url 'pos_system:inventory' %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

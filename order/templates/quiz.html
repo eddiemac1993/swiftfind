@@ -1,0 +1,284 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07C160">
+    <meta name="description" content="Bible Quiz - SwiftFind">
+    <title>Bible Quiz - SwiftFind</title>
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{% static 'css/quiz.css' %}">
+</head>
+<body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
+    <!-- Header -->
+    <header class="app-header">
+        <div class="header-top">
+            <div class="location">
+                <i class="fas fa-bible"></i>
+                <span>Bible Quiz</span>
+            </div>
+            <div class="user-actions">
+                <div class="nav-score">
+                    <i class="fas fa-star"></i>
+                    <span class="score-value {% if score < 0 %}negative-score{% else %}positive-score{% endif %}">
+                        K {{ score|floatformat:2 }}</span>
+                </div>
+                <button id="theme-toggle" class="theme-btn">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-4">
+        <!-- Leaderboard Dropdown -->
+        <div class="leaderboard-collapsible">
+            <div class="leaderboard-header" id="leaderboard-toggle">
+                <h4>
+                    <i class="fas fa-crown" style="color: #FFD700;"></i>
+                    Leaderboard
+                </h4>
+                <i class="fas fa-chevron-down leaderboard-toggle-icon" id="leaderboard-icon"></i>
+            </div>
+            <div class="leaderboard-content" id="leaderboard-content">
+                <div class="leaderboard-items">
+                    {% for score in top_scores %}
+                    <div class="leaderboard-item">
+                        <div class="leaderboard-rank">
+                            <div class="rank-number">{{ forloop.counter }}</div>
+                            <div class="leaderboard-username">{{ score.username }}</div>
+                        </div>
+                        <div class="leaderboard-score">K {{ score.score|floatformat:2 }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Container -->
+        <div class="quiz-container" id="quiz-container">
+            <p class="question-text">{{ question.question_text }}</p>
+
+            <div class="timer-container" id="timer-container">
+                <div class="timer-bar" id="timer-bar"></div>
+            </div>
+            <div class="timer-text" id="timer-text">30 seconds remaining</div>
+
+            <form method="post" class="quiz-form">
+                {% csrf_token %}
+                <input type="hidden" name="correct_answer" value="{{ question.correct_answer }}">
+                <div class="options-container">
+                    <label class="option">
+                        <input type="radio" name="answer" value="A" required>
+                        <span class="option-letter">A</span>
+                        {{ question.option_a }}
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="answer" value="B">
+                        <span class="option-letter">B</span>
+                        {{ question.option_b }}
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="answer" value="C">
+                        <span class="option-letter">C</span>
+                        {{ question.option_c }}
+                    </label>
+                    <label class="option">
+                        <input type="radio" name="answer" value="D">
+                        <span class="option-letter">D</span>
+                        {{ question.option_d }}
+                    </label>
+                </div>
+                <div class="button-container">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check-circle"></i>
+                        Submit
+                    </button>
+                    <a href="{% url 'submit_score' %}" class="btn btn-secondary">
+                        <i class="fas fa-trophy"></i>
+                        Done
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle toast-icon"></i>
+        <span id="toast-message">Answer submitted successfully!</span>
+    </div>
+
+
+    <!-- Bottom navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'games_hub' %}" class="nav-item active">
+            <i class="fas fa-gamepad"></i>
+            <span>Games</span>
+        </a>
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'about' %}" class="nav-item">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
+        </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
+    </nav>
+
+    <script>
+// Quiz Module
+const Quiz = (() => {
+  // Private variables
+  let timeLeft = 30;
+  let timerInterval;
+
+  // Private methods
+  const initThemeToggle = () => {
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      document.cookie = `darkMode=${isDark}; path=/; max-age=${60 * 60 * 24 * 365}`;
+    });
+  };
+
+  const initLeaderboardToggle = () => {
+    const leaderboardToggle = document.getElementById('leaderboard-toggle');
+    const leaderboardContent = document.getElementById('leaderboard-content');
+    const leaderboardIcon = document.getElementById('leaderboard-icon');
+
+    leaderboardToggle.addEventListener('click', () => {
+      leaderboardContent.classList.toggle('open');
+      leaderboardIcon.classList.toggle('open');
+    });
+  };
+
+  const startTimer = () => {
+    const timerBar = document.getElementById('timer-bar');
+    const timerText = document.getElementById('timer-text');
+    const timerContainer = document.getElementById('timer-container');
+
+    timerInterval = setInterval(() => {
+      if (timeLeft <= 0) {
+        handleTimeExpired();
+      } else {
+        updateTimerDisplay(timerBar, timerText, timerContainer);
+        timeLeft--;
+      }
+    }, 1000);
+  };
+
+  const handleTimeExpired = () => {
+    clearInterval(timerInterval);
+    Toast.show("Time's up! Submitting your answer...", false);
+    setTimeout(() => {
+      document.querySelector('.quiz-form').submit();
+    }, 1500);
+  };
+
+  const updateTimerDisplay = (timerBar, timerText, timerContainer) => {
+    timerText.textContent = `${timeLeft} seconds remaining`;
+    const percentage = (timeLeft / 30) * 100;
+    timerBar.style.width = `${percentage}%`;
+
+    if (timeLeft <= 10) {
+      timerContainer.classList.add('timer-critical');
+      if (timeLeft <= 5) timerText.classList.add('pulse');
+    }
+  };
+
+  const initOptionSelection = () => {
+    document.querySelectorAll('.option').forEach(option => {
+      option.addEventListener('click', function() {
+        document.querySelectorAll('.option').forEach(opt => opt.style.transform = '');
+        this.style.transform = 'translateY(-2px)';
+      });
+    });
+  };
+
+  // Public API
+  return {
+    init: function() {
+      initThemeToggle();
+      initLeaderboardToggle();
+      startTimer();
+      initOptionSelection();
+    }
+  };
+})();
+
+// Toast Module
+const Toast = (() => {
+  const show = (message, isSuccess = true) => {
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toast-message');
+    const toastIcon = toast.querySelector('.toast-icon');
+
+    toastMessage.textContent = message;
+    toast.className = `toast ${isSuccess ? 'toast-success show' : 'toast-error show'}`;
+    toastIcon.className = `fas ${isSuccess ? 'fa-check-circle' : 'fa-exclamation-circle'} toast-icon`;
+
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  };
+
+  return { show };
+})();
+
+// Achievement Module
+const Achievement = (() => {
+  const show = (name) => {
+    const popup = document.createElement('div');
+    popup.className = 'achievement-popup show';
+    popup.innerHTML = `
+      <div class="achievement-icon">
+        <i class="fas fa-trophy"></i>
+      </div>
+      <div class="achievement-content">
+        <div class="achievement-title">Achievement Unlocked!</div>
+        <div class="achievement-desc">${name}</div>
+      </div>
+    `;
+    document.body.appendChild(popup);
+
+    setTimeout(() => {
+      popup.classList.remove('show');
+      setTimeout(() => popup.remove(), 500);
+    }, 5000);
+  };
+
+  return { show };
+})();
+
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  Quiz.init();
+
+  // Show achievement if available
+  {% if achievement %}
+  setTimeout(() => Achievement.show("{{ achievement.name }}"), 1000);
+  {% endif %}
+});
+    </script>
+</body>
+</html>

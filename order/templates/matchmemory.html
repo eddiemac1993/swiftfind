@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Memory Match Deluxe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      .card {
+        perspective: 1000px;
+        transform-style: preserve-3d;
+        transition: all 0.5s ease;
+      }
+      .card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+        transition: transform 0.5s;
+      }
+      .card.flipped .card-inner {
+        transform: rotateY(180deg);
+      }
+      .card-front,
+      .card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.5rem;
+      }
+      .card-back {
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: white;
+        font-size: 2rem;
+      }
+      .card-front {
+        background: white;
+        transform: rotateY(180deg);
+      }
+      .matched {
+        opacity: 0.6;
+        transform: scale(0.95);
+      }
+      @keyframes celebration {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .celebration {
+        animation: celebration 0.5s ease;
+      }
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(79, 70, 229, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(79, 70, 229, 0);
+        }
+      }
+      .pulse {
+        animation: pulse 1.5s infinite;
+      }
+      @keyframes confetti {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(1000px) rotate(720deg);
+          opacity: 0;
+        }
+      }
+      .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: #f00;
+        border-radius: 50%;
+        animation: confetti 5s ease-in-out forwards;
+      }
+      .progress-bar {
+        height: 8px;
+        border-radius: 4px;
+        background: linear-gradient(90deg, #4f46e5, #7c3aed);
+        transition: width 0.5s ease;
+      }
+      .theme-dark {
+        background-color: #1f2937;
+        color: #f3f4f6;
+      }
+      .theme-dark .card-front {
+        background-color: #374151;
+        color: #f3f4f6;
+      }
+      .theme-light {
+        background-color: #f3f4f6;
+        color: #1f2937;
+      }
+      .theme-forest {
+        background-color: #064e3b;
+        color: #d1fae5;
+      }
+      .theme-forest .card-back {
+        background: linear-gradient(135deg, #065f46, #047857);
+      }
+      .theme-ocean {
+        background-color: #0c4a6e;
+        color: #e0f2fe;
+      }
+      .theme-ocean .card-back {
+        background: linear-gradient(135deg, #0369a1, #0284c7);
+      }
+      .theme-sunset {
+        background-color: #7c2d12;
+        color: #ffedd5;
+      }
+      .theme-sunset .card-back {
+        background: linear-gradient(135deg, #9a3412, #c2410c);
+      }
+      .hover-scale:hover {
+        transform: scale(1.05);
+        transition: transform 0.3s ease;
+      }
+      .star {
+        color: #fbbf24;
+        font-size: 1.5rem;
+      }
+      .star-empty {
+        color: #d1d5db;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4"
+  >
+    <div class="w-full max-w-4xl">
+      <!-- Header Area with Home Link -->
+      <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+        <div class="flex items-center mb-4 md:mb-0">
+          <a
+            href="https://www.swiftfindzm.com/games/"
+            class="mr-3 text-indigo-600 hover:text-indigo-800"
+            title="More Games"
+          >
+            <i class="fas fa-home text-2xl"></i>
+          </a>
+          <i class="fas fa-brain text-indigo-600 text-3xl mr-3"></i>
+          <h1 class="text-3xl font-bold text-indigo-800">
+            Memory Match Deluxe
+          </h1>
+        </div>
+
+        <!-- Game Mode Switcher -->
+        <div class="flex flex-wrap justify-center gap-2 mb-4 md:mb-0">
+          <button
+            id="mode-solo"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-lg transition"
+          >
+            Solo
+          </button>
+          <button
+            id="mode-timed"
+            class="bg-gray-300 hover:bg-indigo-600 hover:text-white px-3 py-1 rounded-lg transition"
+          >
+            Timed Challenge
+          </button>
+          <button
+            id="mode-zen"
+            class="bg-gray-300 hover:bg-indigo-600 hover:text-white px-3 py-1 rounded-lg transition"
+          >
+            Zen Mode
+          </button>
+        </div>
+      </div>
+
+      <!-- Controls Area -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <!-- Left Side Stats -->
+        <div class="flex flex-wrap gap-3 justify-center md:justify-start">
+          <div class="bg-white rounded-lg shadow p-3 flex items-center">
+            <i class="fas fa-clock text-indigo-600 mr-2"></i>
+            <span id="timer" class="font-mono">00:00</span>
+          </div>
+          <div class="bg-white rounded-lg shadow p-3 flex items-center">
+            <i class="fas fa-redo-alt text-indigo-600 mr-2"></i>
+            <span id="moves">0</span> moves
+          </div>
+          <div class="bg-white rounded-lg shadow p-3 flex items-center">
+            <i class="fas fa-star text-indigo-600 mr-2"></i>
+            <span id="score">0</span> points
+          </div>
+          <div class="bg-white rounded-lg shadow p-3 flex items-center">
+            <i class="fas fa-trophy text-indigo-600 mr-2"></i>
+            <span id="best-score">-</span>
+          </div>
+        </div>
+
+        <!-- Right Side Controls -->
+        <div class="flex flex-wrap gap-3 justify-center md:justify-end">
+          <select
+            id="difficultySelect"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg transition"
+          >
+            <option value="easy">Easy (4×2)</option>
+            <option value="medium" selected>Medium (4×4)</option>
+            <option value="hard">Hard (6×4)</option>
+            <option value="expert">Expert (6×6)</option>
+          </select>
+
+          <select
+            id="cardTypeSelect"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg transition"
+          >
+            <option value="icons" selected>Icons</option>
+            <option value="emoji">Emoji</option>
+            <option value="animals">Animals</option>
+            <option value="colors">Colors</option>
+          </select>
+
+          <select
+            id="themeSelect"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg transition"
+          >
+            <option value="default">Default</option>
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+            <option value="forest">Forest</option>
+            <option value="ocean">Ocean</option>
+            <option value="sunset">Sunset</option>
+          </select>
+
+          <button
+            id="reset-btn"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition flex items-center"
+          >
+            <i class="fas fa-sync-alt mr-2"></i>Reset
+          </button>
+        </div>
+      </div>
+
+      <!-- Game Progress -->
+      <div class="mb-6">
+        <div class="flex justify-between mb-1">
+          <span>Progress: <span id="progress-text">0%</span></span>
+          <span id="pairs-text">0/8 pairs</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full">
+          <div class="progress-bar w-0" id="progress-bar"></div>
+        </div>
+      </div>
+
+      <!-- Game Board -->
+      <div id="game-board" class="grid grid-cols-4 gap-3 md:gap-4 mb-6">
+        <!-- Cards will be generated here -->
+      </div>
+
+      <!-- Hint and Sound Controls -->
+      <div class="flex justify-between">
+        <div class="flex gap-3">
+          <button
+            id="hint-btn"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition"
+          >
+            <i class="fas fa-lightbulb mr-2"></i>Hint (<span id="hints-left"
+              >3</span
+            >)
+          </button>
+          <button
+            id="peek-btn"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition"
+          >
+            <i class="fas fa-eye mr-2"></i>Quick Peek
+          </button>
+        </div>
+        <div>
+          <button
+            id="sound-btn"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition"
+          >
+            <i class="fas fa-volume-up mr-2" id="sound-icon"></i>Sound
+          </button>
+        </div>
+      </div>
+
+      <!-- Time Challenge Countdown -->
+      <div id="countdown-container" class="hidden mt-6 text-center">
+        <div class="text-xl font-bold mb-2">Time Remaining</div>
+        <div class="text-4xl font-bold text-indigo-600" id="countdown">
+          01:00
+        </div>
+      </div>
+    </div>
+
+    <!-- Win Message Modal -->
+    <div
+      id="win-message"
+      class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div class="bg-white p-8 rounded-xl max-w-md w-full text-center relative">
+        <div
+          id="confetti-container"
+          class="absolute inset-0 overflow-hidden"
+        ></div>
+        <div class="relative z-10">
+          <h2 class="text-3xl font-bold text-indigo-600 mb-4">
+            Congratulations!
+          </h2>
+          <div id="stars-container" class="flex justify-center my-4">
+            <!-- Stars will be added here -->
+          </div>
+          <p class="text-lg mb-2">
+            You completed the game in
+            <span id="final-time" class="font-bold">00:00</span>
+          </p>
+          <p class="text-lg mb-2">
+            With <span id="final-moves" class="font-bold">0</span> moves
+          </p>
+          <p class="text-lg mb-6">
+            Score: <span id="final-score" class="font-bold">0</span> points
+          </p>
+          <div class="grid grid-cols-2 gap-4">
+            <button
+              id="play-again-btn"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition"
+            >
+              Play Again
+            </button>
+            <button
+              id="next-level-btn"
+              class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition"
+            >
+              Next Level
+            </button>
+          </div>
+          <div class="mt-4">
+            <button
+              id="share-btn"
+              class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg transition w-full"
+            >
+              <i class="fas fa-share-alt mr-2"></i>Share Score
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div
+      id="game-over-message"
+      class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div class="bg-white p-8 rounded-xl max-w-md w-full text-center">
+        <h2 class="text-3xl font-bold text-red-600 mb-4">Time's Up!</h2>
+        <p class="text-lg mb-6">
+          You found <span id="final-pairs" class="font-bold">0</span> pairs
+        </p>
+        <button
+          id="try-again-btn"
+          class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition"
+        >
+          Try Again
+        </button>
+      </div>
+    </div>
+
+    <!-- Share Dialog (hidden by default) -->
+    <div
+      id="share-dialog"
+      class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+    >
+      <div class="bg-white p-6 rounded-xl max-w-md w-full">
+        <h3 class="text-xl font-bold mb-4">Share Your Score</h3>
+        <p id="share-text" class="mb-4"></p>
+        <div class="flex flex-wrap gap-3">
+          <a
+            id="whatsapp-share"
+            target="_blank"
+            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center cursor-pointer"
+          >
+            <i class="fab fa-whatsapp mr-2"></i> WhatsApp
+          </a>
+          <a
+            id="facebook-share"
+            target="_blank"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center cursor-pointer"
+          >
+            <i class="fab fa-facebook-f mr-2"></i> Facebook
+          </a>
+          <button
+            id="copy-link"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center"
+          >
+            <i class="fas fa-link mr-2"></i> Copy Link
+          </button>
+        </div>
+        <div class="mt-4 flex justify-end">
+          <button
+            id="close-share"
+            class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // DOM Elements
+        const gameBoard = document.getElementById("game-board");
+        const timerElement = document.getElementById("timer");
+        const movesElement = document.getElementById("moves");
+        const scoreElement = document.getElementById("score");
+        const bestScoreElement = document.getElementById("best-score");
+        const resetBtn = document.getElementById("reset-btn");
+        const winMessage = document.getElementById("win-message");
+        const gameOverMessage = document.getElementById("game-over-message");
+        const finalTime = document.getElementById("final-time");
+        const finalMoves = document.getElementById("final-moves");
+        const finalScore = document.getElementById("final-score");
+        const finalPairs = document.getElementById("final-pairs");
+        const playAgainBtn = document.getElementById("play-again-btn");
+        const nextLevelBtn = document.getElementById("next-level-btn");
+        const tryAgainBtn = document.getElementById("try-again-btn");
+        const difficultySelect = document.getElementById("difficultySelect");
+        const themeSelect = document.getElementById("themeSelect");
+        const cardTypeSelect = document.getElementById("cardTypeSelect");
+        const progressBar = document.getElementById("progress-bar");
+        const progressText = document.getElementById("progress-text");
+        const pairsText = document.getElementById("pairs-text");
+        const hintBtn = document.getElementById("hint-btn");
+        const hintsLeftElement = document.getElementById("hints-left");
+        const peekBtn = document.getElementById("peek-btn");
+        const soundBtn = document.getElementById("sound-btn");
+        const soundIcon = document.getElementById("sound-icon");
+        const modeSolo = document.getElementById("mode-solo");
+        const modeTimed = document.getElementById("mode-timed");
+        const modeZen = document.getElementById("mode-zen");
+        const countdownContainer = document.getElementById(
+          "countdown-container"
+        );
+        const countdownElement = document.getElementById("countdown");
+        const shareBtn = document.getElementById("share-btn");
+        const starsContainer = document.getElementById("stars-container");
+        const shareDialog = document.getElementById("share-dialog");
+        const shareTextElement = document.getElementById("share-text");
+        const whatsappShare = document.getElementById("whatsapp-share");
+        const facebookShare = document.getElementById("facebook-share");
+        const copyLinkBtn = document.getElementById("copy-link");
+        const closeShareBtn = document.getElementById("close-share");
+
+        // Game variables
+        let cards = [];
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let moves = 0;
+        let matches = 0;
+        let totalPairs = 8; // Default is 16 cards (8 pairs)
+        let timer;
+        let seconds = 0;
+        let score = 0;
+        let hintsLeft = 3;
+        let soundEnabled = true;
+        let gameMode = "solo"; // solo, timed, zen
+        let countdownTimer;
+        let countdownSeconds = 60; // Default countdown time for timed mode
+        let bestScores =
+          JSON.parse(localStorage.getItem("memoryMatchBestScores")) || {};
+
+        // Audio elements
+        const flipSound = new Audio(
+          "https://cdnjs.cloudflare.com/ajax/libs/soundjs/1.0.1/soundjs.min.js"
+        );
+        const matchSound = new Audio(
+          "https://cdnjs.cloudflare.com/ajax/libs/soundjs/1.0.1/soundjs.min.js"
+        );
+        const victorySound = new Audio(
+          "https://cdnjs.cloudflare.com/ajax/libs/soundjs/1.0.1/soundjs.min.js"
+        );
+        const wrongSound = new Audio(
+          "https://cdnjs.cloudflare.com/ajax/libs/soundjs/1.0.1/soundjs.min.js"
+        );
+
+        // Card content based on type
+        const cardContent = {
+          icons: [
+            "fa-heart",
+            "fa-star",
+            "fa-bell",
+            "fa-flag",
+            "fa-moon",
+            "fa-sun",
+            "fa-cloud",
+            "fa-key",
+            "fa-bolt",
+            "fa-leaf",
+            "fa-snowflake",
+            "fa-fire",
+            "fa-tree",
+            "fa-gift",
+            "fa-music",
+            "fa-crown",
+            "fa-car",
+            "fa-plane",
+            "fa-rocket",
+            "fa-anchor",
+            "fa-bicycle",
+            "fa-camera",
+            "fa-coffee",
+            "fa-paw",
+            "fa-diamond",
+            "fa-chess-knight",
+            "fa-umbrella",
+            "fa-mountain",
+            "fa-book",
+            "fa-palette",
+            "fa-apple-alt",
+            "fa-football-ball",
+            "fa-basketball-ball",
+            "fa-baseball-ball",
+            "fa-volleyball-ball",
+            "fa-table-tennis",
+          ],
+          emoji: [
+            "😀",
+            "😍",
+            "🤣",
+            "😎",
+            "🥳",
+            "😴",
+            "🤔",
+            "😱",
+            "👻",
+            "👽",
+            "🤖",
+            "💩",
+            "👑",
+            "🎩",
+            "🌟",
+            "💥",
+            "🍕",
+            "🍔",
+            "🍦",
+            "🍭",
+            "🎮",
+            "📱",
+            "🚗",
+            "✈️",
+            "🚀",
+            "⚽",
+            "🏀",
+            "🎯",
+            "🎸",
+            "🎹",
+            "🌈",
+            "⛄",
+            "🌹",
+            "🌵",
+            "🌴",
+            "🍄",
+          ],
+          animals: [
+            "🐶",
+            "🐱",
+            "🐭",
+            "🐰",
+            "🦊",
+            "🐻",
+            "🐼",
+            "🐨",
+            "🦁",
+            "🐯",
+            "🐮",
+            "🐷",
+            "🐸",
+            "🐵",
+            "🐔",
+            "🦄",
+            "🦇",
+            "🦉",
+            "🦅",
+            "🐢",
+            "🐠",
+            "🦈",
+            "🐙",
+            "🦋",
+            "🐝",
+            "🐞",
+            "🐜",
+            "🦗",
+            "🦒",
+            "🦓",
+            "🦍",
+            "🐘",
+            "🦔",
+            "🐿️",
+            "🐪",
+            "🦘",
+          ],
+          colors: [
+            "#FF5733",
+            "#33FF57",
+            "#5733FF",
+            "#FF33A1",
+            "#33A1FF",
+            "#A1FF33",
+            "#FF3333",
+            "#33FFF5",
+            "#F533FF",
+            "#FFB533",
+            "#33FFB5",
+            "#B533FF",
+            "#FF5533",
+            "#55FF33",
+            "#3355FF",
+            "#FF33F5",
+            "#33F5FF",
+            "#F5FF33",
+            "#FF3355",
+            "#33FF55",
+          ],
+        };
+
+        // Initialize game
+        function initGame() {
+          // Get difficulty settings
+          const difficulty = difficultySelect.value;
+          switch (difficulty) {
+            case "easy":
+              totalPairs = 4; // 8 cards (4×2)
+              gameBoard.className = "grid grid-cols-4 gap-3 md:gap-4 mb-6";
+              break;
+            case "medium":
+              totalPairs = 8; // 16 cards (4×4)
+              gameBoard.className = "grid grid-cols-4 gap-3 md:gap-4 mb-6";
+              break;
+            case "hard":
+              totalPairs = 12; // 24 cards (6×4)
+              gameBoard.className = "grid grid-cols-6 gap-3 md:gap-4 mb-6";
+              break;
+            case "expert":
+              totalPairs = 18; // 36 cards (6×6)
+              gameBoard.className = "grid grid-cols-6 gap-2 md:gap-3 mb-6";
+              break;
+          }
+
+          // Display best score for current difficulty
+          const currentBestKey = `${gameMode}-${difficulty}`;
+          bestScoreElement.textContent = bestScores[currentBestKey]
+            ? bestScores[currentBestKey]
+            : "-";
+
+          // Set game mode specific settings
+          if (gameMode === "timed") {
+            countdownContainer.classList.remove("hidden");
+            switch (difficulty) {
+              case "easy":
+                countdownSeconds = 45;
+                break;
+              case "medium":
+                countdownSeconds = 60;
+                break;
+              case "hard":
+                countdownSeconds = 90;
+                break;
+              case "expert":
+                countdownSeconds = 120;
+                break;
+            }
+            updateCountdown();
+          } else {
+            countdownContainer.classList.add("hidden");
+            clearInterval(countdownTimer);
+          }
+
+          // Reset game state
+          moves = 0;
+          matches = 0;
+          seconds = 0;
+          score = 0;
+          hintsLeft = 3;
+          hasFlippedCard = false;
+          lockBoard = false;
+          firstCard = secondCard = null;
+
+          // Clear previous timer
+          clearInterval(timer);
+          updateTimer();
+
+          // Update UI
+          movesElement.textContent = moves;
+          scoreElement.textContent = score;
+          hintsLeftElement.textContent = hintsLeft;
+          updateProgress();
+
+          // Clear board
+          gameBoard.innerHTML = "";
+
+          // Get card type and create content array
+          const cardType = cardTypeSelect.value;
+          let contentArray;
+
+          if (cardType === "colors") {
+            // For colors we need a different approach
+            contentArray = [...cardContent.colors.slice(0, totalPairs)];
+          } else {
+            contentArray = [...cardContent[cardType].slice(0, totalPairs)];
+          }
+
+          // Double the array to make pairs and shuffle
+          const pairsArray = [...contentArray, ...contentArray];
+          const shuffledContent = shuffleArray(pairsArray);
+
+          // Create cards
+          createCards(shuffledContent, cardType);
+
+          // Start timer for solo and zen modes (not for timed which has countdown)
+          if (gameMode !== "timed") {
+            timer = setInterval(updateTimer, 1000);
+          } else {
+            // Start countdown for timed mode
+            countdownTimer = setInterval(() => {
+              countdownSeconds--;
+              updateCountdown();
+
+              if (countdownSeconds <= 0) {
+                clearInterval(countdownTimer);
+                gameOver();
+              }
+            }, 1000);
+          }
+        }
+
+        // Create cards and add to board
+        function createCards(contentArray, cardType) {
+          contentArray.forEach((content, index) => {
+            const card = document.createElement("div");
+            card.className = "card hover-scale cursor-pointer";
+
+            // Adjust card height based on difficulty
+            const difficulty = difficultySelect.value;
+            if (difficulty === "expert") {
+              card.classList.add("h-16", "sm:h-20", "md:h-24");
+            } else {
+              card.classList.add("h-20", "sm:h-24", "md:h-28");
+            }
+
+            card.dataset.index = index;
+
+            const cardInner = document.createElement("div");
+            cardInner.className = "card-inner";
+
+            const cardBack = document.createElement("div");
+            cardBack.className = "card-back";
+            cardBack.innerHTML = '<i class="fas fa-question"></i>';
+
+            const cardFront = document.createElement("div");
+            cardFront.className = "card-front";
+
+            if (cardType === "icons") {
+              cardFront.innerHTML = `<i class="fas ${content} text-indigo-600 text-2xl sm:text-3xl"></i>`;
+            } else if (cardType === "colors") {
+              cardFront.innerHTML = `<div class="w-12 h-12 rounded-full" style="background-color: ${content}"></div>`;
+            } else {
+              cardFront.innerHTML = `<span class="text-2xl sm:text-3xl">${content}</span>`;
+            }
+
+            cardInner.appendChild(cardBack);
+            cardInner.appendChild(cardFront);
+            card.appendChild(cardInner);
+
+            card.addEventListener("click", flipCard);
+            gameBoard.appendChild(card);
+
+            // Store card reference
+            cards.push({
+              element: card,
+              content: content,
+              matched: false,
+            });
+          });
+        }
+
+        // Shuffle array (Fisher-Yates algorithm)
+        function shuffleArray(array) {
+          for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+          }
+          return array;
+        }
+
+        // Flip card when clicked
+        function flipCard() {
+          if (lockBoard) return;
+          if (this === firstCard?.element) return;
+
+          const index = this.dataset.index;
+          if (cards[index].matched) return;
+
+          this.classList.add("flipped");
+          this.classList.add("celebration");
+
+          if (soundEnabled) {
+            // Play flip sound
+            playSound("flip");
+          }
+
+          // Remove celebration class after animation
+          setTimeout(() => {
+            this.classList.remove("celebration");
+          }, 500);
+
+          if (!hasFlippedCard) {
+            // First card flipped
+            hasFlippedCard = true;
+            firstCard = {
+              element: this,
+              index: index,
+            };
+            return;
+          }
+
+          // Second card flipped
+          secondCard = {
+            element: this,
+            index: index,
+          };
+
+          // Increment moves
+          moves++;
+          movesElement.textContent = moves;
+
+          checkForMatch();
+        }
+
+        // Check if the two flipped cards match
+        function checkForMatch() {
+          const isMatch =
+            cards[firstCard.index].content === cards[secondCard.index].content;
+
+          if (isMatch) {
+            disableCards();
+
+            // Calculate score based on game mode
+            let pointsEarned = 10;
+            if (gameMode === "timed") {
+              pointsEarned = 20; // More points for timed mode
+            } else if (gameMode === "zen") {
+              pointsEarned = 5; // Fewer points for zen mode
+            }
+
+            // Bonus points for quick matches (less moves)
+            if (moves < totalPairs * 2) {
+              pointsEarned += 5;
+            }
+
+            score += pointsEarned;
+            scoreElement.textContent = score;
+
+            // Play match sound
+            if (soundEnabled) {
+              playSound("match");
+            }
+
+            matches++;
+            updateProgress();
+
+            if (matches === totalPairs) {
+              gameWon();
+            }
+          } else {
+            unflipCards();
+
+            // Play wrong sound
+            if (soundEnabled) {
+              playSound("wrong");
+            }
+          }
+        }
+
+        // Disable matched cards
+        function disableCards() {
+          cards[firstCard.index].matched = true;
+          cards[secondCard.index].matched = true;
+
+          firstCard.element.classList.add("matched");
+          secondCard.element.classList.add("matched");
+
+          resetBoard();
+        }
+
+        // Unflip non-matching cards
+        function unflipCards() {
+          lockBoard = true;
+
+          setTimeout(() => {
+            firstCard.element.classList.remove("flipped");
+            secondCard.element.classList.remove("flipped");
+
+            resetBoard();
+          }, 1000);
+        }
+
+        // Reset board state after each turn
+        function resetBoard() {
+          [hasFlippedCard, lockBoard] = [false, false];
+          [firstCard, secondCard] = [null, null];
+        }
+
+        // Update timer display
+        function updateTimer() {
+          seconds++;
+          const minutes = Math.floor(seconds / 60);
+          const remainingSeconds = seconds % 60;
+          timerElement.textContent = `${minutes
+            .toString()
+            .padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
+        }
+
+        // Update countdown display
+        function updateCountdown() {
+          const minutes = Math.floor(countdownSeconds / 60);
+          const remainingSeconds = countdownSeconds % 60;
+          countdownElement.textContent = `${minutes
+            .toString()
+            .padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
+
+          // Add visual indicator when time is running low
+          if (countdownSeconds <= 10) {
+            countdownElement.classList.add("text-red-600", "pulse");
+          } else {
+            countdownElement.classList.remove("text-red-600", "pulse");
+          }
+        }
+
+        // Update progress bar and text
+        function updateProgress() {
+          const progressPercent = (matches / totalPairs) * 100;
+          progressBar.style.width = `${progressPercent}%`;
+          progressText.textContent = `${Math.round(progressPercent)}%`;
+          pairsText.textContent = `${matches}/${totalPairs} pairs`;
+        }
+
+        // Handle game win
+        function gameWon() {
+          clearInterval(timer);
+          clearInterval(countdownTimer);
+
+          if (soundEnabled) {
+            playSound("victory");
+          }
+
+          // Save best score if better than previous
+          const currentBestKey = `${gameMode}-${difficultySelect.value}`;
+          if (
+            !bestScores[currentBestKey] ||
+            score > bestScores[currentBestKey]
+          ) {
+            bestScores[currentBestKey] = score;
+            localStorage.setItem(
+              "memoryMatchBestScores",
+              JSON.stringify(bestScores)
+            );
+            bestScoreElement.textContent = score;
+          }
+
+          finalTime.textContent = timerElement.textContent;
+          finalMoves.textContent = moves;
+          finalScore.textContent = score;
+
+          // Calculate star rating based on moves and time
+          let stars = 3;
+          if (moves > totalPairs * 2.5) {
+            stars = 1;
+          } else if (moves > totalPairs * 2) {
+            stars = 2;
+          }
+
+          // Show stars
+          starsContainer.innerHTML = "";
+          for (let i = 0; i < 3; i++) {
+            const starIcon = document.createElement("i");
+            starIcon.className =
+              i < stars
+                ? "fas fa-star star mx-1"
+                : "fas fa-star star-empty mx-1";
+            starsContainer.appendChild(starIcon);
+          }
+
+          // Create confetti effect
+          createConfetti();
+
+          // Show next level button only if not on expert difficulty
+          if (difficultySelect.value === "expert") {
+            nextLevelBtn.classList.add("hidden");
+          } else {
+            nextLevelBtn.classList.remove("hidden");
+          }
+
+          winMessage.classList.remove("hidden");
+        }
+
+        // Game over (timed mode)
+        function gameOver() {
+          clearInterval(timer);
+          clearInterval(countdownTimer);
+          finalPairs.textContent = matches;
+          gameOverMessage.classList.remove("hidden");
+        }
+
+        // Create confetti animation
+        function createConfetti() {
+          const confettiContainer =
+            document.getElementById("confetti-container");
+          confettiContainer.innerHTML = "";
+
+          const colors = [
+            "#f44336",
+            "#2196f3",
+            "#ffeb3b",
+            "#4caf50",
+            "#9c27b0",
+          ];
+
+          for (let i = 0; i < 50; i++) {
+            const confetti = document.createElement("div");
+            confetti.className = "confetti";
+            confetti.style.backgroundColor =
+              colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = `${Math.random() * 100}%`;
+            confetti.style.top = `${Math.random() * 20}%`;
+            confetti.style.width = `${Math.random() * 10 + 5}px`;
+            confetti.style.height = `${Math.random() * 10 + 5}px`;
+            confetti.style.animationDelay = `${Math.random() * 2}s`;
+            confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            confettiContainer.appendChild(confetti);
+          }
+        }
+
+        // Play sound effects
+        function playSound(type) {
+          // Since we're limited in actual sound playback, we'll simulate it
+          console.log(`Playing ${type} sound`);
+          // In a real implementation, you would use:
+          // switch(type) {
+          //   case "flip": flipSound.play(); break;
+          //   case "match": matchSound.play(); break;
+          //   case "wrong": wrongSound.play(); break;
+          //            //   case "victory": victorySound.play(); break;
+          // }
+        }
+
+        // Give hint to player
+        function giveHint() {
+          if (hintsLeft <= 0) return;
+
+          // Find all unflipped, unmatched cards
+          const unflippedCards = cards.filter(
+            (card) =>
+              !card.matched && !card.element.classList.contains("flipped")
+          );
+
+          if (unflippedCards.length < 2) return;
+
+          // Find a matching pair to hint at
+          const contentMap = {};
+          let hintCard1 = null;
+          let hintCard2 = null;
+
+          for (const card of unflippedCards) {
+            if (contentMap[card.content]) {
+              hintCard1 = contentMap[card.content];
+              hintCard2 = card;
+              break;
+            }
+            contentMap[card.content] = card;
+          }
+
+          if (hintCard1 && hintCard2) {
+            // Highlight the matching cards
+            hintCard1.element.classList.add("pulse");
+            hintCard2.element.classList.add("pulse");
+
+            // Remove highlight after 2 seconds
+            setTimeout(() => {
+              hintCard1.element.classList.remove("pulse");
+              hintCard2.element.classList.remove("pulse");
+            }, 2000);
+
+            hintsLeft--;
+            hintsLeftElement.textContent = hintsLeft;
+          }
+        }
+
+        // Quick peek at all cards
+        function quickPeek() {
+          if (lockBoard) return;
+
+          // Flip all cards
+          cards.forEach((card) => {
+            if (!card.matched) {
+              card.element.classList.add("flipped");
+            }
+          });
+
+          // Flip back after 1 second
+          setTimeout(() => {
+            cards.forEach((card) => {
+              if (!card.matched && card.element !== firstCard?.element) {
+                card.element.classList.remove("flipped");
+              }
+            });
+          }, 1000);
+        }
+
+        // Change theme
+        function changeTheme(theme) {
+          document.body.className = `min-h-screen flex flex-col items-center justify-center p-4 theme-${theme}`;
+
+          // Update card backs if needed
+          const cardBacks = document.querySelectorAll(".card-back");
+          cardBacks.forEach((card) => {
+            if (theme === "default") {
+              card.style.background =
+                "linear-gradient(135deg, #4f46e5, #7c3aed)";
+            }
+          });
+        }
+
+        // Share score
+        function shareScore() {
+          const difficulty =
+            difficultySelect.options[difficultySelect.selectedIndex].text;
+          const theme = themeSelect.options[themeSelect.selectedIndex].text;
+          const cardType =
+            cardTypeSelect.options[cardTypeSelect.selectedIndex].text;
+
+          const shareText = `I just scored ${score} points in Memory Match Deluxe!
+Difficulty: ${difficulty}
+Theme: ${theme}
+Card Type: ${cardType}
+Time: ${timerElement.textContent}
+Moves: ${moves}
+Pairs: ${matches}/${totalPairs}
+
+Play now: https://www.swiftfindzm.com/games/memory-match/`;
+
+          shareTextElement.textContent = shareText;
+
+          // Set up share links
+          const encodedText = encodeURIComponent(shareText);
+          whatsappShare.href = `https://wa.me/?text=${encodedText}`;
+          facebookShare.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+            "https://www.swiftfindzm.com/games/memory-match/"
+          )}&quote=${encodedText}`;
+
+          shareDialog.classList.remove("hidden");
+        }
+
+        // Copy share link
+        function copyShareLink() {
+          const shareText = shareTextElement.textContent;
+          navigator.clipboard
+            .writeText(shareText)
+            .then(() => {
+              alert("Score copied to clipboard!");
+            })
+            .catch((err) => {
+              console.error("Failed to copy: ", err);
+            });
+        }
+
+        // Event Listeners
+        resetBtn.addEventListener("click", initGame);
+        playAgainBtn.addEventListener("click", () => {
+          winMessage.classList.add("hidden");
+          initGame();
+        });
+        nextLevelBtn.addEventListener("click", () => {
+          // Move to next difficulty level
+          const difficulties = ["easy", "medium", "hard", "expert"];
+          const currentIndex = difficulties.indexOf(difficultySelect.value);
+          if (currentIndex < difficulties.length - 1) {
+            difficultySelect.value = difficulties[currentIndex + 1];
+          }
+          winMessage.classList.add("hidden");
+          initGame();
+        });
+        tryAgainBtn.addEventListener("click", () => {
+          gameOverMessage.classList.add("hidden");
+          initGame();
+        });
+        difficultySelect.addEventListener("change", initGame);
+        cardTypeSelect.addEventListener("change", initGame);
+        themeSelect.addEventListener("change", (e) => {
+          changeTheme(e.target.value);
+        });
+        hintBtn.addEventListener("click", giveHint);
+        peekBtn.addEventListener("click", quickPeek);
+        soundBtn.addEventListener("click", () => {
+          soundEnabled = !soundEnabled;
+          soundIcon.className = soundEnabled
+            ? "fas fa-volume-up mr-2"
+            : "fas fa-volume-mute mr-2";
+        });
+        modeSolo.addEventListener("click", () => {
+          gameMode = "solo";
+          modeSolo.className =
+            "bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-lg transition";
+          modeTimed.className =
+            "bg-gray-300 hover:bg-indigo-600 hover:text-white px-3 py-1 rounded-lg transition";
+          modeZen.className =
+            "bg-gray-300 hover:bg-indigo-600 hover:text-white px-3 py-1 rounded-lg transition";
+          initGame();
+        });
+        modeTimed.addEventListener("click", () => {
+          gameMode = "timed";
+          modeTimed.className =
+            "bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-lg transition";
+          modeSolo.className =
+            "bg-gray-300 hover:bg-indigo-600 hover:text-white px-3 py-1 rounded-lg transition";
+          modeZen.className =
+            "bg-gray-300 hover:bg-indigo-600 hover:text-white px-3 py-1 rounded-lg transition";
+          initGame();
+        });
+        modeZen.addEventListener("click", () => {
+          gameMode = "zen";
+          modeZen.className =
+            "bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-lg transition";
+          modeSolo.className =
+            "bg-gray-300 hover:bg-indigo-600 hover:text-white px-3 py-1 rounded-lg transition";
+          modeTimed.className =
+            "bg-gray-300 hover:bg-indigo-600 hover:text-white px-3 py-1 rounded-lg transition";
+          initGame();
+        });
+        shareBtn.addEventListener("click", shareScore);
+        closeShareBtn.addEventListener("click", () => {
+          shareDialog.classList.add("hidden");
+        });
+        copyLinkBtn.addEventListener("click", copyShareLink);
+
+        // Initialize game with default settings
+        initGame();
+        changeTheme(themeSelect.value);
+      });
+    </script>
+  </body>
+</html>
