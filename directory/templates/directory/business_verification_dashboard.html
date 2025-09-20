@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -1054,3 +1055,277 @@
     </script>
 </body>
 </html>
+=======
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Verification Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F8F8F8;
+            color: #333;
+        }
+
+        .status-badge {
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+        }
+        .status-verified {
+            background-color: #D1FAE5; /* green light */
+            color: #065F46; /* green dark */
+        }
+        .status-notverified {
+            background-color: #FEE2E2; /* red light */
+            color: #991B1B; /* red dark */
+        }
+
+        .btn-verify {
+            @apply bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded w-full;
+        }
+
+        .btn-verified {
+            @apply bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded w-full cursor-not-allowed;
+        }
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            background-color: var(--white);
+            padding: 12px 0 8px;
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .dark-mode .bottom-nav {
+            background-color: var(--dark-surface);
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--light-text);
+            font-size: 12px;
+            font-weight: 500;
+            position: relative;
+            padding: 6px 16px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--light-text);
+            font-size: 12px;
+            font-weight: 500;
+            padding: 6px 16px;
+            position: relative;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+        }
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-item.active i {
+            transform: translateY(-2px);
+        }
+        /* Hide table on small screens */
+        @media (max-width: 768px) {
+            .desktop-table { display: none; }
+            .mobile-cards { display: block; }
+        }
+
+        /* Show table on larger screens */
+        @media (min-width: 769px) {
+            .desktop-table { display: table; width: 100%; border-collapse: collapse; }
+            .mobile-cards { display: none; }
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .card-header {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .card-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+        }
+        .card-label {
+            font-weight: 500;
+            color: #555;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md p-4 flex items-center justify-between sticky top-0 z-50">
+        <h1 class="text-xl font-bold text-gray-700">Business Verification Dashboard</h1>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow p-4 max-w-7xl mx-auto w-full">
+        {% for message in messages %}
+            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <!-- Desktop Table -->
+        <div class="desktop-table bg-white shadow-md rounded-lg overflow-hidden">
+            <table class="min-w-full border-collapse">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="text-left px-4 py-2 border-b">Name</th>
+                        <th class="text-left px-4 py-2 border-b">City</th>
+                        <th class="text-left px-4 py-2 border-b">Status</th>
+                        <th class="text-left px-4 py-2 border-b">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for business in businesses %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-2 border-b">{{ business.name }}</td>
+                        <td class="px-4 py-2 border-b">{{ business.city }}</td>
+                        <td class="px-4 py-2 border-b">
+                            {% if business.is_admin_added %}
+                                <span class="status-badge status-verified">Verified until {{ business.verified_until|date:"M d, Y" }}</span>
+                            {% else %}
+                                <span class="status-badge status-notverified">Not Verified</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-2 border-b">
+                            {% if business.is_admin_added %}
+                                <button class="btn-verified" disabled>Already Verified</button>
+                            {% else %}
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="business_id" value="{{ business.id }}">
+                                    <button type="submit" class="btn-verify">Verify</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile Cards -->
+        <div class="mobile-cards">
+            {% for business in businesses %}
+            <div class="card">
+                <div class="card-header">{{ business.name }}</div>
+                <div class="card-row">
+                    <span class="card-label">City:</span>
+                    <span>{{ business.city }}</span>
+                </div>
+                <div class="card-row">
+                    <span class="card-label">Status:</span>
+                    {% if business.is_admin_added %}
+                        <span class="status-badge status-verified">Verified until {{ business.verified_until|date:"M d, Y" }}</span>
+                    {% else %}
+                        <span class="status-badge status-notverified">Not Verified</span>
+                    {% endif %}
+                </div>
+                <div class="mt-2">
+                    {% if business.is_admin_added %}
+                        <button class="btn-verified" disabled>Already Verified</button>
+                    {% else %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="business_id" value="{{ business.id }}">
+                            <button type="submit" class="btn-verify">Verify</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="{% url 'discover' %}" class="nav-item">
+            <i class="fas fa-compass"></i>
+            <span>Discover</span>
+        </a>
+        <a href="{% url 'pos_system:marketplace' %}" class="nav-item">
+            <i class="fas fa-store"></i>
+            <span>Store</span>
+        </a>
+        <a href="{% url 'about' %}" class="nav-item active">
+            <i class="fas fa-info-circle"></i>
+            <span>About</span>
+        </a>
+            <a href="{% url 'pos_system:ai_assistant' %}" class="nav-item">
+        <span class="star" style="font-size: 18px;">✨</span>
+        <span>AI</span>
+    </a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+                <i class="fas fa-user"></i>
+                <span>Me</span>
+            </a>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-item" title="Login">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </a>
+        {% endif %}
+    </nav>
+
+</body>
+</html>
+>>>>>>> fa7a2c45a9dca50548dcfce224eeb58abd5022df
