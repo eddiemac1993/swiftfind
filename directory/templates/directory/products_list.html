@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -1097,27 +1097,27 @@
     <!-- Filter controls -->
     <div class="filter-controls mb-6">
         <form method="get" class="flex flex-col md:flex-row gap-4">
-            <input type="text" name="q" placeholder="Search products..." 
+            <input type="text" name="q" placeholder="Search products..."
                    value="{{ search_query|default:'' }}"
                    class="form-control">
-            
+
             <select name="business" class="form-control">
                 <option value="">All Businesses</option>
                 {% for business in all_businesses %}
-                    <option value="{{ business.id }}" 
+                    <option value="{{ business.id }}"
                             {% if selected_business == business.id|stringformat:"s" %}selected{% endif %}>
                         {{ business.name }}
                     </option>
                 {% endfor %}
             </select>
-            
+
             <select name="sort" class="form-control">
                 <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest</option>
                 <option value="popular" {% if sort_by == 'popular' %}selected{% endif %}>Most Popular</option>
                 <option value="price_asc" {% if sort_by == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
                 <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
             </select>
-            
+
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-filter"></i> Apply
             </button>
@@ -1148,7 +1148,7 @@
                     </div>
                 </div>
             </a>
-            
+
             <!-- Edit/Delete buttons for owner -->
             {% if request.user == product.business.owner %}
                 <div class="product-actions">
@@ -1163,22 +1163,22 @@
         </div>
     {% endfor %}
 </div>
-        
+
         <!-- Pagination -->
         <div class="pagination mt-6">
             {% if products.has_previous %}
-                <a href="?page={{ products.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_business %}&business={{ selected_business }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" 
+                <a href="?page={{ products.previous_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_business %}&business={{ selected_business }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}"
                    class="btn btn-secondary">
                     Previous
                 </a>
             {% endif %}
-            
+
             <span class="mx-4">
                 Page {{ products.number }} of {{ products.paginator.num_pages }}
             </span>
-            
+
             {% if products.has_next %}
-                <a href="?page={{ products.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_business %}&business={{ selected_business }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" 
+                <a href="?page={{ products.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if selected_business %}&business={{ selected_business }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}"
                    class="btn btn-secondary">
                     Next
                 </a>
@@ -1245,5 +1245,4 @@
         }
     </script>
 </body>
->>>>>>> fa7a2c45a9dca50548dcfce224eeb58abd5022df
 </html>

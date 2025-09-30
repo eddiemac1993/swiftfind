@@ -1,7 +1,7 @@
 {
   "id": "/",
   "short_name": "SwiftFind",
-  "name": "Business Directory",
+  "name": "SwiftFind Business Directory",
   "description": "Find and review local businesses in your area.",
   "icons": [
     {
@@ -16,29 +16,108 @@
     }
   ],
   "start_url": "/",
-  "background_color": "#ffffff",
+  "scope": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay"],
-  "scope": "/",
+  "background_color": "#ffffff",
   "theme_color": "#000000",
-  "launch_handler": {
-    "client_mode": "navigate-existing"
-  },
   "orientation": "portrait",
+  "launch_handler": { "client_mode": "navigate-existing" },
   "screenshots": [
     {
-      "src": "/static/images/screenshot1.png",
-      "sizes": "1280x720",
+      "src": "/static/images/screenshot_wide.png",
+      "sizes": "1920x1080",
       "type": "image/png"
     },
     {
-      "src": "/static/images/screenshot2.png",
-      "sizes": "1920x1080",
+      "src": "/static/images/screenshot_narrow.png",
+      "sizes": "720x1280",
       "type": "image/png"
     }
   ],
   "dir": "ltr",
   "lang": "en",
   "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
-  "categories": ["business", "directory", "local services", "reviews"]
+  "categories": ["business", "directory", "local services", "reviews"],
+
+  "shortcuts": [
+    {
+      "name": "Search Businesses",
+      "short_name": "Search",
+      "description": "Quickly search for businesses",
+      "url": "/search",
+      "icons": [
+        { "src": "/static/images/icon-192x192.png", "sizes": "192x192", "type": "image/png" }
+      ]
+    },
+    {
+      "name": "View Categories",
+      "short_name": "Categories",
+      "description": "Browse business categories",
+      "url": "/categories",
+      "icons": [
+        { "src": "/static/images/icon-192x192.png", "sizes": "192x192", "type": "image/png" }
+      ]
+    }
+  ],
+
+  "file_handlers": [
+    {
+      "action": "/open-file",
+      "accept": { "application/json": [".json"] }
+    }
+  ],
+
+  "protocol_handlers": [
+    { "protocol": "mailto", "url": "/compose?to=%s" }
+  ],
+
+  "prefer_related_applications": true,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.swiftfind.app",
+      "id": "com.swiftfind.app"
+    }
+  ],
+
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "name",
+      "text": "description",
+      "url": "link",
+      "files": [
+        {
+          "name": "file",
+          "accept": ["image/*"]
+        }
+      ]
+    }
+  },
+
+  "widgets": [
+    {
+      "src": "/widgets/recent-businesses.js",
+      "type": "application/javascript",
+      "name": "Recent Businesses"
+    }
+  ],
+
+  "edge_side_panel": {
+    "src": "/side-panel.html",
+    "title": "SwiftFind Panel"
+  },
+
+  "note_taking": {
+    "note_type": "text",
+    "action": "/create-note"
+  },
+
+  "scope_extensions": [
+    "/special-section/",
+    "/promotions/"
+  ]
 }

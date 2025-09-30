@@ -269,11 +269,19 @@ class UserRegistrationForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email'].lower()
+
         if commit:
             user.save()
             profile, created = UserProfile.objects.get_or_create(user=user)
-            profile.phone_number = self.cleaned_data['phone_number']
+            # Convert string to PhoneNumber object
+            from phonenumber_field.phonenumber import PhoneNumber
+            try:
+                profile.phone_number = PhoneNumber.from_string(self.cleaned_data['phone_number'])
+            except:
+                # Fallback if conversion fails
+                profile.phone_number = self.cleaned_data['phone_number']
             profile.save()
+
         return user
 
 

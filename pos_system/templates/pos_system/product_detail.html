@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ product.name }} - Product Details</title>
+    <title>{{ product.name }} - Product Details | SwiftFind</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -87,6 +87,7 @@
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             overflow: hidden;
+            margin-bottom: 20px;
         }
 
         /* Product Image Section */
@@ -105,12 +106,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: zoom-in;
         }
 
         .product-image-main img {
             max-width: 100%;
             max-height: 400px;
             object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .product-image-main.zoomed img {
+            transform: scale(1.5);
+            cursor: zoom-out;
         }
 
         .zoom-icon {
@@ -138,7 +146,7 @@
             border-radius: 4px;
             padding: 3px;
             cursor: pointer;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
         }
 
         .thumbnail:hover,
@@ -308,7 +316,7 @@
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-top: 2rem;
+            margin-bottom: 20px;
         }
 
         .details-header {
@@ -351,10 +359,10 @@
 
         /* Description */
         .description-section {
-            margin-top: 2rem;
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
 
         .description-header {
@@ -370,10 +378,10 @@
 
         /* Related Products */
         .related-products {
-            margin-top: 3rem;
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
 
         .related-header {
@@ -392,6 +400,7 @@
             overflow: hidden;
             transition: all 0.2s;
             background: white;
+            height: 100%;
         }
 
         .product-card:hover {
@@ -447,82 +456,144 @@
             border-top: 1px solid var(--alibaba-border);
             background: #fafafa;
         }
-/* Dropdown styles */
-.dropdown-menu {
-    border: 1px solid var(--alibaba-border);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    border-radius: 6px;
-    padding: 0.5rem;
-}
 
-.dropdown-item {
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    font-size: 0.875rem;
-    transition: all 0.2s;
-}
+        /* Dropdown styles */
+        .dropdown-menu {
+            border: 1px solid var(--alibaba-border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-radius: 6px;
+            padding: 0.5rem;
+        }
 
-.dropdown-item:hover {
-    background: var(--alibaba-light-gray);
-    color: var(--alibaba-orange);
-}
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
 
-.dropdown-divider {
-    border-color: var(--alibaba-border);
-}
-/* Advertisement Styles */
-.advertisement-section {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    padding: 1.5rem;
-}
+        .dropdown-item:hover {
+            background: var(--alibaba-light-gray);
+            color: var(--alibaba-orange);
+        }
 
-.ad-card {
-    border: 1px solid var(--alibaba-border);
-    border-radius: 8px;
-    overflow: hidden;
-    transition: all 0.2s;
-}
+        .dropdown-divider {
+            border-color: var(--alibaba-border);
+        }
 
-.ad-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
-}
+        /* Advertisement Styles */
+        .advertisement-section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 20px;
+        }
 
-.ad-card img {
-    height: 150px;
-    object-fit: cover;
-}
+        .ad-card {
+            border: 1px solid var(--alibaba-border);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.2s;
+            height: 100%;
+        }
 
-.ad-card .card-body {
-    display: flex;
-    flex-direction: column;
-}
+        .ad-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
 
-.ad-card .card-title {
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
+        .ad-card img {
+            height: 150px;
+            object-fit: cover;
+            width: 100%;
+        }
 
-.ad-card small {
-    font-size: 0.75rem;
-}
-/* Make the share button look clickable */
-#shareDropdown::after {
-    display: none;
-}
+        .ad-card .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ad-card .card-title {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .ad-card small {
+            font-size: 0.75rem;
+        }
+
+        /* Make the share button look clickable */
+        #shareDropdown::after {
+            display: none;
+        }
+
+        /* Toast container */
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        /* Contact Supplier Container */
+        .contact-supplier {
+            margin-left: auto;
+            min-width: 180px;
+        }
+
+        .view-store-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--alibaba-orange);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(255, 106, 0, 0.3);
+            width: 100%;
+            white-space: nowrap;
+        }
+
+        .view-store-btn:hover {
+            background-color: var(--alibaba-orange-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(255, 106, 0, 0.4);
+            color: white;
+        }
+
+        .view-store-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(255, 106, 0, 0.3);
+        }
+
+        .view-store-btn::before {
+            content: "\f075";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            margin-right: 8px;
+            font-size: 0.9em;
+        }
+
         /* Responsive Design */
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             .product-image-section {
                 border-right: none;
                 border-bottom: 1px solid var(--alibaba-border);
             }
+        }
 
+        @media (max-width: 768px) {
             .product-title {
                 font-size: 1.5rem;
             }
@@ -539,6 +610,12 @@
             .contact-supplier {
                 margin-left: 0;
                 margin-top: 1rem;
+                width: 100%;
+            }
+
+            .view-store-btn {
+                padding: 0.75rem 1.5rem;
+                font-size: 1rem;
             }
         }
 
@@ -577,13 +654,14 @@
             </nav>
         </div>
     </div>
+
     <div class="container">
         <div class="product-main">
             <div class="row g-0">
                 <!-- Product Images -->
                 <div class="col-lg-5">
                     <div class="product-image-section">
-                        <div class="product-image-main">
+                        <div class="product-image-main" id="product-image-main">
                             <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-product.png' %}{% endif %}"
                                  alt="{{ product.name }}" id="main-image">
                             <div class="zoom-icon">
@@ -595,6 +673,13 @@
                                 <img src="{% if product.image %}{{ product.image.url }}{% else %}{% static 'images/default-product.png' %}{% endif %}"
                                      alt="{{ product.name }}">
                             </div>
+                            {% if product.images.all %}
+                                {% for image in product.images.all %}
+                                <div class="thumbnail">
+                                    <img src="{{ image.image.url }}" alt="{{ product.name }} image {{ forloop.counter }}">
+                                </div>
+                                {% endfor %}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -615,79 +700,12 @@
                                     {{ product.location|default:"Location not specified" }}
                                 </small>
                             </div>
-<style>
-    /* Contact Supplier Container */
-    .contact-supplier {
-        margin-left: auto;
-        min-width: 180px; /* Ensures consistent width */
-    }
-
-    /* Contact Supplier Button */
-    .view-store-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        background-color: var(--alibaba-orange);
-        color: white;
-        border: none;
-        padding: 0.6rem 1.5rem;
-        border-radius: 4px;
-        font-size: 0.9rem;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        box-shadow: 0 2px 6px rgba(255, 106, 0, 0.3);
-        width: 100%; /* Takes full width of container */
-        white-space: nowrap;
-    }
-
-    .view-store-btn:hover {
-        background-color: var(--alibaba-orange-dark);
-        transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(255, 106, 0, 0.4);
-    }
-
-    .view-store-btn:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 4px rgba(255, 106, 0, 0.3);
-    }
-
-    /* Optional icon */
-    .view-store-btn::before {
-        content: "\f075"; /* FontAwesome message icon */
-        font-family: "Font Awesome 6 Free";
-        font-weight: 900;
-        margin-right: 8px;
-        font-size: 0.9em;
-    }
-
-    /* Flex utility */
-    .flex-1 {
-        flex: 1;
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-        .contact-supplier {
-            margin-left: 0;
-            margin-top: 1rem;
-            width: 100%;
-        }
-
-        .view-store-btn {
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-        }
-    }
-</style>
-
-<div class="contact-supplier">
-    <a href="{% url 'messaging:start_conversation' product.business.id %}"
-       class="view-store-btn flex-1">
-        Contact Supplier
-    </a>
-</div>
+                            <div class="contact-supplier">
+                                <a href="{% url 'messaging:start_conversation' product.business.id %}"
+                                   class="view-store-btn">
+                                    Contact Supplier
+                                </a>
+                            </div>
                         </div>
 
                         <div class="price-section">
@@ -791,35 +809,36 @@
             </div>
         </div>
         {% endif %}
-<!-- Advertisement Section -->
-<hr/>
-{% if advertisements %}
-<div class="advertisement-section mb-4">
-    <h5 class="mb-3">Sponsored Ads</h5>
-    <div class="row g-3">
-        {% for ad in advertisements %}
-        <div class="col-md-6 col-lg-12">
-            <div class="ad-card card h-100">
-                <a href="{{ ad.link }}" target="_blank" class="text-decoration-none">
-                    <div class="card-body p-0">
-                        <img src="{{ ad.image.url }}" alt="{{ ad.title }}" class="img-fluid w-100 rounded-top">
-                        <div class="p-3">
-                            <h6 class="card-title text-dark">{{ ad.title }}</h6>
-                            <small class="text-muted">{{ ad.small_text }}</small>
-                            {% if ad.days_remaining %}
-                            <div class="mt-2">
-                                <small class="text-muted">Ends in {{ ad.days_remaining }} days</small>
+
+        <!-- Advertisement Section -->
+        {% if advertisements %}
+        <div class="advertisement-section">
+            <h5 class="mb-3">Sponsored Ads</h5>
+            <div class="row g-3">
+                {% for ad in advertisements %}
+                <div class="col-md-6 col-lg-12">
+                    <div class="ad-card card h-100">
+                        <a href="{{ ad.link }}" target="_blank" class="text-decoration-none">
+                            <div class="card-body p-0">
+                                <img src="{{ ad.image.url }}" alt="{{ ad.title }}" class="img-fluid w-100 rounded-top">
+                                <div class="p-3">
+                                    <h6 class="card-title text-dark">{{ ad.title }}</h6>
+                                    <small class="text-muted">{{ ad.small_text }}</small>
+                                    {% if ad.days_remaining %}
+                                    <div class="mt-2">
+                                        <small class="text-muted">Ends in {{ ad.days_remaining }} days</small>
+                                    </div>
+                                    {% endif %}
+                                </div>
                             </div>
-                            {% endif %}
-                        </div>
+                        </a>
                     </div>
-                </a>
+                </div>
+                {% endfor %}
             </div>
         </div>
-        {% endfor %}
-    </div>
-</div>
-{% endif %}
+        {% endif %}
+
         <!-- Related Products -->
         {% if related_products %}
         <div class="related-products">
@@ -855,7 +874,8 @@
         {% endif %}
     </div>
 
-    <div style="height: 50px;"></div>
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3"></div>
 
     <!-- jQuery and Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -866,41 +886,29 @@
         // Track the view when page loads
         trackProductView({{ product.id }});
 
+        // Image thumbnail click handler
+        $('.thumbnail').click(function() {
+            $('.thumbnail').removeClass('active');
+            $(this).addClass('active');
+            const newSrc = $(this).find('img').attr('src');
+            $('#main-image').attr('src', newSrc);
+        });
+
         // Image zoom functionality
-        $('.zoom-icon').click(function() {
-            const img = $('#main-image');
-            const src = img.attr('src');
-
-            // Create modal for zoom
-            const modal = $(`
-                <div class="modal fade" id="imageZoomModal" tabindex="-1">
-                    <div class="modal-dialog modal-lg modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">{{ product.name }}</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body text-center">
-                                <img src="${src}" class="img-fluid" alt="{{ product.name }}">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `);
-
-            $('body').append(modal);
-            $('#imageZoomModal').modal('show');
-
-            $('#imageZoomModal').on('hidden.bs.modal', function() {
-                $(this).remove();
-            });
+        $('#product-image-main').click(function() {
+            $(this).toggleClass('zoomed');
+            if ($(this).hasClass('zoomed')) {
+                $(this).css('cursor', 'zoom-out');
+            } else {
+                $(this).css('cursor', 'zoom-in');
+            }
         });
 
         // Smooth animations
         $('.product-card').addClass('fade-in');
     });
 
-  // Enhanced product view tracking function
+    // Enhanced product view tracking function
     function trackProductView(productId) {
         // First check if we've already tracked this view in the current session
         const viewedKey = `viewed_product_${productId}`;
@@ -942,52 +950,6 @@
             });
         }
     }
-
-    // Call the function when the page loads
-    $(document).ready(function() {
-        trackProductView({{ product.id }});
-
-        // Track time spent on page
-        let startTime = new Date();
-        let activeTime = 0;
-        const checkActivity = setInterval(function() {
-            activeTime += 1; // in seconds
-
-            // Send periodic updates (every 30 seconds)
-            if (activeTime % 30 === 0) {
-                $.ajax({
-                    url: `/pos_system/track-product-view/{{ product.id }}/`,
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    data: {
-                        action: 'update_duration',
-                        duration: activeTime
-                    }
-                });
-            }
-        }, 1000);
-
-        // Update duration when leaving the page
-        $(window).on('beforeunload', function() {
-            clearInterval(checkActivity);
-            $.ajax({
-                url: `/pos_system/track-product-view/{{ product.id }}/`,
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                async: false, // Make synchronous to ensure it completes
-                data: {
-                    action: 'update_duration',
-                    duration: activeTime
-                }
-            });
-        });
-    });
 
     // Enhanced sharing functions
     function getShareData() {
@@ -1178,6 +1140,6 @@
         }
         return cookieValue;
     }
-</script>
+    </script>
 </body>
 </html>

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -1140,11 +1139,11 @@
             .grid-2 {
                 grid-template-columns: 1fr;
             }
-            
+
             .container {
                 padding: 16px;
             }
-            
+
             .card {
                 padding: 16px;
             }
@@ -1318,7 +1317,7 @@
 
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                
+
                 <div class="grid-2">
                     <div class="form-group">
                         <label class="form-label">Type</label>
@@ -1428,7 +1427,7 @@
             const file = e.target.files[0];
             if (file) {
                 fileName.textContent = file.name;
-                
+
                 // Show image preview
                 const reader = new FileReader();
                 reader.onload = (event) => {
@@ -1458,7 +1457,7 @@
             e.preventDefault();
             fileUpload.style.borderColor = 'var(--border-color)';
             fileUpload.style.backgroundColor = '#fafafa';
-            
+
             if (e.dataTransfer.files.length) {
                 fileInput.files = e.dataTransfer.files;
                 const event = new Event('change');
@@ -1509,5 +1508,4 @@
         }
     </script>
 </body>
->>>>>>> fa7a2c45a9dca50548dcfce224eeb58abd5022df
 </html>
