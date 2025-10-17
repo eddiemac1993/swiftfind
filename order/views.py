@@ -294,6 +294,8 @@ def discover(request):
             Q(name__icontains=query) |
             Q(description__icontains=query) |
             Q(address__icontains=query) |
+            Q(city__icontains=query) |
+            Q(address__icontains=query) |
             Q(tags__name__icontains=query)
         ).distinct()
 

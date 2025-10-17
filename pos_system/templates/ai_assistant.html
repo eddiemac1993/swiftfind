@@ -514,37 +514,53 @@ body.dark-mode .product-image {
                             </div>
                         </div>
 
-                        {% if biz.products %}
-                        <div class="products-list">
-                            {% for product in biz.products %}
-                            <div class="product-item">
-                                {% if product.image %}
-                                    <a href="{{ product.url }}">
-                                        <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image">
-                                    </a>
-                                {% else %}
-                                    <div class="product-image">
-                                        <i class="fas fa-image"></i>
-                                    </div>
-                                {% endif %}
-                                <div class="product-details">
-                                    <a href="{{ product.url }}" class="product-name">{{ product.name }}</a>
-                                    <div class="product-price">ZMW {{ product.price }}</div>
-                                    <div class="product-stock">
-                                        {% if product.stock <= 5 %}
-                                            <span style="color: #ff6a00;">Only {{ product.stock }} left!</span>
-                                        {% else %}
-                                            In stock: {{ product.stock }}
-                                        {% endif %}
-                                    </div>
-                                    <p class="product-description">{{ product.description|truncatewords:20 }}</p>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% else %}
-                            <p class="no-products">No products listed yet.</p>
-                        {% endif %}
+{% if biz.products %}
+<div class="products-list">
+    {% for product in biz.products %}
+    <div class="product-item">
+        {% if biz.business_id %}
+            {% if product.image %}
+                <a href="{% url 'business-store' pk=biz.business_id %}?highlight={{ product.id }}">
+                    <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image">
+                </a>
+            {% else %}
+                <a href="{% url 'business-store' pk=biz.business_id %}?highlight={{ product.id }}">
+                    <div class="product-image">
+                        <i class="fas fa-image"></i>
+                    </div>
+                </a>
+            {% endif %}
+            <div class="product-details">
+                <a href="{% url 'business-store' pk=biz.business_id %}?highlight={{ product.id }}" class="product-name">{{ product.name }}</a>
+        {% else %}
+            {% if product.image %}
+                <div>
+                    <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image">
+                </div>
+            {% else %}
+                <div class="product-image">
+                    <i class="fas fa-image"></i>
+                </div>
+            {% endif %}
+            <div class="product-details">
+                <span class="product-name">{{ product.name }}</span>
+        {% endif %}
+                <div class="product-price">ZMW {{ product.price }}</div>
+                <div class="product-stock">
+                    {% if product.stock <= 5 %}
+                        <span style="color: #ff6a00;">Only {{ product.stock }} left!</span>
+                    {% else %}
+                        In stock: {{ product.stock }}
+                    {% endif %}
+                </div>
+                <p class="product-description">{{ product.description|truncatewords:20 }}</p>
+            </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+    <p class="no-products">No products listed yet.</p>
+{% endif %}
                     </div>
                     {% endfor %}
                 </div>

@@ -646,6 +646,7 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{% url 'discover' %}">Discover</a></li>
                     <li class="breadcrumb-item"><a href="{% url 'pos_system:marketplace'  %}">MarketPlace</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'business-store' pk=business.pk %}">{{ product.business.name }}</a></li>
                     {% if product.category %}
                     <li class="breadcrumb-item"><a href="#">{{ product.category.name }}</a></li>
                     {% endif %}

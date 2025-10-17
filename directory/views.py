@@ -976,6 +976,29 @@ def profile(request):
     }
     return render(request, 'registration/profile.html', context)
 
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
+from .models import UserProfile
+from django.contrib import messages
+import re
+
+@login_required
+def update_profile_phone(request):
+    if request.method == "POST":
+        phone_number = request.POST.get('phone_number', '').strip()
+
+        # Optional: simple validation
+        cleaned_phone = re.sub(r'[^\d+]', '', phone_number)
+        if not re.match(r'^\+?\d{8,16}$', cleaned_phone):
+            messages.error(request, "Enter a valid phone number including country code.")
+            return redirect(request.META.get('HTTP_REFERER'))
+
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        profile.phone_number = cleaned_phone
+        profile.save()
+        messages.success(request, "Phone number updated successfully.")
+    return redirect(request.META.get('HTTP_REFERER'))
+
 def chat_room_list(request):
     rooms = ChatRoom.objects.all().order_by('-created_at')
     return render(request, 'chat/room_list.html', {'rooms': rooms})

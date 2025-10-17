@@ -114,7 +114,6 @@ def ai_assistant_view(request):
                 ),
             }
 
-
             chat_input = [
                 system_prompt,
                 {"role": "system", "content": context},
@@ -161,29 +160,38 @@ def ai_assistant_view(request):
                                 validated_products.append({
                                     "id": product.id,
                                     "name": product.name,
-                                    "price": float(product.price),  # ✅ Decimal → float
+                                    "price": float(product.price),
                                     "stock": product.stock_quantity,
                                     "description": product.description or "",
-                                    "image": product.image.url if product.image else None,  # ✅ URL string
+                                    "image": product.image.url if product.image else None,
                                     "url": reverse("pos_system:product_detail", args=[product.id]),
                                 })
                             except Product.DoesNotExist:
                                 continue
 
                         if validated_products:
+                            # DEBUG: Print business info to identify the issue
+                            print(f"Business ID: {business.id}, Name: {business.name}")
+
                             validated_businesses.append({
-                                "business_id": business.id,
+                                "business_id": business.id,  # Ensure this is always set
                                 "business_name": business.name,
                                 "verified": business.is_verified,
                                 "category": business.category.name if business.category else "Uncategorized",
-                                "logo": business.logo.url if business.logo else None,  # ✅ URL string
+                                "logo": business.logo.url if business.logo else None,
                                 "products": validated_products,
                             })
 
-                    except (Business.DoesNotExist, Business.MultipleObjectsReturned):
+                    except (Business.DoesNotExist, Business.MultipleObjectsReturned) as e:
+                        print(f"Business lookup failed: {e}")
                         continue
 
                 businesses = validated_businesses
+
+                # DEBUG: Check final businesses data
+                if businesses:
+                    for biz in businesses:
+                        print(f"Final business data - ID: {biz.get('business_id')}, Name: {biz.get('business_name')}")
 
                 # Build summary
                 if businesses:

@@ -772,15 +772,18 @@ class SearchQueryAdmin(admin.ModelAdmin):
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'phone_number', 'primary_business', 'receive_message_emails',
-                   'receive_notification_emails', 'receive_marketing_emails', 'profile_picture_preview')
-    # ... rest of the code remains the same
+    list_display = ('user', 'phone_number', 'address', 'bio', 'profile_picture')
+    search_fields = ('user__username', 'phone_number', 'address')
+    list_filter = ('user',)
+    readonly_fields = ('profile_picture_preview',)
 
+    # Optional: show profile picture preview
     def profile_picture_preview(self, obj):
         if obj.profile_picture:
-            return format_html('<img src="{}" width="50" height="50" style="border-radius: 50%;" />', obj.profile_picture.url)
+            return f'<img src="{obj.profile_picture.url}" width="50" height="50" style="border-radius:50%"/>'
         return "-"
-    profile_picture_preview.short_description = 'Profile Picture'
+    profile_picture_preview.allow_tags = True
+    profile_picture_preview.short_description = "Profile Picture"
 
 # Re-register UserAdmin
 admin.site.unregister(User)
