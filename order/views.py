@@ -357,7 +357,7 @@ def discover(request):
             ad_index += 1
 
     # Paginate the combined list
-    paginator = Paginator(combined_list, 100)  # Adjust page size as needed
+    paginator = Paginator(combined_list, 5000)  # Adjust page size as needed
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 

@@ -2550,7 +2550,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             {% for related_business in related_businesses %}
             <a href="{% url 'business-detail' related_business.pk %}" class="related-business-card">
-                <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }}" class="related-business-image" loading="lazy">
+               <!-- <img src="{{ related_business.logo.url }}" alt="{{ related_business.name }}" class="related-business-image" loading="lazy">-->
                 <div class="related-business-info">
                     <h3 class="related-business-name">{{ related_business.name }}</h3>
                     <div class="related-business-rating">
