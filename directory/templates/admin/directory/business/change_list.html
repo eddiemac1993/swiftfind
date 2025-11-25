@@ -1,0 +1,26 @@
+{% extends "admin/change_list.html" %}
+
+{% block content %}
+  <!-- CUSTOM CHANGE_LIST LOADED -->
+  <div style="display:flex;gap:18px;align-items:center;margin:8px 0 18px 0;">
+    <div style="background:#f1f8f5;border-left:6px solid #28a745;padding:10px 14px;border-radius:6px;">
+      <div style="font-size:12px;color:#666;">Total Verified</div>
+      <div style="font-size:22px;font-weight:700;">
+        <a href="{{ total_verified_url }}" style="text-decoration:none;color:inherit;">
+          {{ total_verified|default:0 }}
+        </a>
+      </div>
+    </div>
+
+    <div style="background:#fff8f1;border-left:6px solid #d9534f;padding:10px 14px;border-radius:6px;">
+      <div style="font-size:12px;color:#666;">Total Unverified</div>
+      <div style="font-size:22px;font-weight:700;">
+        <a href="{{ total_unverified_url }}" style="text-decoration:none;color:inherit;">
+          {{ total_unverified|default:0 }}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {{ block.super }}
+{% endblock %}

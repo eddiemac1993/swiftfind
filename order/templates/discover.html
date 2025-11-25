@@ -1136,9 +1136,8 @@ setInterval(updateTimeGreeting, 60000);
         <div class="banner-content">
             <h3 class="banner-title">Discover Local Businesses</h3>
             <p class="banner-text">
-                Find the best businesses in your area.
-                <strong class="highlight-number">{{ businesses_count|intcomma }}</strong> Businesses and
-                <strong class="highlight-number">{{ user_count|intcomma }}</strong> users connected.
+                Explore businesses in your area.
+                <strong class="highlight-number">{{ user_count|intcomma }}</strong> Businesses connected.
             </p>
         </div>
 
@@ -1150,11 +1149,6 @@ setInterval(updateTimeGreeting, 60000);
         </div>
         <div class="floating-element" style="top: 40%; right: 15%;">
             <div class="floating-icon"><i class="fas fa-shopping-bag"></i></div>
-        </div>
-
-        <div class="brand-watermark">
-            Discover Local Businesses | Visits
-            <span class="counter-value" id="visitCount2">0</span>
         </div>
     </a>
 </section>
@@ -1835,51 +1829,49 @@ function initCarousel() {
         {% endif %}
 
         <!-- Business listings -->
-        <section class="business-list">
-            <div class="section-header">
-                <h3>
-                    {% if query or selected_category %}
-                    Search Results
-                    {% else %}
-                    Featured Businesses
-                    {% endif %}
-                </h3>
-                {% if businesses_count > 4 %}
-                <a href="{% url 'discover' %}" class="see-all">See All <i class="fas fa-chevron-right"></i></a>
-                {% endif %}
-            </div>
-            <div class="business-grid">
-                {% for item in page_obj %}
-                    {% if item.0 == 'business' %}
-                    {% with business=item.1 %}
+<section class="business-list">
+    <div class="section-header">
+        <h3>
+            {% if query or selected_category %}
+                Search Results
+            {% else %}
+                Featured Businesses
+            {% endif %}
+        </h3>
+        {% if businesses_count > 4 %}
+            <a href="{% url 'discover' %}" class="see-all">See All <i class="fas fa-chevron-right"></i></a>
+        {% endif %}
+    </div>
+
+    <div class="business-grid">
+        {% for item in page_obj %}
+            {% if item.0 == 'business' %}
+                {% with business=item.1 %}
                     <a href="{% url 'business-detail' business.pk %}" class="business-card">
-<!-- Business image container -->
-<div class="business-image-container">
-    <img src="{{ business.logo.url }}" alt="{{ business.name }} Logo" class="business-image" loading="lazy">
+                        <!-- Business image container -->
+                        <div class="business-image-container">
+                            <img src="{{ business.logo.url }}" alt="{{ business.name }} Logo" class="business-image" loading="lazy">
 
-    <!-- Badges -->
-    {% if business.is_featured %}
-    <div class="business-badge featured-badge">
-        <i class="fas fa-star"></i>
-        <span>Featured</span>
-    </div>
-    {% endif %}
+                            {% if business.is_featured %}
+                                <div class="business-badge featured-badge">
+                                    <i class="fas fa-star"></i>
+                                    <span>Featured</span>
+                                </div>
+                            {% endif %}
 
-    {% if business.is_admin_added %}
-    <div class="business-badge verified-badge">
-        <i class="fas fa-circle-check"></i>
-    </div>
-    {% endif %}
+                            {% if business.is_admin_added %}
+                                <div class="business-badge verified-badge">
+                                    <i class="fas fa-circle-check"></i>
+                                </div>
+                            {% endif %}
 
-    {% if user.is_authenticated and business.owner == user %}
-    <div class="business-badge owner-badge">
-        <i class="fas fa-heart"></i>
-        <span>Yours</span>
-    </div>
-    {% endif %}
-
-
-</div>
+                            {% if user.is_authenticated and business.owner == user %}
+                                <div class="business-badge owner-badge">
+                                    <i class="fas fa-heart"></i>
+                                    <span>Yours</span>
+                                </div>
+                            {% endif %}
+                        </div>
 
                         <!-- Business info -->
                         <div class="business-info">
@@ -1898,9 +1890,9 @@ function initCarousel() {
                                     </span>
                                     <span>
                                         {% if business.average_rating %}
-                                        {{ business.average_rating|floatformat:1 }} ({{ business.review_count }} reviews)
+                                            {{ business.average_rating|floatformat:1 }} ({{ business.review_count }} reviews)
                                         {% else %}
-                                        No reviews yet
+                                            No reviews yet
                                         {% endif %}
                                     </span>
                                 </div>
@@ -1909,58 +1901,82 @@ function initCarousel() {
                                     <i class="fas fa-map-marker-alt"></i>
                                     <span>{{ business.city|upper }}</span>
                                 </div>
-                {% if business.is_verified and business.show_store_link %}
-                <div class="online-status">
-                    <div class="status-light"></div>
-                    <span>Online Store</span>
-                </div>
-                {% endif %}
 
+                                {% if business.is_verified and business.show_store_link %}
+                                    <div class="online-status">
+                                        <div class="status-light"></div>
+                                        <span>Online Store</span>
+                                    </div>
+                                {% endif %}
 
-                            <div class="business-category">
-                                <i class="fas fa-tag"></i>
-                                <span>{{ business.category.name }}</span>
-                            </div>
+                                <div class="business-category">
+                                    <i class="fas fa-tag"></i>
+                                    <span>{{ business.category.name }}</span>
+                                </div>
                             </div>
                         </div>
 
+                        <!-- Facebook Share Button (INSIDE the card, bottom-right) -->
+                        <button
+                            type="button"
+                            class="share-button"
+                            onclick="shareBusiness(event, 'https://www.swiftfindzm.com{% url 'business-detail' business.pk %}');"
+                            aria-label="Share on Facebook"
+                            title="Share on Facebook"
+                        >
+                            <i class="fab fa-facebook-f" aria-hidden="true"></i>
+                        </button>
+
                     </a>
-                    {% endwith %}
-
-                    {% elif item.0 == 'advertisement' %}
-                    <!-- Display Advertisement -->
-                    <div class="advertisement">
-                        <a href="{{ item.1.link }}" target="_blank">
-                            <img src="{{ item.1.image.url }}" alt="{{ item.1.title }}" class="ad-image">
-                        </a>
-                        <p class="ad-text">{{ item.1.small_text }}</p>
-                    </div>
-
-                    {% elif item.0 == 'newsfeed' %}
-                    <!-- Display Newsfeed -->
-                    <div class="newsfeed-section">
-                        <h2>Latest {{ item.1.get_category_display }}</h2>
-                        <ul>
-                            <li>
-                                <a href="{{ item.1.get_absolute_url }}">
-                                    <h3>{{ item.1.title }}</h3>
-                                    <p class="category-display">{{ item.1.get_category_display }}</p>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    {% endif %}
-                {% empty %}
-                <div class="no-results">
-                    <i class="fas fa-search"></i>
-                    <h3>No results found</h3>
-                    <p>Try adjusting your search or filter criteria</p>
+                {% endwith %}
+            {% elif item.0 == 'advertisement' %}
+                <!-- Display Advertisement -->
+                <div class="advertisement">
+                    <a href="{{ item.1.link }}" target="_blank">
+                        <img src="{{ item.1.image.url }}" alt="{{ item.1.title }}" class="ad-image">
+                    </a>
+                    <p class="ad-text">{{ item.1.small_text }}</p>
                 </div>
-                {% endfor %}
-            </div>
 
-        <!-- ... (keep pagination and rest of the content) ... -->
-    </section>
+            {% elif item.0 == 'newsfeed' %}
+                <!-- Display Newsfeed -->
+                <div class="newsfeed-section">
+                    <h2>Latest {{ item.1.get_category_display }}</h2>
+                    <ul>
+                        <li>
+                            <a href="{{ item.1.get_absolute_url }}">
+                                <h3>{{ item.1.title }}</h3>
+                                <p class="category-display">{{ item.1.get_category_display }}</p>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            {% endif %}
+        {% empty %}
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <h3>No results found</h3>
+                <p>Try adjusting your search or filter criteria</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- ... (keep pagination and rest of the content) ... -->
+</section>
+<script>
+function shareBusiness(event, url) {
+  if (event) {
+    event.stopPropagation();
+    if (event.preventDefault) event.preventDefault();
+  }
+  const shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
+  const left = (window.screen.width / 2) - (600 / 2);
+  const top = (window.screen.height / 2) - (450 / 2);
+  window.open(shareUrl, 'fbShareWindow', `status=0,toolbar=0,menubar=0,width=600,height=450,top=${top},left=${left}`);
+  return false;
+}
+</script>
+
     </main>
 <style>
 /* Centered Add Button Styles */
@@ -2106,6 +2122,54 @@ function initCarousel() {
 }
 
 </style>
+<style>
+/* Facebook share button on business card */
+.business-card { position: relative; } /* ensure parent is positioned */
+.share-button {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: rgba(59,89,152,0.95); /* FB navy */
+  color: #fff;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  z-index: 20;
+}
+.share-button i { font-size: 14px; }
+.share-button:hover { transform: translateY(-3px); }
+@media (max-width:480px) {
+  .share-button { right: 8px; bottom: 8px; padding: 6px 8px; font-size:12px; }
+}
+</style>
+<script>
+function shareBusiness(event, url) {
+  // prevent the outer <a> from navigating when button clicked
+  if (event) {
+    event.stopPropagation();
+    event.preventDefault && event.preventDefault();
+  }
+
+  // Build sharer URL and open small popup
+  const shareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
+  const left = (window.screen.width / 2) - (600 / 2);
+  const top = (window.screen.height / 2) - (450 / 2);
+
+  window.open(
+    shareUrl,
+    'fbShareWindow',
+    `status=0,toolbar=0,menubar=0,width=600,height=450,top=${top},left=${left}`
+  );
+
+  return false;
+}
+</script>
 
 <!-- Bottom navigation -->
 <nav class="bottom-nav">

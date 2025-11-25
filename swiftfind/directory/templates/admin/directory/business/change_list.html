@@ -1,0 +1,24 @@
+{% extends "admin/change_list.html" %}
+
+{% block content %}
+  <!-- CUSTOM CHANGE_LIST LOADED -->
+  {% if total_verified is not None and total_unverified is not None %}
+    <div style="display:flex; gap:12px; align-items:center; margin:8px 0 14px;">
+      <a href="{{ total_verified_url }}" title="Show verified businesses" style="text-decoration:none;">
+        <div style="padding:10px 14px; border-radius:8px; border:1px solid #d0e7ff; background:#f0f8ff;">
+          <div style="font-size:13px; color:#555;">Total Verified</div>
+          <div style="font-size:20px; font-weight:700; color:green;">{{ total_verified }}</div>
+        </div>
+      </a>
+
+      <a href="{{ total_unverified_url }}" title="Show unverified businesses" style="text-decoration:none;">
+        <div style="padding:10px 14px; border-radius:8px; border:1px solid #ffd6d6; background:#fff6f6;">
+          <div style="font-size:13px; color:#555;">Total Unverified</div>
+          <div style="font-size:20px; font-weight:700; color:#d9534f;">{{ total_unverified }}</div>
+        </div>
+      </a>
+    </div>
+  {% endif %}
+
+  {{ block.super }}
+{% endblock %}

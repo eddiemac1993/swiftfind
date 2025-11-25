@@ -23,6 +23,13 @@
         font-family: 'Inter', sans-serif;
     }
 
+    :root {
+        --primary-color: #FF6A00;
+        --white: #ffffff;
+        --light-text: #666;
+        --dark-surface: #222;
+    }
+
     body {
         background-color: #f4f6f9;
         color: #333;
@@ -31,20 +38,22 @@
         align-items: center;
         min-height: 100vh;
         transition: background 0.3s ease, color 0.3s ease;
+        padding-bottom: 80px; /* Space for bottom navigation */
     }
 
     body.dark-mode {
         background-color: #181818;
         color: #f1f1f1;
     }
-.assistant-summary {
-    margin-bottom: 10px;
-    padding: 10px;
-    background: #f0f4ff;
-    border-left: 4px solid #4a90e2;
-    border-radius: 6px;
-    font-weight: 500;
-}
+
+    .assistant-summary {
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #f0f4ff;
+        border-left: 4px solid #4a90e2;
+        border-radius: 6px;
+        font-weight: 500;
+    }
 
     .chat-container {
         width: 100%;
@@ -384,50 +393,53 @@
         font-size: 12px;
         color: #777;
     }
-.business-logo, .product-image {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f0f0f0;
-    color: #999;
-}
-.suggestions-wrapper {
-    overflow-x: auto;
-    white-space: nowrap;
-    padding: 10px 0;
-}
+    
+    .business-logo, .product-image {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f0f0f0;
+        color: #999;
+    }
+    
+    .suggestions-wrapper {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 10px 0;
+    }
 
-.suggestions {
-    display: inline-flex;
-    gap: 10px;
-}
+    .suggestions {
+        display: inline-flex;
+        gap: 10px;
+    }
 
-.suggestion-chip {
-    display: inline-flex;
-    align-items: center;
-    background: #f1f1f1;
-    border-radius: 20px;
-    padding: 8px 15px;
-    font-size: 14px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.3s;
-}
+    .suggestion-chip {
+        display: inline-flex;
+        align-items: center;
+        background: #f1f1f1;
+        border-radius: 20px;
+        padding: 8px 15px;
+        font-size: 14px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.3s;
+    }
 
-.suggestion-chip i {
-    margin-right: 6px;
-    color: #555;
-}
+    .suggestion-chip i {
+        margin-right: 6px;
+        color: #555;
+    }
 
-.suggestion-chip:hover {
-    background: #e0e0e0;
-}
+    .suggestion-chip:hover {
+        background: #e0e0e0;
+    }
 
-body.dark-mode .business-logo,
-body.dark-mode .product-image {
-    background: #444;
-    color: #bbb;
-}
+    body.dark-mode .business-logo,
+    body.dark-mode .product-image {
+        background: #444;
+        color: #bbb;
+    }
+    
     .product-description {
         font-size: 13px;
         color: #555;
@@ -437,6 +449,159 @@ body.dark-mode .product-image {
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(5px); }
         to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Bottom Navigation ---------- */
+    /* Centered Add Button Styles */
+    .nav-add-button {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: var(--primary-color);
+        font-size: 12px;
+        font-weight: 600;
+        margin-top: -20px; /* Lifts the button above the nav */
+        z-index: 101;
+    }
+
+    .add-button-inner {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #FF6A00, #FF8C1A);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(255, 106, 0, 0.4);
+        border: 3px solid var(--white);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dark-mode .add-button-inner {
+        border-color: var(--dark-surface);
+        box-shadow: 0 4px 15px rgba(255, 106, 0, 0.6);
+    }
+
+    .add-button-inner::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+        border-radius: 50%;
+    }
+
+    .add-button-inner i {
+        font-size: 20px;
+        color: white;
+        font-weight: bold;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+
+    /* Pulse animation */
+    @keyframes pulse-glow {
+        0% {
+            box-shadow: 0 4px 15px rgba(255, 106, 0, 0.4);
+        }
+        50% {
+            box-shadow: 0 4px 20px rgba(255, 106, 0, 0.8);
+        }
+        100% {
+            box-shadow: 0 4px 15px rgba(255, 106, 0, 0.4);
+        }
+    }
+
+    .nav-add-button:hover .add-button-inner {
+        transform: scale(1.1);
+        animation: pulse-glow 2s infinite;
+    }
+
+    .nav-add-button:active .add-button-inner {
+        transform: scale(0.95);
+    }
+
+    /* Add product label */
+    .nav-add-button span {
+        margin-top: 4px;
+        color: var(--primary-color);
+        font-weight: 700;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .dark-mode .nav-add-button span {
+        color: #FF8C1A;
+    }
+
+    /* Adjust bottom nav to accommodate the raised button */
+    .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-around;
+        align-items: flex-end;
+        background-color: var(--white);
+        padding: 12px 0 8px;
+        box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+        z-index: 100;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+    }
+
+    .dark-mode .bottom-nav {
+        background-color: var(--dark-surface);
+        box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Ensure other nav items are properly aligned */
+    .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-decoration: none;
+        color: var(--light-text);
+        font-size: 12px;
+        font-weight: 500;
+        position: relative;
+        padding: 6px 16px;
+        transition: all 0.3s ease;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 480px) {
+        .nav-add-button {
+            margin-top: -15px;
+        }
+
+        .add-button-inner {
+            width: 50px;
+            height: 50px;
+        }
+
+        .add-button-inner i {
+            font-size: 18px;
+        }
+
+        .nav-add-button span {
+            font-size: 11px;
+        }
+        
+        .chat-container {
+            height: calc(100vh - 80px);
+            border-radius: 0;
+            box-shadow: none;
+        }
+        
+        body {
+            padding-bottom: 80px;
+        }
     }
 </style>
 
@@ -454,131 +619,129 @@ body.dark-mode .product-image {
         </div>
     </div>
 
-<!-- Suggestions -->
-<div class="suggestions-wrapper">
-    <div class="suggestions">
-        <div class="suggestion-chip" onclick="fillInput('What activities can I do in Livingstone?')">
-            <i class="fas fa-umbrella-beach"></i> Livingstone Activities
-        </div>
-        <div class="suggestion-chip" onclick="fillInput('Show me clothing and fashion')">
-            <i class="fas fa-tshirt"></i> Fashion
-        </div>
-        <div class="suggestion-chip" onclick="fillInput('How do I sell on this platform?')">
-            <i class="fas fa-store"></i> Selling Guide
-        </div>
-        <!-- Add more chips as needed -->
-    </div>
-</div>
-
-
-<!-- Chat -->
-<div class="chat-box" id="chat-box">
-    {% if answer or businesses %}
-        <!-- User's last question -->
-        {% if request.POST.question %}
-        <div class="chat-bubble user">
-            {{ request.POST.question }}
-            <div class="message-time">Just now</div>
-        </div>
-        {% endif %}
-
-        <!-- Assistant's last response -->
-        <div class="chat-bubble assistant">
-            {% if summary %}
-                <div class="assistant-summary">
-                    {{ summary }}
-                </div>
-            {% endif %}
-
-            {% if businesses %}
-                <!-- Business Grid -->
-                <div class="business-grid">
-                    {% for biz in businesses %}
-                    <div class="business-card">
-                        <div class="business-header">
-                            {% if biz.logo %}
-                                <img src="{{ biz.logo }}" alt="{{ biz.business_name }} logo" class="business-logo">
-                            {% else %}
-                                <div class="business-logo">
-                                    <i class="fas fa-building"></i>
-                                </div>
-                            {% endif %}
-                            <div class="business-info">
-                                <h3>
-                                    {{ biz.business_name }}
-                                    {% if biz.verified %}
-                                        <span class="verified-badge"><i class="fas fa-check-circle"></i></span>
-                                    {% endif %}
-                                </h3>
-                                <p class="business-category">{{ biz.category }}</p>
-                            </div>
-                        </div>
-
-{% if biz.products %}
-<div class="products-list">
-    {% for product in biz.products %}
-    <div class="product-item">
-        {% if biz.business_id %}
-            {% if product.image %}
-                <a href="{% url 'business-store' pk=biz.business_id %}?highlight={{ product.id }}">
-                    <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image">
-                </a>
-            {% else %}
-                <a href="{% url 'business-store' pk=biz.business_id %}?highlight={{ product.id }}">
-                    <div class="product-image">
-                        <i class="fas fa-image"></i>
-                    </div>
-                </a>
-            {% endif %}
-            <div class="product-details">
-                <a href="{% url 'business-store' pk=biz.business_id %}?highlight={{ product.id }}" class="product-name">{{ product.name }}</a>
-        {% else %}
-            {% if product.image %}
-                <div>
-                    <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image">
-                </div>
-            {% else %}
-                <div class="product-image">
-                    <i class="fas fa-image"></i>
-                </div>
-            {% endif %}
-            <div class="product-details">
-                <span class="product-name">{{ product.name }}</span>
-        {% endif %}
-                <div class="product-price">ZMW {{ product.price }}</div>
-                <div class="product-stock">
-                    {% if product.stock <= 5 %}
-                        <span style="color: #ff6a00;">Only {{ product.stock }} left!</span>
-                    {% else %}
-                        In stock: {{ product.stock }}
-                    {% endif %}
-                </div>
-                <p class="product-description">{{ product.description|truncatewords:20 }}</p>
+    <!-- Suggestions -->
+    <div class="suggestions-wrapper">
+        <div class="suggestions">
+            <div class="suggestion-chip" onclick="fillInput('What activities can I do in Livingstone?')">
+                <i class="fas fa-umbrella-beach"></i> Livingstone Activities
             </div>
+            <div class="suggestion-chip" onclick="fillInput('Show me clothing and fashion')">
+                <i class="fas fa-tshirt"></i> Fashion
+            </div>
+            <div class="suggestion-chip" onclick="fillInput('How do I sell on this platform?')">
+                <i class="fas fa-store"></i> Selling Guide
+            </div>
+            <!-- Add more chips as needed -->
+        </div>
     </div>
-    {% endfor %}
-</div>
-{% else %}
-    <p class="no-products">No products listed yet.</p>
-{% endif %}
-                    </div>
-                    {% endfor %}
-                </div>
-            {% elif answer %}
-                <div class="assistant-answer">{{ answer|safe }}</div>
+
+    <!-- Chat -->
+    <div class="chat-box" id="chat-box">
+        {% if answer or businesses %}
+            <!-- User's last question -->
+            {% if request.POST.question %}
+            <div class="chat-bubble user">
+                {{ request.POST.question }}
+                <div class="message-time">Just now</div>
+            </div>
             {% endif %}
 
-            <div class="message-time">Just now</div>
-        </div>
-    {% else %}
-        <!-- Welcome message when nothing asked yet -->
-        <div class="welcome-message">
-            <i class="fas fa-comments"></i>
-            <p>Welcome! I'm your AI assistant. Ask me anything about our marketplace!</p>
-        </div>
-    {% endif %}
-</div>
+            <!-- Assistant's last response -->
+            <div class="chat-bubble assistant">
+                {% if summary %}
+                    <div class="assistant-summary">
+                        {{ summary }}
+                    </div>
+                {% endif %}
 
+                {% if businesses %}
+                    <!-- Business Grid -->
+                    <div class="business-grid">
+                        {% for biz in businesses %}
+                        <div class="business-card">
+                            <div class="business-header">
+                                {% if biz.logo %}
+                                    <img src="{{ biz.logo }}" alt="{{ biz.business_name }} logo" class="business-logo">
+                                {% else %}
+                                    <div class="business-logo">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="business-info">
+                                    <h3>
+                                        {{ biz.business_name }}
+                                        {% if biz.verified %}
+                                            <span class="verified-badge"><i class="fas fa-check-circle"></i></span>
+                                        {% endif %}
+                                    </h3>
+                                    <p class="business-category">{{ biz.category }}</p>
+                                </div>
+                            </div>
+
+                            {% if biz.products %}
+                            <div class="products-list">
+                                {% for product in biz.products %}
+                                <div class="product-item">
+                                    {% if biz.business_id %}
+                                        {% if product.image %}
+                                            <a href="{% url 'business-store' pk=biz.business_id %}?highlight={{ product.id }}">
+                                                <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image">
+                                            </a>
+                                        {% else %}
+                                            <a href="{% url 'business-store' pk=biz.business_id %}?highlight={{ product.id }}">
+                                                <div class="product-image">
+                                                    <i class="fas fa-image"></i>
+                                                </div>
+                                            </a>
+                                        {% endif %}
+                                        <div class="product-details">
+                                            <a href="{% url 'business-store' pk=biz.business_id %}?highlight={{ product.id }}" class="product-name">{{ product.name }}</a>
+                                    {% else %}
+                                        {% if product.image %}
+                                            <div>
+                                                <img src="{{ product.image }}" alt="{{ product.name }}" class="product-image">
+                                            </div>
+                                        {% else %}
+                                            <div class="product-image">
+                                                <i class="fas fa-image"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div class="product-details">
+                                            <span class="product-name">{{ product.name }}</span>
+                                    {% endif %}
+                                            <div class="product-price">ZMW {{ product.price }}</div>
+                                            <div class="product-stock">
+                                                {% if product.stock <= 5 %}
+                                                    <span style="color: #ff6a00;">Only {{ product.stock }} left!</span>
+                                                {% else %}
+                                                    In stock: {{ product.stock }}
+                                                {% endif %}
+                                            </div>
+                                            <p class="product-description">{{ product.description|truncatewords:20 }}</p>
+                                        </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                                <p class="no-products">No products listed yet.</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% elif answer %}
+                    <div class="assistant-answer">{{ answer|safe }}</div>
+                {% endif %}
+
+                <div class="message-time">Just now</div>
+            </div>
+        {% else %}
+            <!-- Welcome message when nothing asked yet -->
+            <div class="welcome-message">
+                <i class="fas fa-comments"></i>
+                <p>Welcome! I'm your AI assistant. Ask me anything about our marketplace!</p>
+            </div>
+        {% endif %}
+    </div>
 
     <!-- Input -->
     <form method="post" class="chat-form" id="chat-form">
@@ -589,6 +752,44 @@ body.dark-mode .product-image {
         <button type="submit" id="send-button"><i class="fas fa-paper-plane"></i></button>
     </form>
 </div>
+
+<!-- Bottom navigation -->
+<nav class="bottom-nav">
+    <a href="{% url 'pos_system:marketplace' %}" class="nav-item">
+        <i class="fas fa-store"></i>
+        <span>Store</span>
+    </a>
+
+    <a href="{% url 'about' %}" class="nav-item">
+        <i class="fas fa-info-circle"></i>
+        <span>About</span>
+    </a>
+    
+    <!-- Centered Add Product Button -->
+    <a href="{% url 'pos_system:add_product' %}" class="nav-add-button" id="add-product-btn">
+        <div class="add-button-inner">
+            <i class="fas fa-plus"></i>
+        </div>
+        <span>Add</span>
+    </a>
+    
+    <a href="{% url 'pos_system:ai_assistant' %}" class="nav-item">
+        <span class="star" style="font-size: 18px;">✨</span>
+        <span>AI</span>
+    </a>
+    
+    {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}" class="nav-item" title="Profile">
+            <i class="fas fa-user"></i>
+            <span>Me</span>
+        </a>
+    {% else %}
+        <a href="{% url 'login' %}" class="nav-item" title="Login">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Login</span>
+        </a>
+    {% endif %}
+</nav>
 
 <script>
     // ✅ Helper: auto-scroll to bottom

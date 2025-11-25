@@ -385,12 +385,20 @@ class BusinessDepartmentAdmin(admin.ModelAdmin):
         return obj.businesses.count()
     business_count.short_description = 'Businesses'
 
-from django.urls import path
+from django.urls import path, reverse
 from django.shortcuts import redirect
-from django.urls import reverse
+from django.utils import timezone
+from django.db.models import Count, F
+from django.utils.http import urlencode
+from django.contrib import admin
+from import_export.admin import ImportExportModelAdmin
+
+# ... ensure other imports (RelatedDropdownFilter, DropdownFilter, DateRangeFilter, BusinessResource,
+# BusinessPostInline, BusinessImageInline, BusinessMemberInline, ReviewInline, Business, etc.) are present above ...
 
 @admin.register(Business)
 class BusinessAdmin(ImportExportModelAdmin):
+    change_list_template = "admin/directory/business/change_list.html"
     resource_class = BusinessResource
     list_display = (
         'name',
@@ -506,12 +514,21 @@ class BusinessAdmin(ImportExportModelAdmin):
         return redirect('admin:directory_business_changelist')
 
     def get_queryset(self, request):
+        """
+        Annotate useful counts and order the changelist so that:
+        1. Unverified businesses (is_admin_added=False) appear first.
+        2. Among verified businesses, those with the earliest verified_until appear first
+           (i.e., those expiring soon appear higher).
+        3. Verified businesses with verified_until == NULL (indefinite) are pushed to the bottom.
+        """
         qs = super().get_queryset(request)
         qs = qs.annotate(
             _review_count=Count('reviews'),
             _member_count=Count('members'),
         )
-        return qs
+        # Order: is_admin_added False (unverified) first, then by verified_until ascending.
+        # nulls_last=True ensures indefinite verifications (NULL) appear after dated ones.
+        return qs.order_by(F('is_admin_added').asc(), F('verified_until').asc(nulls_last=True))
 
     def verified_badge(self, obj):
         if obj.is_verified:
@@ -604,6 +621,42 @@ class BusinessAdmin(ImportExportModelAdmin):
         updated = queryset.update(status='inactive')
         self.message_user(request, f"{updated} businesses were marked as inactive.")
     mark_as_inactive.short_description = "Mark selected as inactive"
+
+    def changelist_view(self, request, extra_context=None):
+        """
+        Add total_verified and total_unverified to the changelist template.
+        Uses get_changelist_instance() when available so counts reflect current filters/search.
+        Also builds clickable links to the filtered changelist.
+        """
+        extra_context = extra_context or {}
+
+        try:
+            cl = self.get_changelist_instance(request)
+            filtered_qs = cl.get_queryset(request)
+        except Exception:
+            filtered_qs = self.get_queryset(request)
+
+        # counts (if you want active-only, add status='active' to the filters)
+        total_verified = filtered_qs.filter(is_admin_added=True).count()
+        total_unverified = filtered_qs.filter(is_admin_added=False).count()
+
+        # Build changelist base URL
+        changelist_url = reverse('admin:%s_%s_changelist' % (self.model._meta.app_label, self.model._meta.model_name))
+
+        # Build query strings for the boolean filter. Using the __exact param works with default boolean list_filter.
+        verified_qs = urlencode({'is_admin_added__exact': '1'})
+        unverified_qs = urlencode({'is_admin_added__exact': '0'})
+
+        extra_context.update({
+            'total_verified': total_verified,
+            'total_unverified': total_unverified,
+            'total_verified_url': f'{changelist_url}?{verified_qs}',
+            'total_unverified_url': f'{changelist_url}?{unverified_qs}',
+        })
+
+        return super().changelist_view(request, extra_context=extra_context)
+
+
 
 @admin.register(BusinessMember)
 class BusinessMemberAdmin(admin.ModelAdmin):
