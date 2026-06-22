@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from decimal import Decimal
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,22 +21,45 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load environment variables from .env file
 load_dotenv(BASE_DIR / '.env')
 
+
+def env_bool(name, default=False):
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+def env_list(name, default=""):
+    value = os.getenv(name, default)
+    return [item.strip() for item in value.split(",") if item.strip()]
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+# SECURITY WARNING: keep the secret key used in production secret.
+DEBUG = env_bool('DEBUG', default=False)
 
+SECRET_KEY = os.getenv('SECRET_KEY')
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = 'django-insecure-dev-only-change-me'
+    else:
+        raise ImproperlyConfigured('SECRET_KEY must be set when DEBUG is disabled.')
 
 
 # Access the API key
 GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+ALLOWED_HOSTS = env_list(
+    'ALLOWED_HOSTS',
+    'swiftfindzm.com,www.swiftfindzm.com,localhost,127.0.0.1',
+)
 
-ALLOWED_HOSTS = ["swiftfindzm.com", "www.swiftfindzm.com", '*']
+CSRF_TRUSTED_ORIGINS = env_list(
+    'CSRF_TRUSTED_ORIGINS',
+    'https://swiftfindzm.com,https://www.swiftfindzm.com',
+)
 
 # Application definition
 
@@ -92,6 +116,7 @@ CHANNEL_LAYERS = {
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -99,14 +124,19 @@ MIDDLEWARE = [
     'analytics.middleware.PageVisitMiddleware',
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
 ]
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 USER_AGENTS_CACHE = 'default'
 
@@ -202,6 +232,10 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '31536000'))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool('SECURE_HSTS_INCLUDE_SUBDOMAINS', True)
+    SECURE_HSTS_PRELOAD = env_bool('SECURE_HSTS_PRELOAD', True)
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -254,13 +288,13 @@ LOGGING = {
 }
 
 WEBPUSH_SETTINGS = {
-    "VAPID_PUBLIC_KEY": "BBJJB0l44DXAL0_iDAGGdAqo-XTPe2rOjSlp8qBXmcH5MnF5zhq4cm-ihwKInTLAWJUkSR5tgivEPEYTvR7OoKE=",
-    "VAPID_PRIVATE_KEY": "WGRM2IvGlPTn4Ett7skSdotfZA6I_op9cvK7UpIMETc=",
-    "VAPID_ADMIN_EMAIL": "admin@swiftfindzm.com"
+    "VAPID_PUBLIC_KEY": os.getenv("VAPID_PUBLIC_KEY", ""),
+    "VAPID_PRIVATE_KEY": os.getenv("VAPID_PRIVATE_KEY", ""),
+    "VAPID_ADMIN_EMAIL": os.getenv("VAPID_ADMIN_EMAIL", "admin@swiftfindzm.com"),
 }
 
 REWARD_PER_VIEW = Decimal('0.015')
 
 # settings.py
-SITE_URL = 'https://www.swiftfindzm.com/'  # Your site's base URL
-SITE_NAME = 'SwiftFind'  # Your site's name
+SITE_URL = os.getenv('SITE_URL', 'https://www.swiftfindzm.com/')
+SITE_NAME = os.getenv('SITE_NAME', 'SwiftFind')
