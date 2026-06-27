@@ -13,8 +13,50 @@ git push -u origin main
 
 ## PythonAnywhere
 
-1. Upload or clone the GitHub repository into `/home/YOUR_USERNAME/SchoolProcure`.
-2. Create a virtual environment and install dependencies:
+Repository:
+
+- URL: `https://github.com/eddiemac1993/swiftfind.git`
+- Branch: `schoolprocure`
+
+1. Create or log into your PythonAnywhere account.
+2. Open a Bash console and run:
+
+   ```bash
+   git clone --branch schoolprocure https://github.com/eddiemac1993/swiftfind.git ~/SchoolProcure
+   cd ~/SchoolProcure
+   bash pythonanywhere_setup.sh
+   ```
+
+3. In the PythonAnywhere Web tab, create a manual web app.
+4. Set the virtualenv path:
+
+   ```text
+   /home/YOUR_USERNAME/SchoolProcure/.venv
+   ```
+
+5. Replace the WSGI file contents with the contents of:
+
+   ```text
+   /home/YOUR_USERNAME/SchoolProcure/pythonanywhere_wsgi.py
+   ```
+
+6. Add static files mapping:
+
+   ```text
+   URL: /static/
+   Directory: /home/YOUR_USERNAME/SchoolProcure/staticfiles
+   ```
+
+7. Add media files mapping:
+
+   ```text
+   URL: /media/
+   Directory: /home/YOUR_USERNAME/SchoolProcure/media
+   ```
+
+8. Reload the web app.
+
+Manual commands, if you do not use the setup script:
 
    ```bash
    cd /home/YOUR_USERNAME/SchoolProcure
@@ -25,11 +67,6 @@ git push -u origin main
    python manage.py seed_demo
    python manage.py collectstatic
    ```
-
-3. Set the WSGI file using `pythonanywhere_wsgi.py` and replace `YOUR_PYTHONANYWHERE_USERNAME`.
-4. Add static mapping `/static/` to `/home/YOUR_USERNAME/SchoolProcure/staticfiles`.
-5. Add media mapping `/media/` to `/home/YOUR_USERNAME/SchoolProcure/media`.
-6. Reload the web app.
 
 ## Email
 

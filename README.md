@@ -70,19 +70,20 @@ Useful production environment variables:
 
 ## PythonAnywhere deployment
 
+The current GitHub branch for this app is:
+
+```text
+https://github.com/eddiemac1993/swiftfind/tree/schoolprocure
+```
+
 1. Create a new PythonAnywhere web app using manual configuration and a supported Python version.
-2. Clone your repository:
+2. Clone the deployment branch:
 
    ```bash
    cd ~
-   git clone https://github.com/YOUR_USERNAME/SchoolProcure.git
+   git clone --branch schoolprocure https://github.com/eddiemac1993/swiftfind.git SchoolProcure
    cd SchoolProcure
-   python -m venv .venv
-   source .venv/bin/activate
-   pip install -r requirements.txt
-   python manage.py migrate
-   python manage.py seed_demo
-   python manage.py collectstatic
+   bash pythonanywhere_setup.sh
    ```
 
 3. In the PythonAnywhere Web tab, set the virtualenv path to `/home/YOUR_PYTHONANYWHERE_USERNAME/SchoolProcure/.venv`.
