@@ -1,19 +1,35 @@
 {% extends "base.html" %}
-{% block title %}Login - SchoolProcure{% endblock %}
+{% block title %}Login - Swift Technologies SchoolProcure{% endblock %}
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-md-5 col-lg-4">
-    <div class="card shadow-sm border-0">
-      <div class="card-body p-4">
-        <h1 class="h4 mb-3">SchoolProcure Login</h1>
-        <form method="post">
+<div class="login-shell">
+  <section class="login-brand-panel">
+    <div class="swift-logo" aria-label="Swift Technologies logo">
+      <span>ST</span>
+    </div>
+    <p class="eyebrow">Swift Technologies</p>
+    <h1>SchoolProcure</h1>
+    <p>Secure procurement management for schools, suppliers, and oversight teams.</p>
+    <div class="login-highlights">
+      <span>Requests</span>
+      <span>Quotations</span>
+      <span>Purchase Orders</span>
+      <span>Payments</span>
+    </div>
+  </section>
+  <section class="login-card">
+    <div class="login-card__header">
+      <div>
+        <p class="eyebrow">Welcome back</p>
+        <h2>Sign in</h2>
+      </div>
+      <span class="brand-mark">SP</span>
+    </div>
+    <form method="post" class="login-form">
           {% csrf_token %}
           {{ form.as_p }}
-          <button class="btn btn-primary w-100" type="submit">Login</button>
-        </form>
-        <p class="text-muted small mt-3 mb-0">Test users: <code>admin</code>, <code>school</code>, <code>supplier</code>. Password: <code>12345678</code>.</p>
-      </div>
-    </div>
-  </div>
+      <button class="btn btn-primary w-100" type="submit">Login</button>
+    </form>
+    <p class="text-muted small mt-3 mb-0">Test users: <code>admin</code>, <code>school</code>, <code>supplier</code>. Password: <code>12345678</code>.</p>
+  </section>
 </div>
 {% endblock %}

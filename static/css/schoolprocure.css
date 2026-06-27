@@ -503,6 +503,173 @@ a.btn,
   box-shadow: 0 10px 24px rgba(34, 50, 84, .08);
 }
 
+.login-shell {
+  align-items: stretch;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(0, 1.2fr) minmax(340px, .8fr);
+  margin: 3rem auto;
+  max-width: 1080px;
+}
+
+.login-brand-panel,
+.login-card {
+  border: 1px solid rgba(219, 227, 238, .9);
+  border-radius: 8px;
+  box-shadow: 0 18px 46px rgba(34, 50, 84, .11);
+}
+
+.login-brand-panel {
+  background:
+    linear-gradient(135deg, rgba(23, 50, 77, .95), rgba(47, 111, 221, .88)),
+    #17324d;
+  color: #fff;
+  min-height: 460px;
+  overflow: hidden;
+  padding: 2rem;
+  position: relative;
+}
+
+.login-brand-panel::after {
+  background: rgba(255, 255, 255, .12);
+  border: 1px solid rgba(255, 255, 255, .18);
+  content: "";
+  height: 220px;
+  position: absolute;
+  right: -70px;
+  top: -70px;
+  transform: rotate(18deg);
+  width: 220px;
+}
+
+.swift-logo {
+  align-items: center;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 18px 38px rgba(7, 22, 38, .28);
+  color: var(--nav);
+  display: inline-flex;
+  font-size: 1.2rem;
+  font-weight: 900;
+  height: 58px;
+  justify-content: center;
+  margin-bottom: 2rem;
+  position: relative;
+  width: 58px;
+  z-index: 1;
+}
+
+.swift-logo::after {
+  border-bottom: 10px solid transparent;
+  border-left: 18px solid var(--accent);
+  border-top: 10px solid transparent;
+  content: "";
+  position: absolute;
+  right: -12px;
+  top: 19px;
+}
+
+.login-brand-panel h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 6vw, 4.8rem);
+  font-weight: 800;
+  line-height: .95;
+  margin-bottom: 1rem;
+  max-width: 560px;
+}
+
+.login-brand-panel p:not(.eyebrow) {
+  color: rgba(255, 255, 255, .82);
+  font-size: 1.04rem;
+  max-width: 560px;
+}
+
+.login-brand-panel .eyebrow {
+  color: rgba(255, 255, 255, .72);
+}
+
+.login-highlights {
+  bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+  left: 2rem;
+  position: absolute;
+  right: 2rem;
+}
+
+.login-highlights span {
+  background: rgba(255, 255, 255, .13);
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 999px;
+  color: #fff;
+  font-size: .82rem;
+  font-weight: 800;
+  padding: .5rem .72rem;
+}
+
+.login-card {
+  align-self: center;
+  background: #fff;
+  padding: 1.4rem;
+}
+
+.login-card__header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.login-card__header h2 {
+  font-size: 1.65rem;
+  font-weight: 900;
+  margin: 0;
+}
+
+.login-form p {
+  margin-bottom: .9rem;
+}
+
+.login-form label {
+  color: #334155;
+  font-size: .86rem;
+  font-weight: 800;
+  margin-bottom: .35rem;
+}
+
+.login-form input {
+  border: 1px solid #ccd7e5;
+  border-radius: 6px;
+  min-height: 44px;
+  padding: .5rem .75rem;
+  width: 100%;
+}
+
+.choice-grid {
+  display: grid;
+  gap: .55rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.choice-grid label {
+  align-items: center;
+  background: #f7fafd;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: flex;
+  gap: .55rem;
+  min-height: 44px;
+  padding: .65rem .75rem;
+}
+
+.choice-grid input {
+  flex: 0 0 auto;
+}
+
 .catalogue-grid {
   display: grid;
   gap: 1rem;
@@ -922,6 +1089,15 @@ a.btn,
 }
 
 @media (max-width: 992px) {
+  .login-shell {
+    grid-template-columns: 1fr;
+    margin: 1rem auto;
+  }
+
+  .login-brand-panel {
+    min-height: 360px;
+  }
+
   .work-layout {
     grid-template-columns: 1fr;
   }

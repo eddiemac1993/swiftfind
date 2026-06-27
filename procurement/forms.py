@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.models import User
 from django.forms import inlineformset_factory
 
 from .models import (
@@ -14,6 +15,8 @@ from .models import (
     Quotation,
     QuotationItem,
     RequestItem,
+    School,
+    Supplier,
 )
 
 
@@ -29,6 +32,61 @@ class BootstrapModelForm(forms.ModelForm):
             if isinstance(field.widget, forms.CheckboxInput):
                 css = "form-check-input"
             field.widget.attrs.setdefault("class", css)
+
+
+class OptionalAccountMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"] = forms.CharField(
+            required=False,
+            label="Login username",
+            help_text="Optional. Fill this in to create a linked user account.",
+        )
+        self.fields["password"] = forms.CharField(
+            required=False,
+            label="Temporary password",
+            widget=forms.PasswordInput(render_value=True),
+            help_text="Optional. Use a temporary password the user can change later.",
+        )
+        for name in ["username", "password"]:
+            self.fields[name].widget.attrs.setdefault("class", "form-control")
+
+    def clean_username(self):
+        username = self.cleaned_data.get("username", "").strip()
+        if username and User.objects.filter(username=username).exists():
+            raise forms.ValidationError("A user with this username already exists.")
+        return username
+
+    def clean(self):
+        cleaned = super().clean()
+        username = cleaned.get("username")
+        password = cleaned.get("password")
+        if username and not password:
+            self.add_error("password", "Enter a temporary password for the new login account.")
+        if password and not username:
+            self.add_error("username", "Enter a username for the new login account.")
+        return cleaned
+
+
+class SchoolForm(OptionalAccountMixin, BootstrapModelForm):
+    class Meta:
+        model = School
+        fields = ["name", "district", "province", "address", "contact_person", "phone", "email"]
+        widgets = {"address": forms.Textarea(attrs={"rows": 3})}
+
+
+class SupplierForm(OptionalAccountMixin, BootstrapModelForm):
+    class Meta:
+        model = Supplier
+        fields = ["name", "district", "address", "contact_person", "phone", "email", "categories", "is_active"]
+        widgets = {
+            "address": forms.Textarea(attrs={"rows": 3}),
+            "categories": forms.CheckboxSelectMultiple(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["categories"].widget.attrs["class"] = "choice-grid"
 
 
 class ProcurementRequestForm(BootstrapModelForm):

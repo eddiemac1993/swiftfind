@@ -27,6 +27,8 @@ from .forms import (
     QuotationForm,
     QuotationItemFormSet,
     RequestItemFormSet,
+    SchoolForm,
+    SupplierForm,
 )
 from .models import (
     ApprovalStep,
@@ -84,6 +86,23 @@ def require_editor(user):
     if not can_edit(user):
         return HttpResponseForbidden("This role can view reports but cannot edit school transactions.")
     return None
+
+
+def require_admin(user):
+    if role_for(user) != UserProfile.ROLE_ADMIN:
+        return HttpResponseForbidden("Only admins can manage schools and suppliers.")
+    return None
+
+
+def create_linked_user(username, password, email, role, school=None, supplier=None):
+    if not username:
+        return None
+    user = User.objects.create_user(username=username, password=password, email=email or "")
+    UserProfile.objects.update_or_create(
+        user=user,
+        defaults={"role": role, "school": school, "supplier": supplier},
+    )
+    return user
 
 
 def notify_user(user, subject, body):
@@ -190,7 +209,40 @@ def requests_list(request):
 
 @login_required
 def schools_list(request):
-    return render(request, "procurement/schools_list.html", {"schools": School.objects.all()})
+    q = request.GET.get("q", "").strip()
+    district = request.GET.get("district", "").strip()
+    schools = School.objects.all()
+    if q:
+        schools = schools.filter(Q(name__icontains=q) | Q(contact_person__icontains=q) | Q(email__icontains=q))
+    if district:
+        schools = schools.filter(district__icontains=district)
+    return render(request, "procurement/schools_list.html", {"schools": schools, "filters": request.GET})
+
+
+@login_required
+def school_create(request):
+    forbidden = require_admin(request.user)
+    if forbidden:
+        return forbidden
+    if request.method == "POST":
+        form = SchoolForm(request.POST)
+        if form.is_valid():
+            school = form.save()
+            user = create_linked_user(
+                form.cleaned_data.get("username"),
+                form.cleaned_data.get("password"),
+                school.email,
+                UserProfile.ROLE_SCHOOL,
+                school=school,
+            )
+            if user:
+                messages.success(request, f"{school.name} and login user {user.username} were created.")
+            else:
+                messages.success(request, f"{school.name} was added.")
+            return redirect("schools_list")
+    else:
+        form = SchoolForm()
+    return render(request, "procurement/entity_form.html", {"form": form, "title": "Add school", "back_url": reverse("schools_list")})
 
 
 @login_required
@@ -203,6 +255,32 @@ def suppliers_list(request):
     if district:
         suppliers = suppliers.filter(district__icontains=district)
     return render(request, "procurement/suppliers_list.html", {"suppliers": suppliers, "filters": request.GET})
+
+
+@login_required
+def supplier_create(request):
+    forbidden = require_admin(request.user)
+    if forbidden:
+        return forbidden
+    if request.method == "POST":
+        form = SupplierForm(request.POST)
+        if form.is_valid():
+            supplier = form.save()
+            user = create_linked_user(
+                form.cleaned_data.get("username"),
+                form.cleaned_data.get("password"),
+                supplier.email,
+                UserProfile.ROLE_SUPPLIER,
+                supplier=supplier,
+            )
+            if user:
+                messages.success(request, f"{supplier.name} and login user {user.username} were created.")
+            else:
+                messages.success(request, f"{supplier.name} was added.")
+            return redirect("suppliers_list")
+    else:
+        form = SupplierForm()
+    return render(request, "procurement/entity_form.html", {"form": form, "title": "Add supplier", "back_url": reverse("suppliers_list")})
 
 
 @login_required
