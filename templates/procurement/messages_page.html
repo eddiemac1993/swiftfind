@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading">
+  <div>
+    <p class="eyebrow">Clarifications</p>
+    <h1 class="h3 mb-1">Messages</h1>
+  </div>
+  <a href="{% url 'message_create' %}" class="btn btn-primary">New message</a>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-8">
+    <section class="message-panel">
+      <div class="panel-header">
+        <div><h2>Inbox</h2><p>{{ unread_count }} unread clarification{{ unread_count|pluralize }}</p></div>
+      </div>
+      <form method="get" class="filter-bar filter-bar--inside">
+        <input class="form-control" name="q" value="{{ filters.q }}" placeholder="Search messages">
+        <select class="form-select" name="status"><option value="">All</option><option value="unread" {% if filters.status == "unread" %}selected{% endif %}>Unread</option><option value="read" {% if filters.status == "read" %}selected{% endif %}>Read</option></select>
+        <button class="btn btn-primary">Filter</button>
+      </form>
+      <div class="message-list">
+        {% for message in inbox %}
+        <a class="message-item {% if not message.is_read %}message-item--unread{% endif %}" href="{% url 'message_detail' message.pk %}">
+          <div>
+            <strong>{{ message.subject }}</strong>
+            <p>From {{ message.sender.username }}{% if message.request %} about {{ message.request.reference }}{% endif %}</p>
+          </div>
+          <time>{{ message.created_at|date:"d M, H:i" }}</time>
+        </a>
+        {% empty %}
+        <div class="empty-state">No messages received yet.</div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+  <div class="col-lg-4">
+    <section class="message-panel">
+      <div class="panel-header">
+        <div><h2>Recently sent</h2><p>Your latest clarification messages.</p></div>
+      </div>
+      <div class="message-list message-list--compact">
+        {% for message in sent %}
+        <a class="message-item" href="{% url 'message_detail' message.pk %}">
+          <div><strong>{{ message.subject }}</strong><p>To {{ message.recipient.username }}</p></div>
+        </a>
+        {% empty %}
+        <div class="empty-state">No sent messages yet.</div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h3 mb-3">Schools</h1>
+<div class="card shadow-sm border-0"><div class="table-responsive">
+<table class="table table-hover mb-0">
+  <thead><tr><th>Name</th><th>District</th><th>Province</th><th>Contact</th><th>Email</th></tr></thead>
+  <tbody>{% for school in schools %}<tr><td>{{ school.name }}</td><td>{{ school.district }}</td><td>{{ school.province }}</td><td>{{ school.contact_person }} {{ school.phone }}</td><td>{{ school.email }}</td></tr>{% endfor %}</tbody>
+</table>
+</div></div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% load humanize %}
+<div class="card shadow-sm border-0 mb-3"><div class="card-body">
+  <h2 class="h6">Spending by school</h2>
+  {% for row in spending_by_school %}<div class="d-flex justify-content-between"><span>{{ row.request__school__name }}</span><strong>{{ row.total|floatformat:2|intcomma }}</strong></div>{% empty %}<p class="text-muted mb-0">No spending yet.</p>{% endfor %}
+</div></div>
+<div class="card shadow-sm border-0 mb-3"><div class="card-body">
+  <h2 class="h6">Spending by supplier</h2>
+  {% for row in spending_by_supplier %}<div class="d-flex justify-content-between"><span>{{ row.supplier__name }}</span><strong>{{ row.total|floatformat:2|intcomma }}</strong></div>{% empty %}<p class="text-muted mb-0">No spending yet.</p>{% endfor %}
+</div></div>
+<div class="card shadow-sm border-0 mb-3"><div class="card-body">
+  <h2 class="h6">Spending by district</h2>
+  {% for row in spending_by_district %}<div class="d-flex justify-content-between"><span>{{ row.request__school__district }}</span><strong>{{ row.total|floatformat:2|intcomma }}</strong></div>{% empty %}<p class="text-muted mb-0">No spending yet.</p>{% endfor %}
+</div></div>
+<div class="card shadow-sm border-0"><div class="card-body">
+  <h2 class="h6">Spending by category</h2>
+  {% for row in spending_by_category %}<div class="d-flex justify-content-between"><span>{{ row.items__request_item__product__category__name }}</span><strong>{{ row.total|floatformat:2|intcomma }}</strong></div>{% empty %}<p class="text-muted mb-0">No spending yet.</p>{% endfor %}
+</div></div>

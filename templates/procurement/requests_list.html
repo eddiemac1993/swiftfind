@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading">
+  <div><p class="eyebrow">Procurement</p><h1 class="h3 mb-1">Requests</h1></div>
+  <a href="{% url 'request_create' %}" class="btn btn-primary">New request</a>
+</div>
+<form method="get" class="filter-bar">
+  <input class="form-control" name="q" value="{{ filters.q }}" placeholder="Search reference, title, notes">
+  <select class="form-select" name="status"><option value="">All statuses</option>{% for value,label in statuses %}<option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  <select class="form-select" name="school"><option value="">All schools</option>{% for school in schools %}<option value="{{ school.pk }}" {% if filters.school == school.pk|stringformat:"s" %}selected{% endif %}>{{ school.name }}</option>{% endfor %}</select>
+  <select class="form-select" name="supplier"><option value="">All suppliers</option>{% for supplier in suppliers %}<option value="{{ supplier.pk }}" {% if filters.supplier == supplier.pk|stringformat:"s" %}selected{% endif %}>{{ supplier.name }}</option>{% endfor %}</select>
+  <button class="btn btn-primary">Filter</button>
+</form>
+<div class="card shadow-sm border-0"><div class="table-responsive"><table class="table table-hover mb-0">
+  <thead><tr><th>Reference</th><th>Title</th><th>School</th><th>Status</th><th>Supplier</th><th></th></tr></thead>
+  <tbody>{% for req in requests %}<tr><td>{{ req.reference }}</td><td>{{ req.title }}</td><td>{{ req.school.name }}</td><td>{{ req.get_status_display }}</td><td>{{ req.selected_supplier|default:"Pending" }}</td><td><a class="btn btn-sm btn-outline-primary" href="{% url 'request_detail' req.pk %}">Open</a></td></tr>{% empty %}<tr><td colspan="6">No requests found.</td></tr>{% endfor %}</tbody>
+</table></div></div>
+{% endblock %}

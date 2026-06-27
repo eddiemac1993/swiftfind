@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading">
+  <div>
+    <p class="eyebrow">Clarification</p>
+    <h1 class="h3 mb-1">{{ message.subject }}</h1>
+  </div>
+  <a href="{% url 'message_create' %}" class="btn btn-primary">Reply with new message</a>
+</div>
+
+<article class="message-detail">
+  <div class="message-detail__meta">
+    <span>From <strong>{{ message.sender.username }}</strong></span>
+    <span>To <strong>{{ message.recipient.username }}</strong></span>
+    {% if message.request %}<span>Request <strong>{{ message.request.reference }}</strong></span>{% endif %}
+    <time>{{ message.created_at|date:"d M Y, H:i" }}</time>
+  </div>
+  <p>{{ message.body|linebreaksbr }}</p>
+</article>
+{% endblock %}

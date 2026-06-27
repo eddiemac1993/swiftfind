@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h3 mb-3">Suppliers</h1>
+<form method="get" class="filter-bar">
+  <input class="form-control" name="q" value="{{ filters.q }}" placeholder="Search supplier, contact, email">
+  <input class="form-control" name="district" value="{{ filters.district }}" placeholder="District">
+  <button class="btn btn-primary">Filter</button>
+</form>
+<div class="card shadow-sm border-0"><div class="table-responsive">
+<table class="table table-hover mb-0">
+  <thead><tr><th>Name</th><th>District</th><th>Categories</th><th>Contact</th><th>Status</th></tr></thead>
+  <tbody>{% for supplier in suppliers %}<tr><td>{{ supplier.name }}</td><td>{{ supplier.district }}</td><td>{% for cat in supplier.categories.all %}<span class="badge text-bg-light">{{ cat.name }}</span> {% endfor %}</td><td>{{ supplier.contact_person }} {{ supplier.phone }}</td><td>{% if supplier.is_active %}Active{% else %}Inactive{% endif %}</td></tr>{% endfor %}</tbody>
+</table>
+</div></div>
+{% endblock %}

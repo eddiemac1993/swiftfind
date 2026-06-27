@@ -1,0 +1,3 @@
+{% extends "procurement/document_page.html" %}
+{% block content %}{% with title="Upload Purchase Order" pdf_type="po" %}{{ block.super }}{% endwith %}{% endblock %}
+{% block row_actions %}{% if not record.confirmed_by_supplier %}<form method="post" action="{% url 'confirm_purchase_order' record.pk %}">{% csrf_token %}<button class="btn btn-sm btn-success">Confirm</button></form>{% else %}<span class="badge text-bg-success">Confirmed</span>{% endif %}{% endblock %}

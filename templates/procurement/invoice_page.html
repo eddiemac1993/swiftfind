@@ -1,0 +1,2 @@
+{% extends "procurement/document_page.html" %}
+{% block content %}{% with title="Invoice" pdf_type="invoice" %}{{ block.super }}{% endwith %}{% endblock %}

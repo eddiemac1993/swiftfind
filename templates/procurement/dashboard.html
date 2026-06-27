@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <p class="eyebrow">Role dashboard</p>
+    <h1 class="h3 mb-0">Dashboard</h1>
+  </div>
+  <a href="{% url 'request_create' %}" class="btn btn-primary">Create procurement request</a>
+</div>
+<div class="action-strip mb-3">
+  {% if role == "SCHOOL" or role == "ADMIN" %}
+  <a href="{% url 'request_create' %}">Create request</a>
+  <a href="{% url 'requests_list' %}?status=QUOTED">Compare quotes</a>
+  <a href="{% url 'payment_tracking_page' %}">Track payments</a>
+  {% endif %}
+  {% if role == "SUPPLIER" or role == "ADMIN" %}
+  <a href="{% url 'quotation_create' %}">Submit quotation</a>
+  <a href="{% url 'delivery_note_page' %}">Record delivery</a>
+  <a href="{% url 'invoice_page' %}">Submit invoice</a>
+  {% endif %}
+  {% if role == "VIEWER" or role == "ADMIN" %}
+  <a href="{% url 'reports_page' %}">View reports</a>
+  <a href="{% url 'requests_list' %}">Review requests</a>
+  {% endif %}
+  <a href="{% url 'messages_page' %}">Messages{% if unread_messages %} ({{ unread_messages|intcomma }}){% endif %}</a>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-md-2"><div class="card stat-card shadow-sm"><div class="card-body"><div class="text-muted small">Total requests</div><div class="h3">{{ total_requests|intcomma }}</div></div></div></div>
+  <div class="col-md-2"><div class="card stat-card shadow-sm"><div class="card-body"><div class="text-muted small">Pending quotations</div><div class="h3">{{ pending_quotations|intcomma }}</div></div></div></div>
+  <div class="col-md-2"><div class="card stat-card shadow-sm"><div class="card-body"><div class="text-muted small">POs issued</div><div class="h3">{{ pos_issued|intcomma }}</div></div></div></div>
+  <div class="col-md-2"><div class="card stat-card shadow-sm"><div class="card-body"><div class="text-muted small">Delivered orders</div><div class="h3">{{ delivered_orders|intcomma }}</div></div></div></div>
+  <div class="col-md-2"><div class="card stat-card shadow-sm"><div class="card-body"><div class="text-muted small">Processing</div><div class="h3">{{ payments_processing|intcomma }}</div></div></div></div>
+  <div class="col-md-2"><div class="card stat-card shadow-sm"><div class="card-body"><div class="text-muted small">Paid orders</div><div class="h3">{{ paid_orders|intcomma }}</div></div></div></div>
+</div>
+<div class="row g-3">
+  <div class="col-lg-8">
+    <div class="card shadow-sm border-0">
+      <div class="card-body">
+        <h2 class="h5">Recent requests</h2>
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead><tr><th>Reference</th><th>School</th><th>Status</th><th>Supplier</th><th></th></tr></thead>
+            <tbody>
+              {% for req in recent_requests %}
+              <tr>
+                <td>{{ req.reference }}</td><td>{{ req.school.name }}</td>
+                <td><span class="badge text-bg-secondary status-pill">{{ req.get_status_display }}</span></td>
+                <td>{{ req.selected_supplier|default:"Pending" }}</td>
+                <td><a href="{% url 'request_detail' req.pk %}" class="btn btn-sm btn-outline-primary">Open</a></td>
+              </tr>
+              {% empty %}<tr><td colspan="5">No requests yet.</td></tr>{% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    {% include "procurement/partials/spending_lists.html" %}
+    <div class="card shadow-sm border-0 mt-3"><div class="card-body">
+      <h2 class="h6">Pending approvals</h2>
+      {% for approval in my_approvals %}<div class="d-flex justify-content-between gap-2 mb-2"><span>{{ approval.request.reference }}</span><strong>{{ approval.get_approver_role_display }}</strong></div>{% empty %}<p class="text-muted mb-0">No approvals waiting.</p>{% endfor %}
+    </div></div>
+  </div>
+</div>
+{% endblock %}

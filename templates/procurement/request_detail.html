@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div><h1 class="h3 mb-0">{{ req.reference }}</h1><div class="text-muted">{{ req.title }}</div></div>
+  <span class="badge text-bg-secondary">{{ req.get_status_display }}</span>
+</div>
+<div class="row g-3">
+  <div class="col-lg-7"><div class="card shadow-sm border-0"><div class="card-body">
+    <h2 class="h5">Items</h2>
+    <table class="table"><thead><tr><th>Product</th><th>Category</th><th>Quantity</th><th>Notes</th></tr></thead><tbody>{% for item in req.items.all %}<tr><td>{{ item.product.name }}</td><td>{{ item.product.category.name }}</td><td>{{ item.quantity }} {{ item.product.unit }}</td><td>{{ item.notes }}</td></tr>{% endfor %}</tbody></table>
+    <a href="{% url 'compare_quotations' req.pk %}" class="btn btn-outline-primary">Compare quotations</a>
+  </div></div></div>
+  <div class="col-lg-5"><div class="card shadow-sm border-0"><div class="card-body">
+    <h2 class="h5">Workflow</h2>
+    <p><strong>School:</strong> {{ req.school.name }}</p><p><strong>Needed by:</strong> {{ req.needed_by|default:"Not specified" }}</p><p><strong>Selected supplier:</strong> {{ req.selected_supplier|default:"Pending" }}</p><p>{{ req.notes }}</p>
+  </div></div></div>
+</div>
+<div class="card shadow-sm border-0 mt-3"><div class="card-body">
+  <h2 class="h5">Approval steps</h2>
+  <div class="table-responsive"><table class="table">
+    <thead><tr><th>Approver</th><th>Status</th><th>Decided by</th><th>Notes</th><th>Action</th></tr></thead>
+    <tbody>{% for step in req.approval_steps.all %}<tr><td>{{ step.get_approver_role_display }}</td><td>{{ step.get_status_display }}</td><td>{{ step.approved_by|default:"Pending" }}</td><td>{{ step.notes }}</td><td><form method="post" action="{% url 'approval_update' step.pk %}" class="approval-form">{% csrf_token %}{{ approval_form.status }}{{ approval_form.notes }}<button class="btn btn-sm btn-primary">Save</button></form></td></tr>{% empty %}<tr><td colspan="5">No approval steps yet.</td></tr>{% endfor %}</tbody>
+  </table></div>
+</div></div>
+{% endblock %}

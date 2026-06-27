@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading">
+  <div>
+    <p class="eyebrow">Help centre</p>
+    <h1 class="h3 mb-1">User Manual</h1>
+  </div>
+  <a href="{% url 'messages_page' %}" class="btn btn-primary">Ask for clarification</a>
+</div>
+
+<div class="manual-layout">
+  <section class="manual-panel">
+    <h2>Guide for schools</h2>
+    <div class="manual-steps">
+      <article><span>1</span><div><strong>Create a request</strong><p>Select the school, add a clear title, choose the needed date, and list all required items with quantities.</p></div></article>
+      <article><span>2</span><div><strong>Review quotations</strong><p>Open the comparison page, review supplier totals, delivery days, and item pricing before selecting a preferred supplier.</p></div></article>
+      <article><span>3</span><div><strong>Issue the PO</strong><p>Upload the official Purchase Order or keep a generated PDF copy for your procurement file.</p></div></article>
+      <article><span>4</span><div><strong>Confirm delivery</strong><p>Check the delivery note, confirm goods received, and record the Goods Received Note only after physical verification.</p></div></article>
+      <article><span>5</span><div><strong>Track payment</strong><p>Record payment as Processing while government payment procedures are underway, then mark it Paid once confirmed.</p></div></article>
+    </div>
+  </section>
+
+  <section class="manual-panel manual-panel--supplier">
+    <h2>Guide for suppliers</h2>
+    <div class="manual-steps">
+      <article><span>1</span><div><strong>Check requests</strong><p>Review requested goods, quantities, school details, and required dates before quoting.</p></div></article>
+      <article><span>2</span><div><strong>Submit a quotation</strong><p>Create a quotation header, then enter item prices accurately on the pricing screen.</p></div></article>
+      <article><span>3</span><div><strong>Confirm PO</strong><p>Once selected, confirm the Purchase Order before preparing goods for delivery.</p></div></article>
+      <article><span>4</span><div><strong>Upload delivery note</strong><p>Record the delivery note number and date after dispatching goods to the school.</p></div></article>
+      <article><span>5</span><div><strong>Submit invoice</strong><p>Upload or record the invoice after the school confirms receipt through the GRN.</p></div></article>
+    </div>
+  </section>
+</div>
+{% endblock %}

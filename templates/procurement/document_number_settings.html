@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading">
+  <div><p class="eyebrow">Administration</p><h1 class="h3 mb-1">Document numbering</h1></div>
+</div>
+<div class="row g-3">
+  <div class="col-lg-5"><form method="post" class="work-panel">{% csrf_token %}<div class="panel-header"><div><h2>Number setting</h2><p>Set prefixes and next numbers for generated documents.</p></div></div><div class="form-grid">{% for field in form %}<div class="field-block"><label class="form-label">{{ field.label }}</label>{{ field }}</div>{% endfor %}</div><div class="form-actions"><button class="btn btn-primary">Save setting</button></div></form></div>
+  <div class="col-lg-7"><div class="card shadow-sm border-0"><table class="table mb-0"><thead><tr><th>Document</th><th>Prefix</th><th>Next number</th><th>Padding</th></tr></thead><tbody>{% for setting in settings %}<tr><td>{{ setting.get_document_type_display }}</td><td>{{ setting.prefix }}</td><td>{{ setting.next_number }}</td><td>{{ setting.padding }}</td></tr>{% empty %}<tr><td colspan="4">No settings yet.</td></tr>{% endfor %}</tbody></table></div></div>
+</div>
+{% endblock %}

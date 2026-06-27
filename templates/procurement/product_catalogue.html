@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block content %}
+<div class="page-heading">
+  <div>
+    <p class="eyebrow">Approved catalogue</p>
+    <h1 class="h3 mb-1">Product Catalogue</h1>
+  </div>
+  <span class="soft-count">{{ products|length }} active items</span>
+</div>
+<form method="get" class="filter-bar">
+  <input class="form-control" name="q" value="{{ filters.q }}" placeholder="Search products">
+  <select class="form-select" name="category"><option value="">All categories</option>{% for category in categories %}<option value="{{ category.pk }}" {% if filters.category == category.pk|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>{% endfor %}</select>
+  <button class="btn btn-primary">Filter</button>
+</form>
+<div class="catalogue-grid">
+  {% for product in products %}
+  <article class="catalogue-card">
+    <div class="catalogue-card__top">
+      <span class="category-chip">{{ product.category.name }}</span>
+      <span class="unit-chip">{{ product.unit }}</span>
+    </div>
+    <h2>{{ product.name }}</h2>
+    <p>{{ product.description|default:"Standard procurement item" }}</p>
+    <div class="catalogue-card__price">
+      <span>Guide price</span>
+      <strong>{{ product.guide_price|floatformat:2|intcomma }}</strong>
+    </div>
+  </article>
+  {% empty %}
+  <div class="empty-state">No catalogue items are active.</div>
+  {% endfor %}
+</div>
+{% endblock %}

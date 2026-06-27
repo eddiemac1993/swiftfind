@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="h3 mb-1">Quotation pricing</h1>
+<p class="text-muted">{{ quote.quotation_number }} from {{ quote.supplier.name }} for {{ quote.request.reference }}</p>
+<form method="post" class="card shadow-sm border-0">
+  <div class="card-body">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <div class="table-responsive">
+      <table class="table">
+        <thead><tr><th>Item</th><th>Quantity</th><th>Unit price</th></tr></thead>
+        <tbody>
+          {% for form in formset %}
+          <tr>
+            {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+            <td>{{ form.instance.request_item.product.name }}{{ form.request_item }}</td>
+            <td>{{ form.instance.request_item.quantity }} {{ form.instance.request_item.product.unit }}</td>
+            <td>{{ form.unit_price }}{{ form.unit_price.errors }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <button class="btn btn-primary" type="submit">Save quotation</button>
+    <a href="{% url 'compare_quotations' quote.request.pk %}" class="btn btn-outline-secondary">Back to comparison</a>
+  </div>
+</form>
+{% endblock %}

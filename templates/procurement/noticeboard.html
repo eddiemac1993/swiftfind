@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-heading">
+  <div>
+    <p class="eyebrow">Announcements</p>
+    <h1 class="h3 mb-1">Noticeboard</h1>
+  </div>
+</div>
+
+<div class="notice-grid">
+  {% for notice in notices %}
+  <article class="notice-card {% if notice.is_pinned %}notice-card--pinned{% endif %}">
+    <div class="notice-card__meta">
+      <span>{{ notice.get_audience_display }}</span>
+      {% if notice.is_pinned %}<strong>Pinned</strong>{% endif %}
+    </div>
+    <h2>{{ notice.title }}</h2>
+    <p>{{ notice.body }}</p>
+    <time>{{ notice.created_at|date:"d M Y" }}</time>
+  </article>
+  {% empty %}
+  <div class="empty-state">No active notices yet.</div>
+  {% endfor %}
+</div>
+{% endblock %}
