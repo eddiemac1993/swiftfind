@@ -54,6 +54,17 @@
   text-decoration: none;
 }
 
+.brand-logo {
+  background: #fff;
+  border-radius: 8px;
+  display: inline-block;
+  flex: 0 0 auto;
+  height: 42px;
+  object-fit: contain;
+  padding: .2rem .35rem;
+  width: 118px;
+}
+
 .sidebar-brand:hover {
   color: #fff;
 }
@@ -179,6 +190,18 @@
 
 .app-main {
   max-width: 1440px;
+}
+
+.app-footer {
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: .86rem;
+  font-weight: 700;
+  gap: .35rem 1rem;
+  justify-content: center;
+  padding: 0 1rem 1.4rem;
+  text-align: center;
 }
 
 .page-heading {
@@ -543,30 +566,28 @@ a.btn,
 }
 
 .swift-logo {
-  align-items: center;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 18px 38px rgba(7, 22, 38, .28);
-  color: var(--nav);
-  display: inline-flex;
-  font-size: 1.2rem;
-  font-weight: 900;
-  height: 58px;
-  justify-content: center;
+  display: block;
+  height: auto;
+  object-fit: contain;
+  padding: .45rem;
+}
+
+.swift-logo--hero {
+  max-width: 260px;
   margin-bottom: 2rem;
   position: relative;
-  width: 58px;
+  width: min(72vw, 260px);
   z-index: 1;
 }
 
-.swift-logo::after {
-  border-bottom: 10px solid transparent;
-  border-left: 18px solid var(--accent);
-  border-top: 10px solid transparent;
-  content: "";
-  position: absolute;
-  right: -12px;
-  top: 19px;
+.swift-logo--small {
+  box-shadow: 0 10px 22px rgba(34, 50, 84, .12);
+  max-width: 152px;
+  padding: .25rem;
+  width: 152px;
 }
 
 .login-brand-panel h1 {
@@ -1085,6 +1106,10 @@ a.btn,
     max-width: calc(100% - 276px);
     padding-left: 1.5rem;
     padding-right: 1.5rem;
+  }
+
+  .app-footer {
+    margin-left: 276px;
   }
 }
 

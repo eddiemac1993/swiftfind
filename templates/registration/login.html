@@ -1,11 +1,10 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Login - Swift Technologies SchoolProcure{% endblock %}
 {% block content %}
 <div class="login-shell">
   <section class="login-brand-panel">
-    <div class="swift-logo" aria-label="Swift Technologies logo">
-      <span>ST</span>
-    </div>
+    <img class="swift-logo swift-logo--hero" src="{% static 'img/swift-technologies-logo.svg' %}" alt="Swift Technologies">
     <p class="eyebrow">Swift Technologies</p>
     <h1>SchoolProcure</h1>
     <p>Secure procurement management for schools, suppliers, and oversight teams.</p>
@@ -22,7 +21,7 @@
         <p class="eyebrow">Welcome back</p>
         <h2>Sign in</h2>
       </div>
-      <span class="brand-mark">SP</span>
+      <img class="swift-logo swift-logo--small" src="{% static 'img/swift-technologies-logo.svg' %}" alt="Swift Technologies">
     </div>
     <form method="post" class="login-form">
           {% csrf_token %}
