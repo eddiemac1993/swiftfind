@@ -55,14 +55,12 @@
 }
 
 .brand-logo {
-  background: #fff;
-  border-radius: 8px;
+  border-radius: 6px;
   display: inline-block;
   flex: 0 0 auto;
-  height: 42px;
+  height: 48px;
   object-fit: contain;
-  padding: .2rem .35rem;
-  width: 118px;
+  width: 48px;
 }
 
 .sidebar-brand:hover {
@@ -566,28 +564,25 @@ a.btn,
 }
 
 .swift-logo {
-  background: #fff;
   border-radius: 8px;
-  box-shadow: 0 18px 38px rgba(7, 22, 38, .28);
+  box-shadow: 0 18px 38px rgba(7, 22, 38, .24);
   display: block;
   height: auto;
   object-fit: contain;
-  padding: .45rem;
 }
 
 .swift-logo--hero {
-  max-width: 260px;
+  max-width: 300px;
   margin-bottom: 2rem;
   position: relative;
-  width: min(72vw, 260px);
+  width: min(72vw, 300px);
   z-index: 1;
 }
 
 .swift-logo--small {
   box-shadow: 0 10px 22px rgba(34, 50, 84, .12);
-  max-width: 152px;
-  padding: .25rem;
-  width: 152px;
+  max-width: 98px;
+  width: 98px;
 }
 
 .login-brand-panel h1 {
