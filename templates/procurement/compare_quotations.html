@@ -8,8 +8,10 @@
     <h2 class="h5">{{ quote.supplier.name }}</h2>
     <p class="text-muted">{{ quote.quotation_number }} | {{ quote.delivery_days }} delivery days</p>
     <table class="table table-sm"><tbody>{% for item in quote.items.all %}<tr><td>{{ item.request_item.product.name }}</td><td class="text-end">{{ item.line_total|floatformat:2|intcomma }}</td></tr>{% endfor %}</tbody><tfoot><tr><th>Total</th><th class="text-end">{{ quote.total_amount|floatformat:2|intcomma }}</th></tr></tfoot></table>
-    <a href="{% url 'document_pdf' 'quotation' quote.pk %}" class="btn btn-sm btn-outline-secondary">PDF</a>
-    <form method="post" action="{% url 'select_quotation' quote.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-primary" type="submit">Select supplier</button></form>
+    <a href="{% url 'document_pdf' 'quotation' quote.pk %}" class="btn btn-sm btn-outline-secondary">Styled PDF</a>
+    {% if user.is_superuser or user.profile.role == "ADMIN" or user.profile.role == "SCHOOL" %}
+    <form method="post" action="{% url 'select_quotation' quote.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-primary" type="submit">Approve quote</button></form>
+    {% endif %}
   </div></div></div>
 {% empty %}<div class="col"><div class="alert alert-info">No quotations submitted yet.</div></div>{% endfor %}
 </div>

@@ -90,6 +90,21 @@ class SupplierForm(OptionalAccountMixin, BootstrapModelForm):
 
 
 class ProcurementRequestForm(BootstrapModelForm):
+    def __init__(self, *args, locked_school=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.locked_school = locked_school
+        if locked_school:
+            self.fields.pop("school", None)
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if self.locked_school:
+            instance.school = self.locked_school
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
+
     class Meta:
         model = ProcurementRequest
         fields = ["school", "title", "needed_by", "notes"]
@@ -114,6 +129,21 @@ RequestItemFormSet = inlineformset_factory(
 
 
 class QuotationForm(BootstrapModelForm):
+    def __init__(self, *args, locked_supplier=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.locked_supplier = locked_supplier
+        if locked_supplier:
+            self.fields.pop("supplier", None)
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if self.locked_supplier:
+            instance.supplier = self.locked_supplier
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
+
     class Meta:
         model = Quotation
         fields = ["request", "supplier", "quotation_number", "valid_until", "delivery_days", "notes"]

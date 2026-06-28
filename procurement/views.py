@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.utils import timezone
 from openpyxl import Workbook
 from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 
 from .forms import (
@@ -125,8 +126,21 @@ def notify_user(user, subject, body):
 
 
 def create_default_approvals(req):
-    for role in [ApprovalStep.APPROVER_HEAD, ApprovalStep.APPROVER_COMMITTEE, ApprovalStep.APPROVER_DEBS]:
-        ApprovalStep.objects.get_or_create(request=req, approver_role=role)
+    return None
+
+
+def locked_school_for(user):
+    profile = getattr(user, "profile", None)
+    if role_for(user) == UserProfile.ROLE_SCHOOL and profile and profile.school:
+        return profile.school
+    return None
+
+
+def locked_supplier_for(user):
+    profile = getattr(user, "profile", None)
+    if role_for(user) == UserProfile.ROLE_SUPPLIER and profile and profile.supplier:
+        return profile.supplier
+    return None
 
 
 def generate_doc_number(document_type, fallback_prefix):
@@ -188,7 +202,7 @@ def dashboard(request):
         "spending_by_district": selected_items.values("request__school__district").annotate(total=Sum(line_total)).order_by("-total")[:8],
         "spending_by_category": selected_items.values("items__request_item__product__category__name").annotate(total=Sum(line_total)).order_by("-total")[:8],
         "role": role_for(request.user),
-        "my_approvals": ApprovalStep.objects.filter(status=ApprovalStep.STATUS_PENDING, request__in=requests)[:5],
+        "quotes_to_approve": requests.filter(status=ProcurementRequest.STATUS_QUOTED).prefetch_related("quotations")[:5],
         "unread_messages": ClarificationMessage.objects.filter(recipient=request.user, is_read=False).count(),
     }
     return render(request, "procurement/dashboard.html", context)
@@ -317,11 +331,11 @@ def procurement_request_create(request):
     if forbidden:
         return forbidden
     instance = ProcurementRequest(created_by=request.user)
-    profile = getattr(request.user, "profile", None)
-    if role_for(request.user) == UserProfile.ROLE_SCHOOL and profile and profile.school:
-        instance.school = profile.school
+    locked_school = locked_school_for(request.user)
+    if locked_school:
+        instance.school = locked_school
     if request.method == "POST":
-        form = ProcurementRequestForm(request.POST, instance=instance)
+        form = ProcurementRequestForm(request.POST, instance=instance, locked_school=locked_school)
         formset = RequestItemFormSet(request.POST, instance=instance)
         if form.is_valid() and formset.is_valid():
             req = form.save(commit=False)
@@ -336,16 +350,15 @@ def procurement_request_create(request):
             messages.success(request, "Procurement request submitted to suppliers.")
             return redirect("request_detail", pk=req.pk)
     else:
-        form = ProcurementRequestForm(instance=instance)
+        form = ProcurementRequestForm(instance=instance, locked_school=locked_school)
         formset = RequestItemFormSet(instance=instance)
-    return render(request, "procurement/request_form.html", {"form": form, "formset": formset})
+    return render(request, "procurement/request_form.html", {"form": form, "formset": formset, "locked_school": locked_school})
 
 
 @login_required
 def request_detail(request, pk):
     req = get_object_or_404(visible_requests(request.user), pk=pk)
-    approval_form = ApprovalStepForm()
-    return render(request, "procurement/request_detail.html", {"req": req, "approval_form": approval_form})
+    return render(request, "procurement/request_detail.html", {"req": req})
 
 
 @login_required
@@ -353,8 +366,9 @@ def quotation_create(request):
     forbidden = require_editor(request.user)
     if forbidden:
         return forbidden
+    locked_supplier = locked_supplier_for(request.user)
     if request.method == "POST":
-        form = QuotationForm(request.POST)
+        form = QuotationForm(request.POST, locked_supplier=locked_supplier)
         if form.is_valid():
             quote = form.save()
             for item in quote.request.items.all():
@@ -366,11 +380,10 @@ def quotation_create(request):
             return redirect("quotation_edit", pk=quote.pk)
     else:
         initial = {}
-        profile = getattr(request.user, "profile", None)
-        if role_for(request.user) == UserProfile.ROLE_SUPPLIER and profile and profile.supplier:
-            initial["supplier"] = profile.supplier
-        form = QuotationForm(initial=initial)
-    return render(request, "procurement/quotation_form.html", {"form": form})
+        if locked_supplier:
+            initial["supplier"] = locked_supplier
+        form = QuotationForm(initial=initial, locked_supplier=locked_supplier)
+    return render(request, "procurement/quotation_form.html", {"form": form, "locked_supplier": locked_supplier})
 
 
 @login_required
@@ -400,10 +413,13 @@ def compare_quotations(request, pk):
 
 @login_required
 def select_quotation(request, pk):
-    forbidden = require_editor(request.user)
-    if forbidden:
-        return forbidden
     quotation = get_object_or_404(Quotation, pk=pk)
+    role = role_for(request.user)
+    profile = getattr(request.user, "profile", None)
+    if role not in {UserProfile.ROLE_ADMIN, UserProfile.ROLE_SCHOOL}:
+        return HttpResponseForbidden("Only the school user or admin can approve a quotation.")
+    if role == UserProfile.ROLE_SCHOOL and (not profile or quotation.request.school_id != getattr(profile.school, "id", None)):
+        return HttpResponseForbidden("You can only approve quotations for your assigned school.")
     if request.method == "POST":
         Quotation.objects.filter(request=quotation.request).update(is_selected=False)
         quotation.is_selected = True
@@ -411,7 +427,7 @@ def select_quotation(request, pk):
         quotation.request.selected_supplier = quotation.supplier
         quotation.request.status = ProcurementRequest.STATUS_PO_ISSUED
         quotation.request.save(update_fields=["selected_supplier", "status"])
-        messages.success(request, f"{quotation.supplier.name} selected. Upload or generate the Purchase Order next.")
+        messages.success(request, f"{quotation.supplier.name} quotation approved. Upload or generate the Purchase Order next.")
     return redirect("compare_quotations", pk=quotation.request.pk)
 
 
@@ -725,12 +741,36 @@ def document_pdf(request, document_type, pk):
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)
     width, height = A4
-    y = height - 60
-    pdf.setFont("Helvetica-Bold", 18)
-    pdf.drawString(50, y, f"SchoolProcure {title}")
-    y -= 35
-    pdf.setFont("Helvetica", 10)
     req = obj.request
+    margin = 42
+
+    def money(value):
+        return f"K {Decimal(value):,.2f}"
+
+    def footer():
+        pdf.setStrokeColor(colors.HexColor("#dbe3ee"))
+        pdf.line(margin, 38, width - margin, 38)
+        pdf.setFillColor(colors.HexColor("#657084"))
+        pdf.setFont("Helvetica", 8)
+        pdf.drawString(margin, 24, "Generated by SchoolProcure for standard school procurement administration.")
+        pdf.drawRightString(width - margin, 24, "Powered by Dreambolt Technology")
+
+    pdf.setFillColor(colors.HexColor("#17324d"))
+    pdf.rect(0, height - 104, width, 104, fill=1, stroke=0)
+    pdf.setFillColor(colors.white)
+    pdf.setFont("Helvetica-Bold", 20)
+    pdf.drawString(margin, height - 48, f"SchoolProcure {title}")
+    pdf.setFont("Helvetica", 10)
+    pdf.drawString(margin, height - 70, "Swift Technologies")
+    pdf.drawRightString(width - margin, height - 48, req.reference)
+    pdf.drawRightString(width - margin, height - 70, timezone.now().strftime("%d %b %Y"))
+
+    y = height - 135
+    pdf.setFillColor(colors.HexColor("#172033"))
+    pdf.setFont("Helvetica-Bold", 12)
+    pdf.drawString(margin, y, "Document details")
+    y -= 18
+    pdf.setFont("Helvetica", 9)
     rows = [
         ("Reference", req.reference),
         ("School", req.school.name),
@@ -740,14 +780,32 @@ def document_pdf(request, document_type, pk):
     supplier = getattr(obj, "supplier", None) or getattr(req, "selected_supplier", None)
     if supplier:
         rows.append(("Supplier", supplier.name))
+    if isinstance(obj, Quotation):
+        rows.extend([
+            ("Quotation number", obj.quotation_number),
+            ("Delivery days", f"{obj.delivery_days} days"),
+            ("Valid until", obj.valid_until.strftime("%d %b %Y") if obj.valid_until else "Not specified"),
+        ])
     for label, value in rows:
-        pdf.drawString(50, y, f"{label}: {value}")
-        y -= 16
-    y -= 10
-    pdf.setFont("Helvetica-Bold", 11)
-    pdf.drawString(50, y, "Items")
-    y -= 18
-    pdf.setFont("Helvetica", 10)
+        pdf.setFillColor(colors.HexColor("#657084"))
+        pdf.drawString(margin, y, label)
+        pdf.setFillColor(colors.HexColor("#172033"))
+        pdf.drawString(165, y, str(value))
+        y -= 14
+    y -= 16
+
+    table_left = margin
+    table_right = width - margin
+    pdf.setFillColor(colors.HexColor("#eef3f8"))
+    pdf.rect(table_left, y - 6, table_right - table_left, 24, fill=1, stroke=0)
+    pdf.setFillColor(colors.HexColor("#172033"))
+    pdf.setFont("Helvetica-Bold", 9)
+    pdf.drawString(table_left + 8, y, "Item")
+    pdf.drawString(245, y, "Qty")
+    pdf.drawString(320, y, "Unit price")
+    pdf.drawRightString(table_right - 8, y, "Line total")
+    y -= 20
+    pdf.setFont("Helvetica", 9)
     total = Decimal("0.00")
     quote = obj if isinstance(obj, Quotation) else req.quotations.filter(is_selected=True).first()
     for item in req.items.select_related("product", "product__category"):
@@ -757,18 +815,29 @@ def document_pdf(request, document_type, pk):
             unit_price = quote_item.unit_price if quote_item else Decimal("0.00")
         line_total = item.quantity * unit_price
         total += line_total
-        pdf.drawString(50, y, f"{item.product.name} | Qty {item.quantity} {item.product.unit} | Unit {unit_price} | Total {line_total}")
-        y -= 16
-        if y < 80:
+        if y < 86:
+            footer()
             pdf.showPage()
             y = height - 60
-    y -= 10
-    pdf.setFont("Helvetica-Bold", 12)
+        pdf.setStrokeColor(colors.HexColor("#edf2f7"))
+        pdf.line(table_left, y - 5, table_right, y - 5)
+        pdf.setFillColor(colors.HexColor("#172033"))
+        pdf.drawString(table_left + 8, y, item.product.name[:34])
+        pdf.setFillColor(colors.HexColor("#657084"))
+        pdf.drawString(245, y, f"{item.quantity:g} {item.product.unit}")
+        pdf.drawString(320, y, money(unit_price))
+        pdf.setFillColor(colors.HexColor("#172033"))
+        pdf.drawRightString(table_right - 8, y, money(line_total))
+        y -= 18
+    y -= 8
     amount = getattr(obj, "amount", total)
-    pdf.drawString(50, y, f"Amount: {amount}")
-    y -= 30
-    pdf.setFont("Helvetica", 9)
-    pdf.drawString(50, y, "Generated by SchoolProcure for standard school procurement administration.")
+    pdf.setFillColor(colors.HexColor("#17324d"))
+    pdf.rect(320, y - 10, table_right - 320, 30, fill=1, stroke=0)
+    pdf.setFillColor(colors.white)
+    pdf.setFont("Helvetica-Bold", 11)
+    pdf.drawString(330, y, "Total")
+    pdf.drawRightString(table_right - 8, y, money(amount))
+    footer()
     pdf.showPage()
     pdf.save()
     buffer.seek(0)

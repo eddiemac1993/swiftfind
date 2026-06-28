@@ -60,18 +60,18 @@ class Command(BaseCommand):
                 defaults={"category": categories[cat], "unit": unit, "guide_price": Decimal(price)},
             )
 
-        school_a, _ = School.objects.get_or_create(
-            name="Chibolya Primary School",
-            defaults={"district": "Lusaka", "province": "Lusaka", "contact_person": "Mary Banda", "phone": "+260 955 100 100", "email": "chibolya@example.com"},
+        school_a, _ = School.objects.update_or_create(
+            name="Test School",
+            defaults={"district": "Lusaka", "province": "Lusaka", "contact_person": "Test School User", "phone": "+260 955 100 100", "email": "testschool@example.com"},
         )
         school_b, _ = School.objects.get_or_create(
             name="Kabwe Central Secondary School",
             defaults={"district": "Kabwe", "province": "Central", "contact_person": "Peter Mwansa", "phone": "+260 966 200 200", "email": "kabwecentral@example.com"},
         )
 
-        supplier_a, _ = Supplier.objects.get_or_create(
-            name="EduBuild Supplies Ltd",
-            defaults={"district": "Lusaka", "contact_person": "Grace Phiri", "phone": "+260 977 300 300", "email": "sales@edubuild.example"},
+        supplier_a, _ = Supplier.objects.update_or_create(
+            name="Test Supplier",
+            defaults={"district": "Lusaka", "contact_person": "Test Supplier User", "phone": "+260 977 300 300", "email": "testsupplier@example.com"},
         )
         supplier_b, _ = Supplier.objects.get_or_create(
             name="Classroom Essentials Zambia",
@@ -130,8 +130,7 @@ class Command(BaseCommand):
         ]:
             DocumentNumberSetting.objects.get_or_create(document_type=doc_type, defaults={"prefix": prefix, "next_number": 2, "padding": 4})
 
-        for approver_role in [ApprovalStep.APPROVER_HEAD, ApprovalStep.APPROVER_COMMITTEE, ApprovalStep.APPROVER_DEBS]:
-            ApprovalStep.objects.get_or_create(request=req, approver_role=approver_role)
+        ApprovalStep.objects.filter(request=req).delete()
 
         Notice.objects.get_or_create(
             title="Term procurement submissions",

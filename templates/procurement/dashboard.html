@@ -3,10 +3,12 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-3">
   <div>
-    <p class="eyebrow">Role dashboard</p>
+    <p class="eyebrow">{{ user.username }} dashboard</p>
     <h1 class="h3 mb-0">Dashboard</h1>
   </div>
+  {% if role == "SCHOOL" or role == "ADMIN" %}
   <a href="{% url 'request_create' %}" class="btn btn-primary">Create procurement request</a>
+  {% endif %}
 </div>
 <div class="action-strip mb-3">
   {% if role == "SCHOOL" or role == "ADMIN" %}
@@ -59,8 +61,8 @@
   <div class="col-lg-4">
     {% include "procurement/partials/spending_lists.html" %}
     <div class="card shadow-sm border-0 mt-3"><div class="card-body">
-      <h2 class="h6">Pending approvals</h2>
-      {% for approval in my_approvals %}<div class="d-flex justify-content-between gap-2 mb-2"><span>{{ approval.request.reference }}</span><strong>{{ approval.get_approver_role_display }}</strong></div>{% empty %}<p class="text-muted mb-0">No approvals waiting.</p>{% endfor %}
+      <h2 class="h6">Quotes to approve</h2>
+      {% for req in quotes_to_approve %}<div class="d-flex justify-content-between gap-2 mb-2"><span>{{ req.reference }}</span><a href="{% url 'compare_quotations' req.pk %}" class="btn btn-sm btn-outline-primary">Review</a></div>{% empty %}<p class="text-muted mb-0">No quotations waiting for school approval.</p>{% endfor %}
     </div></div>
   </div>
 </div>

@@ -305,6 +305,28 @@
   padding: 1.25rem;
 }
 
+.locked-context {
+  align-items: center;
+  background: #f7fafd;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  gap: .75rem;
+  justify-content: space-between;
+  padding: .85rem 1.25rem;
+}
+
+.locked-context span {
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.locked-context strong {
+  color: var(--ink);
+  font-size: .98rem;
+}
+
 .field-block {
   min-width: 0;
 }

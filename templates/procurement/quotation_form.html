@@ -21,10 +21,16 @@
     <div class="panel-header">
       <div>
         <h2>Quotation details</h2>
-        <p>Supplier, request, validity, and delivery timing.</p>
+        <p>{% if locked_supplier %}Submitting as {{ locked_supplier.name }}.{% else %}Supplier, request, validity, and delivery timing.{% endif %}</p>
       </div>
       <span class="panel-badge">Draft</span>
     </div>
+    {% if locked_supplier %}
+    <div class="locked-context">
+      <span>Assigned supplier</span>
+      <strong>{{ locked_supplier.name }}</strong>
+    </div>
+    {% endif %}
     <div class="form-grid">
       {% for field in form %}
       <div class="field-block {% if field.name == 'notes' %}field-block--wide{% endif %}">
