@@ -158,7 +158,7 @@ class QuotationForm(BootstrapModelForm):
 
     class Meta:
         model = Quotation
-        fields = ["request", "supplier", "quotation_number", "valid_until", "delivery_days", "notes"]
+        fields = ["request", "supplier", "valid_until", "delivery_days", "notes"]
         widgets = {"valid_until": DateInput(), "notes": forms.Textarea(attrs={"rows": 4})}
 
 
@@ -255,7 +255,7 @@ class GoodsReceivedNoteForm(BootstrapModelForm):
 class InvoiceForm(BootstrapModelForm):
     class Meta:
         model = Invoice
-        fields = ["request", "supplier", "invoice_number", "invoice_date", "amount", "document", "notes"]
+        fields = ["request", "supplier", "invoice_date", "amount", "document", "notes"]
         widgets = {"invoice_date": DateInput()}
 
     def __init__(self, *args, request_queryset=None, supplier=None, **kwargs):
@@ -281,7 +281,7 @@ class InvoiceForm(BootstrapModelForm):
 class PaymentRecordForm(BootstrapModelForm):
     class Meta:
         model = PaymentRecord
-        fields = ["request", "status", "amount", "payment_reference", "paid_date", "notes"]
+        fields = ["request", "status", "amount", "paid_date", "notes"]
         widgets = {"paid_date": DateInput()}
 
     def __init__(self, *args, request_queryset=None, **kwargs):

@@ -182,16 +182,20 @@ class ApprovalStep(models.Model):
 
 
 class DocumentNumberSetting(models.Model):
+    DOC_QUOTATION = "QTN"
     DOC_PO = "PO"
     DOC_DELIVERY = "DN"
     DOC_GRN = "GRN"
     DOC_INVOICE = "INV"
+    DOC_PAYMENT = "PAY"
     DOC_RECEIPT = "RCT"
     DOC_CHOICES = [
+        (DOC_QUOTATION, "Quotation"),
         (DOC_PO, "Purchase Order"),
         (DOC_DELIVERY, "Delivery Note"),
         (DOC_GRN, "Goods Received Note"),
         (DOC_INVOICE, "Invoice"),
+        (DOC_PAYMENT, "Payment Reference"),
         (DOC_RECEIPT, "Receipt"),
     ]
 

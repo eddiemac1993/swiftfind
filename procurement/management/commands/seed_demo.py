@@ -134,10 +134,12 @@ class Command(BaseCommand):
         Receipt.objects.get_or_create(request=req, defaults={"supplier": supplier_a, "receipt_number": "RCT-2026-0001", "receipt_date": date.today(), "amount": Decimal("10080.00"), "notes": "Payment received in full."})
 
         for doc_type, prefix in [
+            (DocumentNumberSetting.DOC_QUOTATION, "QTN"),
             (DocumentNumberSetting.DOC_PO, "PO"),
             (DocumentNumberSetting.DOC_DELIVERY, "DN"),
             (DocumentNumberSetting.DOC_GRN, "GRN"),
             (DocumentNumberSetting.DOC_INVOICE, "INV"),
+            (DocumentNumberSetting.DOC_PAYMENT, "PAY"),
             (DocumentNumberSetting.DOC_RECEIPT, "RCT"),
         ]:
             DocumentNumberSetting.objects.get_or_create(document_type=doc_type, defaults={"prefix": prefix, "next_number": 2, "padding": 4})

@@ -474,7 +474,9 @@ def quotation_create(request):
             if form.cleaned_data["request"].quotation_deadline and form.cleaned_data["request"].quotation_deadline < timezone.now():
                 form.add_error("request", "This request has passed its quotation deadline.")
             else:
-                quote = form.save()
+                quote = form.save(commit=False)
+                quote.quotation_number = generate_doc_number(DocumentNumberSetting.DOC_QUOTATION, "QTN")
+                quote.save()
                 for item in quote.request.items.all():
                     quote.items.get_or_create(request_item=item, defaults={"unit_price": item.product.guide_price})
                 quote.request.status = ProcurementRequest.STATUS_QUOTED
@@ -651,7 +653,10 @@ def payment_tracking_page(request):
     if request.method == "POST":
         form = PaymentRecordForm(request.POST, request_queryset=request_queryset)
         if form.is_valid():
-            payment = form.save()
+            payment = form.save(commit=False)
+            if not payment.payment_reference:
+                payment.payment_reference = generate_doc_number(DocumentNumberSetting.DOC_PAYMENT, "PAY")
+            payment.save()
             payment.request.status = (
                 ProcurementRequest.STATUS_PAID
                 if payment.status == PaymentRecord.STATUS_PAID
