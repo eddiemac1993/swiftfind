@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Source+Serif+4:wght@700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="{% static 'css/schoolprocure.css' %}?v=20260628-logo-png" rel="stylesheet">
+  <link href="{% static 'css/schoolprocure.css' %}?v=20260629-workflow-ai" rel="stylesheet">
 </head>
 <body class="app-body">
   {% if user.is_authenticated %}
@@ -33,6 +33,7 @@
       <a class="{% if request.resolver_match.url_name == 'quotation_create' or request.resolver_match.url_name == 'quotation_edit' %}active{% endif %}" href="{% url 'quotation_create' %}">Quotations</a>
       <a class="{% if request.resolver_match.url_name == 'delivery_note_page' %}active{% endif %}" href="{% url 'delivery_note_page' %}">Delivery Notes</a>
       <a class="{% if request.resolver_match.url_name == 'invoice_page' %}active{% endif %}" href="{% url 'invoice_page' %}">Invoices</a>
+      <a class="{% if request.resolver_match.url_name == 'receipt_page' %}active{% endif %}" href="{% url 'receipt_page' %}">Receipts</a>
       {% endif %}
       {% if user.is_superuser or user.profile.role == "ADMIN" or user.profile.role == "SCHOOL" %}
       <a class="{% if request.resolver_match.url_name == 'purchase_order_upload' %}active{% endif %}" href="{% url 'purchase_order_upload' %}">Purchase Orders</a>
@@ -81,6 +82,7 @@
           <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'delivery_note_page' %}active{% endif %}" href="{% url 'delivery_note_page' %}">Delivery</a></li>
           <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'goods_received_page' %}active{% endif %}" href="{% url 'goods_received_page' %}">GRN</a></li>
           <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'invoice_page' %}active{% endif %}" href="{% url 'invoice_page' %}">Invoices</a></li>
+          <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'receipt_page' %}active{% endif %}" href="{% url 'receipt_page' %}">Receipts</a></li>
           <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'payment_tracking_page' %}active{% endif %}" href="{% url 'payment_tracking_page' %}">Payments</a></li>
           <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'reports_page' %}active{% endif %}" href="{% url 'reports_page' %}">Reports</a></li>
           <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'noticeboard_page' %}active{% endif %}" href="{% url 'noticeboard_page' %}">Noticeboard</a></li>
@@ -109,6 +111,66 @@
     <span>Powered by Dreambolt Technology</span>
     <span>Copyright &copy; 2026 Swift Technologies. All rights reserved.</span>
   </footer>
+  {% if user.is_authenticated %}
+  <div class="ai-assistant" id="ai-assistant">
+    <button class="ai-assistant__toggle" type="button" id="aiAssistantToggle" aria-label="Open AI assistant">AI</button>
+    <section class="ai-assistant__panel" id="aiAssistantPanel" hidden>
+      <header>
+        <div>
+          <strong>SchoolProcure Assistant</strong>
+          <span>Ask how to use the platform</span>
+        </div>
+        <button type="button" id="aiAssistantClose" aria-label="Close assistant">&times;</button>
+      </header>
+      <div class="ai-assistant__messages" id="aiAssistantMessages">
+        <div class="ai-message ai-message--bot">Hello {{ user.username }}. Ask me about requests, quotations, delivery, invoices, payments, receipts, reports, or messages.</div>
+      </div>
+      <form id="aiAssistantForm" class="ai-assistant__form">
+        <input id="aiAssistantInput" type="text" placeholder="Type your question..." autocomplete="off">
+        <button type="submit">Send</button>
+      </form>
+    </section>
+  </div>
+  {% endif %}
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  {% if user.is_authenticated %}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const panel = document.getElementById("aiAssistantPanel");
+      const toggle = document.getElementById("aiAssistantToggle");
+      const close = document.getElementById("aiAssistantClose");
+      const form = document.getElementById("aiAssistantForm");
+      const input = document.getElementById("aiAssistantInput");
+      const messages = document.getElementById("aiAssistantMessages");
+      const getCookie = (name) => document.cookie.split("; ").find((row) => row.startsWith(name + "="))?.split("=")[1] || "";
+      const addMessage = (text, type) => {
+        const item = document.createElement("div");
+        item.className = "ai-message ai-message--" + type;
+        item.textContent = text;
+        messages.appendChild(item);
+        messages.scrollTop = messages.scrollHeight;
+      };
+      toggle?.addEventListener("click", () => {
+        panel.hidden = !panel.hidden;
+        if (!panel.hidden) input.focus();
+      });
+      close?.addEventListener("click", () => panel.hidden = true);
+      form?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = "";
+        addMessage(text, "user");
+        const response = await fetch("{% url 'assistant_ask' %}", {
+          method: "POST",
+          headers: {"Content-Type": "application/json", "X-CSRFToken": decodeURIComponent(getCookie("csrftoken"))},
+          body: JSON.stringify({message: text})
+        });
+        const data = await response.json();
+        addMessage(data.answer || "I could not answer that yet.", "bot");
+      });
+    });
+  </script>
+  {% endif %}
 </body>
 </html>

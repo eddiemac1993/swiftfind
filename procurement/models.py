@@ -117,8 +117,11 @@ class ProcurementRequest(models.Model):
     reference = models.CharField(max_length=40, unique=True, blank=True)
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default=STATUS_DRAFT)
     needed_by = models.DateField(null=True, blank=True)
+    quotation_deadline = models.DateTimeField(null=True, blank=True)
     notes = models.TextField(blank=True)
     selected_supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True)
+    selection_reason = models.TextField(blank=True)
+    delivery_due_date = models.DateField(null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -183,11 +186,13 @@ class DocumentNumberSetting(models.Model):
     DOC_DELIVERY = "DN"
     DOC_GRN = "GRN"
     DOC_INVOICE = "INV"
+    DOC_RECEIPT = "RCT"
     DOC_CHOICES = [
         (DOC_PO, "Purchase Order"),
         (DOC_DELIVERY, "Delivery Note"),
         (DOC_GRN, "Goods Received Note"),
         (DOC_INVOICE, "Invoice"),
+        (DOC_RECEIPT, "Receipt"),
     ]
 
     document_type = models.CharField(max_length=10, choices=DOC_CHOICES, unique=True)
@@ -273,6 +278,7 @@ class DeliveryNote(models.Model):
     delivery_number = models.CharField(max_length=60)
     delivered_date = models.DateField()
     document = models.FileField(upload_to="delivery_notes/", blank=True)
+    items_delivered = models.TextField(blank=True)
     notes = models.TextField(blank=True)
 
     def __str__(self):
@@ -322,6 +328,20 @@ class PaymentRecord(models.Model):
 
     def __str__(self):
         return f"{self.request.reference} - {self.get_status_display()}"
+
+
+class Receipt(models.Model):
+    request = models.OneToOneField(ProcurementRequest, on_delete=models.CASCADE, related_name="receipt")
+    supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT)
+    receipt_number = models.CharField(max_length=60)
+    receipt_date = models.DateField()
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    document = models.FileField(upload_to="receipts/", blank=True)
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.receipt_number
 
 
 class Notice(models.Model):

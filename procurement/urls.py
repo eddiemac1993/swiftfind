@@ -22,6 +22,7 @@ urlpatterns = [
     path("goods-received/", views.goods_received_page, name="goods_received_page"),
     path("invoices/", views.invoice_page, name="invoice_page"),
     path("payments/", views.payment_tracking_page, name="payment_tracking_page"),
+    path("receipts/", views.receipt_page, name="receipt_page"),
     path("reports/", views.reports_page, name="reports_page"),
     path("reports/export/<str:export_type>/", views.reports_export, name="reports_export"),
     path("approvals/<int:pk>/", views.approval_update, name="approval_update"),
@@ -31,5 +32,6 @@ urlpatterns = [
     path("messages/", views.messages_page, name="messages_page"),
     path("messages/new/", views.message_create, name="message_create"),
     path("messages/<int:pk>/", views.message_detail, name="message_detail"),
+    path("assistant/ask/", views.assistant_ask, name="assistant_ask"),
     path("pdf/<str:document_type>/<int:pk>/", views.document_pdf, name="document_pdf"),
 ]

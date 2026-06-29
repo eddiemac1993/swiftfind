@@ -31,14 +31,38 @@
       {% endfor %}
     </div>
     <hr>
-    <h2 class="h5">Request items</h2>
+    <div class="items-heading">
+      <div>
+        <h2 class="h5 mb-1">Request items</h2>
+        <p class="text-muted mb-0">Add every item or service the school needs before submitting.</p>
+      </div>
+      <button class="btn btn-outline-primary" type="button" id="add-item-row">Add item</button>
+    </div>
     {{ formset.management_form }}
     <div class="table-responsive">
       <table class="table">
         <thead><tr><th>Product</th><th>Quantity</th><th>Notes</th><th>Delete</th></tr></thead>
-        <tbody>{% for item_form in formset %}<tr>{% for hidden in item_form.hidden_fields %}{{ hidden }}{% endfor %}<td>{{ item_form.product }}</td><td>{{ item_form.quantity }}</td><td>{{ item_form.notes }}</td><td>{% if item_form.DELETE %}{{ item_form.DELETE }}{% endif %}</td></tr>{% endfor %}</tbody>
+        <tbody id="request-items-body">{% for item_form in formset %}<tr class="request-item-row">{% for hidden in item_form.hidden_fields %}{{ hidden }}{% endfor %}<td>{{ item_form.product }}</td><td>{{ item_form.quantity }}</td><td>{{ item_form.notes }}</td><td>{% if item_form.DELETE %}{{ item_form.DELETE }}{% endif %}</td></tr>{% endfor %}</tbody>
       </table>
     </div>
+    <template id="empty-item-template">
+      <tr class="request-item-row">{% for hidden in formset.empty_form.hidden_fields %}{{ hidden }}{% endfor %}<td>{{ formset.empty_form.product }}</td><td>{{ formset.empty_form.quantity }}</td><td>{{ formset.empty_form.notes }}</td><td>{% if formset.empty_form.DELETE %}{{ formset.empty_form.DELETE }}{% endif %}</td></tr>
+    </template>
     <div class="form-actions"><button class="btn btn-primary btn-lg" type="submit">Submit request</button></div>
 </form>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const addButton = document.getElementById("add-item-row");
+    const body = document.getElementById("request-items-body");
+    const template = document.getElementById("empty-item-template");
+    const totalForms = document.getElementById("id_items-TOTAL_FORMS");
+    if (!addButton || !body || !template || !totalForms) return;
+    addButton.addEventListener("click", function () {
+      const index = Number(totalForms.value);
+      const html = template.innerHTML.replace(/__prefix__/g, index);
+      body.insertAdjacentHTML("beforeend", html);
+      totalForms.value = index + 1;
+    });
+  });
+</script>
 {% endblock %}

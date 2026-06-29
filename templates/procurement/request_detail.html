@@ -12,7 +12,15 @@
   </div></div></div>
   <div class="col-lg-5"><div class="card shadow-sm border-0"><div class="card-body">
     <h2 class="h5">Workflow</h2>
-    <p><strong>School:</strong> {{ req.school.name }}</p><p><strong>Needed by:</strong> {{ req.needed_by|default:"Not specified" }}</p><p><strong>Selected supplier:</strong> {{ req.selected_supplier|default:"Pending" }}</p><p>{{ req.notes }}</p>
+    <p><strong>School:</strong> {{ req.school.name }}</p>
+    <p><strong>Needed by:</strong> {{ req.needed_by|default:"Not specified" }}</p>
+    <p><strong>Quotation deadline:</strong> {{ req.quotation_deadline|date:"d M Y H:i"|default:"Not specified" }}</p>
+    <p><strong>Selected supplier:</strong> {{ req.selected_supplier|default:"Pending" }}</p>
+    {% if req.selection_reason %}<p><strong>Selection reason:</strong> {{ req.selection_reason }}</p>{% endif %}
+    {% if req.delivery_due_date %}
+      <p><strong>Expected delivery:</strong> {{ req.delivery_due_date }} {% if days_remaining is not None %}<span class="badge text-bg-{% if days_remaining < 0 %}danger{% elif days_remaining <= 3 %}warning{% else %}success{% endif %}">{% if days_remaining < 0 %}Overdue{% else %}{{ days_remaining }} days remaining{% endif %}</span>{% endif %}</p>
+    {% endif %}
+    <p>{{ req.notes }}</p>
   </div></div></div>
 </div>
 <div class="card shadow-sm border-0 mt-3"><div class="card-body">

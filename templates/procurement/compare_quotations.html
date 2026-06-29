@@ -2,6 +2,9 @@
 {% load humanize %}
 {% block content %}
 <h1 class="h3 mb-3">Compare quotations for {{ req.reference }}</h1>
+{% if req.quotation_deadline %}
+<div class="alert alert-light border">Quotation deadline: <strong>{{ req.quotation_deadline|date:"d M Y H:i" }}</strong></div>
+{% endif %}
 <div class="row g-3">
 {% for quote in req.quotations.all %}
   <div class="col-lg-4"><div class="card shadow-sm {% if quote.is_selected %}border-primary{% else %}border-0{% endif %}"><div class="card-body">
@@ -10,7 +13,16 @@
     <table class="table table-sm"><tbody>{% for item in quote.items.all %}<tr><td>{{ item.request_item.product.name }}</td><td class="text-end">{{ item.line_total|floatformat:2|intcomma }}</td></tr>{% endfor %}</tbody><tfoot><tr><th>Total</th><th class="text-end">{{ quote.total_amount|floatformat:2|intcomma }}</th></tr></tfoot></table>
     <a href="{% url 'document_pdf' 'quotation' quote.pk %}" class="btn btn-sm btn-outline-secondary">Styled PDF</a>
     {% if user.is_superuser or user.profile.role == "ADMIN" or user.profile.role == "SCHOOL" %}
-    <form method="post" action="{% url 'select_quotation' quote.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-primary" type="submit">Approve quote</button></form>
+    {% if quote.is_selected %}
+    <div class="alert alert-success mt-3 mb-0">Approved supplier. Reason: {{ req.selection_reason|default:"Not recorded" }}</div>
+    {% else %}
+    <form method="post" action="{% url 'select_quotation' quote.pk %}" class="quote-select-form mt-3">
+      {% csrf_token %}
+      <label class="form-label" for="reason-{{ quote.pk }}">Reason for selecting this supplier</label>
+      <textarea class="form-control" id="reason-{{ quote.pk }}" name="selection_reason" rows="3" required placeholder="Example: best value, delivery timeline, compliance, warranty, or quality."></textarea>
+      <button class="btn btn-sm btn-primary mt-2" type="submit">Approve quote</button>
+    </form>
+    {% endif %}
     {% endif %}
   </div></div></div>
 {% empty %}<div class="col"><div class="alert alert-info">No quotations submitted yet.</div></div>{% endfor %}

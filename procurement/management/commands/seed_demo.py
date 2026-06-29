@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
 from procurement.models import (
     ApprovalStep,
@@ -19,6 +20,7 @@ from procurement.models import (
     PurchaseOrder,
     Quotation,
     QuotationItem,
+    Receipt,
     RequestItem,
     School,
     Supplier,
@@ -101,7 +103,15 @@ class Command(BaseCommand):
         req, _ = ProcurementRequest.objects.get_or_create(
             title="Classroom repairs and maintenance materials",
             school=school_a,
-            defaults={"status": ProcurementRequest.STATUS_PAID, "needed_by": date.today() + timedelta(days=14), "selected_supplier": supplier_a, "notes": "Urgent materials for classroom block repairs."},
+            defaults={
+                "status": ProcurementRequest.STATUS_PAID,
+                "needed_by": date.today() + timedelta(days=14),
+                "quotation_deadline": timezone.now() + timedelta(days=7),
+                "selected_supplier": supplier_a,
+                "selection_reason": "Best value quotation with the shortest delivery timeline.",
+                "delivery_due_date": date.today() + timedelta(days=5),
+                "notes": "Urgent materials for classroom block repairs.",
+            },
         )
         cement, _ = RequestItem.objects.get_or_create(request=req, product=product_map["50kg cement bag"], defaults={"quantity": 40})
         paint, _ = RequestItem.objects.get_or_create(request=req, product=product_map["20L acrylic paint"], defaults={"quantity": 8})
@@ -117,16 +127,18 @@ class Command(BaseCommand):
         QuotationItem.objects.get_or_create(quotation=quote, request_item=paint, defaults={"unit_price": Decimal("560.00")})
 
         PurchaseOrder.objects.get_or_create(request=req, defaults={"supplier": supplier_a, "po_number": "PO-2026-0001", "issued_date": date.today(), "confirmed_by_supplier": True})
-        DeliveryNote.objects.get_or_create(request=req, defaults={"supplier": supplier_a, "delivery_number": "DN-2026-0001", "delivered_date": date.today()})
+        DeliveryNote.objects.get_or_create(request=req, defaults={"supplier": supplier_a, "delivery_number": "DN-2026-0001", "delivered_date": date.today(), "items_delivered": "40 bags cement and 8 buckets acrylic paint delivered."})
         GoodsReceivedNote.objects.get_or_create(request=req, defaults={"grn_number": "GRN-2026-0001", "received_date": date.today(), "received_by": "Mary Banda", "condition_notes": "Items received in good condition."})
         Invoice.objects.get_or_create(request=req, defaults={"supplier": supplier_a, "invoice_number": "INV-2026-0001", "invoice_date": date.today(), "amount": Decimal("10080.00")})
         PaymentRecord.objects.get_or_create(request=req, defaults={"status": PaymentRecord.STATUS_PAID, "amount": Decimal("10080.00"), "payment_reference": "TREASURY-001", "paid_date": date.today()})
+        Receipt.objects.get_or_create(request=req, defaults={"supplier": supplier_a, "receipt_number": "RCT-2026-0001", "receipt_date": date.today(), "amount": Decimal("10080.00"), "notes": "Payment received in full."})
 
         for doc_type, prefix in [
             (DocumentNumberSetting.DOC_PO, "PO"),
             (DocumentNumberSetting.DOC_DELIVERY, "DN"),
             (DocumentNumberSetting.DOC_GRN, "GRN"),
             (DocumentNumberSetting.DOC_INVOICE, "INV"),
+            (DocumentNumberSetting.DOC_RECEIPT, "RCT"),
         ]:
             DocumentNumberSetting.objects.get_or_create(document_type=doc_type, defaults={"prefix": prefix, "next_number": 2, "padding": 4})
 

@@ -14,6 +14,7 @@ from .models import (
     PurchaseOrder,
     Quotation,
     QuotationItem,
+    Receipt,
     RequestItem,
     School,
     Supplier,
@@ -22,6 +23,10 @@ from .models import (
 
 class DateInput(forms.DateInput):
     input_type = "date"
+
+
+class DateTimeInput(forms.DateTimeInput):
+    input_type = "datetime-local"
 
 
 class BootstrapModelForm(forms.ModelForm):
@@ -93,6 +98,7 @@ class ProcurementRequestForm(BootstrapModelForm):
     def __init__(self, *args, locked_school=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.locked_school = locked_school
+        self.fields["quotation_deadline"].input_formats = ["%Y-%m-%dT%H:%M"]
         if locked_school:
             self.fields.pop("school", None)
 
@@ -107,8 +113,12 @@ class ProcurementRequestForm(BootstrapModelForm):
 
     class Meta:
         model = ProcurementRequest
-        fields = ["school", "title", "needed_by", "notes"]
-        widgets = {"needed_by": DateInput()}
+        fields = ["school", "title", "needed_by", "quotation_deadline", "notes"]
+        widgets = {
+            "needed_by": DateInput(),
+            "quotation_deadline": DateTimeInput(format="%Y-%m-%dT%H:%M"),
+            "notes": forms.Textarea(attrs={"rows": 4}),
+        }
 
 
 class RequestItemForm(BootstrapModelForm):
@@ -121,7 +131,7 @@ RequestItemFormSet = inlineformset_factory(
     ProcurementRequest,
     RequestItem,
     form=RequestItemForm,
-    extra=4,
+    extra=1,
     can_delete=True,
     min_num=1,
     validate_min=True,
@@ -129,9 +139,11 @@ RequestItemFormSet = inlineformset_factory(
 
 
 class QuotationForm(BootstrapModelForm):
-    def __init__(self, *args, locked_supplier=None, **kwargs):
+    def __init__(self, *args, locked_supplier=None, request_queryset=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.locked_supplier = locked_supplier
+        if request_queryset is not None:
+            self.fields["request"].queryset = request_queryset
         if locked_supplier:
             self.fields.pop("supplier", None)
 
@@ -147,7 +159,14 @@ class QuotationForm(BootstrapModelForm):
     class Meta:
         model = Quotation
         fields = ["request", "supplier", "quotation_number", "valid_until", "delivery_days", "notes"]
-        widgets = {"valid_until": DateInput()}
+        widgets = {"valid_until": DateInput(), "notes": forms.Textarea(attrs={"rows": 4})}
+
+
+class QuotationSelectionForm(forms.Form):
+    selection_reason = forms.CharField(
+        label="Reason for selecting this supplier",
+        widget=forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+    )
 
 
 class QuotationItemForm(BootstrapModelForm):
@@ -172,12 +191,53 @@ class PurchaseOrderForm(BootstrapModelForm):
         fields = ["request", "supplier", "po_number", "issued_date", "document", "notes"]
         widgets = {"issued_date": DateInput()}
 
+    def __init__(self, *args, request_queryset=None, supplier=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if request_queryset is not None:
+            self.fields["request"].queryset = request_queryset
+        if supplier:
+            self.locked_supplier = supplier
+            self.fields.pop("supplier", None)
+        else:
+            self.locked_supplier = None
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if self.locked_supplier:
+            instance.supplier = self.locked_supplier
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
+
 
 class DeliveryNoteForm(BootstrapModelForm):
     class Meta:
         model = DeliveryNote
-        fields = ["request", "supplier", "delivery_number", "delivered_date", "document", "notes"]
-        widgets = {"delivered_date": DateInput()}
+        fields = ["request", "supplier", "delivery_number", "delivered_date", "items_delivered", "document", "notes"]
+        widgets = {
+            "delivered_date": DateInput(),
+            "items_delivered": forms.Textarea(attrs={"rows": 4, "placeholder": "List delivered items, quantities, and any shortages."}),
+        }
+
+    def __init__(self, *args, request_queryset=None, supplier=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if request_queryset is not None:
+            self.fields["request"].queryset = request_queryset
+        if supplier:
+            self.locked_supplier = supplier
+            self.fields.pop("supplier", None)
+        else:
+            self.locked_supplier = None
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if self.locked_supplier:
+            instance.supplier = self.locked_supplier
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
 
 
 class GoodsReceivedNoteForm(BootstrapModelForm):
@@ -186,6 +246,11 @@ class GoodsReceivedNoteForm(BootstrapModelForm):
         fields = ["request", "grn_number", "received_date", "received_by", "condition_notes"]
         widgets = {"received_date": DateInput()}
 
+    def __init__(self, *args, request_queryset=None, supplier=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if request_queryset is not None:
+            self.fields["request"].queryset = request_queryset
+
 
 class InvoiceForm(BootstrapModelForm):
     class Meta:
@@ -193,12 +258,62 @@ class InvoiceForm(BootstrapModelForm):
         fields = ["request", "supplier", "invoice_number", "invoice_date", "amount", "document", "notes"]
         widgets = {"invoice_date": DateInput()}
 
+    def __init__(self, *args, request_queryset=None, supplier=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if request_queryset is not None:
+            self.fields["request"].queryset = request_queryset
+        if supplier:
+            self.locked_supplier = supplier
+            self.fields.pop("supplier", None)
+        else:
+            self.locked_supplier = None
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if self.locked_supplier:
+            instance.supplier = self.locked_supplier
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
+
 
 class PaymentRecordForm(BootstrapModelForm):
     class Meta:
         model = PaymentRecord
         fields = ["request", "status", "amount", "payment_reference", "paid_date", "notes"]
         widgets = {"paid_date": DateInput()}
+
+    def __init__(self, *args, request_queryset=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if request_queryset is not None:
+            self.fields["request"].queryset = request_queryset
+
+
+class ReceiptForm(BootstrapModelForm):
+    class Meta:
+        model = Receipt
+        fields = ["request", "supplier", "receipt_number", "receipt_date", "amount", "document", "notes"]
+        widgets = {"receipt_date": DateInput()}
+
+    def __init__(self, *args, request_queryset=None, supplier=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        if request_queryset is not None:
+            self.fields["request"].queryset = request_queryset
+        if supplier:
+            self.locked_supplier = supplier
+            self.fields.pop("supplier", None)
+        else:
+            self.locked_supplier = None
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if self.locked_supplier:
+            instance.supplier = self.locked_supplier
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
 
 
 class ClarificationMessageForm(BootstrapModelForm):

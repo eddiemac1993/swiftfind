@@ -16,6 +16,7 @@ from .models import (
     PurchaseOrder,
     Quotation,
     QuotationItem,
+    Receipt,
     RequestItem,
     School,
     Supplier,
@@ -87,6 +88,7 @@ admin.site.register(DeliveryNote)
 admin.site.register(GoodsReceivedNote)
 admin.site.register(Invoice)
 admin.site.register(PaymentRecord)
+admin.site.register(Receipt)
 admin.site.register(Notice)
 admin.site.register(ClarificationMessage)
 admin.site.register(ApprovalStep)

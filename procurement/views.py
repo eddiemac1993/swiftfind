@@ -1,3 +1,5 @@
+import json
+from datetime import timedelta
 from decimal import Decimal
 from io import BytesIO
 
@@ -6,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.db.models import Count, DecimalField, ExpressionWrapper, F, Q, Sum
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import JsonResponse, HttpResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -27,6 +29,8 @@ from .forms import (
     PurchaseOrderForm,
     QuotationForm,
     QuotationItemFormSet,
+    QuotationSelectionForm,
+    ReceiptForm,
     RequestItemFormSet,
     SchoolForm,
     SupplierForm,
@@ -44,6 +48,7 @@ from .models import (
     Product,
     PurchaseOrder,
     Quotation,
+    Receipt,
     RequestItem,
     School,
     Supplier,
@@ -69,17 +74,24 @@ def visible_requests(user):
     if role == UserProfile.ROLE_SCHOOL and profile and profile.school:
         return qs.filter(school=profile.school)
     if role == UserProfile.ROLE_SUPPLIER and profile and profile.supplier:
-        return qs.filter(status__in=[
-            ProcurementRequest.STATUS_REQUESTED,
-            ProcurementRequest.STATUS_QUOTED,
-            ProcurementRequest.STATUS_PO_ISSUED,
-            ProcurementRequest.STATUS_CONFIRMED,
-            ProcurementRequest.STATUS_DELIVERED,
-            ProcurementRequest.STATUS_GRN_CONFIRMED,
-            ProcurementRequest.STATUS_INVOICED,
-            ProcurementRequest.STATUS_PAYMENT_PROCESSING,
-            ProcurementRequest.STATUS_PAID,
-        ])
+        return qs.filter(
+            Q(status__in=[ProcurementRequest.STATUS_REQUESTED, ProcurementRequest.STATUS_QUOTED])
+            | Q(selected_supplier=profile.supplier)
+        )
+    return qs
+
+
+def open_quotation_requests(user):
+    return visible_requests(user).filter(
+        status__in=[ProcurementRequest.STATUS_REQUESTED, ProcurementRequest.STATUS_QUOTED],
+    ).filter(Q(quotation_deadline__isnull=True) | Q(quotation_deadline__gte=timezone.now()))
+
+
+def selected_supplier_requests(user):
+    qs = visible_requests(user).filter(selected_supplier__isnull=False)
+    supplier = locked_supplier_for(user)
+    if supplier:
+        qs = qs.filter(selected_supplier=supplier)
     return qs
 
 
@@ -358,7 +370,10 @@ def procurement_request_create(request):
 @login_required
 def request_detail(request, pk):
     req = get_object_or_404(visible_requests(request.user), pk=pk)
-    return render(request, "procurement/request_detail.html", {"req": req})
+    days_remaining = None
+    if req.delivery_due_date:
+        days_remaining = (req.delivery_due_date - timezone.localdate()).days
+    return render(request, "procurement/request_detail.html", {"req": req, "days_remaining": days_remaining})
 
 
 @login_required
@@ -367,23 +382,27 @@ def quotation_create(request):
     if forbidden:
         return forbidden
     locked_supplier = locked_supplier_for(request.user)
+    request_queryset = open_quotation_requests(request.user)
     if request.method == "POST":
-        form = QuotationForm(request.POST, locked_supplier=locked_supplier)
+        form = QuotationForm(request.POST, locked_supplier=locked_supplier, request_queryset=request_queryset)
         if form.is_valid():
-            quote = form.save()
-            for item in quote.request.items.all():
-                quote.items.get_or_create(request_item=item, defaults={"unit_price": item.product.guide_price})
-            quote.request.status = ProcurementRequest.STATUS_QUOTED
-            quote.request.save(update_fields=["status"])
-            notify_user(quote.request.created_by, "Quotation submitted", f"{quote.supplier.name} submitted quotation {quote.quotation_number} for {quote.request.reference}.")
-            messages.info(request, "Add or adjust item pricing for the quotation.")
-            return redirect("quotation_edit", pk=quote.pk)
+            if form.cleaned_data["request"].quotation_deadline and form.cleaned_data["request"].quotation_deadline < timezone.now():
+                form.add_error("request", "This request has passed its quotation deadline.")
+            else:
+                quote = form.save()
+                for item in quote.request.items.all():
+                    quote.items.get_or_create(request_item=item, defaults={"unit_price": item.product.guide_price})
+                quote.request.status = ProcurementRequest.STATUS_QUOTED
+                quote.request.save(update_fields=["status"])
+                notify_user(quote.request.created_by, "Quotation submitted", f"{quote.supplier.name} submitted quotation {quote.quotation_number} for {quote.request.reference}.")
+                messages.info(request, "Add or adjust item pricing for the quotation.")
+                return redirect("quotation_edit", pk=quote.pk)
     else:
         initial = {}
         if locked_supplier:
             initial["supplier"] = locked_supplier
-        form = QuotationForm(initial=initial, locked_supplier=locked_supplier)
-    return render(request, "procurement/quotation_form.html", {"form": form, "locked_supplier": locked_supplier})
+        form = QuotationForm(initial=initial, locked_supplier=locked_supplier, request_queryset=request_queryset)
+    return render(request, "procurement/quotation_form.html", {"form": form, "locked_supplier": locked_supplier, "open_request_count": request_queryset.count()})
 
 
 @login_required
@@ -392,6 +411,11 @@ def quotation_edit(request, pk):
     if forbidden:
         return forbidden
     quote = get_object_or_404(Quotation.objects.select_related("request", "supplier"), pk=pk)
+    supplier = locked_supplier_for(request.user)
+    if supplier and quote.supplier_id != supplier.id:
+        return HttpResponseForbidden("You can only edit quotations for your supplier account.")
+    if quote.request.quotation_deadline and quote.request.quotation_deadline < timezone.now():
+        return HttpResponseForbidden("This request has passed its quotation deadline.")
     if request.method == "POST":
         formset = QuotationItemFormSet(request.POST, instance=quote)
         if formset.is_valid():
@@ -408,7 +432,7 @@ def quotation_edit(request, pk):
 @login_required
 def compare_quotations(request, pk):
     req = get_object_or_404(visible_requests(request.user), pk=pk)
-    return render(request, "procurement/compare_quotations.html", {"req": req})
+    return render(request, "procurement/compare_quotations.html", {"req": req, "selection_form": QuotationSelectionForm()})
 
 
 @login_required
@@ -421,13 +445,19 @@ def select_quotation(request, pk):
     if role == UserProfile.ROLE_SCHOOL and (not profile or quotation.request.school_id != getattr(profile.school, "id", None)):
         return HttpResponseForbidden("You can only approve quotations for your assigned school.")
     if request.method == "POST":
-        Quotation.objects.filter(request=quotation.request).update(is_selected=False)
-        quotation.is_selected = True
-        quotation.save(update_fields=["is_selected"])
-        quotation.request.selected_supplier = quotation.supplier
-        quotation.request.status = ProcurementRequest.STATUS_PO_ISSUED
-        quotation.request.save(update_fields=["selected_supplier", "status"])
-        messages.success(request, f"{quotation.supplier.name} quotation approved. Upload or generate the Purchase Order next.")
+        form = QuotationSelectionForm(request.POST)
+        if form.is_valid():
+            Quotation.objects.filter(request=quotation.request).update(is_selected=False)
+            quotation.is_selected = True
+            quotation.save(update_fields=["is_selected"])
+            quotation.request.selected_supplier = quotation.supplier
+            quotation.request.selection_reason = form.cleaned_data["selection_reason"]
+            quotation.request.delivery_due_date = timezone.localdate() + timedelta(days=quotation.delivery_days)
+            quotation.request.status = ProcurementRequest.STATUS_PO_ISSUED
+            quotation.request.save(update_fields=["selected_supplier", "selection_reason", "delivery_due_date", "status"])
+            messages.success(request, f"{quotation.supplier.name} quotation approved. Expected delivery is {quotation.request.delivery_due_date:%d %b %Y}.")
+        else:
+            messages.error(request, "Please enter the reason for selecting this supplier.")
     return redirect("compare_quotations", pk=quotation.request.pk)
 
 
@@ -435,8 +465,9 @@ def select_quotation(request, pk):
 def purchase_order_upload(request):
     if request.method == "GET":
         initial = {"po_number": preview_doc_number(DocumentNumberSetting.DOC_PO, "PO")}
-        form = PurchaseOrderForm(initial=initial)
-        records = PurchaseOrder.objects.select_related("request", "request__school")
+        request_queryset = selected_supplier_requests(request.user)
+        form = PurchaseOrderForm(initial=initial, request_queryset=request_queryset)
+        records = PurchaseOrder.objects.select_related("request", "request__school").filter(request__in=visible_requests(request.user))
         return render(request, "procurement/purchase_order_page.html", {"form": form, "records": records})
     return handle_document_form(
         request,
@@ -453,7 +484,7 @@ def confirm_purchase_order(request, pk):
     forbidden = require_editor(request.user)
     if forbidden:
         return forbidden
-    po = get_object_or_404(PurchaseOrder, pk=pk)
+    po = get_object_or_404(PurchaseOrder.objects.filter(request__in=visible_requests(request.user)), pk=pk)
     if request.method == "POST":
         po.confirmed_by_supplier = True
         po.confirmed_at = timezone.now()
@@ -467,8 +498,13 @@ def confirm_purchase_order(request, pk):
 @login_required
 def delivery_note_page(request):
     if request.method == "GET":
-        form = DeliveryNoteForm(initial={"delivery_number": preview_doc_number(DocumentNumberSetting.DOC_DELIVERY, "DN")})
-        records = DeliveryNote.objects.select_related("request", "request__school")
+        request_queryset = selected_supplier_requests(request.user)
+        form = DeliveryNoteForm(
+            initial={"delivery_number": preview_doc_number(DocumentNumberSetting.DOC_DELIVERY, "DN")},
+            request_queryset=request_queryset,
+            supplier=locked_supplier_for(request.user),
+        )
+        records = DeliveryNote.objects.select_related("request", "request__school").filter(request__in=visible_requests(request.user))
         return render(request, "procurement/delivery_note_page.html", {"form": form, "records": records})
     return handle_document_form(
         request,
@@ -483,8 +519,11 @@ def delivery_note_page(request):
 @login_required
 def goods_received_page(request):
     if request.method == "GET":
-        form = GoodsReceivedNoteForm(initial={"grn_number": preview_doc_number(DocumentNumberSetting.DOC_GRN, "GRN")})
-        records = GoodsReceivedNote.objects.select_related("request", "request__school")
+        form = GoodsReceivedNoteForm(
+            initial={"grn_number": preview_doc_number(DocumentNumberSetting.DOC_GRN, "GRN")},
+            request_queryset=selected_supplier_requests(request.user),
+        )
+        records = GoodsReceivedNote.objects.select_related("request", "request__school").filter(request__in=visible_requests(request.user))
         return render(request, "procurement/goods_received_page.html", {"form": form, "records": records})
     return handle_document_form(
         request,
@@ -499,8 +538,13 @@ def goods_received_page(request):
 @login_required
 def invoice_page(request):
     if request.method == "GET":
-        form = InvoiceForm(initial={"invoice_number": preview_doc_number(DocumentNumberSetting.DOC_INVOICE, "INV")})
-        records = Invoice.objects.select_related("request", "request__school")
+        request_queryset = selected_supplier_requests(request.user)
+        form = InvoiceForm(
+            initial={"invoice_number": preview_doc_number(DocumentNumberSetting.DOC_INVOICE, "INV")},
+            request_queryset=request_queryset,
+            supplier=locked_supplier_for(request.user),
+        )
+        records = Invoice.objects.select_related("request", "request__school").filter(request__in=visible_requests(request.user))
         return render(request, "procurement/invoice_page.html", {"form": form, "records": records})
     return handle_document_form(
         request,
@@ -517,9 +561,10 @@ def payment_tracking_page(request):
     forbidden = require_editor(request.user)
     if forbidden:
         return forbidden
-    records = PaymentRecord.objects.select_related("request", "request__school")
+    request_queryset = selected_supplier_requests(request.user)
+    records = PaymentRecord.objects.select_related("request", "request__school").filter(request__in=visible_requests(request.user))
     if request.method == "POST":
-        form = PaymentRecordForm(request.POST)
+        form = PaymentRecordForm(request.POST, request_queryset=request_queryset)
         if form.is_valid():
             payment = form.save()
             payment.request.status = (
@@ -531,17 +576,57 @@ def payment_tracking_page(request):
             messages.success(request, "Payment status updated.")
             return redirect("payment_tracking_page")
     else:
-        form = PaymentRecordForm()
+        form = PaymentRecordForm(request_queryset=request_queryset)
     return render(request, "procurement/payment_tracking_page.html", {"form": form, "records": records})
+
+
+@login_required
+def receipt_page(request):
+    forbidden = require_editor(request.user)
+    if forbidden:
+        return forbidden
+    can_issue = role_for(request.user) in {UserProfile.ROLE_ADMIN, UserProfile.ROLE_SUPPLIER}
+    if request.method == "POST" and not can_issue:
+        return HttpResponseForbidden("Only the selected supplier or admin can issue receipts.")
+    request_queryset = selected_supplier_requests(request.user).filter(payment__status=PaymentRecord.STATUS_PAID)
+    supplier = locked_supplier_for(request.user)
+    records = Receipt.objects.select_related("request", "request__school", "supplier").filter(request__in=visible_requests(request.user))
+    if request.method == "POST":
+        form = ReceiptForm(request.POST, request.FILES, request_queryset=request_queryset, supplier=supplier)
+        if form.is_valid():
+            receipt = form.save(commit=False)
+            if not hasattr(receipt.request, "payment") or receipt.request.payment.status != PaymentRecord.STATUS_PAID:
+                form.add_error("request", "A receipt can only be issued after payment is marked Paid.")
+            else:
+                receipt.receipt_number = generate_doc_number(DocumentNumberSetting.DOC_RECEIPT, "RCT")
+                if supplier:
+                    receipt.supplier = supplier
+                receipt.save()
+                receipt.request.status = ProcurementRequest.STATUS_CLOSED
+                receipt.request.save(update_fields=["status"])
+                notify_user(receipt.request.created_by, "Receipt issued", f"{receipt.supplier.name} issued receipt {receipt.receipt_number} for {receipt.request.reference}.")
+                messages.success(request, "Receipt issued and request closed.")
+                return redirect("receipt_page")
+    elif can_issue:
+        form = ReceiptForm(
+            initial={"receipt_number": preview_doc_number(DocumentNumberSetting.DOC_RECEIPT, "RCT")},
+            request_queryset=request_queryset,
+            supplier=supplier,
+        )
+    else:
+        form = None
+    return render(request, "procurement/receipt_page.html", {"form": form, "records": records, "pdf_type": "receipt", "title": "Receipts"})
 
 
 def handle_document_form(request, form_class, model_class, template, next_status, success_message):
     forbidden = require_editor(request.user)
     if forbidden:
         return forbidden
-    records = model_class.objects.select_related("request", "request__school")
+    records = model_class.objects.select_related("request", "request__school").filter(request__in=visible_requests(request.user))
+    request_queryset = selected_supplier_requests(request.user)
+    supplier = locked_supplier_for(request.user)
     if request.method == "POST":
-        form = form_class(request.POST, request.FILES)
+        form = form_class(request.POST, request.FILES, request_queryset=request_queryset, supplier=supplier)
         if form.is_valid():
             record = form.save()
             number_fields = {
@@ -549,6 +634,7 @@ def handle_document_form(request, form_class, model_class, template, next_status
                 DeliveryNote: ("delivery_number", DocumentNumberSetting.DOC_DELIVERY, "DN"),
                 GoodsReceivedNote: ("grn_number", DocumentNumberSetting.DOC_GRN, "GRN"),
                 Invoice: ("invoice_number", DocumentNumberSetting.DOC_INVOICE, "INV"),
+                Receipt: ("receipt_number", DocumentNumberSetting.DOC_RECEIPT, "RCT"),
             }
             if model_class in number_fields:
                 field, doc_type, prefix = number_fields[model_class]
@@ -560,7 +646,7 @@ def handle_document_form(request, form_class, model_class, template, next_status
             messages.success(request, success_message)
             return redirect(request.resolver_match.url_name)
     else:
-        form = form_class()
+        form = form_class(request_queryset=request_queryset, supplier=supplier)
     return render(request, template, {"form": form, "records": records})
 
 
@@ -726,6 +812,35 @@ def message_create(request):
 
 
 @login_required
+def assistant_ask(request):
+    if request.method != "POST":
+        return JsonResponse({"answer": "Open the assistant and type a question about using SchoolProcure."})
+    try:
+        payload = json.loads(request.body.decode("utf-8") or "{}")
+    except json.JSONDecodeError:
+        payload = {}
+    question = (payload.get("message") or request.POST.get("message") or "").lower()
+    answers = [
+        (("request", "item", "deadline"), "Schools create a procurement request from Requests, add as many items as needed, and set a quotation deadline. Suppliers cannot submit quotations after that deadline."),
+        (("quote", "quotation", "supplier"), "Suppliers use Quotations to choose an open request and enter prices. The school then compares quotations and records the reason for selecting the preferred supplier."),
+        (("purchase", "po"), "After a quotation is approved, the school uploads or generates the Purchase Order. The selected supplier confirms the PO before preparing goods."),
+        (("delivery", "deliver"), "The selected supplier records the delivery note, including delivered items and any shortages. The system tracks the expected delivery date from the approved quotation."),
+        (("grn", "received", "goods"), "The school confirms delivered goods on the GRN page. That creates the Goods Received Note and moves the request to GRN Confirmed."),
+        (("invoice",), "After the school confirms receipt, the supplier uploads the invoice and amount on the Invoice page."),
+        (("payment", "paid"), "The school records payment as Processing or Paid. Once it is Paid, the supplier can issue a receipt."),
+        (("receipt",), "Receipts are issued by the supplier only after payment is marked Paid. Issuing the receipt closes the procurement request."),
+        (("message", "clarification"), "Use Messages to ask another user for clarification about a request, quotation, document, or payment."),
+        (("report", "excel", "pdf"), "Reports show spending and status summaries. Use the export buttons to download PDF or Excel reports."),
+    ]
+    answer = "I can help with SchoolProcure. Ask about creating requests, adding items, quotation deadlines, approving suppliers, delivery notes, GRNs, invoices, payments, receipts, reports, or messages."
+    for keywords, text in answers:
+        if any(keyword in question for keyword in keywords):
+            answer = text
+            break
+    return JsonResponse({"answer": answer})
+
+
+@login_required
 def document_pdf(request, document_type, pk):
     mapping = {
         "quotation": (Quotation, "Quotation"),
@@ -733,11 +848,12 @@ def document_pdf(request, document_type, pk):
         "delivery": (DeliveryNote, "Delivery Note"),
         "grn": (GoodsReceivedNote, "Goods Received Note"),
         "invoice": (Invoice, "Invoice"),
+        "receipt": (Receipt, "Receipt"),
     }
     if document_type not in mapping:
         return HttpResponse(status=404)
     model, title = mapping[document_type]
-    obj = get_object_or_404(model, pk=pk)
+    obj = get_object_or_404(model.objects.filter(request__in=visible_requests(request.user)), pk=pk)
     buffer = BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)
     width, height = A4
