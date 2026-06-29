@@ -187,6 +187,77 @@ def apply_request_filters(qs, params):
     return qs
 
 
+def next_action_for_request(req, user):
+    role = role_for(user)
+    status = req.status
+    detail = ("Open request", "request_detail", {"pk": req.pk})
+    actions = {
+        ProcurementRequest.STATUS_REQUESTED: {
+            UserProfile.ROLE_SUPPLIER: ("Submit quotation", "quotation_create", {}),
+            UserProfile.ROLE_ADMIN: ("Monitor quotations", "compare_quotations", {"pk": req.pk}),
+            UserProfile.ROLE_SCHOOL: ("Waiting for quotations", "request_detail", {"pk": req.pk}),
+        },
+        ProcurementRequest.STATUS_QUOTED: {
+            UserProfile.ROLE_SCHOOL: ("Compare and approve quote", "compare_quotations", {"pk": req.pk}),
+            UserProfile.ROLE_ADMIN: ("Compare quotations", "compare_quotations", {"pk": req.pk}),
+            UserProfile.ROLE_SUPPLIER: ("Update quotation", "quotation_create", {}),
+        },
+        ProcurementRequest.STATUS_PO_ISSUED: {
+            UserProfile.ROLE_SCHOOL: ("Manage purchase order", "purchase_order_upload", {}),
+            UserProfile.ROLE_ADMIN: ("Manage purchase order", "purchase_order_upload", {}),
+            UserProfile.ROLE_SUPPLIER: ("Confirm purchase order", "purchase_order_upload", {}),
+        },
+        ProcurementRequest.STATUS_CONFIRMED: {
+            UserProfile.ROLE_SUPPLIER: ("Record delivery note", "delivery_note_page", {}),
+            UserProfile.ROLE_ADMIN: ("Record delivery note", "delivery_note_page", {}),
+            UserProfile.ROLE_SCHOOL: ("Await delivery", "request_detail", {"pk": req.pk}),
+        },
+        ProcurementRequest.STATUS_DELIVERED: {
+            UserProfile.ROLE_SCHOOL: ("Confirm goods received", "goods_received_page", {}),
+            UserProfile.ROLE_ADMIN: ("Confirm goods received", "goods_received_page", {}),
+            UserProfile.ROLE_SUPPLIER: ("Await GRN confirmation", "request_detail", {"pk": req.pk}),
+        },
+        ProcurementRequest.STATUS_GRN_CONFIRMED: {
+            UserProfile.ROLE_SUPPLIER: ("Submit invoice", "invoice_page", {}),
+            UserProfile.ROLE_ADMIN: ("Submit invoice", "invoice_page", {}),
+            UserProfile.ROLE_SCHOOL: ("Await invoice", "request_detail", {"pk": req.pk}),
+        },
+        ProcurementRequest.STATUS_INVOICED: {
+            UserProfile.ROLE_SCHOOL: ("Update payment", "payment_tracking_page", {}),
+            UserProfile.ROLE_ADMIN: ("Update payment", "payment_tracking_page", {}),
+            UserProfile.ROLE_SUPPLIER: ("Await payment", "request_detail", {"pk": req.pk}),
+        },
+        ProcurementRequest.STATUS_PAYMENT_PROCESSING: {
+            UserProfile.ROLE_SCHOOL: ("Mark paid when complete", "payment_tracking_page", {}),
+            UserProfile.ROLE_ADMIN: ("Update payment", "payment_tracking_page", {}),
+            UserProfile.ROLE_SUPPLIER: ("Await paid status", "request_detail", {"pk": req.pk}),
+        },
+        ProcurementRequest.STATUS_PAID: {
+            UserProfile.ROLE_SUPPLIER: ("Issue receipt", "receipt_page", {}),
+            UserProfile.ROLE_ADMIN: ("Issue receipt", "receipt_page", {}),
+            UserProfile.ROLE_SCHOOL: ("View receipt", "receipt_page", {}),
+        },
+        ProcurementRequest.STATUS_CLOSED: {
+            UserProfile.ROLE_SCHOOL: detail,
+            UserProfile.ROLE_SUPPLIER: detail,
+            UserProfile.ROLE_ADMIN: detail,
+            UserProfile.ROLE_VIEWER: detail,
+        },
+    }
+    if role == UserProfile.ROLE_VIEWER:
+        return ("View request", "request_detail", {"pk": req.pk})
+    return actions.get(status, {}).get(role, detail)
+
+
+def attach_next_actions(requests, user):
+    items = list(requests)
+    for req in items:
+        label, url_name, kwargs = next_action_for_request(req, user)
+        req.next_action_label = label
+        req.next_action_url = reverse(url_name, kwargs=kwargs) if kwargs else reverse(url_name)
+    return items
+
+
 @login_required
 def dashboard(request):
     requests = visible_requests(request.user)
@@ -208,7 +279,7 @@ def dashboard(request):
         ]).count(),
         "payments_processing": requests.filter(status=ProcurementRequest.STATUS_PAYMENT_PROCESSING).count(),
         "paid_orders": requests.filter(status=ProcurementRequest.STATUS_PAID).count(),
-        "recent_requests": requests[:8],
+        "recent_requests": attach_next_actions(requests[:8], request.user),
         "spending_by_school": selected_items.values("request__school__name").annotate(total=Sum(line_total)).order_by("-total")[:8],
         "spending_by_supplier": selected_items.values("supplier__name").annotate(total=Sum(line_total)).order_by("-total")[:8],
         "spending_by_district": selected_items.values("request__school__district").annotate(total=Sum(line_total)).order_by("-total")[:8],
@@ -224,7 +295,7 @@ def dashboard(request):
 def requests_list(request):
     reqs = apply_request_filters(visible_requests(request.user), request.GET)
     context = {
-        "requests": reqs,
+        "requests": attach_next_actions(reqs, request.user),
         "schools": School.objects.all(),
         "suppliers": Supplier.objects.all(),
         "statuses": ProcurementRequest.STATUS_CHOICES,
@@ -370,10 +441,24 @@ def procurement_request_create(request):
 @login_required
 def request_detail(request, pk):
     req = get_object_or_404(visible_requests(request.user), pk=pk)
+    label, url_name, kwargs = next_action_for_request(req, request.user)
+    req.next_action_label = label
+    req.next_action_url = reverse(url_name, kwargs=kwargs) if kwargs else reverse(url_name)
     days_remaining = None
     if req.delivery_due_date:
         days_remaining = (req.delivery_due_date - timezone.localdate()).days
     return render(request, "procurement/request_detail.html", {"req": req, "days_remaining": days_remaining})
+
+
+@login_required
+def request_next_action(request, pk):
+    req = get_object_or_404(visible_requests(request.user), pk=pk)
+    label, url_name, kwargs = next_action_for_request(req, request.user)
+    if "Waiting" in label or "Await" in label:
+        messages.info(request, label)
+    else:
+        messages.info(request, f"Next action for {req.reference}: {label}.")
+    return redirect(reverse(url_name, kwargs=kwargs) if kwargs else reverse(url_name))
 
 
 @login_required

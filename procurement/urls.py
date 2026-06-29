@@ -12,6 +12,7 @@ urlpatterns = [
     path("catalogue/", views.product_catalogue, name="product_catalogue"),
     path("requests/new/", views.procurement_request_create, name="request_create"),
     path("requests/<int:pk>/", views.request_detail, name="request_detail"),
+    path("requests/<int:pk>/next-action/", views.request_next_action, name="request_next_action"),
     path("quotations/new/", views.quotation_create, name="quotation_create"),
     path("quotations/<int:pk>/edit/", views.quotation_edit, name="quotation_edit"),
     path("quotations/compare/<int:pk>/", views.compare_quotations, name="compare_quotations"),
