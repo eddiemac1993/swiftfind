@@ -73,4 +73,3 @@ urlpatterns = [
         RedirectView.as_view(pattern_name="business-detail", permanent=True),
     ),
 ]
-

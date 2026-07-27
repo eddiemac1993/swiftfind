@@ -45,4 +45,3 @@ SWIFTFIND_MIDDLEWARE = [
 SWIFTFIND_CONTEXT_PROCESSORS = [
     "messaging.context_processors.unread_messages",
 ]
-
