@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Products Marketplace</title>
+    <title>Swiftfind Marketplace | Shop trusted Zambian businesses</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome -->
@@ -484,36 +484,522 @@
         .toast i {
             font-size: 18px;
         }
+
+        /* 2026 marketplace refresh */
+        :root {
+            --sf-ink: #102a43;
+            --sf-muted: #627d98;
+            --sf-line: #d9e2ec;
+            --sf-surface: #ffffff;
+            --sf-canvas: #f5f8fb;
+            --sf-primary: #0b6e4f;
+            --sf-primary-dark: #07543d;
+            --sf-accent: #f2b134;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body.marketplace-body {
+            background:
+                radial-gradient(circle at 8% 0%, rgba(11, 110, 79, .08), transparent 24rem),
+                var(--sf-canvas);
+            color: var(--sf-ink);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        .search-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0 0 32px 32px;
+            margin-bottom: 2.25rem;
+            padding: 1.25rem 0 3.5rem;
+            background:
+                radial-gradient(circle at 85% 20%, rgba(242, 177, 52, .25), transparent 20rem),
+                linear-gradient(135deg, #063f32 0%, #0b6e4f 60%, #118760 100%);
+        }
+
+        .search-container::after {
+            content: "";
+            position: absolute;
+            right: -6rem;
+            bottom: -9rem;
+            width: 24rem;
+            height: 24rem;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 50%;
+            box-shadow: 0 0 0 3.5rem rgba(255, 255, 255, .035), 0 0 0 7rem rgba(255, 255, 255, .025);
+            pointer-events: none;
+        }
+
+        .marketplace-topbar,
+        .hero-content,
+        .marketplace-shell {
+            max-width: 1280px;
+            margin-inline: auto;
+        }
+
+        .marketplace-topbar {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            padding: 0 1rem 2.75rem;
+        }
+
+        .marketplace-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: .7rem;
+            color: #fff;
+            font-weight: 800;
+            letter-spacing: -.02em;
+            text-decoration: none;
+        }
+
+        .marketplace-brand-mark {
+            display: grid;
+            width: 38px;
+            height: 38px;
+            place-items: center;
+            border: 1px solid rgba(255, 255, 255, .25);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .14);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2);
+        }
+
+        .desktop-marketplace-nav {
+            display: flex;
+            align-items: center;
+            gap: .35rem;
+        }
+
+        .desktop-marketplace-nav a {
+            padding: .65rem .9rem;
+            border-radius: 999px;
+            color: rgba(255, 255, 255, .78);
+            font-size: .86rem;
+            font-weight: 650;
+            text-decoration: none;
+            transition: .2s ease;
+        }
+
+        .desktop-marketplace-nav a:hover,
+        .desktop-marketplace-nav a.active {
+            color: #fff;
+            background: rgba(255, 255, 255, .14);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            padding-inline: 1rem;
+            text-align: center;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            margin-bottom: 1rem;
+            padding: .42rem .72rem;
+            border: 1px solid rgba(255, 255, 255, .2);
+            border-radius: 999px;
+            color: #e9fff7;
+            background: rgba(255, 255, 255, .09);
+            font-size: .75rem;
+            font-weight: 750;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            max-width: 760px;
+            margin: 0 auto .75rem;
+            color: #fff;
+            font-size: clamp(2rem, 5vw, 3.6rem);
+            font-weight: 850;
+            line-height: 1.04;
+            letter-spacing: -.045em;
+        }
+
+        .hero-subtitle {
+            max-width: 620px;
+            margin: 0 auto 1.75rem;
+            color: rgba(255, 255, 255, .78);
+            font-size: clamp(.98rem, 2vw, 1.12rem);
+        }
+
+        .search-box {
+            max-width: 760px;
+        }
+
+        .search-input {
+            min-height: 60px;
+            padding: 16px 68px 16px 24px;
+            border: 1px solid rgba(255, 255, 255, .55);
+            border-radius: 18px;
+            color: var(--sf-ink);
+            box-shadow: 0 18px 45px rgba(2, 35, 26, .25);
+        }
+
+        .search-input::placeholder {
+            color: #829ab1;
+        }
+
+        .search-btn {
+            right: 8px;
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: var(--sf-primary);
+        }
+
+        .search-btn:hover {
+            background: var(--sf-primary-dark);
+        }
+
+        .trust-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: .65rem 1.25rem;
+            margin-top: 1.35rem;
+            color: rgba(255, 255, 255, .78);
+            font-size: .82rem;
+            font-weight: 600;
+        }
+
+        .trust-row span {
+            display: inline-flex;
+            align-items: center;
+            gap: .42rem;
+        }
+
+        .trust-row i {
+            color: #ffd778;
+        }
+
+        .marketplace-shell {
+            padding-inline: 1rem;
+        }
+
+        .categories-section {
+            margin-bottom: 2.4rem;
+            padding: 1.35rem;
+            border: 1px solid var(--sf-line);
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(16, 42, 67, .06);
+        }
+
+        .filter-heading {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            color: var(--sf-ink);
+        }
+
+        .filter-heading-icon {
+            display: grid;
+            width: 34px;
+            height: 34px;
+            place-items: center;
+            border-radius: 10px;
+            color: var(--sf-primary);
+            background: #e8f5f0;
+        }
+
+        .filter-select {
+            min-height: 46px;
+            border-color: var(--sf-line) !important;
+            border-radius: 12px !important;
+            color: var(--sf-ink);
+            background-color: #fbfdff;
+        }
+
+        .products-toolbar {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .products-kicker {
+            margin-bottom: .2rem;
+            color: var(--sf-primary);
+            font-size: .72rem;
+            font-weight: 800;
+            letter-spacing: .11em;
+            text-transform: uppercase;
+        }
+
+        .products-title {
+            color: var(--sf-ink);
+            font-size: clamp(1.45rem, 3vw, 2rem);
+            font-weight: 800;
+            letter-spacing: -.025em;
+        }
+
+        #results-count {
+            flex: 0 0 auto;
+            padding: .5rem .8rem;
+            border: 1px solid var(--sf-line);
+            border-radius: 999px;
+            color: var(--sf-muted);
+            background: #fff;
+            font-weight: 650;
+        }
+
+        #products-container {
+            gap: 1.25rem;
+        }
+
+        .product-card {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--sf-line);
+            border-radius: 18px !important;
+            background: var(--sf-surface);
+            box-shadow: 0 5px 18px rgba(16, 42, 67, .055);
+            transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(11, 110, 79, .35);
+            box-shadow: 0 18px 38px rgba(16, 42, 67, .13);
+        }
+
+        .product-card .product-image-link > div {
+            height: 13.5rem;
+            background: #edf2f7;
+        }
+
+        .product-card .product-image-link > div::after {
+            content: "";
+            position: absolute;
+            inset: auto 0 0;
+            height: 34%;
+            background: linear-gradient(transparent, rgba(0, 0, 0, .12));
+            pointer-events: none;
+        }
+
+        .product-card > .p-4 {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            padding: 1rem 1.05rem 1.1rem;
+        }
+
+        .product-card h3 {
+            min-height: 2.7rem;
+            color: var(--sf-ink);
+            font-size: 1.02rem;
+            font-weight: 750;
+            line-height: 1.35;
+        }
+
+        .business-meta {
+            min-height: 3rem;
+        }
+
+        .business-rating {
+            color: var(--sf-muted);
+        }
+
+        .price-tag {
+            color: var(--sf-primary);
+            background: none;
+            -webkit-text-fill-color: currentColor;
+            font-size: 1.08rem !important;
+        }
+
+        .business-badge {
+            display: inline-block;
+            max-width: 150px;
+            overflow: hidden;
+            border-radius: 8px;
+            color: var(--sf-primary);
+            background: #e8f5f0;
+            font-weight: 700;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .location-badge {
+            overflow: hidden;
+            max-width: 100%;
+            padding: 0;
+            color: var(--sf-muted);
+            background: transparent;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .add-to-cart-button {
+            border-color: #d5e9e1 !important;
+            color: var(--sf-primary);
+            background: #f2faf7;
+        }
+
+        .add-to-cart-button span,
+        .add-to-cart-button i {
+            color: var(--sf-primary) !important;
+        }
+
+        .view-store-btn {
+            padding: .72rem 1rem;
+            border-radius: 11px;
+            background: var(--sf-primary);
+            box-shadow: none;
+        }
+
+        .view-store-btn:hover {
+            background: var(--sf-primary-dark);
+            box-shadow: 0 7px 18px rgba(11, 110, 79, .2);
+        }
+
+        .share-btn {
+            width: 44px;
+            height: 44px;
+            flex: 0 0 44px;
+            border-color: var(--sf-line);
+            border-radius: 11px !important;
+            background: #f8fafc;
+        }
+
+        .share-btn .download {
+            color: var(--sf-muted);
+        }
+
+        button:focus, input:focus, select:focus {
+            outline-color: var(--sf-primary);
+        }
+
+        @media (min-width: 769px) {
+            .bottom-nav {
+                display: none;
+            }
+
+            .main-content {
+                padding-bottom: 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-container {
+                border-radius: 0 0 24px 24px;
+                padding: 1rem 0 2.5rem;
+            }
+
+            .marketplace-topbar {
+                padding-bottom: 2rem;
+            }
+
+            .desktop-marketplace-nav {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 2.15rem;
+            }
+
+            .search-input {
+                min-height: 56px;
+                font-size: 15px;
+            }
+
+            .trust-row {
+                gap: .55rem 1rem;
+            }
+
+            .categories-section {
+                border-radius: 16px;
+            }
+
+            .products-toolbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .product-card .product-image-link > div {
+                height: 15rem;
+            }
+
+            .bottom-nav {
+                border-top: 1px solid var(--sf-line);
+                padding-bottom: max(10px, env(safe-area-inset-bottom));
+                box-shadow: 0 -8px 24px rgba(16, 42, 67, .08);
+            }
+
+            .nav-item.active,
+            .nav-item:hover {
+                color: var(--sf-primary);
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="marketplace-body">
     <!-- Search Hero Section -->
     <div class="search-container">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-6">
-                <h1 class="text-white text-3xl font-bold mb-2">Find Products from Trusted Suppliers</h1>
-                <p class="text-white text-opacity-90">Discover quality products from verified businesses</p>
+        <div class="marketplace-topbar">
+            <a href="{% url 'discover' %}" class="marketplace-brand">
+                <span class="marketplace-brand-mark"><i class="fas fa-bolt"></i></span>
+                <span>Swiftfind Marketplace</span>
+            </a>
+            <nav class="desktop-marketplace-nav" aria-label="Marketplace navigation">
+                <a href="{% url 'discover' %}">Discover</a>
+                <a href="{% url 'pos_system:marketplace' %}" class="active">Marketplace</a>
+                <a href="{% url 'about' %}">About</a>
+                <a href="{% url 'pos_system:ai_assistant' %}">AI Assistant</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'profile' %}">My account</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Sign in</a>
+                {% endif %}
+            </nav>
+        </div>
+
+        <div class="hero-content">
+            <div class="hero-eyebrow"><i class="fas fa-shield-check"></i> Local. Trusted. Zambian.</div>
+            <div>
+                <h1 class="hero-title">Everything you need, from businesses you can trust.</h1>
+                <p class="hero-subtitle">Explore products, compare local suppliers and connect directly with growing businesses across Zambia.</p>
             </div>
 
             <div class="search-box">
                 <input type="text" id="search-input" placeholder="Search for products, suppliers, or categories..."
-                       class="search-input">
-                <button class="search-btn" id="search-button">
+                       class="search-input" aria-label="Search marketplace">
+                <button class="search-btn" id="search-button" aria-label="Search">
                     <i class="fas fa-search"></i>
                 </button>
+            </div>
+
+            <div class="trust-row" aria-label="Marketplace highlights">
+                <span><i class="fas fa-check-circle"></i> Verified suppliers</span>
+                <span><i class="fas fa-store"></i> {{ unique_businesses|length }} local businesses</span>
+                <span><i class="fas fa-box-open"></i> {{ products|length }} products available</span>
             </div>
         </div>
     </div>
 
-    <div class="container mx-auto px-4 main-content">
+    <div class="marketplace-shell main-content">
         <!-- Filter Categories -->
         <div class="categories-section">
-            <h3 class="text-lg font-semibold mb-4 text-gray-800">Filter by Category & Business</h3>
+            <h3 class="filter-heading text-lg font-semibold mb-4">
+                <span class="filter-heading-icon"><i class="fas fa-sliders-h"></i></span>
+                Refine your search
+            </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Category Filter -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                    <select id="category-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                    <select id="category-filter" class="filter-select w-full px-4 py-2 border">
                         <option value="all">All Categories</option>
                         {% for category in categories %}
                         <option value="{{ category.id }}">{{ category.name }}</option>
@@ -524,7 +1010,7 @@
                 <!-- Business Filter -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Business</label>
-                    <select id="business-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+                    <select id="business-filter" class="filter-select w-full px-4 py-2 border">
                         <option value="all">All Businesses</option>
                         {% for business in unique_businesses %}
                         <option value="{{ business.id }}">{{ business.name }}</option>
@@ -536,12 +1022,15 @@
 
         <!-- Products Grid -->
         <div class="mb-6">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-semibold text-gray-800">Products</h2>
+            <div class="products-toolbar">
+                <div>
+                    <div class="products-kicker">Explore the marketplace</div>
+                    <h2 class="products-title">Products near you</h2>
+                </div>
                 <span class="text-sm text-gray-600" id="results-count">Showing all products</span>
             </div>
 
-            <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            <div id="products-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {% for product in products %}
                 {% if product.business.show_store_link %}
                 <div class="product-card bg-white rounded-lg overflow-hidden"
