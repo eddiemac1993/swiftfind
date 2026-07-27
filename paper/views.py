@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-from weasyprint import HTML
 from .models import Paper, PaperItem
 from .forms import PaperForm, PaperItemForm
 from django.contrib import messages
@@ -123,7 +122,6 @@ def delete_item(request, item_id):
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.http import HttpResponse
-from weasyprint import HTML
 from .models import Paper, PaperItem
 
 from django.shortcuts import get_object_or_404
@@ -137,10 +135,11 @@ import random
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.http import HttpResponse
-from weasyprint import HTML
 from .models import Paper
 
 def download_paper(request, paper_id):
+    from weasyprint import HTML
+
     paper = get_object_or_404(Paper, id=paper_id)
     items = paper.items.all()
 

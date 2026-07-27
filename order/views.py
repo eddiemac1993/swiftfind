@@ -589,9 +589,10 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import os
 from datetime import datetime
-from weasyprint import HTML
 
 def generate_quotation(request):
+    from weasyprint import HTML
+
     cart_id = request.session.get('cart_id')
     if cart_id:
         cart = Cart.objects.get(id=cart_id)

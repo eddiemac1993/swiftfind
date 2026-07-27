@@ -5,7 +5,6 @@ from directory.models import Business
 from .forms import ProductForm, SaleForm
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-from weasyprint import HTML
 
 
 def custom_logout(request):
@@ -81,6 +80,8 @@ def receipt(request, order_id):
 
 @login_required
 def receipt_pdf(request, order_id):
+    from weasyprint import HTML
+
     business = get_object_or_404(Business, owner=request.user)
     order = get_object_or_404(Order, id=order_id, business=business)
     sales = order.sales.all()  # Fetch all sales linked to this order
