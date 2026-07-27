@@ -1,0 +1,559 @@
+/*
+ * Swiftfind shared design system
+ * Applied to every Swiftfind HTML response by swiftfind.theme.
+ */
+
+body.sf-theme {
+    --sf-ink: #102a43;
+    --sf-ink-soft: #334e68;
+    --sf-muted: #627d98;
+    --sf-line: #d9e2ec;
+    --sf-line-soft: #e9eff5;
+    --sf-canvas: #f5f8fb;
+    --sf-surface: #ffffff;
+    --sf-primary: #0b6e4f;
+    --sf-primary-dark: #07543d;
+    --sf-primary-soft: #e8f5f0;
+    --sf-accent: #f2b134;
+    --sf-danger: #c83e4d;
+    --sf-shadow-sm: 0 5px 18px rgba(16, 42, 67, .06);
+    --sf-shadow: 0 16px 38px rgba(16, 42, 67, .11);
+
+    /* Remap the most common legacy theme variables. */
+    --primary: var(--sf-primary);
+    --primary-color: var(--sf-primary);
+    --primary-dark: var(--sf-primary-dark);
+    --primary-light: var(--sf-primary-soft);
+    --accent-color: var(--sf-accent);
+    --background-color: var(--sf-canvas);
+    --secondary-color: var(--sf-canvas);
+    --text-color: var(--sf-ink);
+    --light-text: var(--sf-muted);
+    --border-color: var(--sf-line);
+    --white: var(--sf-surface);
+    --shadow: var(--sf-shadow-sm);
+
+    min-height: 100vh;
+    margin: 0;
+    color: var(--sf-ink);
+    background:
+        radial-gradient(circle at 7% 0%, rgba(11, 110, 79, .065), transparent 24rem),
+        var(--sf-canvas);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.55;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+body.sf-theme *,
+body.sf-theme *::before,
+body.sf-theme *::after {
+    box-sizing: border-box;
+}
+
+body.sf-theme a {
+    text-underline-offset: .18em;
+}
+
+body.sf-theme :is(h1, h2, h3, h4, h5, h6) {
+    color: var(--sf-ink);
+    font-family: inherit;
+    letter-spacing: -.025em;
+}
+
+body.sf-theme :is(h1, h2) {
+    font-weight: 800;
+}
+
+body.sf-theme p {
+    color: inherit;
+}
+
+/* Shared Swiftfind navigation */
+.sf-theme-bar {
+    position: sticky;
+    top: 0;
+    z-index: 1200;
+    width: 100%;
+    border-bottom: 1px solid rgba(217, 226, 236, .88);
+    background: rgba(255, 255, 255, .92);
+    box-shadow: 0 5px 22px rgba(16, 42, 67, .055);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+
+.sf-theme-bar__inner {
+    display: flex;
+    width: min(100% - 2rem, 1280px);
+    min-height: 68px;
+    margin-inline: auto;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.sf-theme-brand {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: .65rem;
+    color: var(--sf-ink) !important;
+    font-size: 1.05rem;
+    font-weight: 850;
+    letter-spacing: -.025em;
+    text-decoration: none !important;
+}
+
+.sf-theme-brand__mark {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border-radius: 11px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--sf-primary-dark), var(--sf-primary));
+    box-shadow: 0 7px 16px rgba(11, 110, 79, .2);
+    font-size: .95rem;
+}
+
+.sf-theme-nav {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    gap: .15rem;
+}
+
+.sf-theme-nav a,
+.sf-theme-account {
+    border-radius: 999px;
+    color: var(--sf-muted) !important;
+    font-size: .83rem;
+    font-weight: 700;
+    text-decoration: none !important;
+    transition: color .18s ease, background .18s ease, transform .18s ease;
+}
+
+.sf-theme-nav a {
+    padding: .58rem .78rem;
+}
+
+.sf-theme-nav a:hover,
+.sf-theme-nav a.active {
+    color: var(--sf-primary) !important;
+    background: var(--sf-primary-soft);
+}
+
+.sf-theme-account {
+    flex: 0 0 auto;
+    padding: .62rem .95rem;
+    border: 1px solid var(--sf-line);
+    color: var(--sf-ink-soft) !important;
+    background: #fff;
+}
+
+.sf-theme-account:hover {
+    border-color: rgba(11, 110, 79, .3);
+    color: var(--sf-primary) !important;
+    transform: translateY(-1px);
+}
+
+/* Refinish common legacy page headers. */
+body.sf-theme:not(.marketplace-body) :is(
+    .app-header,
+    .page-header,
+    .main-header,
+    header:not(.sf-theme-bar)
+) {
+    border-bottom-color: var(--sf-line) !important;
+    color: var(--sf-ink);
+    background: rgba(255, 255, 255, .95) !important;
+    box-shadow: var(--sf-shadow-sm) !important;
+}
+
+body.sf-theme:not(.marketplace-body) :is(
+    .app-header,
+    .page-header,
+    .main-header,
+    header:not(.sf-theme-bar)
+) a {
+    color: var(--sf-ink-soft);
+}
+
+body.sf-theme:not(.marketplace-body) main {
+    color: var(--sf-ink);
+}
+
+/* Cards, panels, forms, business modules and modal surfaces. */
+body.sf-theme:not(.marketplace-body) :where(
+    .card,
+    .content-card,
+    .form-card,
+    .info-card,
+    .business-card,
+    .product-card,
+    .post-card,
+    .order-card,
+    .profile-card,
+    .dashboard-card,
+    .stats-card,
+    .stat-card,
+    .service-card,
+    .feature-card,
+    .section-card,
+    .auth-card,
+    .login-card,
+    .register-card,
+    .modal-content,
+    .categories-section
+) {
+    border: 1px solid var(--sf-line) !important;
+    border-radius: 18px !important;
+    background: var(--sf-surface) !important;
+    box-shadow: var(--sf-shadow-sm) !important;
+}
+
+body.sf-theme:not(.marketplace-body) :where(
+    .card,
+    .business-card,
+    .product-card,
+    .post-card,
+    .order-card,
+    .service-card,
+    .feature-card
+) {
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+body.sf-theme:not(.marketplace-body) :where(
+    .card,
+    .business-card,
+    .product-card,
+    .post-card,
+    .order-card,
+    .service-card,
+    .feature-card
+):hover {
+    border-color: rgba(11, 110, 79, .3) !important;
+    box-shadow: var(--sf-shadow) !important;
+    transform: translateY(-3px);
+}
+
+/* Inputs */
+body.sf-theme:not(.marketplace-body) :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+    select,
+    textarea
+) {
+    min-height: 46px;
+    border: 1px solid var(--sf-line) !important;
+    border-radius: 12px !important;
+    color: var(--sf-ink) !important;
+    background-color: #fbfdff !important;
+    box-shadow: inset 0 1px 2px rgba(16, 42, 67, .025) !important;
+    font: inherit;
+    transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+body.sf-theme:not(.marketplace-body) textarea {
+    min-height: 110px;
+}
+
+body.sf-theme:not(.marketplace-body) :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+    select,
+    textarea
+):focus {
+    border-color: var(--sf-primary) !important;
+    outline: none !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 4px rgba(11, 110, 79, .11) !important;
+}
+
+body.sf-theme:not(.marketplace-body) :where(input, textarea)::placeholder {
+    color: #829ab1 !important;
+}
+
+body.sf-theme:not(.marketplace-body) label {
+    color: var(--sf-ink-soft);
+    font-weight: 650;
+}
+
+/* Buttons and calls to action */
+body.sf-theme:not(.marketplace-body) :where(
+    .btn,
+    .button,
+    .primary-button,
+    .submit-btn,
+    .login-btn,
+    .register-btn,
+    .save-btn,
+    .action-btn,
+    button[type="submit"],
+    input[type="submit"]
+) {
+    min-height: 44px;
+    border: 1px solid transparent !important;
+    border-radius: 11px !important;
+    color: #fff !important;
+    background: var(--sf-primary) !important;
+    box-shadow: 0 7px 16px rgba(11, 110, 79, .16) !important;
+    font-weight: 750 !important;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+body.sf-theme:not(.marketplace-body) :where(
+    .btn,
+    .button,
+    .primary-button,
+    .submit-btn,
+    .login-btn,
+    .register-btn,
+    .save-btn,
+    .action-btn,
+    button[type="submit"],
+    input[type="submit"]
+):hover {
+    background: var(--sf-primary-dark) !important;
+    box-shadow: 0 10px 22px rgba(11, 110, 79, .22) !important;
+    transform: translateY(-1px);
+}
+
+body.sf-theme:not(.marketplace-body) :where(
+    .secondary-btn,
+    .cancel-btn,
+    .outline-btn,
+    .btn-secondary
+) {
+    border: 1px solid var(--sf-line) !important;
+    color: var(--sf-ink-soft) !important;
+    background: #fff !important;
+    box-shadow: none !important;
+}
+
+body.sf-theme:not(.marketplace-body) :where(
+    .danger-btn,
+    .delete-btn,
+    .btn-danger
+) {
+    color: #fff !important;
+    background: var(--sf-danger) !important;
+}
+
+/* Pills, badges and metadata */
+body.sf-theme:not(.marketplace-body) :where(
+    .badge,
+    .tag,
+    .category-tag,
+    .status-badge,
+    .business-badge,
+    .verified-badge,
+    .chip
+) {
+    border: 1px solid rgba(11, 110, 79, .12) !important;
+    border-radius: 999px !important;
+    color: var(--sf-primary) !important;
+    background: var(--sf-primary-soft) !important;
+}
+
+body.sf-theme:not(.marketplace-body) :where(
+    .price,
+    .price-tag,
+    .amount,
+    .highlight-number
+) {
+    color: var(--sf-primary) !important;
+    -webkit-text-fill-color: currentColor;
+}
+
+/* Tables and list rows */
+body.sf-theme:not(.marketplace-body) table {
+    overflow: hidden;
+    border: 1px solid var(--sf-line);
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 14px;
+    color: var(--sf-ink-soft);
+    background: #fff;
+    box-shadow: var(--sf-shadow-sm);
+}
+
+body.sf-theme:not(.marketplace-body) :where(th, thead) {
+    color: var(--sf-ink);
+    background: #eef5f2 !important;
+}
+
+body.sf-theme:not(.marketplace-body) :where(th, td) {
+    border-color: var(--sf-line-soft) !important;
+}
+
+body.sf-theme:not(.marketplace-body) :where(
+    .list-item,
+    .result-item,
+    .conversation-item,
+    .notification-item
+) {
+    border-color: var(--sf-line) !important;
+    background-color: #fff !important;
+}
+
+/* Existing fixed mobile navigation */
+body.sf-theme:not(.marketplace-body) .bottom-nav {
+    border-top: 1px solid var(--sf-line) !important;
+    background: rgba(255, 255, 255, .96) !important;
+    box-shadow: 0 -8px 26px rgba(16, 42, 67, .09) !important;
+    backdrop-filter: blur(16px);
+}
+
+body.sf-theme:not(.marketplace-body) .bottom-nav :where(.nav-item.active, .nav-item:hover) {
+    color: var(--sf-primary) !important;
+}
+
+/* Alerts */
+body.sf-theme:not(.marketplace-body) :where(
+    .alert,
+    .message,
+    .notification,
+    .toast
+) {
+    border: 1px solid var(--sf-line) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--sf-shadow-sm) !important;
+}
+
+/* Legacy orange utility overrides where Tailwind is loaded from the CDN. */
+body.sf-theme:not(.marketplace-body) :where(
+    .bg-orange-500,
+    .bg-orange-600,
+    .bg-green-500
+) {
+    background-color: var(--sf-primary) !important;
+}
+
+body.sf-theme:not(.marketplace-body) :where(
+    .text-orange-500,
+    .text-orange-600,
+    .text-green-500,
+    .text-green-600
+) {
+    color: var(--sf-primary) !important;
+}
+
+body.sf-theme:not(.marketplace-body) :where(
+    .border-orange-200,
+    .border-orange-500,
+    .border-green-500
+) {
+    border-color: rgba(11, 110, 79, .3) !important;
+}
+
+body.sf-theme:not(.marketplace-body) :where(
+    .focus\:ring-orange-500,
+    .focus\:ring-green-500
+):focus {
+    --tw-ring-color: rgba(11, 110, 79, .28) !important;
+}
+
+/* Respect existing dark-mode toggles while keeping the shared identity. */
+html[data-theme="dark"] body.sf-theme,
+body.sf-theme.dark-mode {
+    --sf-ink: #edf6f3;
+    --sf-ink-soft: #c5d8d2;
+    --sf-muted: #9fb9b1;
+    --sf-line: #294a41;
+    --sf-line-soft: #233f37;
+    --sf-canvas: #0c1815;
+    --sf-surface: #14241f;
+    --sf-primary-soft: #173b30;
+    color-scheme: dark;
+    background: #0c1815;
+}
+
+html[data-theme="dark"] .sf-theme-bar,
+body.sf-theme.dark-mode .sf-theme-bar {
+    border-bottom-color: #294a41;
+    background: rgba(20, 36, 31, .94);
+}
+
+html[data-theme="dark"] .sf-theme-account,
+body.sf-theme.dark-mode .sf-theme-account {
+    border-color: #294a41;
+    background: #14241f;
+}
+
+@media (max-width: 900px) {
+    .sf-theme-bar__inner {
+        width: min(100% - 1.25rem, 1280px);
+        min-height: 62px;
+        gap: .7rem;
+    }
+
+    .sf-theme-nav {
+        justify-content: flex-start;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .sf-theme-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .sf-theme-nav a {
+        flex: 0 0 auto;
+    }
+
+    .sf-theme-account {
+        display: none;
+    }
+}
+
+@media (max-width: 620px) {
+    .sf-theme-bar__inner {
+        min-height: 58px;
+    }
+
+    .sf-theme-brand span:last-child {
+        display: none;
+    }
+
+    .sf-theme-brand__mark {
+        width: 34px;
+        height: 34px;
+    }
+
+    .sf-theme-nav {
+        gap: 0;
+    }
+
+    .sf-theme-nav a {
+        padding: .5rem .62rem;
+        font-size: .78rem;
+    }
+
+    .sf-theme-nav a:nth-child(3),
+    .sf-theme-nav a:nth-child(4) {
+        display: none;
+    }
+
+    body.sf-theme:not(.marketplace-body) :where(
+        .card,
+        .content-card,
+        .form-card,
+        .business-card,
+        .product-card,
+        .post-card,
+        .order-card
+    ) {
+        border-radius: 15px !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.sf-theme *,
+    body.sf-theme *::before,
+    body.sf-theme *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
