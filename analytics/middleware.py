@@ -1,7 +1,10 @@
-from django.utils import timezone
-from django.contrib.sessions.models import Session
-from .models import PageVisit
 import logging
+
+from django.contrib.sessions.models import Session
+
+from swiftfind.theme import apply_swiftfind_theme
+
+from .models import PageVisit
 
 logger = logging.getLogger(__name__)
 
@@ -12,7 +15,7 @@ class PageVisitMiddleware:
     def __call__(self, request):
         # Skip tracking for certain paths
         if self._should_skip_tracking(request.path):
-            return self.get_response(request)
+            return apply_swiftfind_theme(request, self.get_response(request))
         
         try:
             # Get or create session for anonymous users
@@ -42,7 +45,7 @@ class PageVisitMiddleware:
         except Exception as e:
             logger.error(f"Error tracking page visit: {str(e)}")
         
-        return self.get_response(request)
+        return apply_swiftfind_theme(request, self.get_response(request))
 
     def _should_skip_tracking(self, path):
         skip_paths = [
