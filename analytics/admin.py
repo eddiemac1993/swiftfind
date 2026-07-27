@@ -18,7 +18,6 @@ import csv
 
 from .models import PageVisit
 from directory.models import Referral
-from ip2geotools.databases.noncommercial import DbIpCity
 
 User = get_user_model()
 
@@ -351,6 +350,8 @@ class PageVisitAdmin(admin.ModelAdmin):
 
         if not data:
             try:
+                from ip2geotools.databases.noncommercial import DbIpCity
+
                 response = DbIpCity.get(obj.ip_address, api_key="free")
                 data = {
                     "city": response.city,
@@ -386,6 +387,8 @@ class PageVisitAdmin(admin.ModelAdmin):
 
         if not data:
             try:
+                from ip2geotools.databases.noncommercial import DbIpCity
+
                 response = DbIpCity.get(obj.ip_address, api_key="free")
                 data = {
                     "country": response.country,
