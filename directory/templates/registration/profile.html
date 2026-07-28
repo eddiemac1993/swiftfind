@@ -1057,13 +1057,6 @@
         <a href="{% url 'referral_dashboard' %}" class="earnings-link">
             <i class="fas fa-external-link-alt mr-1"></i> View Details
         </a>
-<a href="{% url 'post_create' %}" class="notification-btn menu-item {% if unread_announcements_count > 0 %}highlight{% endif %}" title="My Products">
-    <i class="fas fa-bullhorn"></i>
-    <span>Create Post</span>
-    {% if unread_announcements_count > 0 %}
-        <span class="notification-badge">{{ unread_announcements_count }}</span>
-    {% endif %}
-</a>
     </div>
         {% if business.is_verified %}
             <a href="#" class="menu-item active">
@@ -1077,11 +1070,6 @@
             <a href="{% url 'create_paper' %}" class="menu-item">
                 <i class="fas fa-file-invoice"></i>
                 <span>Create Quotations</span>
-            </a>
-            <!-- Add Products/Services Menu Item -->
-            <a href="{% url 'post_create' %}" class="menu-item">
-                <i class="fas fa-boxes"></i>
-                <span>Create Annoucements</span>
             </a>
             <a href="{% url 'pos_system:product_analytics' %}" class="menu-item">
             <i class="fas fa-chart-line"></i>

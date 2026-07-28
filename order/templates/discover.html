@@ -1060,22 +1060,19 @@ updateTimeGreeting();
 setInterval(updateTimeGreeting, 60000);
 </script>
         <div class="user-actions">
-            <!-- Jobs Button -->
-            <a href="{% url 'post_list' %}" class="notification-btn">
-                <i class="fas fa-briefcase"></i>
-                {% if job_notifications_count > 0 %}
-                <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                    {{ job_notifications_count }}
-                </span>
-                {% endif %}
-            </a>
-            <a href="{% url 'messaging:conversation_list' %}" class="notification-btn">
+            <a
+                href="{% url 'messaging:conversation_list' %}"
+                class="notification-btn"
+                title="Messages — {{ unread_count|default:0 }} unread"
+                aria-label="Messages — {{ unread_count|default:0 }} unread"
+            >
                 <i class="fas {% if is_business_owner %}fa-comments{% else %}fa-envelope{% endif %}"></i>
-                {% if unread_count > 0 %}
-                <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                    {{ unread_count }}
+                <span
+                    class="notification-badge"
+                    aria-label="{{ unread_count|default:0 }} unread messages"
+                >
+                    {% if unread_count > 99 %}99+{% else %}{{ unread_count|default:0 }}{% endif %}
                 </span>
-                {% endif %}
             </a>
             <button id="theme-toggle" class="theme-btn">
                 <i class="fas fa-moon light-icon"></i>
