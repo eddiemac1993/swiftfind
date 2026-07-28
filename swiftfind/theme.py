@@ -8,7 +8,7 @@ from html import escape
 from django.conf import settings
 
 
-THEME_VERSION = "2026.07.27"
+THEME_VERSION = "2026.07.28-orange"
 _HEAD_CLOSE_RE = re.compile(r"</head\s*>", re.IGNORECASE)
 _BODY_OPEN_RE = re.compile(r"<body(?P<attrs>[^>]*)>", re.IGNORECASE)
 _CLASS_RE = re.compile(
@@ -139,7 +139,7 @@ def _theme_bar(request) -> str:
         '<header class="sf-theme-bar" data-swiftfind-theme-bar>'
         '<div class="sf-theme-bar__inner">'
         f'<a class="sf-theme-brand" href="{escape(prefix)}/">'
-        '<span class="sf-theme-brand__mark" aria-hidden="true">⚡</span>'
+        '<span class="sf-theme-brand__mark" aria-hidden="true">&#9889;</span>'
         '<span>Swiftfind</span></a>'
         f'<nav class="sf-theme-nav" aria-label="Swiftfind navigation">{link_html}</nav>'
         f'<a class="sf-theme-account" href="{escape(prefix + account_path)}">'

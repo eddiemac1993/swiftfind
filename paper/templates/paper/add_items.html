@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#07C160">
+    <meta name="theme-color" content="#c2410c">
     <meta name="description" content="Add Items - SwiftFind">
     <title>Add Items | SwiftFind</title>
     <link rel="manifest" href="{% static 'manifest.json' %}">
@@ -19,9 +19,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --primary-color: #07C160;
-            --primary-dark: #05a54e;
-            --primary-light: #e6f7ef;
+            --primary-color: #c2410c;
+            --primary-dark: #9a3412;
+            --primary-light: #fff1e8;
             --secondary-color: #F8F8F8;
             --text-color: #333;
             --light-text: #999;
@@ -88,7 +88,7 @@
         select:focus,
         textarea:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.15);
+            box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.15);
             outline: none;
         }
 
@@ -116,14 +116,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(7, 193, 96, 0.2);
+            box-shadow: 0 4px 12px rgba(194, 65, 12, 0.2);
             font-size: 16px;
         }
 
         .btn-primary:hover {
             background-color: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(7, 193, 96, 0.3);
+            box-shadow: 0 6px 16px rgba(194, 65, 12, 0.3);
         }
 
         .btn-primary:active {
@@ -317,7 +317,7 @@
         }
 
         .dark-mode th {
-            background-color: rgba(7, 193, 96, 0.1);
+            background-color: rgba(194, 65, 12, 0.1);
             color: var(--dark-text);
             border-bottom-color: #333;
         }
@@ -338,11 +338,11 @@
         }
 
         tr:hover {
-            background-color: rgba(7, 193, 96, 0.05);
+            background-color: rgba(194, 65, 12, 0.05);
         }
 
         .dark-mode tr:hover {
-            background-color: rgba(7, 193, 96, 0.05);
+            background-color: rgba(194, 65, 12, 0.05);
         }
 
         .action-buttons {
@@ -435,7 +435,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 12px rgba(7, 193, 96, 0.2);
+            box-shadow: 0 4px 12px rgba(194, 65, 12, 0.2);
             font-size: 16px;
             text-decoration: none;
         }
@@ -443,7 +443,7 @@
         .finish-button:hover {
             background-color: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(7, 193, 96, 0.3);
+            box-shadow: 0 6px 16px rgba(194, 65, 12, 0.3);
             text-decoration: none;
         }
 
@@ -459,7 +459,7 @@
             margin: 20px 0;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 6px 20px rgba(7, 193, 96, 0.15);
+            box-shadow: 0 6px 20px rgba(194, 65, 12, 0.15);
         }
 
         .banner-icon {

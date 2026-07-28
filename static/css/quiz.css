@@ -1,7 +1,7 @@
 :root {
-    --primary-color: #07C160;
-    --primary-dark: #05a54e;
-    --primary-light: #e6f7ef;
+    --primary-color: #c2410c;
+    --primary-dark: #9a3412;
+    --primary-light: #fff1e8;
     --secondary-color: #F8F8F8;
     --accent-color: #5D5FEF;
     --accent-dark: #4B4DC9;
@@ -99,7 +99,7 @@ body.dark-mode {
 }
 
 .dark-mode .theme-btn:hover {
-    background-color: rgba(7, 193, 96, 0.1);
+    background-color: rgba(194, 65, 12, 0.1);
 }
 
 .dark-icon {
@@ -129,7 +129,7 @@ body.dark-mode {
 }
 
 .dark-mode .nav-score {
-    background-color: rgba(7, 193, 96, 0.15);
+    background-color: rgba(194, 65, 12, 0.15);
     color: var(--primary-color);
 }
 
@@ -171,7 +171,7 @@ body.dark-mode {
 }
 
 .dark-mode .leaderboard-header:hover {
-    background-color: rgba(7, 193, 96, 0.1);
+    background-color: rgba(194, 65, 12, 0.1);
 }
 
 .leaderboard-header h4 {
@@ -246,7 +246,7 @@ body.dark-mode {
 }
 
 .dark-mode .rank-number {
-    background-color: rgba(7, 193, 96, 0.1);
+    background-color: rgba(194, 65, 12, 0.1);
 }
 
 .leaderboard-item:nth-child(1) .rank-number {
@@ -345,7 +345,7 @@ body.dark-mode {
 }
 
 .dark-mode .option:hover {
-    background-color: rgba(7, 193, 96, 0.1);
+    background-color: rgba(194, 65, 12, 0.1);
 }
 
 .option input[type="radio"] {
@@ -370,7 +370,7 @@ body.dark-mode {
 }
 
 .dark-mode .option-letter {
-    background-color: rgba(7, 193, 96, 0.1);
+    background-color: rgba(194, 65, 12, 0.1);
 }
 
 .option:hover .option-letter {
@@ -450,13 +450,13 @@ body.dark-mode {
 .btn-primary {
     background-color: var(--primary-color);
     color: white;
-    box-shadow: 0 4px 10px rgba(7, 193, 96, 0.2);
+    box-shadow: 0 4px 10px rgba(194, 65, 12, 0.2);
 }
 
 .btn-primary:hover {
     background-color: var(--primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(7, 193, 96, 0.3);
+    box-shadow: 0 6px 12px rgba(194, 65, 12, 0.3);
 }
 
 .btn-secondary {
@@ -510,13 +510,13 @@ body.dark-mode {
 }
 
 .dark-mode .difficulty-badge {
-    background-color: rgba(7, 193, 96, 0.1);
+    background-color: rgba(194, 65, 12, 0.1);
     color: var(--primary-color);
 }
 
 .difficulty-badge.easy {
-    background-color: #E6F7EF;
-    color: #05a54e;
+    background-color: #FFF1E8;
+    color: #9a3412;
 }
 
 .difficulty-badge.medium {
@@ -530,8 +530,8 @@ body.dark-mode {
 }
 
 .dark-mode .difficulty-badge.easy {
-    background-color: rgba(5, 165, 78, 0.1);
-    color: #07C160;
+    background-color: rgba(154, 52, 18, 0.1);
+    color: #c2410c;
 }
 
 .dark-mode .difficulty-badge.medium {
@@ -704,9 +704,9 @@ body.dark-mode {
 }
 
 @keyframes glow {
-    0% { box-shadow: 0 0 5px rgba(7, 193, 96, 0.5); }
-    50% { box-shadow: 0 0 20px rgba(7, 193, 96, 0.8); }
-    100% { box-shadow: 0 0 5px rgba(7, 193, 96, 0.5); }
+    0% { box-shadow: 0 0 5px rgba(194, 65, 12, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(194, 65, 12, 0.8); }
+    100% { box-shadow: 0 0 5px rgba(194, 65, 12, 0.5); }
 }
 
 .correct-answer {
@@ -716,7 +716,7 @@ body.dark-mode {
 }
 
 .dark-mode .correct-answer {
-    background-color: rgba(7, 193, 96, 0.2) !important;
+    background-color: rgba(194, 65, 12, 0.2) !important;
 }
 
 .streak-indicator {
@@ -733,7 +733,7 @@ body.dark-mode {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(7, 193, 96, 0.4);
+    box-shadow: 0 2px 8px rgba(194, 65, 12, 0.4);
     animation: float 3s ease-in-out infinite;
 }
 
