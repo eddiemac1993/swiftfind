@@ -1,11 +1,11 @@
 """Swiftfind routes that can be mounted below a host project's URL prefix."""
 
-from django.conf import settings
 from django.contrib.auth import views as auth_views
 from django.urls import include, path, re_path, reverse_lazy
 from django.views.generic.base import RedirectView
 
 from pos_system.views import order_details
+from swiftfind import seo
 
 
 # This URLconf intentionally has no outer app_name.  Swiftfind predates a
@@ -61,13 +61,10 @@ urlpatterns = [
     ),
     path(
         "favicon.ico",
-        RedirectView.as_view(url=settings.STATIC_URL + "images/favicon.ico"),
+        RedirectView.as_view(url="/static/images/favicon.ico"),
     ),
-    path(
-        "robots.txt",
-        RedirectView.as_view(url=settings.STATIC_URL + "robots.txt"),
-        name="robots",
-    ),
+    path("robots.txt", seo.robots, name="swiftfind-robots"),
+    path("sitemap.xml", seo.sitemap, name="swiftfind-sitemap"),
     re_path(
         r"^(?P<pk>\d+)/$",
         RedirectView.as_view(pattern_name="business-detail", permanent=True),

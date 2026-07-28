@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('register/', views.register, name='register'),
@@ -38,7 +39,11 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('offline/', views.offline, name='offline'),
     path('profile/add-business/', views.add_business, name='add-business'),
-    path('<int:pk>/', views.business_detail, name='business-detail'),
+    path(
+        '<int:pk>/',
+        RedirectView.as_view(pattern_name='business-detail', permanent=True),
+        name='legacy-business-detail',
+    ),
     path('contact/', views.contact, name='contact'),
     path('privacy/', views.privacy, name='privacy'),
     path('terms/', views.terms, name='terms'),

@@ -6,7 +6,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#07C160">
-    <title>{{ business.name }} - Business Details</title>
+    <title>{{ business.name }} | Swiftfind Zambia</title>
+    <meta name="description" content="{{ business.description|striptags|truncatechars:160 }}">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ business.get_absolute_url }}">
+    <meta property="og:type" content="business.business">
+    <meta property="og:site_name" content="Swiftfind">
+    <meta property="og:title" content="{{ business.name }} | Swiftfind Zambia">
+    <meta property="og:description" content="{{ business.description|striptags|truncatechars:160 }}">
+    <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ business.get_absolute_url }}">
+    {% if business.logo %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ business.logo.url }}">{% endif %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "{{ business.name|escapejs }}",
+      "description": "{{ business.description|striptags|truncatechars:300|escapejs }}",
+      "url": "{{ request.scheme }}://{{ request.get_host }}{{ business.get_absolute_url }}",
+      "telephone": "{{ business.phone_number|escapejs }}",
+      "email": "{{ business.email|default:''|escapejs }}",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "{{ business.address|escapejs }}",
+        "addressLocality": "{{ business.city|default:''|escapejs }}",
+        "addressCountry": "ZM"
+      }{% if business.logo %},
+      "image": "{{ request.scheme }}://{{ request.get_host }}{{ business.logo.url }}"{% endif %}
+    }
+    </script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
