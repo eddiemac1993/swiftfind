@@ -479,20 +479,401 @@
         .dark-mode .cart-count {
             border-color: var(--dark-surface);
         }
+
+        /* Professional Swiftfind authentication layout */
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding-bottom: 96px;
+            background:
+                radial-gradient(circle at 10% 5%, rgba(194, 65, 12, 0.09), transparent 28rem),
+                radial-gradient(circle at 90% 90%, rgba(245, 158, 11, 0.08), transparent 24rem),
+                #f7f9fc;
+        }
+
+        body.dark-mode {
+            background:
+                radial-gradient(circle at 10% 5%, rgba(194, 65, 12, 0.16), transparent 28rem),
+                #160e0a;
+        }
+
+        .login-container {
+            position: relative;
+            display: grid;
+            grid-template-columns: minmax(300px, 0.85fr) minmax(420px, 1.15fr);
+            width: min(calc(100% - 40px), 980px);
+            max-width: none;
+            min-height: 590px;
+            margin: 38px auto 24px;
+            padding: 0;
+            overflow: hidden;
+            border: 1px solid rgba(217, 226, 236, 0.92);
+            border-radius: 24px;
+            background: #fff;
+            box-shadow: 0 28px 70px rgba(16, 42, 67, 0.14);
+        }
+
+        .login-intro {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            padding: 42px;
+            color: #fff;
+            background:
+                radial-gradient(circle at 90% 8%, rgba(255, 255, 255, 0.18), transparent 13rem),
+                linear-gradient(145deg, #7c2d12 0%, #c2410c 56%, #ea580c 100%);
+        }
+
+        .login-intro::after {
+            position: absolute;
+            right: -8rem;
+            bottom: -10rem;
+            width: 23rem;
+            height: 23rem;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 50%;
+            box-shadow:
+                0 0 0 3.5rem rgba(255, 255, 255, 0.045),
+                0 0 0 7rem rgba(255, 255, 255, 0.025);
+            content: "";
+            pointer-events: none;
+        }
+
+        .login-brand,
+        .login-brand:hover {
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            width: fit-content;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            text-decoration: none;
+        }
+
+        .login-brand-mark {
+            display: grid;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 13px;
+            background: rgba(255, 255, 255, 0.14);
+            box-shadow: 0 10px 24px rgba(83, 27, 8, 0.24);
+        }
+
+        .login-intro-copy {
+            position: relative;
+            z-index: 1;
+            margin-block: 42px;
+        }
+
+        .login-eyebrow {
+            display: inline-flex;
+            margin-bottom: 18px;
+            padding: 7px 11px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .login-intro h1 {
+            max-width: 390px;
+            margin-bottom: 16px;
+            color: #fff;
+            font-size: clamp(32px, 4vw, 46px);
+            line-height: 1.08;
+            letter-spacing: -0.045em;
+        }
+
+        .login-intro p {
+            max-width: 390px;
+            color: rgba(255, 255, 255, 0.82);
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .login-benefits {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            gap: 12px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .login-benefits li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .login-benefits i {
+            display: grid;
+            width: 26px;
+            height: 26px;
+            place-items: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.14);
+            font-size: 11px;
+        }
+
+        .auth-panel {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 42px 48px;
+            background: #fff;
+        }
+
+        .dark-mode .auth-panel {
+            background: #21140e;
+        }
+
+        .auth-panel-top {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            left: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: #627d98;
+            font-size: 13px;
+            font-weight: 650;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            color: var(--primary-color);
+        }
+
+        .theme-btn {
+            flex: 0 0 auto;
+            width: 40px;
+            height: 40px;
+            color: #334e68;
+            background: #f3f6f9;
+        }
+
+        .login-header {
+            margin: 42px 0 28px;
+            text-align: left;
+        }
+
+        .login-header h2 {
+            margin-bottom: 9px;
+            color: #102a43;
+            font-size: 30px;
+            letter-spacing: -0.035em;
+        }
+
+        .login-header p {
+            color: #627d98;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            margin-bottom: 7px;
+            color: #334e68;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .form-control {
+            min-height: 50px;
+            padding: 13px 15px;
+            border-color: #d9e2ec;
+            border-radius: 12px;
+            color: #102a43;
+            background: #fbfdff;
+            font-size: 14px;
+        }
+
+        .form-control::placeholder {
+            color: #829ab1;
+        }
+
+        .login-options {
+            align-items: center;
+            gap: 18px;
+            margin: 2px 0 18px;
+            color: #627d98;
+            font-size: 13px;
+        }
+
+        .login-options .remember-me label {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .login-options .remember-me input {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary-color);
+        }
+
+        .login-btn {
+            min-height: 50px;
+            margin: 0;
+            padding: 13px 20px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #c2410c, #ea580c);
+            box-shadow: 0 12px 25px rgba(194, 65, 12, 0.22);
+        }
+
+        body.sf-theme .login-btn {
+            background: linear-gradient(135deg, #c2410c, #ea580c) !important;
+        }
+
+        .terms-agreement {
+            margin-top: 15px;
+            color: #829ab1;
+            font-size: 12px;
+        }
+
+        .divider {
+            margin: 22px 0 17px;
+            color: #9fb3c8;
+            font-size: 12px;
+        }
+
+        .signup-prompt {
+            color: #627d98;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .bottom-nav {
+            border: 1px solid rgba(217, 226, 236, 0.9);
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 -8px 28px rgba(16, 42, 67, 0.1);
+            backdrop-filter: blur(16px);
+        }
+
+        .login-bg-decor,
+        .app-header {
+            display: none;
+        }
+
+        @media (min-width: 761px) {
+            body {
+                padding-bottom: 40px;
+            }
+
+            .bottom-nav {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding-bottom: 92px;
+            }
+
+            .login-container {
+                grid-template-columns: 1fr;
+                width: min(calc(100% - 24px), 540px);
+                min-height: 0;
+                margin: 20px auto 24px;
+                border-radius: 20px;
+            }
+
+            .login-intro {
+                min-height: 185px;
+                padding: 26px 24px;
+            }
+
+            .login-intro-copy {
+                margin: 28px 0 0;
+            }
+
+            .login-eyebrow,
+            .login-benefits {
+                display: none;
+            }
+
+            .login-intro h1 {
+                max-width: 430px;
+                margin-bottom: 10px;
+                font-size: 28px;
+            }
+
+            .login-intro p {
+                max-width: 430px;
+                font-size: 13px;
+                line-height: 1.55;
+            }
+
+            .auth-panel {
+                padding: 28px 24px 30px;
+            }
+
+            .auth-panel-top {
+                position: static;
+                margin-bottom: 20px;
+            }
+
+            .login-header {
+                margin: 0 0 24px;
+            }
+
+            .login-header h2 {
+                font-size: 26px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .login-container {
+                width: calc(100% - 16px);
+                margin-top: 10px;
+            }
+
+            .login-intro {
+                min-height: 165px;
+                padding: 22px 20px;
+            }
+
+            .auth-panel {
+                padding: 24px 18px 28px;
+            }
+
+            .login-options {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
     </style>
 </head>
 <body class="{% if request.COOKIES.darkMode == 'true' %}dark-mode{% endif %}">
-    <!-- Header -->
-    <header class="app-header">
-        <div class="header-title">Sign In</div>
-        <button id="theme-toggle" class="theme-btn">
-            <i class="fas fa-moon light-icon"></i>
-            <i class="fas fa-sun dark-icon"></i>
-        </button>
-    </header>
-
     <!-- Login Container -->
-    <div class="login-container">
+    <main class="login-container">
         <!-- Background decorative elements -->
         <div class="login-bg-decor">
             <div class="bubble bubble-1"></div>
@@ -501,10 +882,37 @@
             <div class="bubble bubble-4"></div>
         </div>
 
-        <div class="login-card">
+        <section class="login-intro" aria-label="Welcome to Swiftfind">
+            <a class="login-brand" href="{% url 'discover' %}">
+                <span class="login-brand-mark" aria-hidden="true"><i class="fas fa-bolt"></i></span>
+                <span>Swiftfind</span>
+            </a>
+            <div class="login-intro-copy">
+                <span class="login-eyebrow">Zambia's local marketplace</span>
+                <h1>Your business dashboard, ready when you are.</h1>
+                <p>Sign in to manage listings, connect with customers and keep your marketplace activity moving.</p>
+            </div>
+            <ul class="login-benefits">
+                <li><i class="fas fa-check"></i> Manage your business profile</li>
+                <li><i class="fas fa-check"></i> Track products and customer activity</li>
+                <li><i class="fas fa-check"></i> Discover opportunities across Zambia</li>
+            </ul>
+        </section>
+
+        <section class="auth-panel">
+            <div class="auth-panel-top">
+                <a class="back-link" href="{% url 'pos_system:marketplace' %}">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to marketplace
+                </a>
+                <button id="theme-toggle" class="theme-btn" type="button" aria-label="Toggle dark mode">
+                    <i class="fas fa-moon light-icon"></i>
+                    <i class="fas fa-sun dark-icon"></i>
+                </button>
+            </div>
             <div class="login-header">
-                <h2>Welcome Back</h2>
-                <p>Access your dashboard and manage your listings</p>
+                <h2>Welcome back</h2>
+                <p>Enter your details to continue to Swiftfind.</p>
             </div>
             <form method="post">
                 {% csrf_token %}
@@ -570,8 +978,8 @@
             <div class="signup-prompt">
                 Don't have an account? <a href="{% url 'register' %}">Sign up</a>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <!-- Bottom navigation -->
     <nav class="bottom-nav">
