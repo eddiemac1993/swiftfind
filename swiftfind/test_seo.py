@@ -1,3 +1,6 @@
+from unittest.mock import patch
+
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
@@ -6,6 +9,18 @@ from directory.models import Business
 
 class SwiftfindSEOTests(TestCase):
     def setUp(self):
+        notification_patch = patch(
+            "directory.signals.send_business_creation_notification"
+        )
+        welcome_patch = patch("directory.signals.send_business_welcome_email")
+        notification_patch.start()
+        welcome_patch.start()
+        self.addCleanup(notification_patch.stop)
+        self.addCleanup(welcome_patch.stop)
+        owner = get_user_model().objects.create_user(
+            username="seo-test-owner",
+            email="owner@example.com",
+        )
         self.business = Business.objects.create(
             name="Searchable Zambian Company",
             description="A company that should be discoverable in search.",
@@ -13,6 +28,7 @@ class SwiftfindSEOTests(TestCase):
             phone_number="0970000000",
             city="Lusaka",
             status="active",
+            owner=owner,
         )
 
     def test_sitemap_contains_active_business_canonical_url(self):
