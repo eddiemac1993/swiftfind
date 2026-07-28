@@ -19,7 +19,6 @@ urlpatterns = [
     path("pos/", include("pos.urls")),
     path("pos1/", include("pos_system.urls")),
     path("orders/<int:order_id>/", order_details, name="order_details_root"),
-    path("posts/", include("posts.urls")),
     path("", include("order.urls")),
     path("bot/", include("chatbot.urls")),
     path("taxi/", include("taxi.urls")),

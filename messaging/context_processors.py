@@ -9,4 +9,7 @@ def unread_messages(request):
             ).exclude(sender=request.user).count(),
             'is_business_owner': hasattr(request.user, 'owned_businesses') and request.user.owned_businesses.exists()
         }
-    return {}
+    return {
+        'unread_count': 0,
+        'is_business_owner': False,
+    }
