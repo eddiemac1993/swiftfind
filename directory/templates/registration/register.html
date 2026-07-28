@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <meta name="theme-color" content="#07C160">
+    <meta name="theme-color" content="#c2410c">
     <meta name="description" content="Register - Distribution Platform">
     <title>Register - Distribution Platform</title>
     <link rel="manifest" href="{% static 'manifest.json' %}">
@@ -37,7 +37,7 @@
         :root {
             --primary-color: #FF6A00;
             --primary-dark: #FF6A00;
-            --primary-light: #e6f7ef;
+            --primary-light: #fff1e8;
             --secondary-color: #F8F8F8;
             --text-color: #333;
             --light-text: #999;
@@ -52,8 +52,8 @@
             --dark-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             --error-color: #dc2626;
             --error-bg: rgba(220, 38, 38, 0.1);
-            --success-color: #07C160;
-            --success-bg: rgba(7, 193, 96, 0.1);
+            --success-color: #c2410c;
+            --success-bg: rgba(194, 65, 12, 0.1);
         }
 
         * {
@@ -197,7 +197,7 @@
         .bubble-4 {
             width: 250px;
             height: 250px;
-            background: #07C160;
+            background: #c2410c;
             bottom: -50px;
             left: 30%;
             animation-delay: 6s;
@@ -392,11 +392,11 @@
 
         .is-valid {
             border-color: var(--success-color) !important;
-            box-shadow: 0 0 0 2px rgba(7, 193, 96, 0.2) !important;
+            box-shadow: 0 0 0 2px rgba(194, 65, 12, 0.2) !important;
         }
 
         .dark-mode .is-valid {
-            box-shadow: 0 0 0 2px rgba(7, 193, 96, 0.3) !important;
+            box-shadow: 0 0 0 2px rgba(194, 65, 12, 0.3) !important;
         }
 
         /* Error messages */
@@ -764,7 +764,7 @@
 }
 
 .dark-mode .alert-message.success {
-    background-color: rgba(7, 193, 96, 0.2);
+    background-color: rgba(194, 65, 12, 0.2);
 }
 
 .dark-mode .alert-message.warning {

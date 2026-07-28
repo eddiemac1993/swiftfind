@@ -1,8 +1,8 @@
 
 :root {
-    --primary-color: #07C160; /* WeChat green */
-    --primary-dark: #05a54e;
-    --primary-light: #e6f7ef;
+    --primary-color: #c2410c; /* Swiftfind orange */
+    --primary-dark: #9a3412;
+    --primary-light: #fff1e8;
     --secondary-color: #F8F8F8;
     --text-color: #333;
     --light-text: #999;
@@ -72,7 +72,7 @@ body.dark-mode {
 }
 
 .dark-mode .location {
-    background-color: rgba(7, 193, 96, 0.2);
+    background-color: rgba(194, 65, 12, 0.2);
     color: var(--primary-color);
 }
 
@@ -169,7 +169,7 @@ box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 
 .source-badge {
 left: 12px;
-background-color: #07C160;
+background-color: #c2410c;
 color: white;
 }
 
@@ -288,7 +288,7 @@ max-width: 100%;
     position: relative;
     box-shadow: var(--shadow);
     height: 200px;
-    background: linear-gradient(to right, #07C160, #05a54e);
+    background: linear-gradient(to right, #c2410c, #9a3412);
 }
 
 .dark-mode .banner {
@@ -441,7 +441,7 @@ font-size: 14px;
 }
 
 .dark-mode .action i {
-    background-color: rgba(7, 193, 96, 0.2);
+    background-color: rgba(194, 65, 12, 0.2);
 }
 
 .action:hover i {
@@ -565,7 +565,7 @@ font-size: 14px;
     font-size: 12px;
     font-weight: bold;
     z-index: 1;
-    box-shadow: 0 2px 8px rgba(7, 193, 96, 0.3);
+    box-shadow: 0 2px 8px rgba(194, 65, 12, 0.3);
 }
 
 .product-image {
@@ -889,7 +889,7 @@ font-size: 14px;
 
 .dark-mode .modal-location {
     color: var(--primary-color);
-    background-color: rgba(7, 193, 96, 0.1);
+    background-color: rgba(194, 65, 12, 0.1);
 }
 
 .modal-location i {
@@ -952,7 +952,7 @@ background-color: var(--primary-light) !important;
 }
 
 .dark-mode .search-suggestions div:hover {
-background-color: rgba(7, 193, 96, 0.1) !important;
+background-color: rgba(194, 65, 12, 0.1) !important;
 }
 .modal-add-to-cart {
     background-color: var(--primary-color);
@@ -966,13 +966,13 @@ background-color: rgba(7, 193, 96, 0.1) !important;
     align-items: center;
     gap: 10px;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(7, 193, 96, 0.3);
+    box-shadow: 0 4px 10px rgba(194, 65, 12, 0.3);
 }
 
 .modal-add-to-cart:hover {
     background-color: var(--primary-dark);
     transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(7, 193, 96, 0.4);
+    box-shadow: 0 6px 15px rgba(194, 65, 12, 0.4);
 }
 
 .modal-add-to-cart i {
@@ -1042,7 +1042,7 @@ border-radius: 6px;
 
 .dark-mode .product-location,
 .dark-mode .product-category {
-background-color: rgba(7, 193, 96, 0.1);
+background-color: rgba(194, 65, 12, 0.1);
 }
 
 .product-location i, .product-category i {
@@ -1070,13 +1070,13 @@ font-size: 12px;
 /* Pulse animation for active elements */
 @keyframes pulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(7, 193, 96, 0.4);
+        box-shadow: 0 0 0 0 rgba(194, 65, 12, 0.4);
     }
     70% {
-        box-shadow: 0 0 0 10px rgba(7, 193, 96, 0);
+        box-shadow: 0 0 0 10px rgba(194, 65, 12, 0);
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(7, 193, 96, 0);
+        box-shadow: 0 0 0 0 rgba(194, 65, 12, 0);
     }
 }
 

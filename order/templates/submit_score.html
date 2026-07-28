@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#07C160">
+    <meta name="theme-color" content="#c2410c">
     <meta name="description" content="Submit Score - SwiftFind">
     <title>Submit Score - SwiftFind</title>
     <link rel="manifest" href="{% static 'manifest.json' %}">
@@ -18,9 +18,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --primary-color: #07C160;
-            --primary-dark: #05a54e;
-            --primary-light: #e6f7ef;
+            --primary-color: #c2410c;
+            --primary-dark: #9a3412;
+            --primary-light: #fff1e8;
             --secondary-color: #F8F8F8;
             --text-color: #333;
             --light-text: #999;
@@ -112,7 +112,7 @@
         }
 
         .dark-mode .theme-btn:hover {
-            background-color: rgba(7, 193, 96, 0.1);
+            background-color: rgba(194, 65, 12, 0.1);
         }
 
         .dark-icon {
@@ -165,18 +165,18 @@
             margin: 20px 0 30px;
             text-align: center;
             overflow: hidden;
-            box-shadow: 0 8px 24px rgba(7, 193, 96, 0.15);
+            box-shadow: 0 8px 24px rgba(194, 65, 12, 0.15);
             transition: all 0.3s ease;
         }
 
         .dark-mode .score-card {
-            background: linear-gradient(120deg, rgba(7, 193, 96, 0.15), rgba(24, 144, 255, 0.15));
-            box-shadow: 0 8px 24px rgba(7, 193, 96, 0.2);
+            background: linear-gradient(120deg, rgba(194, 65, 12, 0.15), rgba(24, 144, 255, 0.15));
+            box-shadow: 0 8px 24px rgba(194, 65, 12, 0.2);
         }
 
         .score-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 28px rgba(7, 193, 96, 0.2);
+            box-shadow: 0 12px 28px rgba(194, 65, 12, 0.2);
         }
 
         .score-label {
@@ -299,7 +299,7 @@
         }
 
         .dark-mode .form-control:focus {
-            box-shadow: 0 0 0 3px rgba(7, 193, 96, 0.3);
+            box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.3);
         }
 
         .form-control::placeholder {
@@ -336,13 +336,13 @@
         .btn-primary {
             background-color: var(--primary-color);
             color: white;
-            box-shadow: 0 4px 10px rgba(7, 193, 96, 0.2);
+            box-shadow: 0 4px 10px rgba(194, 65, 12, 0.2);
         }
 
         .btn-primary:hover {
             background-color: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(7, 193, 96, 0.3);
+            box-shadow: 0 6px 12px rgba(194, 65, 12, 0.3);
         }
 
         .btn-secondary {
@@ -791,7 +791,7 @@
         // Confetti animation
         function createConfetti() {
             const container = document.getElementById('confetti-container');
-            const colors = ['#07C160', '#1890ff', '#FFD700', '#FF4D4F', '#722ED1', '#13C2C2', '#FA8C16'];
+            const colors = ['#c2410c', '#1890ff', '#FFD700', '#FF4D4F', '#722ED1', '#13C2C2', '#FA8C16'];
             
             for (let i = 0; i < 100; i++) {
                 setTimeout(() => {
