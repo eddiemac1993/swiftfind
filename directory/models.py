@@ -13,6 +13,7 @@ from django_ckeditor_5.fields import CKEditor5Field
 from django.contrib.auth.hashers import make_password
 from django.db.models import Q
 from django.contrib.contenttypes.models import ContentType
+from django.urls import reverse
 
 # You might want to run this in a data migration or in the shell
 def create_verification_permission():
@@ -258,6 +259,9 @@ class Business(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse("business-detail", kwargs={"pk": self.pk})
 
     @classmethod
     def search(cls, query=None, city=None, category=None):
