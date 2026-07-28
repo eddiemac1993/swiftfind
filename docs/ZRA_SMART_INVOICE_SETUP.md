@@ -46,12 +46,23 @@ cd /home/Dreambolt/swiftfind
 cp db.sqlite3 "db.sqlite3.pre-zra-$(date +%Y%m%d-%H%M%S).bak"
 git fetch origin
 git pull --ff-only origin master
-/home/Dreambolt/dream-bolt-technologies/.venv/bin/python manage.py check
-/home/Dreambolt/dream-bolt-technologies/.venv/bin/python manage.py migrate --plan
-/home/Dreambolt/dream-bolt-technologies/.venv/bin/python manage.py migrate --noinput
 /home/Dreambolt/dream-bolt-technologies/.venv/bin/python manage.py collectstatic --noinput
 /home/Dreambolt/dream-bolt-technologies/.venv/bin/python manage.py test pos_system.tests
+
+cd /home/Dreambolt/dream-bolt-technologies
+cp db.sqlite3 "db.sqlite3.pre-zra-$(date +%Y%m%d-%H%M%S).bak"
+SWIFTFIND_ROOT=/home/Dreambolt/swiftfind SWIFTFIND_ENABLED=true \
+  .venv/bin/python manage.py check
+SWIFTFIND_ROOT=/home/Dreambolt/swiftfind SWIFTFIND_ENABLED=true \
+  .venv/bin/python manage.py migrate pos_system --plan
+SWIFTFIND_ROOT=/home/Dreambolt/swiftfind SWIFTFIND_ENABLED=true \
+  .venv/bin/python manage.py migrate pos_system --noinput
 ```
+
+The second migration command is essential: the deployed `/swiftfind/` route is
+embedded in Dream Bolt and therefore uses Dream Bolt's SQLite database. Running
+`manage.py migrate` only from the standalone Swiftfind checkout does not migrate the
+database used by `www.dbt.africa`.
 
 Then open the PythonAnywhere **Web** tab for `www.dbt.africa`, press **Reload**, and
 verify:
@@ -83,7 +94,7 @@ real fiscal data exists.
 If migration itself fails before any fiscal sale, restore the backup:
 
 ```bash
-cd /home/Dreambolt/swiftfind
+cd /home/Dreambolt/dream-bolt-technologies
 cp db.sqlite3.pre-zra-YYYYMMDD-HHMMSS.bak db.sqlite3
 ```
 
