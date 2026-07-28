@@ -7,7 +7,10 @@ class ProductForm(forms.ModelForm):
         fields = [
             'name', 'description', 'price', 'cost_price', 'stock_quantity',
             'unit',  # 👈 Added here
-            'category', 'location', 'image', 'barcode', 'sku', 'is_active'
+            'category', 'location', 'image', 'barcode', 'sku', 'is_active',
+            'zra_item_code', 'zra_item_class_code', 'zra_item_type',
+            'zra_origin_country_code', 'zra_package_unit_code',
+            'zra_quantity_unit_code', 'zra_tax_category',
         ]
         widgets = {
             'description': forms.Textarea(attrs={'rows': 3}),

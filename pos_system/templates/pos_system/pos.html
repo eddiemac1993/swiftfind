@@ -429,6 +429,26 @@
                         <option value="bank_transfer">Bank Transfer</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <label for="customer-name">Customer name <small>(optional)</small></label>
+                    <input id="customer-name" class="form-control" maxlength="200"
+                           placeholder="Walk-In Customer">
+                </div>
+                <div class="form-group">
+                    <label for="customer-tpin">Customer TPIN <small>(optional)</small></label>
+                    <input id="customer-tpin" class="form-control" maxlength="10"
+                           inputmode="numeric" pattern="[0-9]{10}"
+                           placeholder="10 digits">
+                </div>
+                <div class="form-group">
+                    <label for="customer-phone">Customer phone <small>(optional)</small></label>
+                    <input id="customer-phone" class="form-control" maxlength="30"
+                           inputmode="tel" placeholder="+260...">
+                </div>
+                <div class="form-group">
+                    <label for="sale-notes">Notes <small>(optional)</small></label>
+                    <textarea id="sale-notes" class="form-control" rows="2" maxlength="400"></textarea>
+                </div>
 
                 <button id="complete-sale" class="checkout-btn" disabled>
                     <i class="fas fa-check-circle"></i> Complete Sale
@@ -732,13 +752,26 @@ $(document).ready(function() {
     // Complete sale
     $('#complete-sale').click(function() {
         const paymentMethod = $('#payment-method').val();
+        const customerName = $('#customer-name').val();
+        const customerTpin = $('#customer-tpin').val().trim();
+        const customerPhone = $('#customer-phone').val();
+        const saleNotes = $('#sale-notes').val();
+
+        if (customerTpin && !/^\d{10}$/.test(customerTpin)) {
+            showToast('Customer TPIN must contain exactly 10 digits.', 'danger');
+            return;
+        }
 
         $.ajax({
             url: urls.processSale,
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify({
-                payment_method: paymentMethod
+                payment_method: paymentMethod,
+                customer_name: customerName,
+                customer_tpin: customerTpin,
+                customer_phone: customerPhone,
+                notes: saleNotes
             }),
             headers: {
                 'X-CSRFToken': urls.csrfToken,
