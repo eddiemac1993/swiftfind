@@ -3,13 +3,15 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.db.models import Sum, Count, Q
+from django.db import transaction
+from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils import timezone
 from datetime import datetime, timedelta
 import json
 from decimal import Decimal, InvalidOperation
 from django.db.models import Avg
-from .models import Product, ProductCategory, OrderStatusUpdate, Sale, SaleItem, ProductView, RewardClaim
+from .models import Product, ProductCategory, OrderStatusUpdate, Sale, SaleItem, ProductView, RewardClaim, FiscalEvent
 from directory.models import Business, Advertisement
 from django.db.models.functions import Random
 from django.shortcuts import render
@@ -17,6 +19,15 @@ from django.http import JsonResponse
 from pos_system.models import Product
 from directory.models import Business
 from pos_system.services.ai_assistant import ask_chatgpt
+from pos_system.services.fiscal import (
+    apply_vsdc_response,
+    build_sale_payload,
+    build_stock_payloads,
+    calculate_line,
+    next_invoice_number,
+    validate_fiscal_products,
+)
+from pos_system.services.zra_vsdc import VSDCClient, VSDCError
 
 
 from django.shortcuts import render
@@ -1504,7 +1515,7 @@ def clear_cart(request):
 
 @login_required
 def process_sale(request):
-    """AJAX view to process sale"""
+    """Process a standard sale, or a ZRA sale when the business enables VSDC."""
     if request.method != 'POST':
         return HttpResponseBadRequest("Invalid request method")
 
@@ -1525,50 +1536,166 @@ def process_sale(request):
                 'message': error
             })
 
-        # Validate all products in cart
+        payment_method = data.get('payment_method', 'cash')
+        if payment_method not in dict(Sale.PAYMENT_METHOD_CHOICES):
+            return JsonResponse({'success': False, 'message': 'Invalid payment method'}, status=400)
+
         product_ids = [int(pid) for pid in cart.keys()]
-        products = Product.objects.filter(id__in=product_ids, business=business)
+        configuration = getattr(business, 'zra_configuration', None)
+        fiscal_enabled = bool(configuration and configuration.enabled)
+        fiscal_error = None
 
-        if len(products) != len(cart):
-            return JsonResponse({
-                'success': False,
-                'message': 'Some products in cart are no longer available'
-            })
+        with transaction.atomic():
+            products = list(
+                Product.objects.select_for_update().filter(
+                    id__in=product_ids, business=business, is_active=True,
+                )
+            )
+            if len(products) != len(cart):
+                raise ValidationError('Some products are no longer available.')
+            products_by_id = {product.id: product for product in products}
 
-        # Calculate totals
-        subtotal = sum(Decimal(item['price']) * item['quantity'] for item in cart.values())
-        tax = Decimal(data.get('tax', 0))
-        discount = Decimal(data.get('discount', 0))
-        total = subtotal + tax - discount
+            for product_id, item in cart.items():
+                quantity = int(item['quantity'])
+                if quantity <= 0:
+                    raise ValidationError('Sale quantities must be greater than zero.')
+                if products_by_id[int(product_id)].stock_quantity < quantity:
+                    raise ValidationError(
+                        f"Not enough stock for {products_by_id[int(product_id)].name}."
+                    )
 
-        # Create sale
-        sale = Sale.objects.create(
-            business=business,
-            transaction_id=f"TXN{timezone.now().strftime('%Y%m%d%H%M%S')}",
-            subtotal=subtotal,
-            tax=tax,
-            discount=discount,
-            total=total,
-            payment_method=data.get('payment_method', 'cash'),
-            notes=data.get('notes', '').strip(),
-            created_by=request.user
-        )
+            if fiscal_enabled:
+                configuration.full_clean()
+                validate_fiscal_products(products)
+                customer_tpin = data.get('customer_tpin', '').strip()
+                if customer_tpin and (not customer_tpin.isdigit() or len(customer_tpin) != 10):
+                    raise ValidationError('Customer TPIN must contain exactly 10 digits.')
 
-        # Create sale items and update stock
-        for product_id, item in cart.items():
-            product = next(p for p in products if p.id == int(product_id))
+            discount = Decimal(str(data.get('discount', 0)))
+            if discount < 0:
+                raise ValidationError('Discount cannot be negative.')
+            if fiscal_enabled and discount:
+                raise ValidationError(
+                    'Discounted Smart Invoices are temporarily blocked until the '
+                    'discount has been allocated and certified per line item.'
+                )
 
-            SaleItem.objects.create(
-                sale=sale,
-                product=product,
-                quantity=item['quantity'],
-                unit_price=Decimal(item['price']),
-                total_price=Decimal(item['price']) * item['quantity']
+            line_values = {}
+            for product_id, item in cart.items():
+                product = products_by_id[int(product_id)]
+                line_values[product.id] = calculate_line(product, int(item['quantity']))
+
+            subtotal = sum((line['taxable'] for line in line_values.values()), Decimal('0'))
+            tax = sum((line['tax'] for line in line_values.values()), Decimal('0'))
+            gross_total = subtotal + tax
+            if discount > gross_total:
+                raise ValidationError('Discount cannot exceed the sale total.')
+            total = gross_total - discount
+            invoice_number = (
+                next_invoice_number(business) if fiscal_enabled else None
             )
 
-            # Update stock
-            product.stock_quantity -= item['quantity']
-            product.save()
+            sale = Sale.objects.create(
+                business=business,
+                transaction_id=f"TXN{timezone.now().strftime('%Y%m%d%H%M%S%f')}",
+                subtotal=subtotal,
+                tax=tax,
+                discount=discount,
+                total=total,
+                payment_method=payment_method,
+                notes=data.get('notes', '').strip(),
+                created_by=request.user,
+                cis_invoice_number=invoice_number,
+                customer_name_snapshot=data.get('customer_name', '').strip(),
+                customer_tpin=data.get('customer_tpin', '').strip(),
+                customer_phone=data.get('customer_phone', '').strip(),
+                currency_code=(
+                    configuration.default_currency_code if fiscal_enabled else 'ZMW'
+                ),
+                exchange_rate=(
+                    configuration.default_exchange_rate if fiscal_enabled else Decimal('1')
+                ),
+                fiscal_status='PENDING' if fiscal_enabled else 'NON_FISCAL',
+            )
+
+            for product_id, item in cart.items():
+                product = products_by_id[int(product_id)]
+                quantity = int(item['quantity'])
+                line = line_values[product.id]
+                SaleItem.objects.create(
+                    sale=sale,
+                    product=product,
+                    quantity=quantity,
+                    unit_price=product.price,
+                    total_price=line['gross'],
+                    item_code_snapshot=product.zra_item_code,
+                    item_class_code_snapshot=product.zra_item_class_code,
+                    item_name_snapshot=product.name,
+                    package_unit_code_snapshot=product.zra_package_unit_code,
+                    quantity_unit_code_snapshot=product.zra_quantity_unit_code,
+                    tax_category_snapshot=product.zra_tax_category,
+                    tax_rate=line['rate'],
+                    taxable_amount=line['taxable'],
+                    tax_amount=line['tax'],
+                )
+            if fiscal_enabled:
+                client = VSDCClient(configuration)
+                payload = build_sale_payload(sale, configuration)
+                sale.zra_request = payload
+                sale.save(update_fields=('zra_request', 'updated_at'))
+                try:
+                    response = client.save_sale(payload)
+                except VSDCError as sale_error:
+                    # Consume the CIS sequence and preserve the attempt. A timeout may
+                    # mean VSDC received it; reusing the number would be unsafe.
+                    fiscal_error = str(sale_error)
+                    sale.fiscal_status = 'FAILED'
+                    sale.zra_response = {'error': fiscal_error}
+                    sale.stock_sync_status = 'NOT_REQUIRED'
+                    sale.save(update_fields=(
+                        'fiscal_status', 'zra_response', 'stock_sync_status', 'updated_at',
+                    ))
+                    FiscalEvent.objects.create(
+                        sale=sale, event_type='CERTIFICATION_FAILED',
+                        message=fiscal_error, payload={'request': payload},
+                    )
+                else:
+                    apply_vsdc_response(sale, response)
+                    for product_id, item in cart.items():
+                        product = products_by_id[int(product_id)]
+                        product.stock_quantity -= int(item['quantity'])
+                        product.save()
+
+                    movement_payload, master_payload = build_stock_payloads(sale, configuration)
+                    try:
+                        client.save_stock_items(movement_payload)
+                        client.save_stock_master(master_payload)
+                        sale.stock_sync_status = 'SYNCED'
+                        sale.stock_sync_error = ''
+                    except VSDCError as stock_error:
+                        # The invoice already exists at ZRA; preserve it and flag stock for retry.
+                        sale.stock_sync_status = 'FAILED'
+                        sale.stock_sync_error = str(stock_error)
+                        FiscalEvent.objects.create(
+                            sale=sale, event_type='STOCK_SYNC_FAILED',
+                            message=str(stock_error),
+                            payload={'movement': movement_payload, 'master': master_payload},
+                        )
+                    sale.save(update_fields=('stock_sync_status', 'stock_sync_error', 'updated_at'))
+            else:
+                for product_id, item in cart.items():
+                    product = products_by_id[int(product_id)]
+                    product.stock_quantity -= int(item['quantity'])
+                    product.save()
+
+        if fiscal_error:
+            return JsonResponse({
+                'success': False,
+                'message': (
+                    f"{fiscal_error}. No stock was deducted. The invoice number was "
+                    "reserved for safe ZRA reconciliation."
+                ),
+            }, status=502)
 
         # Clear cart
         if 'cart' in request.session:
@@ -1582,6 +1709,9 @@ def process_sale(request):
             'sale_id': sale.id
         })
 
+    except (ValidationError, VSDCError) as e:
+        message = '; '.join(e.messages) if isinstance(e, ValidationError) else str(e)
+        return JsonResponse({'success': False, 'message': message}, status=400)
     except Exception as e:
         return JsonResponse({
             'success': False,

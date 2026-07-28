@@ -1,9 +1,12 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.utils.html import format_html
 from django.urls import reverse
 from django.db.models import Sum, F, DecimalField
 from django.db.models.functions import Coalesce
-from .models import ProductCategory, Product, Sale, SaleItem
+from .models import (
+    FiscalEvent, FiscalInvoiceSequence, ProductCategory, Product, Sale,
+    SaleItem, ZRAConfiguration,
+)
 from .models import RewardClaim
 from django.utils import timezone
 from .models import ProductView  # Add this import at the top
@@ -13,6 +16,46 @@ from django.contrib import admin
 from .models import Order, OrderItem  # Import your models
 from django.contrib import admin
 from .models import Order, OrderItem
+
+
+@admin.register(ZRAConfiguration)
+class ZRAConfigurationAdmin(admin.ModelAdmin):
+    list_display = (
+        'business', 'tpin', 'branch_id', 'environment', 'device_initialized',
+        'enabled', 'updated_at',
+    )
+    list_filter = ('enabled', 'device_initialized', 'environment')
+    search_fields = ('business__name', 'tpin', 'cis_number', 'sdc_id')
+    readonly_fields = ('created_at', 'updated_at')
+
+
+@admin.register(FiscalInvoiceSequence)
+class FiscalInvoiceSequenceAdmin(admin.ModelAdmin):
+    list_display = (
+        'business', 'invoice_type', 'transaction_type', 'last_number', 'updated_at',
+    )
+    readonly_fields = (
+        'business', 'invoice_type', 'transaction_type', 'last_number', 'updated_at',
+    )
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(FiscalEvent)
+class FiscalEventAdmin(admin.ModelAdmin):
+    list_display = ('sale', 'event_type', 'created_at')
+    search_fields = ('sale__transaction_id', 'event_type', 'message')
+    readonly_fields = ('sale', 'event_type', 'message', 'payload', 'created_at')
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
@@ -250,12 +293,24 @@ class ProductAdmin(BaseAdmin):
                 'image_preview'
             )
         }),
+        ('ZRA Smart Invoice', {
+            'fields': (
+                'zra_item_code', 'zra_item_class_code', 'zra_item_type',
+                'zra_origin_country_code', 'zra_package_unit_code',
+                'zra_quantity_unit_code', 'zra_tax_category',
+                'zra_registered', 'zra_last_response',
+            ),
+            'classes': ('collapse',),
+        }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
     )
-    actions = ['activate_products', 'deactivate_products', 'update_stock_status']
+    actions = [
+        'activate_products', 'deactivate_products', 'update_stock_status',
+        'register_products_with_zra',
+    ]
 
     def stock_status_display(self, obj):
         status_map = {
@@ -285,6 +340,42 @@ class ProductAdmin(BaseAdmin):
             product.save()  # This will trigger the stock status update in the save method
     update_stock_status.short_description = "Update stock status for selected products"
 
+    def register_products_with_zra(self, request, queryset):
+        from django.core.exceptions import ValidationError
+        from pos_system.services.fiscal import build_item_payload
+        from pos_system.services.zra_vsdc import VSDCClient, VSDCError
+
+        registered = 0
+        failures = []
+        for product in queryset.select_related('business'):
+            try:
+                configuration = product.business.zra_configuration
+                if not (
+                    configuration.tpin and configuration.vsdc_base_url
+                    and configuration.device_initialized
+                ):
+                    raise ValidationError(
+                        'TPIN, initialized device and VSDC URL are required.'
+                    )
+                payload = build_item_payload(product, configuration, request.user)
+                client = VSDCClient(configuration)
+                response = (
+                    client.update_item(payload)
+                    if product.zra_registered
+                    else client.save_item(payload)
+                )
+                product.zra_registered = True
+                product.zra_last_response = response
+                product.save(update_fields=('zra_registered', 'zra_last_response', 'updated_at'))
+                registered += 1
+            except (AttributeError, ValidationError, VSDCError) as exc:
+                failures.append(f"{product.name}: {exc}")
+        if registered:
+            self.message_user(request, f"{registered} product(s) registered with ZRA VSDC.")
+        if failures:
+            self.message_user(request, ' | '.join(failures), level=messages.ERROR)
+    register_products_with_zra.short_description = "Register/update selected products with ZRA VSDC"
+
 # Sale Item Inline
 class SaleItemInline(admin.TabularInline):
     model = SaleItem
@@ -294,6 +385,14 @@ class SaleItemInline(admin.TabularInline):
     autocomplete_fields = ('product',)
 
     def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        if obj and obj.fiscal_status == 'CERTIFIED':
+            return False
+        return super().has_change_permission(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
         return False
 
 # Sale Admin
@@ -321,12 +420,15 @@ class TotalSalesFilter(admin.SimpleListFilter):
 
 @admin.register(Sale)
 class SaleAdmin(BaseAdmin):
+    actions = ('retry_zra_stock_sync',)
     list_display = (
         'transaction_id',
         'business',
         'customer_display',
         'total',
         'payment_method_display',
+        'fiscal_status',
+        'zra_receipt_number',
         'is_paid',
         'created_at',
         'items_count',
@@ -336,6 +438,7 @@ class SaleAdmin(BaseAdmin):
         'business',
         'is_paid',
         'payment_method',
+        'fiscal_status',
         'created_at',
         TotalSalesFilter
     )
@@ -355,8 +458,51 @@ class SaleAdmin(BaseAdmin):
         'created_at',
         'updated_at',
         'created_by',
-        'customer'
+        'customer',
+        'cis_invoice_number', 'invoice_type', 'transaction_type',
+        'original_sale', 'customer_name_snapshot', 'customer_tpin',
+        'customer_phone', 'currency_code', 'exchange_rate', 'fiscal_status',
+        'zra_receipt_number', 'zra_internal_data', 'zra_receipt_signature',
+        'zra_sdc_id', 'zra_machine_registration_number', 'zra_qr_code_url',
+        'zra_publication_datetime', 'zra_request', 'zra_response',
+        'fiscalized_at', 'stock_sync_status', 'stock_sync_error',
     )
+
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.fiscal_status == 'CERTIFIED':
+            return False
+        return super().has_delete_permission(request, obj)
+
+    def retry_zra_stock_sync(self, request, queryset):
+        from pos_system.services.fiscal import build_stock_payloads
+        from pos_system.services.zra_vsdc import VSDCClient, VSDCError
+
+        synchronized = 0
+        failures = []
+        for sale in queryset.select_related('business', 'created_by'):
+            if sale.fiscal_status != 'CERTIFIED' or sale.stock_sync_status != 'FAILED':
+                continue
+            try:
+                configuration = sale.business.zra_configuration
+                movement, master = build_stock_payloads(sale, configuration)
+                client = VSDCClient(configuration)
+                client.save_stock_items(movement)
+                client.save_stock_master(master)
+                sale.stock_sync_status = 'SYNCED'
+                sale.stock_sync_error = ''
+                sale.save(update_fields=('stock_sync_status', 'stock_sync_error', 'updated_at'))
+                FiscalEvent.objects.create(
+                    sale=sale, event_type='STOCK_SYNC_RETRIED',
+                    message='Stock synchronization completed from Django admin.',
+                )
+                synchronized += 1
+            except (AttributeError, VSDCError) as exc:
+                failures.append(f"{sale.transaction_id}: {exc}")
+        if synchronized:
+            self.message_user(request, f"{synchronized} sale(s) synchronized with ZRA stock.")
+        if failures:
+            self.message_user(request, ' | '.join(failures), level=messages.ERROR)
+    retry_zra_stock_sync.short_description = "Retry ZRA stock sync for selected certified sales"
     fieldsets = (
         ('Sale Information', {
             'fields': (
@@ -375,6 +521,20 @@ class SaleAdmin(BaseAdmin):
                 'payment_method',
                 'is_paid'
             )
+        }),
+        ('ZRA Smart Invoice', {
+            'fields': (
+                'cis_invoice_number', 'invoice_type', 'transaction_type',
+                'original_sale', 'customer_name_snapshot', 'customer_tpin',
+                'customer_phone', 'currency_code', 'exchange_rate',
+                'fiscal_status', 'zra_receipt_number', 'zra_sdc_id',
+                'zra_machine_registration_number', 'zra_publication_datetime',
+                'zra_qr_code_url', 'zra_internal_data',
+                'zra_receipt_signature', 'fiscalized_at',
+                'stock_sync_status', 'stock_sync_error',
+                'zra_request', 'zra_response',
+            ),
+            'classes': ('collapse',),
         }),
         ('Additional Information', {
             'fields': (
@@ -440,6 +600,16 @@ class SaleItemAdmin(BaseAdmin):
         'product__barcode'
     )
     readonly_fields = ('unit_price', 'total_price', 'created_at')
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.sale.fiscal_status == 'CERTIFIED':
+            return tuple(field.name for field in self.model._meta.fields)
+        return super().get_readonly_fields(request, obj)
+
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.sale.fiscal_status == 'CERTIFIED':
+            return False
+        return super().has_delete_permission(request, obj)
 
     def sale_link(self, obj):
         url = reverse('admin:pos_system_sale_change', args=[obj.sale.id])
