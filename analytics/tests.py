@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from django.http import HttpResponse
 from django.test import RequestFactory, SimpleTestCase, override_settings
@@ -14,9 +15,9 @@ class SwiftfindThemeTests(SimpleTestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
-    def render(self, path, body=None, content_type="text/html"):
+    def render(self, path, body=None, content_type="text/html", authenticated=False):
         request = self.factory.get(path)
-        request.user = SimpleNamespace(is_authenticated=False)
+        request.user = SimpleNamespace(is_authenticated=authenticated)
         response = HttpResponse(
             body
             or '<html><head><title>Page</title></head><body class="page">OK</body></html>',
@@ -35,7 +36,36 @@ class SwiftfindThemeTests(SimpleTestCase):
         self.assertIn("/swiftfind/pos1/marketplace/", content)
         self.assertIn('id="sf-primary-navigation"', content)
         self.assertIn('class="sf-ai-fab"', content)
+        self.assertIn('class="sf-cart-action"', content)
+        self.assertIn("/swiftfind/pos1/cart/", content)
+        self.assertNotIn('data-sf-nav="businesses"', content)
+        self.assertNotIn('data-sf-nav="products"', content)
         self.assertNotIn(">AI Assistant</a>", content)
+
+    @patch("swiftfind.theme._navigation_context", return_value=(7, True))
+    def test_business_owner_gets_messages_orders_and_business_tools(self, _context):
+        response = self.render(
+            "/swiftfind/directory/profile/",
+            authenticated=True,
+        )
+        content = response.content.decode()
+
+        self.assertIn(">Messages</span>", content)
+        self.assertIn(">Orders</a>", content)
+        self.assertIn(">Business tools</a>", content)
+        self.assertIn(">7</span>", content)
+
+    @patch("swiftfind.theme._navigation_context", return_value=(0, False))
+    def test_regular_user_can_add_business_from_navigation(self, _context):
+        response = self.render(
+            "/swiftfind/directory/profile/",
+            authenticated=True,
+        )
+
+        self.assertIn(
+            "/swiftfind/directory/profile/add-business/",
+            response.content.decode(),
+        )
 
     def test_replaces_marketplace_navigation_with_shared_navigation(self):
         response = self.render(

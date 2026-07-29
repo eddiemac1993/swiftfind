@@ -1869,6 +1869,7 @@ $(document).on('click', function(e) {
     // Cart management
     function saveCart() {
         localStorage.setItem('cart', JSON.stringify(state.cart));
+        window.dispatchEvent(new CustomEvent('swiftfind:cart-updated'));
     }
 
     function updateCartBadge() {
@@ -1956,6 +1957,7 @@ function addToCart(productId) {
 
     if (state.cart[productId]) {
         state.cart[productId].quantity += 1;
+        state.cart[productId].storeUrl = window.location.pathname;
     } else {
         state.cart[productId] = {
             name: productName,
@@ -1963,7 +1965,8 @@ function addToCart(productId) {
             quantity: 1,
             business: productBusiness || config.businessName,
             businessId: businessId,
-            image: productImage
+            image: productImage,
+            storeUrl: window.location.pathname
         };
     }
 
@@ -1987,6 +1990,10 @@ function addToCart(productId) {
     function closeCart() {
         $('#cart-sidebar').removeClass('open');
         $('#cart-overlay').removeClass('open');
+    }
+
+    if (new URLSearchParams(window.location.search).get('cart') === 'open') {
+        openCart();
     }
 
     $(document).on('click', '.decrease-qty', function() {

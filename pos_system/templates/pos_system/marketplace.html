@@ -1107,7 +1107,7 @@
                             </a>
 
                             <!-- Enhanced Add to Cart button -->
-                            <a href="{% url 'business-store' pk=product.business.pk %}?highlight={{ product.id }}"
+                            <a href="{% url 'pos_system:public_store' business_slug=product.business.slug %}?highlight={{ product.id }}"
                                class="add-to-cart-button text-xs hover:bg-orange-50 ml-2 flex items-center gap-1 px-3 py-1.5 rounded-full border border-orange-200 transition-all"
                                title="Add to Cart">
                                 <span class="text-orange-600">Add to Cart</span>
@@ -1133,7 +1133,7 @@
                                     data-product-price="ZMW {{ product.price }}"
                                     data-business-name="{{ product.business.name }}"
                                     data-product-image="{% if product.image %}{{ product.image.url }}{% else %}https://via.placeholder.com/300x300?text=No+Image{% endif %}"
-                                    data-product-url="{% url 'business-store' pk=product.business.pk %}?highlight={{ product.id }}"
+                                    data-product-url="{% url 'pos_system:public_store' business_slug=product.business.slug %}?highlight={{ product.id }}"
                                     data-business-location="{{ product.location|default_if_none:'' }}">
                                 <i class="fas fa-download download"></i>
                             </button>

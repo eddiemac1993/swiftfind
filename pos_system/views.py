@@ -30,6 +30,11 @@ from pos_system.services.fiscal import (
 from pos_system.services.zra_vsdc import VSDCClient, VSDCError
 
 
+def marketplace_cart(request):
+    """Render the customer cart shared by Swiftfind business stores."""
+    return render(request, "pos_system/marketplace_cart.html")
+
+
 from django.shortcuts import render
 from pos_system.models import Product
 from pos_system.services.ai_assistant import ask_chatgpt

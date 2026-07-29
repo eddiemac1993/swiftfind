@@ -21,6 +21,7 @@
         var header = document.querySelector("[data-swiftfind-theme-bar]");
         var toggle = document.querySelector(".sf-menu-toggle");
         var navigation = document.getElementById("sf-primary-navigation");
+        var lastCartCount = -1;
 
         forceLightPresentation();
 
@@ -34,6 +35,43 @@
         if (!header || !toggle || !navigation) {
             return;
         }
+
+        function marketplaceCartCount() {
+            try {
+                var cart = JSON.parse(window.localStorage.getItem("cart") || "{}");
+                return Object.values(cart).reduce(function (total, item) {
+                    var quantity = Number(item && item.quantity);
+                    return total + (Number.isFinite(quantity) && quantity > 0 ? quantity : 0);
+                }, 0);
+            } catch (error) {
+                return 0;
+            }
+        }
+
+        function updateCartCount() {
+            var count = marketplaceCartCount();
+            if (count === lastCartCount) {
+                return;
+            }
+            lastCartCount = count;
+
+            document.querySelectorAll(".sf-cart-badge").forEach(function (badge) {
+                badge.textContent = count > 99 ? "99+" : String(count);
+                badge.hidden = count === 0;
+            });
+
+            document.querySelectorAll(".sf-cart-action").forEach(function (link) {
+                link.setAttribute(
+                    "aria-label",
+                    "Cart, " + count + (count === 1 ? " item" : " items")
+                );
+            });
+        }
+
+        updateCartCount();
+        window.addEventListener("storage", updateCartCount);
+        window.addEventListener("swiftfind:cart-updated", updateCartCount);
+        window.setInterval(updateCartCount, 1000);
 
         function closeMenu() {
             header.classList.remove("sf-menu-open");
