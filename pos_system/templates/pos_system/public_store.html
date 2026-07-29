@@ -19,6 +19,7 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="{% static 'swiftfind/js/store-cart.js' %}" defer></script>
 
     <script type="text/javascript">
         (function(c,l,a,r,i,t,y){
@@ -3038,6 +3039,9 @@ function startOrderConversation(orderId, customerName, customerPhone, customerNo
 <script>
 (function () {
     "use strict";
+
+    if (document.documentElement.dataset.swiftfindStoreCartReady) return;
+    document.documentElement.dataset.swiftfindStoreCartReady = "inline";
 
     var cartPageUrl = "{% url 'pos_system:marketplace_cart' %}";
 
