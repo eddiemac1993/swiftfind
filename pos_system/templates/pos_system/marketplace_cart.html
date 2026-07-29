@@ -1,0 +1,275 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart | Swiftfind</title>
+    <meta name="description" content="Review products in your Swiftfind marketplace cart.">
+    <style>
+        .sf-cart-page {
+            width: min(calc(100% - 2rem), 980px);
+            margin: 2.5rem auto 6rem;
+        }
+        .sf-cart-page__heading {
+            display: flex;
+            margin-bottom: 1.5rem;
+            align-items: end;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        .sf-cart-page__heading h1 { margin: 0; font-size: clamp(1.7rem, 4vw, 2.35rem); }
+        .sf-cart-page__heading p { margin: .35rem 0 0; color: #69758a; }
+        .sf-cart-list { display: grid; gap: .85rem; }
+        .sf-cart-row {
+            display: grid;
+            padding: 1rem;
+            grid-template-columns: 76px 1fr auto;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid #e5e9f0;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 5px 18px rgba(23, 32, 51, .05);
+        }
+        .sf-cart-row img {
+            width: 76px;
+            height: 76px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: #f0f2f6;
+        }
+        .sf-cart-row h2 { margin: 0; font-size: 1rem; }
+        .sf-cart-row__business { margin: .22rem 0; color: #69758a; font-size: .82rem; }
+        .sf-cart-row__price { color: #e85d04; font-weight: 800; }
+        .sf-cart-quantity { display: flex; align-items: center; gap: .45rem; }
+        .sf-cart-quantity button {
+            width: 36px;
+            min-height: 36px !important;
+            padding: 0;
+            border: 1px solid #e5e9f0 !important;
+            border-radius: 10px !important;
+            color: #172033 !important;
+            background: #fff !important;
+            box-shadow: none !important;
+        }
+        .sf-cart-quantity output { min-width: 1.8rem; text-align: center; font-weight: 750; }
+        .sf-cart-remove {
+            display: block;
+            margin: .45rem 0 0 auto;
+            border: 0;
+            color: #b42318;
+            background: transparent;
+            font: inherit;
+            font-size: .78rem;
+            cursor: pointer;
+        }
+        .sf-cart-summary {
+            display: flex;
+            margin-top: 1.25rem;
+            padding: 1.25rem;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            border: 1px solid #e5e9f0;
+            border-radius: 16px;
+            background: #fff;
+        }
+        .sf-cart-total span { display: block; color: #69758a; font-size: .8rem; }
+        .sf-cart-total strong { font-size: 1.35rem; }
+        .sf-cart-actions { display: flex; gap: .65rem; }
+        .sf-cart-actions a {
+            display: inline-flex;
+            min-height: 44px;
+            padding: .65rem 1rem;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e5e9f0;
+            border-radius: 11px;
+            color: #3f4b5f;
+            background: #fff;
+            font-size: .86rem;
+            font-weight: 750;
+            text-decoration: none;
+        }
+        .sf-cart-actions a:last-child {
+            border-color: #e85d04;
+            color: #fff;
+            background: #e85d04;
+        }
+        .sf-cart-empty {
+            padding: 4rem 1.25rem;
+            border: 1px dashed #d7dde7;
+            border-radius: 18px;
+            text-align: center;
+            background: #fff;
+        }
+        .sf-cart-empty svg { width: 48px; color: #e85d04; fill: none; stroke: currentColor; stroke-width: 1.5; }
+        .sf-cart-empty h2 { margin: .8rem 0 .3rem; }
+        .sf-cart-empty p { margin: 0 0 1.2rem; color: #69758a; }
+        @media (max-width: 640px) {
+            .sf-cart-page { margin-top: 1.4rem; }
+            .sf-cart-page__heading { align-items: start; flex-direction: column; }
+            .sf-cart-row { grid-template-columns: 62px 1fr; }
+            .sf-cart-row img { width: 62px; height: 62px; }
+            .sf-cart-row__controls { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; }
+            .sf-cart-remove { margin: 0; }
+            .sf-cart-summary { align-items: stretch; flex-direction: column; }
+            .sf-cart-actions { display: grid; grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <main class="sf-cart-page">
+        <div class="sf-cart-page__heading">
+            <div>
+                <h1>Your cart</h1>
+                <p>Review your order, then return to the business to complete checkout.</p>
+            </div>
+            <span id="cart-item-summary">0 items</span>
+        </div>
+
+        <div id="cart-empty" class="sf-cart-empty" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.4L21 8H6"/>
+                <circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/>
+            </svg>
+            <h2>Your cart is empty</h2>
+            <p>Explore trusted Zambian businesses and add products you need.</p>
+            <div class="sf-cart-actions">
+                <a href="{% url 'pos_system:marketplace' %}">Browse marketplace</a>
+            </div>
+        </div>
+
+        <div id="cart-content" hidden>
+            <div id="cart-list" class="sf-cart-list"></div>
+            <section class="sf-cart-summary" aria-label="Cart summary">
+                <div class="sf-cart-total">
+                    <span>Product subtotal</span>
+                    <strong id="cart-total">ZMW 0.00</strong>
+                </div>
+                <div class="sf-cart-actions">
+                    <a href="{% url 'pos_system:marketplace' %}">Continue shopping</a>
+                    <a id="cart-checkout" href="{% url 'pos_system:marketplace' %}">Continue to checkout</a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+    (function () {
+        "use strict";
+        var cart;
+        try {
+            cart = JSON.parse(localStorage.getItem("cart") || "{}");
+        } catch (error) {
+            cart = {};
+        }
+
+        var list = document.getElementById("cart-list");
+        var empty = document.getElementById("cart-empty");
+        var content = document.getElementById("cart-content");
+        var summary = document.getElementById("cart-item-summary");
+        var total = document.getElementById("cart-total");
+        var checkout = document.getElementById("cart-checkout");
+
+        function quantityCount() {
+            return Object.values(cart).reduce(function (sum, item) {
+                return sum + Math.max(0, Number(item.quantity) || 0);
+            }, 0);
+        }
+
+        function saveAndRender() {
+            localStorage.setItem("cart", JSON.stringify(cart));
+            window.dispatchEvent(new CustomEvent("swiftfind:cart-updated"));
+            render();
+        }
+
+        function actionButton(label, onClick) {
+            var button = document.createElement("button");
+            button.type = "button";
+            button.textContent = label;
+            button.addEventListener("click", onClick);
+            return button;
+        }
+
+        function render() {
+            var entries = Object.entries(cart);
+            var count = quantityCount();
+            var subtotal = 0;
+            list.replaceChildren();
+            summary.textContent = count + (count === 1 ? " item" : " items");
+            empty.hidden = entries.length !== 0;
+            content.hidden = entries.length === 0;
+
+            entries.forEach(function (entry) {
+                var productId = entry[0];
+                var item = entry[1];
+                var price = Number(item.price) || 0;
+                var quantity = Math.max(1, Number(item.quantity) || 1);
+                subtotal += price * quantity;
+
+                var row = document.createElement("article");
+                row.className = "sf-cart-row";
+
+                var image = document.createElement("img");
+                image.src = item.image || "{% static 'default.jpg' %}";
+                image.alt = "";
+
+                var details = document.createElement("div");
+                var name = document.createElement("h2");
+                name.textContent = item.name || "Marketplace product";
+                var business = document.createElement("p");
+                business.className = "sf-cart-row__business";
+                business.textContent = item.business || "Swiftfind business";
+                var priceText = document.createElement("div");
+                priceText.className = "sf-cart-row__price";
+                priceText.textContent = "ZMW " + price.toFixed(2);
+                details.append(name, business, priceText);
+
+                var controls = document.createElement("div");
+                controls.className = "sf-cart-row__controls";
+                var quantityControls = document.createElement("div");
+                quantityControls.className = "sf-cart-quantity";
+                var quantityOutput = document.createElement("output");
+                quantityOutput.textContent = String(quantity);
+                quantityControls.append(
+                    actionButton("−", function () {
+                        if (quantity <= 1) {
+                            delete cart[productId];
+                        } else {
+                            cart[productId].quantity = quantity - 1;
+                        }
+                        saveAndRender();
+                    }),
+                    quantityOutput,
+                    actionButton("+", function () {
+                        cart[productId].quantity = quantity + 1;
+                        saveAndRender();
+                    })
+                );
+                var remove = actionButton("Remove", function () {
+                    delete cart[productId];
+                    saveAndRender();
+                });
+                remove.className = "sf-cart-remove";
+                controls.append(quantityControls, remove);
+                row.append(image, details, controls);
+                list.append(row);
+            });
+
+            total.textContent = "ZMW " + subtotal.toFixed(2);
+            var firstItem = entries.length ? entries[0][1] : null;
+            if (firstItem && firstItem.storeUrl) {
+                checkout.href = firstItem.storeUrl + "?cart=open";
+            } else {
+                checkout.href = "{% url 'pos_system:marketplace' %}";
+                checkout.textContent = "Find this business";
+            }
+        }
+
+        render();
+    })();
+    </script>
+</body>
+</html>

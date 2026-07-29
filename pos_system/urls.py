@@ -8,6 +8,7 @@ urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     path("ai-assistant/", views.ai_assistant_view, name="ai_assistant"),
     path('marketplace/', views.marketplace_view, name='marketplace'),
+    path('cart/', views.marketplace_cart, name='marketplace_cart'),
     path('store/', views.public_store_all, name='public_store_all'),
     path('products/search/<str:product_name>/', views.product_fallback_view, name='product_fallback'),
     path('orders/<int:order_id>/submit/', views.submit_order, name='submit_order'),

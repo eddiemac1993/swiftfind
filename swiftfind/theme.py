@@ -8,7 +8,7 @@ from html import escape
 from django.conf import settings
 
 
-THEME_VERSION = "2026.07.29-navigation"
+THEME_VERSION = "2026.07.29-cart-navigation"
 _HEAD_CLOSE_RE = re.compile(r"</head\s*>", re.IGNORECASE)
 _BODY_CLOSE_RE = re.compile(r"</body\s*>", re.IGNORECASE)
 _BODY_OPEN_RE = re.compile(r"<body(?P<attrs>[^>]*)>", re.IGNORECASE)
@@ -138,13 +138,13 @@ def _theme_bar(request) -> str:
     authenticated = bool(user and getattr(user, "is_authenticated", False))
     account_path = "/directory/profile/" if authenticated else "/accounts/login/"
     account_label = "Profile" if authenticated else "Sign in"
-    unread_count = _unread_message_count(request) if authenticated else 0
+    unread_count, is_business_owner = (
+        _navigation_context(request) if authenticated else (0, False)
+    )
 
     links = [
         ("Discover", f"{prefix}/", "home"),
-        ("Businesses", f"{prefix}/directory/", "businesses"),
         ("Marketplace", f"{prefix}/pos1/marketplace/", "marketplace"),
-        ("Products", f"{prefix}/directory/products/", "products"),
     ]
     link_parts = []
     for label, url, key in links:
@@ -164,6 +164,10 @@ def _theme_bar(request) -> str:
         f'<a href="{escape(prefix)}/messages/" data-sf-nav="messages">'
         f'<span>Messages</span>{messages_badge}</a>'
         f'<a href="{escape(prefix)}/pos1/orders/" data-sf-nav="orders">Orders</a>'
+        f'<a href="{escape(prefix)}'
+        f'{"/pos1/" if is_business_owner else "/directory/profile/add-business/"}" '
+        f'data-sf-nav="business-tools">'
+        f'{"Business tools" if is_business_owner else "Add a business"}</a>'
         if authenticated
         else ""
     )
@@ -174,6 +178,14 @@ def _theme_bar(request) -> str:
     )
     message_aria_label = (
         f"Messages, {unread_count} unread" if unread_count else "Messages"
+    )
+    message_action = (
+        f'<a class="sf-message-action" href="{escape(prefix)}/messages/" '
+        f'aria-label="{escape(message_aria_label)}">'
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v11H8l-4 3v-14Z"/></svg>'
+        f"{messages_badge}</a>"
+        if authenticated
+        else ""
     )
 
     return (
@@ -194,10 +206,13 @@ def _theme_bar(request) -> str:
         f'<a href="{escape(prefix + account_path)}">{escape(account_label)}</a>'
         f"{session_action}</div></nav>"
         '<div class="sf-theme-actions">'
-        f'<a class="sf-message-action" href="{escape(prefix)}/messages/" '
-        f'aria-label="{escape(message_aria_label)}">'
-        '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v11H8l-4 3v-14Z"/></svg>'
-        f"{messages_badge}</a>"
+        f'<a class="sf-cart-action" href="{escape(prefix)}/pos1/cart/" '
+        'aria-label="Cart, 0 items">'
+        '<svg viewBox="0 0 24 24" aria-hidden="true">'
+        '<path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.4L21 8H6"/>'
+        '<circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/>'
+        '</svg><span class="sf-cart-badge" hidden>0</span></a>'
+        f"{message_action}"
         f'<a class="sf-theme-account" href="{escape(prefix + account_path)}">'
         f"{escape(account_label)}</a></div>"
         "</div></header>"
@@ -219,26 +234,22 @@ def _ai_assistant_action(request) -> str:
     )
 
 
-def _unread_message_count(request) -> int:
+def _navigation_context(request) -> tuple[int, bool]:
     try:
         from messaging.context_processors import unread_messages
 
-        return int(unread_messages(request).get("unread_count", 0))
+        context = unread_messages(request)
+        return (
+            int(context.get("unread_count", 0)),
+            bool(context.get("is_business_owner", False)),
+        )
     except Exception:
         # Navigation must never prevent a page from rendering if messaging is
         # temporarily unavailable during a migration or maintenance window.
-        return 0
+        return 0, False
 
 
 def _is_active(current_path: str, link_path: str) -> bool:
     if link_path.endswith("/pos1/marketplace/"):
         return "/pos1/marketplace/" in current_path
-    if link_path.endswith("/directory/products/"):
-        return "/directory/products/" in current_path
-    if link_path.endswith("/directory/"):
-        return (
-            "/directory/" in current_path
-            and "/directory/products/" not in current_path
-            and "/directory/about/" not in current_path
-        )
     return current_path.rstrip("/") == link_path.rstrip("/")
