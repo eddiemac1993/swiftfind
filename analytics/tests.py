@@ -29,11 +29,15 @@ class SwiftfindThemeTests(SimpleTestCase):
         content = response.content.decode()
 
         self.assertIn("swiftfind/css/modern-theme.css", content)
+        self.assertIn("swiftfind/js/navigation.js", content)
         self.assertIn('class="page sf-theme"', content)
         self.assertIn("data-swiftfind-theme-bar", content)
         self.assertIn("/swiftfind/pos1/marketplace/", content)
+        self.assertIn('id="sf-primary-navigation"', content)
+        self.assertIn('class="sf-ai-fab"', content)
+        self.assertNotIn(">AI Assistant</a>", content)
 
-    def test_preserves_marketplace_navigation(self):
+    def test_replaces_marketplace_navigation_with_shared_navigation(self):
         response = self.render(
             "/swiftfind/pos1/marketplace/",
             '<html><head></head><body class="marketplace-body">Marketplace</body></html>',
@@ -41,7 +45,26 @@ class SwiftfindThemeTests(SimpleTestCase):
         content = response.content.decode()
 
         self.assertIn('class="marketplace-body sf-theme"', content)
-        self.assertNotIn("data-swiftfind-theme-bar", content)
+        self.assertIn("data-swiftfind-theme-bar", content)
+        self.assertIn('data-sf-nav="marketplace"', content)
+
+    def test_ai_page_does_not_repeat_floating_ai_action(self):
+        response = self.render("/swiftfind/pos1/ai-assistant/")
+
+        self.assertNotIn('class="sf-ai-fab"', response.content.decode())
+
+    def test_removes_server_rendered_dark_mode_state(self):
+        response = self.render(
+            "/swiftfind/directory/profile/",
+            (
+                '<html data-theme="dark"><head></head>'
+                '<body class="profile dark-mode">Profile</body></html>'
+            ),
+        )
+        content = response.content.decode()
+
+        self.assertNotIn('data-theme="dark"', content)
+        self.assertIn('class="profile sf-theme"', content)
 
     def test_does_not_theme_host_project_page(self):
         response = self.render("/")
