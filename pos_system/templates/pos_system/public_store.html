@@ -2098,6 +2098,12 @@ function trackProductView(productId) {
         $('#quick-view').removeClass('active');
     });
 
+    $(document).on('click', '.add-to-cart-btn', function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        addToCart($(this).data('product-id'));
+    });
+
 function generateShareCard(productData) {
     return new Promise((resolve, reject) => {
         // Add unit to cache key
