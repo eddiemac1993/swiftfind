@@ -120,7 +120,9 @@
     </style>
 </head>
 <body>
-    <main class="sf-cart-page">
+    <main class="sf-cart-page"
+          data-marketplace-url="{% url 'pos_system:marketplace' %}"
+          data-fallback-image="{% static 'default.jpg' %}">
         <div class="sf-cart-page__heading">
             <div>
                 <h1>Your cart</h1>
@@ -271,5 +273,6 @@
         render();
     })();
     </script>
+    <script src="{% static 'swiftfind/js/marketplace-cart.js' %}"></script>
 </body>
 </html>
